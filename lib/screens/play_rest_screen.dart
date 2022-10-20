@@ -13,6 +13,7 @@ class _PlayRestState extends State<PlayRest> {
   Timer? countdownTimer;
   late Duration myDuration;
   bool initParams = true;
+  String displaySeconds = "";
 
   @override
   void initState() {
@@ -22,7 +23,7 @@ class _PlayRestState extends State<PlayRest> {
 
   void startTimer() {
     countdownTimer =
-        Timer.periodic(Duration(seconds: 1), (_) => setCountDown());
+        Timer.periodic(const Duration(seconds: 1), (_) => setCountDown());
   }
 
   // Step 4
@@ -38,7 +39,7 @@ class _PlayRestState extends State<PlayRest> {
 
   // Step 6
   void setCountDown() {
-    final reduceSecondsBy = 1;
+    const reduceSecondsBy = 1;
     setState(() {
       final seconds = myDuration.inSeconds - reduceSecondsBy;
       if (seconds < 0) {
@@ -59,28 +60,35 @@ class _PlayRestState extends State<PlayRest> {
       initParams = false;
     }
 
-    final seconds = strDigits(myDuration.inSeconds.remainder(60));
+    displaySeconds = strDigits(myDuration.inSeconds.remainder(60));
+    double appHeight = MediaQuery.of(context).size.height -
+        MediaQuery.of(context).viewPadding.top;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Rest"),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text("$seconds"),
-          TextButton(
-            onPressed: startTimer,
-            child: const Text("Start Timer"),
+      body: SingleChildScrollView(
+        child: Container(
+          margin: const EdgeInsets.only(top: 50),
+          padding: const EdgeInsets.all(10),
+          height: appHeight,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text(
+                "Take Rest",
+                style: Theme.of(context).textTheme.headline2,
+                textAlign: TextAlign.center,
+              ),
+              CircleAvatar(
+                radius: 100,
+                child: Text(
+                  displaySeconds,
+                  style: Theme.of(context).textTheme.headline2,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: stopTimer,
-            child: const Text("Stop Timer"),
-          ),
-          TextButton(
-            onPressed: resetTimer,
-            child: const Text("Reset Timer"),
-          ),
-        ],
+        ),
       ),
     );
   }

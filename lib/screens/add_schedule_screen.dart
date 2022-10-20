@@ -8,6 +8,8 @@ import 'package:schedule_it/models/schedule_list.dart';
 class AddScheduleScreen extends StatefulWidget {
   static String routename = "/add_schedules";
 
+  const AddScheduleScreen({super.key});
+
   @override
   State<AddScheduleScreen> createState() => _AddScheduleScreenState();
 }
@@ -41,21 +43,29 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
   Future<void> addSchedule() async {
     formKey.currentState?.validate();
     formKey.currentState?.save();
-    await Provider.of<ScheduleList>(context, listen: false)
-        .addSchedule(tempSchedule);
+    if (tempSchedule.activities.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Add Activity to Create Schedule!"),
+        ),
+      );
+      return;
+    }
+    Provider.of<ScheduleList>(context, listen: false).addSchedule(tempSchedule);
     Navigator.of(context).pop();
   }
 
   Future<void> addActivity() async {
     if (activityTitleController.text.isNotEmpty &&
-        activityDurationController.text.isNotEmpty &&
         nextActivityAfterController.text.isNotEmpty) {
       setState(() {
         tempSchedule.activities.add(
           Activity(
             title: activityTitleController.text,
-            activityDuration:
-                Duration(seconds: int.parse(activityDurationController.text)),
+            activityDuration: Duration(
+                seconds: int.parse(activityDurationController.text.isNotEmpty
+                    ? activityDurationController.text
+                    : "0")),
             nextActivityAfter:
                 Duration(seconds: int.parse(nextActivityAfterController.text)),
           ),
@@ -97,8 +107,8 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       TextFormField(
-                        decoration: InputDecoration(
-                          label: const Text("Unique Schedule Name"),
+                        decoration: const InputDecoration(
+                          label: Text("Unique Schedule Name"),
                         ),
                         initialValue: tempSchedule.name,
                         onSaved: (newValue) => tempSchedule.name = newValue ??
@@ -153,20 +163,20 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                       const Divider(),
                       const Text("Add Activities"),
                       TextField(
-                        decoration: InputDecoration(
-                          label: const Text("Activity Title"),
+                        decoration: const InputDecoration(
+                          label: Text("Activity Title"),
                         ),
                         controller: activityTitleController,
                       ),
                       TextField(
-                        decoration: InputDecoration(
-                          label: const Text("Activity Duration"),
+                        decoration: const InputDecoration(
+                          label: Text("Activity Duration"),
                         ),
                         controller: activityDurationController,
                       ),
                       TextField(
-                        decoration: InputDecoration(
-                          label: const Text("Rest before Next Duration"),
+                        decoration: const InputDecoration(
+                          label: Text("Rest before Next Duration"),
                         ),
                         controller: nextActivityAfterController,
                       ),
@@ -176,24 +186,44 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                         label: const Text("Add Activity"),
                       ),
                       const Divider(),
+
                       const Text("Added Activities"),
                       SizedBox(
                         height: 200,
                         child: ListView.builder(
                           itemCount: tempSchedule.activities.length,
                           itemBuilder: (context, index) {
-                            return Card(
-                              elevation: 10,
-                              child: ListTile(
-                                title:
-                                    Text(tempSchedule.activities[index].title),
-                                subtitle: Text(tempSchedule.activities[index]
-                                    .activityDuration.inSeconds
-                                    .toString()),
-                                trailing: Text(tempSchedule.activities[index]
-                                    .nextActivityAfter.inSeconds
-                                    .toString()),
-                              ),
+                            return Column(
+                              children: [
+                                Container(
+                                  width: 5,
+                                  height: 15,
+                                  decoration:
+                                      const BoxDecoration(color: Colors.amber),
+                                ),
+                                Card(
+                                  elevation: 10,
+                                  child: ListTile(
+                                    title: Text(
+                                        tempSchedule.activities[index].title),
+                                    trailing: Text(
+                                      "for ${tempSchedule.activities[index].activityDuration.inSeconds} Seconds.",
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  width: 5,
+                                  height: 15,
+                                  decoration:
+                                      const BoxDecoration(color: Colors.amber),
+                                ),
+                                if (tempSchedule.activities[index]
+                                        .nextActivityAfter.inSeconds !=
+                                    0)
+                                  Text(
+                                    "Rest for ${tempSchedule.activities[index].nextActivityAfter.inSeconds} Seconds.",
+                                  ),
+                              ],
                             );
                           },
                         ),

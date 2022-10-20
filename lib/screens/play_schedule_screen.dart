@@ -16,6 +16,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
   late Duration myDuration;
   late Schedule schedule;
   int invokeCounter = 0;
+  bool initializing = true;
 
   @override
   void initState() {
@@ -31,7 +32,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
 
   void startTimer() {
     countdownTimer = Timer.periodic(
-      Duration(
+      const Duration(
         seconds: 1,
       ),
       (_) => setCountDown(),
@@ -51,56 +52,107 @@ class _PlayScheduleState extends State<PlaySchedule> {
 
   // Step 6
   void setCountDown() async {
-    final reduceSecondsBy = 1;
+    const reduceSecondsBy = 1;
     final seconds = myDuration.inSeconds - reduceSecondsBy;
+
+    if (invokeCounter > schedule.activities.length) {
+      //stopTimer();
+      Navigator.of(context).pop();
+    }
 
     if (seconds <= 0) {
       resetTimer();
-      await Navigator.of(context).pushNamed(PlayRest.routename,
-          arguments: schedule.activities[invokeCounter - 1].nextActivityAfter);
 
-      setState(() {
-        invokeCounter++;
-      });
-      myDuration = schedule.activities[invokeCounter - 1].activityDuration;
-      startTimer();
+      if (invokeCounter + 1 == schedule.activities.length) {
+        Navigator.of(context).pop();
+      } else {
+        // setState(() {
+        //   invokeCounter++;
+        //   myDuration = const Duration(seconds: 0);
+        // });
+        // await Navigator.of(context).pushNamed(PlayRest.routename,
+        //     arguments: schedule.activities[invokeCounter].nextActivityAfter);
+
+        // myDuration = schedule.activities[invokeCounter].activityDuration;
+        // startTimer();
+        goToRestPage();
+      }
     } else {
       setState(() {
         myDuration = Duration(seconds: seconds);
       });
     }
+  }
 
-    if (invokeCounter > schedule.activities.length) {
-      stopTimer();
-      Navigator.of(context).pop();
+  void goToRestPage() async {
+    setState(() {
+      invokeCounter++;
+      myDuration = const Duration(seconds: 0);
+    });
+    await Navigator.of(context).pushNamed(PlayRest.routename,
+        arguments: schedule.activities[invokeCounter].nextActivityAfter);
+
+    setState(() {
+      myDuration = schedule.activities[invokeCounter].activityDuration;
+    });
+    if (myDuration.inSeconds != 0) {
+      startTimer();
     }
   }
 
-  String strDigits(int n) => n.toString().padLeft(2, '0');
+  String strDigits(int n) => n == 0 ? "Done" : n.toString().padLeft(2, '0');
 
   @override
   Widget build(BuildContext context) {
-    if (invokeCounter == 0) {
+    //if (invokeCounter == 0) {
+    if (initializing) {
       schedule = ModalRoute.of(context)?.settings.arguments as Schedule;
-      print("build wala");
-      invokeCounter++;
-      myDuration = schedule.activities[invokeCounter - 1].activityDuration;
+      //invokeCounter++;
+      myDuration = schedule.activities[invokeCounter].activityDuration;
+
+      initializing = false;
     }
 
-    final seconds = strDigits(myDuration.inSeconds.remainder(60));
-
+    final String displaySeconds = strDigits(myDuration.inSeconds.remainder(60));
+    double appHeight = MediaQuery.of(context).size.height -
+        MediaQuery.of(context).viewPadding.top;
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Text("Running Schedule"),
-          Text("Scheudle Repeat Total: ${schedule.activities.length}"),
-          Text("$seconds"),
-          Text(
-              "Scheudle Repeatation: ${invokeCounter < schedule.activities.length ? invokeCounter : schedule.activities.length}"),
-          IconButton(onPressed: stopTimer, icon: const Icon(Icons.stop)),
-        ],
+      body: SingleChildScrollView(
+        child: Container(
+          margin: const EdgeInsets.only(top: 50),
+          padding: const EdgeInsets.all(10),
+          height: appHeight,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text(
+                schedule.activities[invokeCounter].title,
+                style: Theme.of(context).textTheme.headline2,
+                textAlign: TextAlign.center,
+              ),
+              Card(
+                elevation: 10,
+                child: Text(
+                  "For \n${schedule.activities[invokeCounter].activityDuration.inSeconds} \nSeconds",
+                  style: Theme.of(context).textTheme.headline4,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              InkWell(
+                onTap: goToRestPage,
+                child: CircleAvatar(
+                  radius: 100,
+                  child: Text(
+                    displaySeconds,
+                    style: Theme.of(context).textTheme.headline2,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

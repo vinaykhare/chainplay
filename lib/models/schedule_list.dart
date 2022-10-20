@@ -5,7 +5,14 @@ class ScheduleList with ChangeNotifier {
   List<Schedule> schedules = [];
 
   addSchedule(Schedule schedule) {
-    schedules.add(schedule);
+    int index =
+        schedules.indexWhere((element) => element.name == schedule.name);
+
+    if (index == -1) {
+      schedules.add(schedule);
+    } else {
+      schedules[index] = schedule;
+    }
     notifyListeners();
   }
 
@@ -15,6 +22,7 @@ class ScheduleList with ChangeNotifier {
   }
 
   getScheduleByName(String scheduleName) {
-    return schedules.firstWhere((element) => scheduleName == element.name);
+    return schedules.firstWhere((element) => scheduleName == element.name,
+        orElse: () => Schedule());
   }
 }

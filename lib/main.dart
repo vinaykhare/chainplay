@@ -36,9 +36,9 @@ class ScheduleIt extends StatelessWidget {
         //home: Schedules(),
         initialRoute: ScheduleListScreen.routename,
         routes: {
-          ScheduleListScreen.routename: (context) => ScheduleListScreen(),
-          ScheduleScreen.routename: (context) => ScheduleScreen(),
-          AddScheduleScreen.routename: (context) => AddScheduleScreen(),
+          ScheduleListScreen.routename: (context) => const ScheduleListScreen(),
+          ScheduleScreen.routename: (context) => const ScheduleScreen(),
+          AddScheduleScreen.routename: (context) => const AddScheduleScreen(),
           PlaySchedule.routename: (context) => const PlaySchedule(),
           PlayRest.routename: (context) => const PlayRest(),
         },
