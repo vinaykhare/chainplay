@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:schedule_it/models/activity.dart';
 import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_list.dart';
 
@@ -12,19 +13,15 @@ class AddScheduleScreen extends StatefulWidget {
 }
 
 class _AddScheduleScreenState extends State<AddScheduleScreen> {
+  String pageTitle = "Add Schedule";
   Schedule tempSchedule = Schedule();
   TextEditingController scheduleAtController = TextEditingController();
+  TextEditingController activityTitleController = TextEditingController();
+  TextEditingController activityDurationController = TextEditingController();
+  TextEditingController nextActivityAfterController = TextEditingController();
   DateTime formDateTime = DateTime.now();
   String durHour = "", durMin = "", durSec = "";
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
-  Future<void> addSchedule() async {
-    formKey.currentState?.validate();
-    formKey.currentState?.save();
-    await Provider.of<ScheduleList>(context, listen: false)
-        .addSchedule(tempSchedule);
-    Navigator.of(context).pop();
-  }
 
   void getDatePicker() {
     showDatePicker(
@@ -41,11 +38,49 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     });
   }
 
+  Future<void> addSchedule() async {
+    formKey.currentState?.validate();
+    formKey.currentState?.save();
+    await Provider.of<ScheduleList>(context, listen: false)
+        .addSchedule(tempSchedule);
+    Navigator.of(context).pop();
+  }
+
+  Future<void> addActivity() async {
+    if (activityTitleController.text.isNotEmpty &&
+        activityDurationController.text.isNotEmpty &&
+        nextActivityAfterController.text.isNotEmpty) {
+      setState(() {
+        tempSchedule.activities.add(
+          Activity(
+            title: activityTitleController.text,
+            activityDuration:
+                Duration(seconds: int.parse(activityDurationController.text)),
+            nextActivityAfter:
+                Duration(seconds: int.parse(nextActivityAfterController.text)),
+          ),
+        );
+      });
+      activityTitleController.clear();
+      activityDurationController.clear();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (ModalRoute.of(context)?.settings.arguments != null) {
+      tempSchedule = ModalRoute.of(context)?.settings.arguments as Schedule;
+      pageTitle = "Edit Schedule";
+    }
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add Schedule"),
+        title: Text(pageTitle),
+        actions: [
+          IconButton(
+            onPressed: addSchedule,
+            icon: const Icon(Icons.add_alarm),
+          ),
+        ],
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -81,6 +116,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                       //   },
                       //   onTap: getDatePicker,
                       // ),
+                      /*
                       TextFormField(
                         decoration: InputDecoration(
                           label: const Text("Number of Repetations"),
@@ -113,11 +149,54 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                           seconds: int.parse(newValue ?? "0"),
                         ),
                       ),
+                      */
                       const Divider(),
+                      const Text("Add Activities"),
+                      TextField(
+                        decoration: InputDecoration(
+                          label: const Text("Activity Title"),
+                        ),
+                        controller: activityTitleController,
+                      ),
+                      TextField(
+                        decoration: InputDecoration(
+                          label: const Text("Activity Duration"),
+                        ),
+                        controller: activityDurationController,
+                      ),
+                      TextField(
+                        decoration: InputDecoration(
+                          label: const Text("Rest before Next Duration"),
+                        ),
+                        controller: nextActivityAfterController,
+                      ),
                       ElevatedButton.icon(
-                        onPressed: addSchedule,
-                        icon: const Icon(Icons.add_alarm),
-                        label: const Text("Add Schedule"),
+                        onPressed: addActivity,
+                        icon: const Icon(Icons.add_task),
+                        label: const Text("Add Activity"),
+                      ),
+                      const Divider(),
+                      const Text("Added Activities"),
+                      SizedBox(
+                        height: 200,
+                        child: ListView.builder(
+                          itemCount: tempSchedule.activities.length,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              elevation: 10,
+                              child: ListTile(
+                                title:
+                                    Text(tempSchedule.activities[index].title),
+                                subtitle: Text(tempSchedule.activities[index]
+                                    .activityDuration.inSeconds
+                                    .toString()),
+                                trailing: Text(tempSchedule.activities[index]
+                                    .nextActivityAfter.inSeconds
+                                    .toString()),
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ],
                   ),

@@ -56,19 +56,21 @@ class _PlayScheduleState extends State<PlaySchedule> {
 
     if (seconds <= 0) {
       resetTimer();
-      await Navigator.of(context)
-          .pushNamed(PlayRest.routename, arguments: schedule.repeatAfter);
-      startTimer();
+      await Navigator.of(context).pushNamed(PlayRest.routename,
+          arguments: schedule.activities[invokeCounter - 1].nextActivityAfter);
+
       setState(() {
         invokeCounter++;
       });
+      myDuration = schedule.activities[invokeCounter - 1].activityDuration;
+      startTimer();
     } else {
       setState(() {
         myDuration = Duration(seconds: seconds);
       });
     }
 
-    if (invokeCounter > schedule.noOfRepeat) {
+    if (invokeCounter > schedule.activities.length) {
       stopTimer();
       Navigator.of(context).pop();
     }
@@ -81,8 +83,8 @@ class _PlayScheduleState extends State<PlaySchedule> {
     if (invokeCounter == 0) {
       schedule = ModalRoute.of(context)?.settings.arguments as Schedule;
       print("build wala");
-      myDuration = schedule.activityDuration;
       invokeCounter++;
+      myDuration = schedule.activities[invokeCounter - 1].activityDuration;
     }
 
     final seconds = strDigits(myDuration.inSeconds.remainder(60));
@@ -93,10 +95,10 @@ class _PlayScheduleState extends State<PlaySchedule> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const Text("Running Schedule"),
-          Text("Scheudle Repeat Total: ${schedule.noOfRepeat}"),
+          Text("Scheudle Repeat Total: ${schedule.activities.length}"),
           Text("$seconds"),
           Text(
-              "Scheudle Repeatation: ${invokeCounter < schedule.noOfRepeat ? invokeCounter : schedule.noOfRepeat}"),
+              "Scheudle Repeatation: ${invokeCounter < schedule.activities.length ? invokeCounter : schedule.activities.length}"),
           IconButton(onPressed: stopTimer, icon: const Icon(Icons.stop)),
         ],
       ),

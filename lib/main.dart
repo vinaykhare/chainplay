@@ -4,6 +4,7 @@ import 'package:schedule_it/screens/add_schedule_screen.dart';
 import 'package:schedule_it/screens/play_rest_screen.dart';
 import 'package:schedule_it/screens/play_schedule_screen.dart';
 import 'package:schedule_it/screens/schedule_list_screen.dart';
+import 'package:schedule_it/screens/schedule_screen.dart';
 
 import 'models/schedule_list.dart';
 
@@ -36,6 +37,7 @@ class ScheduleIt extends StatelessWidget {
         initialRoute: ScheduleListScreen.routename,
         routes: {
           ScheduleListScreen.routename: (context) => ScheduleListScreen(),
+          ScheduleScreen.routename: (context) => ScheduleScreen(),
           AddScheduleScreen.routename: (context) => AddScheduleScreen(),
           PlaySchedule.routename: (context) => const PlaySchedule(),
           PlayRest.routename: (context) => const PlayRest(),

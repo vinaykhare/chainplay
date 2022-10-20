@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:schedule_it/models/schedule_list.dart';
 import 'package:schedule_it/screens/add_schedule_screen.dart';
 import 'package:schedule_it/screens/play_schedule_screen.dart';
+import 'package:schedule_it/screens/schedule_screen.dart';
 
 class ScheduleListScreen extends StatelessWidget {
   static String routename = "/schedules";
@@ -22,6 +23,10 @@ class ScheduleListScreen extends StatelessWidget {
             child: Card(
               elevation: 5,
               child: ListTile(
+                onTap: () => Navigator.of(context).pushNamed(
+                  ScheduleScreen.routename,
+                  arguments: scheduleList.schedules[index],
+                ),
                 title: Text(scheduleList.schedules[index].name),
                 subtitle: Text(
                   "At: ${DateFormat.yMEd().add_jms().format(scheduleList.schedules[index].at)}\n Duration: ${scheduleList.schedules[index].repeatAfter.toString()}",
@@ -38,7 +43,7 @@ class ScheduleListScreen extends StatelessWidget {
                 ),
                 trailing: IconButton(
                   onPressed: () => Navigator.of(context).pushNamed(
-                    PlaySchedule.routename,
+                    AddScheduleScreen.routename,
                     arguments: scheduleList.schedules[index],
                   ),
                   icon: const Icon(Icons.edit),
