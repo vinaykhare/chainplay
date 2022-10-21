@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/screens/play_rest_screen.dart';
 
@@ -60,9 +61,9 @@ class _PlayScheduleState extends State<PlaySchedule> {
       Navigator.of(context).pop();
     }
 
-    if (seconds <= 0) {
-      resetTimer();
-
+    if (seconds < 0) {
+      stopTimer();
+      FlutterRingtonePlayer.playNotification();
       if (invokeCounter + 1 == schedule.activities.length) {
         Navigator.of(context).pop();
       } else {
@@ -85,22 +86,29 @@ class _PlayScheduleState extends State<PlaySchedule> {
   }
 
   void goToRestPage() async {
-    setState(() {
-      invokeCounter++;
-      myDuration = const Duration(seconds: 0);
-    });
-    await Navigator.of(context).pushNamed(PlayRest.routename,
-        arguments: schedule.activities[invokeCounter].nextActivityAfter);
+    // setState(() {
+    //   myDuration = const Duration(seconds: 0);
+    // });
+    await Navigator.of(context).pushNamed(
+      PlayRest.routename,
+      arguments: schedule.activities[invokeCounter].nextActivityAfter,
+    );
 
     setState(() {
-      myDuration = schedule.activities[invokeCounter].activityDuration;
+      if (invokeCounter + 1 < schedule.activities.length) {
+        invokeCounter++;
+        myDuration = schedule.activities[invokeCounter].activityDuration;
+      } else {
+        Navigator.of(context).pop();
+      }
     });
+
     if (myDuration.inSeconds != 0) {
       startTimer();
     }
   }
 
-  String strDigits(int n) => n == 0 ? "Done" : n.toString().padLeft(2, '0');
+  String strDigits(int n) => n <= 0 ? "Done" : n.toString().padLeft(2, '0');
 
   @override
   Widget build(BuildContext context) {
@@ -131,16 +139,11 @@ class _PlayScheduleState extends State<PlaySchedule> {
                 style: Theme.of(context).textTheme.headline2,
                 textAlign: TextAlign.center,
               ),
-              Card(
-                elevation: 10,
-                child: Text(
-                  "For \n${schedule.activities[invokeCounter].activityDuration.inSeconds} \nSeconds",
-                  style: Theme.of(context).textTheme.headline4,
-                  textAlign: TextAlign.center,
-                ),
-              ),
               InkWell(
-                onTap: goToRestPage,
+                onTap: () {
+                  stopTimer();
+                  goToRestPage();
+                },
                 child: CircleAvatar(
                   radius: 100,
                   child: Text(
@@ -150,6 +153,17 @@ class _PlayScheduleState extends State<PlaySchedule> {
                   ),
                 ),
               ),
+              if (schedule
+                      .activities[invokeCounter].activityDuration.inSeconds !=
+                  0)
+                Card(
+                  elevation: 10,
+                  child: Text(
+                    "For \n${schedule.activities[invokeCounter].activityDuration.inSeconds} \nSeconds",
+                    style: Theme.of(context).textTheme.headline4,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
             ],
           ),
         ),

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 
 class PlayRest extends StatefulWidget {
   static String routename = "play_rest";
@@ -19,6 +20,12 @@ class _PlayRestState extends State<PlayRest> {
   void initState() {
     super.initState();
     startTimer();
+  }
+
+  @override
+  void dispose() {
+    countdownTimer!.cancel();
+    super.dispose();
   }
 
   void startTimer() {
@@ -44,6 +51,7 @@ class _PlayRestState extends State<PlayRest> {
       final seconds = myDuration.inSeconds - reduceSecondsBy;
       if (seconds < 0) {
         countdownTimer!.cancel();
+        FlutterRingtonePlayer.playNotification();
         Navigator.of(context).pop();
       } else {
         myDuration = Duration(seconds: seconds);
@@ -51,7 +59,7 @@ class _PlayRestState extends State<PlayRest> {
     });
   }
 
-  String strDigits(int n) => n.toString().padLeft(2, '0');
+  String strDigits(int n) => n <= 0 ? "Start" : n.toString().padLeft(2, '0');
 
   @override
   Widget build(BuildContext context) {
