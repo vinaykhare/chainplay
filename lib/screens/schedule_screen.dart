@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:schedule_it/models/schedule.dart';
+import 'package:schedule_it/widgets/activities_timeline.dart';
 
 class ScheduleScreen extends StatelessWidget {
   static String routename = "/schedule";
@@ -22,43 +23,13 @@ class ScheduleScreen extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           child: Column(
             children: [
-              const Text("Activities"),
+              const Text("Start"),
               SizedBox(
                 height: appHeight,
-                child: ListView.builder(
-                  itemCount: schedule.activities.length,
-                  itemBuilder: (context, index) {
-                    return Column(
-                      children: [
-                        Container(
-                          width: 5,
-                          height: appHeight * 0.05,
-                          decoration: const BoxDecoration(color: Colors.amber),
-                        ),
-                        Card(
-                          elevation: 10,
-                          child: ListTile(
-                            title: Text(schedule.activities[index].title),
-                            trailing: Text(
-                              "for ${schedule.activities[index].activityDuration.inSeconds} Seconds.",
-                            ),
-                          ),
-                        ),
-                        Container(
-                          width: 5,
-                          height: appHeight * 0.05,
-                          decoration: const BoxDecoration(color: Colors.amber),
-                        ),
-                        Text(
-                          schedule.activities[index].nextActivityAfter
-                                      .inSeconds ==
-                                  0
-                              ? "No Rest"
-                              : "Rest for ${schedule.activities[index].nextActivityAfter.inSeconds} Seconds.",
-                        ),
-                      ],
-                    );
-                  },
+                child: ActivitiesTimeline(
+                  tempSchedule: schedule,
+                  replaceActivity: null,
+                  removeActivity: null,
                 ),
               ),
             ],

@@ -48,7 +48,8 @@ class _PlayScheduleState extends State<PlaySchedule> {
   // Step 5
   void resetTimer() {
     stopTimer();
-    setState(() => myDuration = schedule.activityDuration);
+    setState(
+        () => myDuration = schedule.activities[invokeCounter].activityDuration);
   }
 
   // Step 6
@@ -61,9 +62,12 @@ class _PlayScheduleState extends State<PlaySchedule> {
       Navigator.of(context).pop();
     }
 
+    if (seconds == 0) {
+      FlutterRingtonePlayer.playNotification();
+    }
+
     if (seconds < 0) {
       stopTimer();
-      FlutterRingtonePlayer.playNotification();
       if (invokeCounter + 1 == schedule.activities.length) {
         Navigator.of(context).pop();
       } else {
@@ -72,7 +76,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
         //   myDuration = const Duration(seconds: 0);
         // });
         // await Navigator.of(context).pushNamed(PlayRest.routename,
-        //     arguments: schedule.activities[invokeCounter].nextActivityAfter);
+        //     arguments: schedule.activities[invokeCounter].restDurationAfter);
 
         // myDuration = schedule.activities[invokeCounter].activityDuration;
         // startTimer();
@@ -108,7 +112,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
     }
   }
 
-  String strDigits(int n) => n <= 0 ? "Done" : n.toString().padLeft(2, '0');
+  String strDigits(int n) => n.toString().padLeft(2, '0');
 
   @override
   Widget build(BuildContext context) {
@@ -120,8 +124,15 @@ class _PlayScheduleState extends State<PlaySchedule> {
 
       initializing = false;
     }
-
-    final String displaySeconds = strDigits(myDuration.inSeconds.remainder(60));
+    String timeLeft = "Done";
+    if (myDuration.inSeconds > 0) {
+      final String displayHours = strDigits(myDuration.inHours.remainder(60));
+      final String displayMinutes =
+          strDigits(myDuration.inMinutes.remainder(60));
+      final String displaySeconds =
+          strDigits(myDuration.inSeconds.remainder(60));
+      timeLeft = "$displayHours:$displayMinutes:$displaySeconds";
+    }
     double appHeight = MediaQuery.of(context).size.height -
         MediaQuery.of(context).viewPadding.top;
     return Scaffold(
@@ -141,15 +152,18 @@ class _PlayScheduleState extends State<PlaySchedule> {
               ),
               InkWell(
                 onTap: () {
+                  FlutterRingtonePlayer.playNotification();
                   stopTimer();
                   goToRestPage();
                 },
                 child: CircleAvatar(
-                  radius: 100,
-                  child: Text(
-                    displaySeconds,
-                    style: Theme.of(context).textTheme.headline2,
-                    textAlign: TextAlign.center,
+                  radius: 150,
+                  child: FittedBox(
+                    child: Text(
+                      timeLeft,
+                      style: Theme.of(context).textTheme.headline2,
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ),
               ),

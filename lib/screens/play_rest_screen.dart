@@ -49,9 +49,12 @@ class _PlayRestState extends State<PlayRest> {
     const reduceSecondsBy = 1;
     setState(() {
       final seconds = myDuration.inSeconds - reduceSecondsBy;
+      if (seconds == 0) {
+        FlutterRingtonePlayer.playNotification();
+      }
       if (seconds < 0) {
         countdownTimer!.cancel();
-        FlutterRingtonePlayer.playNotification();
+
         Navigator.of(context).pop();
       } else {
         myDuration = Duration(seconds: seconds);
@@ -59,7 +62,7 @@ class _PlayRestState extends State<PlayRest> {
     });
   }
 
-  String strDigits(int n) => n <= 0 ? "Start" : n.toString().padLeft(2, '0');
+  String strDigits(int n) => n.toString().padLeft(2, '0');
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +71,17 @@ class _PlayRestState extends State<PlayRest> {
       initParams = false;
     }
 
-    displaySeconds = strDigits(myDuration.inSeconds.remainder(60));
+    String timeLeft = "Let's Start";
+
+    if (myDuration.inSeconds > 0) {
+      final String displayHours = strDigits(myDuration.inHours.remainder(60));
+      final String displayMinutes =
+          strDigits(myDuration.inMinutes.remainder(60));
+      final String displaySeconds =
+          strDigits(myDuration.inSeconds.remainder(60));
+      timeLeft = "$displayHours:$displayMinutes:$displaySeconds";
+    }
+
     double appHeight = MediaQuery.of(context).size.height -
         MediaQuery.of(context).viewPadding.top;
     return Scaffold(
@@ -86,12 +99,21 @@ class _PlayRestState extends State<PlayRest> {
                 style: Theme.of(context).textTheme.headline2,
                 textAlign: TextAlign.center,
               ),
-              CircleAvatar(
-                radius: 100,
-                child: Text(
-                  displaySeconds,
-                  style: Theme.of(context).textTheme.headline2,
-                  textAlign: TextAlign.center,
+              InkWell(
+                onTap: () {
+                  FlutterRingtonePlayer.playNotification();
+                  stopTimer();
+                  Navigator.of(context).pop();
+                },
+                child: CircleAvatar(
+                  radius: 150,
+                  child: FittedBox(
+                    child: Text(
+                      timeLeft,
+                      style: Theme.of(context).textTheme.headline2,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 ),
               ),
             ],
