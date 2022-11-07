@@ -1,5 +1,5 @@
 name: schedule_it
-description: A new Flutter project.
+description: Flutter project to Schedule the To Do Activities.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -31,18 +31,22 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
   sqflite: ^2.1.0+1
+  path: ^1.8.2
+
   provider: ^6.0.4
   intl: ^0.17.0
-  flutter_local_notifications: ^12.0.2
-
-  path: ^1.8.2
   uuid: ^3.0.6
+  
   flutter_ringtone_player: ^3.2.0
+
+  # Library for Google Ads
+  google_mobile_ads: ^2.2.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.2
+  # cupertino_icons: ^1.0.2
 
 dev_dependencies:
   flutter_test:

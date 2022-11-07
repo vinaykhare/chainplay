@@ -52,12 +52,42 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
     );
   }
 
+  String? validateMinuteOrSecond(String? value) {
+    try {
+      if (value == null || value == "") {
+        return null;
+      }
+      int intValue = int.parse(value);
+      if (intValue > 59 || intValue < 0) {
+        return "00-59";
+      }
+      return null;
+    } catch (e) {
+      return "Number 00-59";
+    }
+  }
+
+  String? validateHour(String? value) {
+    try {
+      if (value == null || value == "") {
+        return null;
+      }
+      int intValue = int.parse(value);
+      if (intValue > 23 || intValue < 0) {
+        return "00-23";
+      }
+      return null;
+    } catch (e) {
+      return "Number 00-23";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (pageInit) {
       if (ModalRoute.of(context)?.settings.arguments != null) {
         tempActivity = ModalRoute.of(context)?.settings.arguments as Activity;
-        pageTitle = "Edit Schedule";
+        pageTitle = "Edit Activity";
         buttonText = "Update Activity";
         activityTitleOnPageLoad = tempActivity.title;
 
@@ -67,169 +97,243 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
         activityDurationHour = activityDuration.inHours;
         activityDurationMinute =
             activityDuration.inMinutes - (activityDurationHour * 60);
-        if (activityDurationMinute == 0) {
-          activityDurationSecond =
-              activityDuration.inSeconds - (activityDurationHour * 3600);
-        } else {
-          activityDurationSecond =
-              activityDuration.inSeconds - (activityDurationMinute * 60);
-        }
+        activityDurationSecond = activityDuration.inSeconds -
+            (activityDurationHour * 3600) -
+            (activityDurationMinute * 60);
 
         restDurationAfterHour = restDuration.inHours;
         restDurationAfterMinute =
             restDuration.inMinutes - (restDurationAfterHour * 60);
-        if (restDurationAfterMinute == 0) {
-          restDurationAfterSecond =
-              restDuration.inSeconds - (restDurationAfterHour * 3600);
-        } else {
-          restDurationAfterSecond =
-              restDuration.inSeconds - (restDurationAfterMinute * 60);
-        }
+        restDurationAfterSecond = restDuration.inSeconds -
+            (restDurationAfterHour * 3600) -
+            (restDurationAfterMinute * 60);
       }
       pageInit = false;
     }
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
           pageTitle,
         ),
       ),
-      body: Form(
-        key: activityFormKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Text("Add Activity"),
-            TextFormField(
-              initialValue: tempActivity.title,
-              decoration: const InputDecoration(
-                label: Text("Activity Title"),
-              ),
-              onSaved: (newValue) => tempActivity.title = newValue ?? "",
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            // Slider(
-            //   value: actDurHour,
-            //   onChanged: (newVal) => setState(
-            //     () {
-            //       actDurHour = newVal;
-            //     },
-            //   ),
-            //   min: 0,
-            //   max: 23,
-            //   divisions: 5,
-            //   label: actDurHour.round().toString().padLeft(2, '0'),
-            // ),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Expanded(
-                  child: Text(
-                    "Activity Duration:",
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(
-                  width: 30,
-                ),
-                Expanded(
-                  child: TextFormField(
-                    initialValue:
-                        activityDurationHour.toString().padLeft(2, '0'),
-                    decoration: const InputDecoration(
-                      label: Text("HH"),
+      body: Center(
+        child: Container(
+          margin: const EdgeInsets.all(8.0),
+          child: Card(
+            elevation: 10,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Form(
+                key: activityFormKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextFormField(
+                      keyboardType: TextInputType.number,
+                      textAlign: TextAlign.center,
+                      initialValue: tempActivity.title,
+                      decoration: const InputDecoration(
+                        label: Text(
+                          "Activity Title",
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      onSaved: (newValue) =>
+                          tempActivity.title = newValue ?? "",
+                      validator: (value) =>
+                          value == null || value == "" ? "Title Missing" : null,
                     ),
-                    onSaved: (newValue) => activityDurationHour =
-                        newValue != "" && newValue != null
-                            ? int.parse(newValue)
-                            : 0,
-                  ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      children: [
+                        const Expanded(
+                          child: Text(
+                            "Activity Duration",
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 30,
+                        ),
+                        Expanded(
+                          child: TextFormField(
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            initialValue: activityDurationHour == 0
+                                ? null
+                                : activityDurationHour
+                                    .toString()
+                                    .padLeft(2, '0'),
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              label: const Text("Hour"),
+                              hintText: activityDurationHour
+                                  .toString()
+                                  .padLeft(2, '0'),
+                            ),
+                            onSaved: (newValue) => activityDurationHour =
+                                newValue != "" && newValue != null
+                                    ? int.parse(newValue)
+                                    : 0,
+                            validator: (value) => validateHour(value),
+                          ),
+                        ),
+                        Expanded(
+                          child: TextFormField(
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            initialValue: activityDurationMinute == 0
+                                ? null
+                                : activityDurationMinute
+                                    .toString()
+                                    .padLeft(2, '0'),
+                            onSaved: (newValue) => activityDurationMinute =
+                                newValue != "" && newValue != null
+                                    ? int.parse(newValue)
+                                    : 0,
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              label: const Text(
+                                "Minute",
+                              ),
+                              hintText: activityDurationMinute
+                                  .toString()
+                                  .padLeft(2, '0'),
+                            ),
+                            validator: (value) => validateMinuteOrSecond(value),
+                          ),
+                        ),
+                        Expanded(
+                          child: TextFormField(
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            initialValue: activityDurationSecond == 0
+                                ? null
+                                : activityDurationSecond
+                                    .toString()
+                                    .padLeft(2, '0'),
+                            onSaved: (newValue) => activityDurationSecond =
+                                newValue != "" && newValue != null
+                                    ? int.parse(newValue)
+                                    : 0,
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              label: const Text("Second"),
+                              hintText: activityDurationSecond
+                                  .toString()
+                                  .padLeft(2, '0'),
+                              alignLabelWithHint: true,
+                            ),
+                            validator: (value) => validateMinuteOrSecond(value),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      children: [
+                        const Expanded(
+                          child: Text(
+                            "Rest Duration after Activity",
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 30,
+                        ),
+                        Expanded(
+                          child: TextFormField(
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            initialValue: restDurationAfterHour == 0
+                                ? null
+                                : restDurationAfterHour
+                                    .toString()
+                                    .padLeft(2, '0'),
+                            onSaved: (newValue) => restDurationAfterHour =
+                                newValue != "" && newValue != null
+                                    ? int.parse(newValue)
+                                    : 0,
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              label: const Text("Hour"),
+                              hintText: restDurationAfterHour
+                                  .toString()
+                                  .padLeft(2, '0'),
+                            ),
+                            validator: (value) => validateHour(value),
+                          ),
+                        ),
+                        Expanded(
+                          child: TextFormField(
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            initialValue: restDurationAfterMinute == 0
+                                ? null
+                                : restDurationAfterMinute
+                                    .toString()
+                                    .padLeft(2, '0'),
+                            onSaved: (newValue) => restDurationAfterMinute =
+                                newValue != "" && newValue != null
+                                    ? int.parse(newValue)
+                                    : 0,
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              label: const Text("Minute"),
+                              hintText: restDurationAfterMinute
+                                  .toString()
+                                  .padLeft(2, '0'),
+                            ),
+                            validator: (value) => validateMinuteOrSecond(value),
+                          ),
+                        ),
+                        Expanded(
+                          child: TextFormField(
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            initialValue: restDurationAfterSecond == 0
+                                ? null
+                                : restDurationAfterSecond
+                                    .toString()
+                                    .padLeft(2, '0'),
+                            onSaved: (newValue) => restDurationAfterSecond =
+                                newValue != "" && newValue != null
+                                    ? int.parse(newValue)
+                                    : 0,
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              label: const Text("Second"),
+                              hintText: restDurationAfterSecond
+                                  .toString()
+                                  .padLeft(2, '0'),
+                            ),
+                            validator: (value) => validateMinuteOrSecond(value),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    const Divider(
+                      color: Colors.black,
+                    ),
+                    ElevatedButton(
+                      onPressed: addActivity,
+                      child: Text(buttonText),
+                    ),
+                  ],
                 ),
-                Expanded(
-                  child: TextFormField(
-                    initialValue:
-                        activityDurationMinute.toString().padLeft(2, '0'),
-                    onSaved: (newValue) => activityDurationMinute =
-                        newValue != "" && newValue != null
-                            ? int.parse(newValue)
-                            : 0,
-                    decoration: const InputDecoration(label: Text("MM")),
-                  ),
-                ),
-                Expanded(
-                  child: TextFormField(
-                    initialValue:
-                        activityDurationSecond.toString().padLeft(2, '0'),
-                    onSaved: (newValue) => activityDurationSecond =
-                        newValue != "" && newValue != null
-                            ? int.parse(newValue)
-                            : 0,
-                    decoration: const InputDecoration(label: Text("SS")),
-                  ),
-                ),
-              ],
+              ),
             ),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Expanded(
-                  child: Text(
-                    "Next Activity Duration:",
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(
-                  width: 30,
-                ),
-                Expanded(
-                  child: TextFormField(
-                    initialValue:
-                        restDurationAfterHour.toString().padLeft(2, '0'),
-                    onSaved: (newValue) => restDurationAfterHour =
-                        newValue != "" && newValue != null
-                            ? int.parse(newValue)
-                            : 0,
-                    decoration: const InputDecoration(label: Text("HH")),
-                  ),
-                ),
-                Expanded(
-                  child: TextFormField(
-                    initialValue:
-                        restDurationAfterMinute.toString().padLeft(2, '0'),
-                    onSaved: (newValue) => restDurationAfterMinute =
-                        newValue != "" && newValue != null
-                            ? int.parse(newValue)
-                            : 0,
-                    decoration: const InputDecoration(label: Text("MM")),
-                  ),
-                ),
-                Expanded(
-                  child: TextFormField(
-                    initialValue:
-                        restDurationAfterSecond.toString().padLeft(2, '0'),
-                    onSaved: (newValue) => restDurationAfterSecond =
-                        newValue != "" && newValue != null
-                            ? int.parse(newValue)
-                            : 0,
-                    decoration: const InputDecoration(label: Text("SS")),
-                  ),
-                ),
-              ],
-            ),
-            ElevatedButton(
-              onPressed: addActivity,
-              child: Text(buttonText),
-            ),
-          ],
+          ),
         ),
       ),
     );

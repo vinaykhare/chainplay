@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
+import 'package:schedule_it/helpers/transform_functions.dart';
+import 'package:schedule_it/models/activity.dart';
 import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/screens/play_rest_screen.dart';
 
@@ -16,18 +18,18 @@ class _PlayScheduleState extends State<PlaySchedule> {
   Timer? countdownTimer;
   late Duration myDuration;
   late Schedule schedule;
+  List<Activity> activities = [];
   int invokeCounter = 0;
   bool initializing = true;
 
   @override
   void initState() {
     super.initState();
-    startTimer();
   }
 
   @override
   void dispose() {
-    countdownTimer!.cancel();
+    if (countdownTimer != null) countdownTimer?.cancel();
     super.dispose();
   }
 
@@ -42,14 +44,15 @@ class _PlayScheduleState extends State<PlaySchedule> {
 
   // Step 4
   void stopTimer() {
-    setState(() => countdownTimer!.cancel());
+    setState(() {
+      if (countdownTimer != null) countdownTimer?.cancel();
+    });
   }
 
   // Step 5
   void resetTimer() {
     stopTimer();
-    setState(
-        () => myDuration = schedule.activities[invokeCounter].activityDuration);
+    setState(() => myDuration = activities[invokeCounter].activityDuration);
   }
 
   // Step 6
@@ -71,15 +74,6 @@ class _PlayScheduleState extends State<PlaySchedule> {
       if (invokeCounter + 1 == schedule.activities.length) {
         Navigator.of(context).pop();
       } else {
-        // setState(() {
-        //   invokeCounter++;
-        //   myDuration = const Duration(seconds: 0);
-        // });
-        // await Navigator.of(context).pushNamed(PlayRest.routename,
-        //     arguments: schedule.activities[invokeCounter].restDurationAfter);
-
-        // myDuration = schedule.activities[invokeCounter].activityDuration;
-        // startTimer();
         goToRestPage();
       }
     } else {
@@ -95,13 +89,13 @@ class _PlayScheduleState extends State<PlaySchedule> {
     // });
     await Navigator.of(context).pushNamed(
       PlayRest.routename,
-      arguments: schedule.activities[invokeCounter].nextActivityAfter,
+      arguments: activities[invokeCounter].nextActivityAfter,
     );
 
     setState(() {
       if (invokeCounter + 1 < schedule.activities.length) {
         invokeCounter++;
-        myDuration = schedule.activities[invokeCounter].activityDuration;
+        myDuration = activities[invokeCounter].activityDuration;
       } else {
         Navigator.of(context).pop();
       }
@@ -119,20 +113,32 @@ class _PlayScheduleState extends State<PlaySchedule> {
     //if (invokeCounter == 0) {
     if (initializing) {
       schedule = ModalRoute.of(context)?.settings.arguments as Schedule;
+      activities = schedule.activities.reversed.toList();
       //invokeCounter++;
-      myDuration = schedule.activities[invokeCounter].activityDuration;
-
+      myDuration = activities[invokeCounter].activityDuration;
+      if (myDuration.inSeconds != 0) {
+        startTimer();
+      }
       initializing = false;
     }
     String timeLeft = "Done";
-    if (myDuration.inSeconds > 0) {
-      final String displayHours = strDigits(myDuration.inHours.remainder(60));
-      final String displayMinutes =
-          strDigits(myDuration.inMinutes.remainder(60));
-      final String displaySeconds =
-          strDigits(myDuration.inSeconds.remainder(60));
-      timeLeft = "$displayHours:$displayMinutes:$displaySeconds";
-    }
+    //if (myDuration.inSeconds > 0) {
+    final int hours = myDuration.inHours.remainder(60);
+    final int minutes = myDuration.inMinutes.remainder(60);
+    final int seconds = myDuration.inSeconds.remainder(60);
+    final String displaySeconds = myDuration.inSeconds == 0
+        ? "Done"
+        : strDigits(myDuration.inSeconds.remainder(60));
+    // timeLeft = "$hours:$minutes:$displaySeconds";
+    timeLeft = hours == 0 && minutes == 0 && seconds != 0
+        ? " in "
+        : TransformFunctions.durationToString(
+            Duration(
+              hours: hours,
+              minutes: minutes,
+            ),
+          );
+    //}
     double appHeight = MediaQuery.of(context).size.height -
         MediaQuery.of(context).viewPadding.top;
     return Scaffold(
@@ -146,8 +152,13 @@ class _PlayScheduleState extends State<PlaySchedule> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Text(
-                schedule.activities[invokeCounter].title,
+                activities[invokeCounter].title,
                 style: Theme.of(context).textTheme.headline2,
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                "will compelte\n$timeLeft\n${(hours != 0 || minutes != 0) && seconds != 0 ? 'and' : ''}",
+                style: Theme.of(context).textTheme.headline5,
                 textAlign: TextAlign.center,
               ),
               InkWell(
@@ -160,23 +171,18 @@ class _PlayScheduleState extends State<PlaySchedule> {
                   radius: 150,
                   child: FittedBox(
                     child: Text(
-                      timeLeft,
-                      style: Theme.of(context).textTheme.headline2,
+                      displaySeconds,
+                      style: Theme.of(context).textTheme.headline1,
                       textAlign: TextAlign.center,
                     ),
                   ),
                 ),
               ),
-              if (schedule
-                      .activities[invokeCounter].activityDuration.inSeconds !=
-                  0)
-                Card(
-                  elevation: 10,
-                  child: Text(
-                    "For \n${schedule.activities[invokeCounter].activityDuration.inSeconds} \nSeconds",
-                    style: Theme.of(context).textTheme.headline4,
-                    textAlign: TextAlign.center,
-                  ),
+              if (myDuration.inSeconds != 0)
+                Text(
+                  "Seconds.",
+                  style: Theme.of(context).textTheme.headline5,
+                  textAlign: TextAlign.center,
                 ),
             ],
           ),

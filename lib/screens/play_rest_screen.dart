@@ -16,15 +16,15 @@ class _PlayRestState extends State<PlayRest> {
   bool initParams = true;
   String displaySeconds = "";
 
-  @override
-  void initState() {
-    super.initState();
-    startTimer();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   startTimer();
+  // }
 
   @override
   void dispose() {
-    countdownTimer!.cancel();
+    if (countdownTimer != null) countdownTimer?.cancel();
     super.dispose();
   }
 
@@ -35,7 +35,9 @@ class _PlayRestState extends State<PlayRest> {
 
   // Step 4
   void stopTimer() {
-    setState(() => countdownTimer!.cancel());
+    setState(() {
+      if (countdownTimer != null) countdownTimer?.cancel();
+    });
   }
 
   // Step 5
@@ -53,7 +55,7 @@ class _PlayRestState extends State<PlayRest> {
         FlutterRingtonePlayer.playNotification();
       }
       if (seconds < 0) {
-        countdownTimer!.cancel();
+        if (countdownTimer != null) countdownTimer?.cancel();
 
         Navigator.of(context).pop();
       } else {
@@ -68,6 +70,7 @@ class _PlayRestState extends State<PlayRest> {
   Widget build(BuildContext context) {
     if (initParams) {
       myDuration = ModalRoute.of(context)?.settings.arguments as Duration;
+      startTimer();
       initParams = false;
     }
 

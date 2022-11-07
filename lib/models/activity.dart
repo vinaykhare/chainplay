@@ -8,7 +8,7 @@ class Activity {
 
   Activity({
     required this.title,
-    required this.activityDuration,
-    required this.nextActivityAfter,
+    this.activityDuration = const Duration(seconds: 0),
+    this.nextActivityAfter = const Duration(seconds: 0),
   });
 }
