@@ -4,7 +4,7 @@ import 'package:schedule_it/models/activity.dart';
 import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/screens/add_activity_screen.dart';
 
-class ActivitiesTimeline extends StatelessWidget {
+class ActivitiesTimeline extends StatefulWidget {
   final Schedule tempSchedule;
   final Function replaceActivity, removeActivity;
   const ActivitiesTimeline({
@@ -15,6 +15,11 @@ class ActivitiesTimeline extends StatelessWidget {
   });
 
   @override
+  State<ActivitiesTimeline> createState() => _ActivitiesTimelineState();
+}
+
+class _ActivitiesTimelineState extends State<ActivitiesTimeline> {
+  @override
   Widget build(Object context) {
     return ReorderableListView.builder(
       reverse: true,
@@ -23,16 +28,16 @@ class ActivitiesTimeline extends StatelessWidget {
         if (oldIndex < newIndex) {
           newIndex -= 1;
         }
-        var itemAtOldIndex = tempSchedule.activities.removeAt(oldIndex);
-        tempSchedule.activities.insert(newIndex, itemAtOldIndex);
+        var itemAtOldIndex = widget.tempSchedule.activities.removeAt(oldIndex);
+        widget.tempSchedule.activities.insert(newIndex, itemAtOldIndex);
       },
-      itemCount: tempSchedule.activities.length,
+      itemCount: widget.tempSchedule.activities.length,
       itemBuilder: (context, index) {
-        Activity activity = tempSchedule.activities[index];
+        Activity activity = widget.tempSchedule.activities[index];
         return Column(
           key: ValueKey(activity.activityId),
           children: [
-            if (index == tempSchedule.activities.length - 1)
+            if (index == widget.tempSchedule.activities.length - 1)
               const Text("Start"),
             Container(
               width: 5,
@@ -47,17 +52,21 @@ class ActivitiesTimeline extends StatelessWidget {
                     color: Colors.red,
                   ),
                 ),
-                key: ValueKey(tempSchedule.activities[index].activityId),
+                key: ValueKey(widget.tempSchedule.activities[index].activityId),
                 onDismissed: (_) {
-                  removeActivity(index);
+                  widget.removeActivity(index);
                 },
                 child: ListTile(
+                  tileColor: activity.activityDone
+                      ? Colors.grey
+                      : Theme.of(context).cardColor,
                   onTap: () async {
                     var updatedActivity = await Navigator.of(context).pushNamed(
                         AddActivityScreen.routename,
                         arguments: activity);
                     if (updatedActivity != null) {
-                      replaceActivity(index, updatedActivity as Activity);
+                      widget.replaceActivity(
+                          index, updatedActivity as Activity);
                     }
                   },
                   title: Text(activity.title),
@@ -68,6 +77,15 @@ class ActivitiesTimeline extends StatelessWidget {
                     index: index,
                     child: const Icon(Icons.drag_handle),
                   ),
+                  leading: Checkbox(
+                    key: ValueKey(activity.title),
+                    value: activity.activityDone,
+                    onChanged: (value) {
+                      setState(() {
+                        activity.activityDone = value ?? false;
+                      });
+                    },
+                  ),
                 ),
               ),
             ),
@@ -76,7 +94,9 @@ class ActivitiesTimeline extends StatelessWidget {
               height: 15,
               decoration: const BoxDecoration(color: Colors.amber),
             ),
-            if (tempSchedule.activities[index].nextActivityAfter.inSeconds != 0)
+            if (widget.tempSchedule.activities[index].nextActivityAfter
+                    .inSeconds !=
+                0)
               Text(
                 "Rest will end ${TransformFunctions.durationToString(activity.nextActivityAfter)}.",
               ),

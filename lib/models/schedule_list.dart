@@ -16,39 +16,46 @@ class ScheduleList with ChangeNotifier {
     this.adState,
   );
 
-  addSchedule(Schedule schedule, String oldScheduleName) {
+  addSchedule(Schedule schedule, String oldScheduleName) async {
     int index =
         schedules.indexWhere((element) => element.name == schedule.name);
 
     if (index == -1) {
-      schedules.insert(0, schedule);
+      schedules.add(schedule);
     } else {
-      schedules[index] = schedule;
-      removeSchedule(schedule, oldScheduleName);
+      //schedules[index] = schedule;
+      removeSchedule(oldScheduleName);
     }
+
+    //maxScheduleIndex = (await DBHelper.getMax("Activity", "scheduleIndex")) as int;
 
     for (var activity in schedule.activities) {
       // if (activity.syncedWithDb) {
       //   continue;
       // }
-      DBHelper.insert("activity", {
-        "activityId": activity.activityId,
-        "title": activity.title,
-        "activityDuration": activity.activityDuration.inSeconds,
-        "nextActivityAfter ": activity.nextActivityAfter.inSeconds,
-        "scheduleName": schedule.name,
-      });
+      DBHelper.insert(
+        "activity",
+        {
+          "activityId": activity.activityId,
+          "title": activity.title,
+          "activityDuration": activity.activityDuration.inSeconds,
+          "nextActivityAfter ": activity.nextActivityAfter.inSeconds,
+          "activityDone": activity.activityDone ? 1 : 0,
+          "scheduleName": schedule.name,
+          "lastUpdatedAt": schedule.lastUpdatedAt.millisecondsSinceEpoch,
+          "pinned": schedule.pinned ? 1 : 0,
+        },
+      );
       //activity.syncedWithDb = true;
     }
     notifyListeners();
   }
 
-  removeSchedule(Schedule schedule, [String oldScheduleName = ""]) {
-    schedules.removeWhere((sc) => sc.name == schedule.name);
-    DBHelper.removeData("activity", "scheduleName = ?", [schedule.name]);
-    if (schedule.name != oldScheduleName) {
-      DBHelper.removeData("activity", "scheduleName = ?", [oldScheduleName]);
-    }
+  removeSchedule(String scheduleName) {
+    //schedules.removeWhere((sc) => sc.name == schedule.name);
+
+    DBHelper.removeData("activity", "scheduleName = ?", [scheduleName]);
+
     notifyListeners();
   }
 
@@ -60,6 +67,26 @@ class ScheduleList with ChangeNotifier {
     schedules.insert(newIndex, itemAtOldIndex);
 
     //Reschedule in DB here.
+    DBHelper.removeData("activity", "", []);
+    for (Schedule schedule in schedules) {
+      if (schedule.adBanner == null) {
+        addSchedule(schedule, "");
+      }
+    }
+    notifyListeners();
+  }
+
+  pinSchedule(schedule) {
+    schedule.pinned = !schedule.pinned;
+    DBHelper.update(
+      "activity",
+      {
+        "pinned": schedule.pinned ? 1 : 0,
+      },
+      "scheduleName = ?",
+      [schedule.name],
+    );
+    notifyListeners();
   }
 
   getScheduleByName(String scheduleName) {
@@ -77,31 +104,41 @@ class ScheduleList with ChangeNotifier {
     List<Map<String, dynamic>> loadedActivities =
         await DBHelper.getData("activity");
     Map<String, List<Activity>> mappedActivities = {};
+    Map<String, Map<String, int>> scheduleParameters = {};
     for (var activity in loadedActivities) {
       if (mappedActivities[activity["scheduleName"]] == null) {
         mappedActivities[activity["scheduleName"]] = [];
       }
-      mappedActivities[activity["scheduleName"]]!.insert(
-        0,
+      mappedActivities[activity["scheduleName"]]!.add(
         Activity(
           title: activity["title"],
           activityDuration: Duration(seconds: activity["activityDuration"]),
           nextActivityAfter: Duration(seconds: activity["nextActivityAfter"]),
-          //syncedWithDb: true,
+          activityDone: activity["activityDone"] == 1,
         ),
       );
+
+      scheduleParameters[activity["scheduleName"]] = {
+        "lastUpdatedAt": activity["lastUpdatedAt"],
+        "pinned": activity["pinned"],
+      };
     }
 
-    schedules = mappedActivities.entries.map((entry) {
-      Schedule schedule = Schedule();
-      schedule.name = entry.key;
-      schedule.activities = entry.value;
-      return schedule;
-    }).toList();
+    schedules = mappedActivities.entries.map(
+      (entry) {
+        Schedule schedule = Schedule();
+        schedule.name = entry.key;
+        schedule.activities = entry.value;
+        schedule.lastUpdatedAt = DateTime.fromMillisecondsSinceEpoch(
+            scheduleParameters[schedule.name]!["lastUpdatedAt"] as int);
+        schedule.pinned = scheduleParameters[schedule.name]!["pinned"] == 1;
+        return schedule;
+      },
+    ).toList();
 
     //Add ads to Schedule
     adIndexInSchedules = [];
-    for (var i = 1; i < schedules.length; i += 5) {
+    for (var i = 1; i < schedules.length + 1; i += 5) {
       adIndexInSchedules.add(i);
       Schedule adSchedule = Schedule();
       adSchedule.name = "Sponsored..$i";

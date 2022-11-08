@@ -5,6 +5,8 @@ import 'package:schedule_it/models/activity.dart';
 class Schedule with ChangeNotifier {
   String name = "";
   DateTime at = DateTime.now();
+  DateTime lastUpdatedAt = DateTime.now();
   List<Activity> activities = [];
   BannerAd? adBanner;
+  bool pinned = false;
 }

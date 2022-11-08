@@ -83,6 +83,35 @@ class _PlayScheduleState extends State<PlaySchedule> {
     }
   }
 
+  void updateMyDuration() {
+    while (invokeCounter < schedule.activities.length &&
+        activities[invokeCounter].activityDone) {
+      invokeCounter++;
+    }
+    if (invokeCounter < schedule.activities.length) {
+      setState(() {
+        myDuration = activities[invokeCounter].activityDuration;
+      });
+    } else {
+      Navigator.of(context).pop();
+      // await showDialog<bool>(
+      //   context: context,
+      //   builder: (context) => AlertDialog(
+      //     content: const Text("Flow is Over Now"),
+      //     actions: [
+      //       TextButton(
+      //         onPressed: () {
+      //           Navigator.of(context).pop();
+      //           Navigator.of(context).pop();
+      //         },
+      //         child: const Text("Ok"),
+      //       ),
+      //     ],
+      //   ),
+      // );
+    }
+  }
+
   void goToRestPage() async {
     // setState(() {
     //   myDuration = const Duration(seconds: 0);
@@ -92,14 +121,8 @@ class _PlayScheduleState extends State<PlaySchedule> {
       arguments: activities[invokeCounter].nextActivityAfter,
     );
 
-    setState(() {
-      if (invokeCounter + 1 < schedule.activities.length) {
-        invokeCounter++;
-        myDuration = activities[invokeCounter].activityDuration;
-      } else {
-        Navigator.of(context).pop();
-      }
-    });
+    invokeCounter++;
+    updateMyDuration();
 
     if (myDuration.inSeconds != 0) {
       startTimer();
@@ -114,8 +137,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
     if (initializing) {
       schedule = ModalRoute.of(context)?.settings.arguments as Schedule;
       activities = schedule.activities.reversed.toList();
-      //invokeCounter++;
-      myDuration = activities[invokeCounter].activityDuration;
+      updateMyDuration();
       if (myDuration.inSeconds != 0) {
         startTimer();
       }

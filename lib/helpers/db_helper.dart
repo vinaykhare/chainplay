@@ -8,8 +8,9 @@ class DBHelper {
     return sql.openDatabase(path.join(dbPath, 'places.db'),
         onCreate: (db, version) async {
       return await db.execute(
-          'CREATE TABLE activity(activityId TEXT PRIMARY KEY, title TEXT, activityDuration INTEGER, nextActivityAfter INTEGER, scheduleName TEXT)');
-    }, version: 2);
+        'CREATE TABLE activity(activityId TEXT PRIMARY KEY, title TEXT, activityDuration INTEGER, nextActivityAfter INTEGER, activityDone INTEGER, scheduleName TEXT, lastUpdatedAt INTEGER, pinned INTEGER)',
+      );
+    }, version: 1);
   }
 
   static Future<void> insert(String table, Map<String, Object> data) async {
@@ -35,12 +36,19 @@ class DBHelper {
 
   static Future<List<Map<String, dynamic>>> getData(String table) async {
     final db = await DBHelper.database();
-    return db.query(table);
+    return db.query(
+      table,
+      orderBy: "pinned DESC, lastUpdatedAt DESC",
+    );
   }
 
   static Future<void> removeData(
       String table, String condition, List<dynamic> conditionArgs) async {
     final db = await DBHelper.database();
-    db.delete(table, where: condition, whereArgs: conditionArgs);
+    if (condition != "") {
+      db.delete(table, where: condition, whereArgs: conditionArgs);
+    } else {
+      db.delete(table);
+    }
   }
 }
