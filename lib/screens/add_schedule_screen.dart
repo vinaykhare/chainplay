@@ -197,7 +197,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                       Expanded(
                         child: TextField(
                           decoration: const InputDecoration(
-                            label: Text("Add Activity"),
+                            label: Text("Add One Liner Task or Activity"),
                             border: OutlineInputBorder(
                               borderSide: BorderSide.none,
                             ),
@@ -224,7 +224,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                           );
                           addActivityController.clear();
                         },
-                        icon: const Icon(Icons.send),
+                        icon: const Icon(Icons.add_task),
                       ),
                     ],
                   )

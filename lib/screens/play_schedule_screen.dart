@@ -23,11 +23,6 @@ class _PlayScheduleState extends State<PlaySchedule> {
   bool initializing = true;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   void dispose() {
     if (countdownTimer != null) countdownTimer?.cancel();
     super.dispose();
@@ -116,6 +111,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
     // setState(() {
     //   myDuration = const Duration(seconds: 0);
     // });
+    activities[invokeCounter].activityDone = true;
     await Navigator.of(context).pushNamed(
       PlayRest.routename,
       arguments: activities[invokeCounter].nextActivityAfter,
