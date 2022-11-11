@@ -28,7 +28,7 @@ class ScheduleList with ChangeNotifier {
     }
 
     //maxScheduleIndex = (await DBHelper.getMax("Activity", "scheduleIndex")) as int;
-
+    int activityIndex = 0;
     for (var activity in schedule.activities) {
       // if (activity.syncedWithDb) {
       //   continue;
@@ -42,11 +42,25 @@ class ScheduleList with ChangeNotifier {
           "nextActivityAfter ": activity.nextActivityAfter.inSeconds,
           "activityDone": activity.activityDone ? 1 : 0,
           "scheduleName": schedule.name,
+        },
+      );
+      DBHelper.insert(
+        "schedule",
+        {
+          "scheduleName": schedule.name,
           "lastUpdatedAt": schedule.lastUpdatedAt.millisecondsSinceEpoch,
           "pinned": schedule.pinned ? 1 : 0,
         },
       );
-      //activity.syncedWithDb = true;
+      DBHelper.insert(
+        "schedule_activity",
+        {
+          "scheduleName": schedule.name,
+          "activityId": activity.activityId,
+          "activityIndex": activityIndex,
+        },
+      );
+      activityIndex++;
     }
     notifyListeners();
   }
@@ -54,7 +68,21 @@ class ScheduleList with ChangeNotifier {
   removeSchedule(String scheduleName) {
     //schedules.removeWhere((sc) => sc.name == schedule.name);
 
-    DBHelper.removeData("activity", "scheduleName = ?", [scheduleName]);
+    DBHelper.removeData(
+      "activity",
+      "scheduleName = ?",
+      [scheduleName],
+    );
+    DBHelper.removeData(
+      "schedule_activity",
+      "scheduleName = ?",
+      [scheduleName],
+    );
+    DBHelper.removeData(
+      "schedule",
+      "scheduleName = ?",
+      [scheduleName],
+    );
 
     notifyListeners();
   }
@@ -79,7 +107,7 @@ class ScheduleList with ChangeNotifier {
   pinSchedule(schedule) {
     schedule.pinned = !schedule.pinned;
     DBHelper.update(
-      "activity",
+      "schedule",
       {
         "pinned": schedule.pinned ? 1 : 0,
       },
@@ -100,9 +128,9 @@ class ScheduleList with ChangeNotifier {
     }
   }
 
-  fetchAllSchedules() async {
+  fetchAllActivites() async {
     List<Map<String, dynamic>> loadedActivities =
-        await DBHelper.getData("activity");
+        await DBHelper.getData("activity", "pinned DESC, lastUpdatedAt DESC");
     Map<String, List<Activity>> mappedActivities = {};
     Map<String, Map<String, int>> scheduleParameters = {};
     for (var activity in loadedActivities) {
@@ -135,6 +163,42 @@ class ScheduleList with ChangeNotifier {
         return schedule;
       },
     ).toList();
+
+    //Add ads to Schedule
+    adIndexInSchedules = [];
+    for (var i = 1; i < schedules.length + 1; i += 5) {
+      adIndexInSchedules.add(i);
+      Schedule adSchedule = Schedule();
+      adSchedule.name = "Sponsored..$i";
+      adSchedule.adBanner = BannerAd(
+        adUnitId: adState.bannerAdUnitId,
+        size: AdSize.banner,
+        request: const AdRequest(),
+        listener: adState.adListener,
+      )..load();
+      schedules.insert(i, adSchedule);
+    }
+
+    return schedules;
+  }
+
+  fetchSchedules() async {
+    List<Map<String, dynamic>> loadedSchedule =
+        await DBHelper.getData("schedule", "pinned DESC, lastUpdatedAt DESC");
+    schedules = [];
+    for (var schedule in loadedSchedule) {
+      Schedule tempSchedule = Schedule();
+      tempSchedule.name = schedule["scheduleName"];
+      tempSchedule.at = schedule["startedAt"];
+      if (schedule["lastUpdatedAt"] != null) {
+        tempSchedule.lastUpdatedAt =
+            DateTime.fromMillisecondsSinceEpoch(schedule["lastUpdatedAt"]);
+      }
+
+      tempSchedule.pinned = schedule["pinned"] == 1;
+
+      schedules.add(tempSchedule);
+    }
 
     //Add ads to Schedule
     adIndexInSchedules = [];

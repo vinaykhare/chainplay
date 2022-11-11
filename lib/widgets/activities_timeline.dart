@@ -95,8 +95,10 @@ class _ActivitiesTimelineState extends State<ActivitiesTimeline> {
               decoration: const BoxDecoration(color: Colors.amber),
             ),
             if (widget.tempSchedule.activities[index].nextActivityAfter
-                    .inSeconds !=
-                0)
+                        .inSeconds !=
+                    0 &&
+                index != 0 &&
+                !widget.tempSchedule.activities[index - 1].activityDone)
               Text(
                 "Rest will end ${TransformFunctions.durationToString(activity.nextActivityAfter)}.",
               ),

@@ -23,7 +23,7 @@ class ScheduleListScreen extends StatelessWidget {
       ),
       drawer: const AppDrawer(),
       body: FutureBuilder(
-        future: Provider.of<ScheduleList>(context).fetchAllSchedules(),
+        future: Provider.of<ScheduleList>(context).fetchSchedules(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(

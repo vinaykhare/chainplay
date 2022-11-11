@@ -110,6 +110,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
         tempSchedule = ModalRoute.of(context)?.settings.arguments as Schedule;
         pageTitle = "Edit Schedule";
         scheduleNameOnPageLoad = tempSchedule.name;
+        tempSchedule.loadActivities();
       }
       pageInit = false;
     }

@@ -2,14 +2,46 @@ import 'package:sqflite/sqflite.dart' as sql;
 import 'package:path/path.dart' as path;
 import 'package:sqflite/sqlite_api.dart';
 
+const initScript = [
+  '''CREATE TABLE activity (
+      activityId TEXT PRIMARY KEY, 
+      title TEXT, 
+      activityDuration INTEGER, 
+      nextActivityAfter INTEGER, 
+      activityDone INTEGER, 
+      scheduleName TEXT,
+      FOREIGN KEY (scheduleName)
+        REFERENCES schedule (scheduleName)
+    )
+  ''',
+  '''CREATE TABLE schedule (
+      scheduleName TEXT PRIMARY KEY,
+      scheduleIndex INTEGER,
+      startedAt INTEGER,
+      lastUpdatedAt INTEGER, 
+      pinned INTEGER
+    )
+  ''',
+  '''CREATE TABLE schedule_activity (
+      scheduleName TEXT, 
+      activityId TEXT,
+      activityIndex INTEGER,
+      FOREIGN KEY (scheduleName)
+        REFERENCES schedule (scheduleName),
+      FOREIGN KEY (activityId)
+        REFERENCES activity (activityId)
+    )
+  ''',
+];
+
 class DBHelper {
   static Future<Database> database() async {
     final dbPath = await sql.getDatabasesPath();
     return sql.openDatabase(path.join(dbPath, 'places.db'),
         onCreate: (db, version) async {
-      return await db.execute(
-        'CREATE TABLE activity(activityId TEXT PRIMARY KEY, title TEXT, activityDuration INTEGER, nextActivityAfter INTEGER, activityDone INTEGER, scheduleName TEXT, lastUpdatedAt INTEGER, pinned INTEGER)',
-      );
+      for (var script in initScript) {
+        await db.execute(script);
+      }
     }, version: 1);
   }
 
@@ -34,12 +66,19 @@ class DBHelper {
     );
   }
 
-  static Future<List<Map<String, dynamic>>> getData(String table) async {
+  static Future<List<Map<String, dynamic>>> getData(
+      String table, String orderBy) async {
     final db = await DBHelper.database();
     return db.query(
       table,
-      orderBy: "pinned DESC, lastUpdatedAt DESC",
+      orderBy: orderBy, //"pinned DESC, lastUpdatedAt DESC",
     );
+  }
+
+  static Future<List<Map<String, dynamic>>> getDataBySQL(
+      String sql, List<dynamic> conditionArgs) async {
+    final db = await DBHelper.database();
+    return db.rawQuery(sql, conditionArgs);
   }
 
   static Future<void> removeData(
