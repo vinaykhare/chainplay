@@ -16,6 +16,13 @@ class SearchBar extends StatelessWidget {
         showCursor: false,
         onTap: () {},
         decoration: const InputDecoration(
+          label: Text(
+            "Search Schedule!",
+            style: TextStyle(
+              color: Colors.green,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           fillColor: Colors.white,
           filled: true,
           prefixIcon: Icon(

@@ -6,6 +6,7 @@ import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_list.dart';
 //import 'package:schedule_it/screens/add_activity_screen.dart';
 import 'package:schedule_it/widgets/activities_timeline.dart';
+import 'package:uuid/uuid.dart';
 
 class AddScheduleScreen extends StatefulWidget {
   static String routename = "/add_schedules";
@@ -17,6 +18,7 @@ class AddScheduleScreen extends StatefulWidget {
 }
 
 class _AddScheduleScreenState extends State<AddScheduleScreen> {
+  FocusNode addActivityFocus = FocusNode();
   String pageTitle = "Add Schedule";
   Schedule tempSchedule = Schedule();
   String activityTitle = "";
@@ -30,13 +32,19 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
   //final TextEditingController scheduleAtController = TextEditingController();
   final TextEditingController addActivityController = TextEditingController();
 
-  DateTime formDateTime = DateTime.now();
-  String durHour = "", durMin = "", durSec = "";
+  //DateTime formDateTime = DateTime.now();
+  //String durHour = "", durMin = "", durSec = "";
   GlobalKey<FormState> scheduleFormKey = GlobalKey<FormState>();
-  GlobalKey<FormState> activityFormKey = GlobalKey<FormState>();
 
   bool pageInit = true;
   String scheduleNameOnPageLoad = "";
+
+  @override
+  void dispose() {
+    super.dispose();
+    addActivityFocus.dispose();
+    addActivityController.dispose();
+  }
 
   // void getDatePicker() {
   //   showDatePicker(
@@ -53,7 +61,17 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
   //   });
   // }
 
-  Future<bool> addSchedule() async {
+  Future<bool> validateForm() async {
+    bool? valid = scheduleFormKey.currentState?.validate();
+    scheduleFormKey.currentState?.save();
+    return valid ?? true;
+  }
+
+  Future<bool> addActivity(Activity newActivity) async {
+    tempSchedule.activities.insert(
+      0,
+      newActivity,
+    );
     ScheduleList scheduleList =
         Provider.of<ScheduleList>(context, listen: false);
 
@@ -68,39 +86,11 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
       // );
       return false;
     } else {
-      scheduleList.addSchedule(tempSchedule, scheduleNameOnPageLoad);
+      scheduleList.addSchedule(
+          tempSchedule, scheduleNameOnPageLoad, newActivity);
       //Navigator.of(context).pop();
       return true;
     }
-  }
-
-  Future<void> addActivity(Activity newActivity) async {
-    setState(
-      () {
-        tempSchedule.activities.insert(
-          0,
-          newActivity,
-        );
-      },
-    );
-  }
-
-  Future<void> removeActivity(int index) async {
-    setState(
-      () {
-        tempSchedule.activities.removeAt(
-          index,
-        );
-      },
-    );
-  }
-
-  Future<void> replaceActivity(int index, Activity newActivity) async {
-    setState(
-      () {
-        tempSchedule.activities[index] = newActivity;
-      },
-    );
   }
 
   @override
@@ -108,9 +98,9 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     if (pageInit) {
       if (ModalRoute.of(context)?.settings.arguments != null) {
         tempSchedule = ModalRoute.of(context)?.settings.arguments as Schedule;
-        pageTitle = "Edit Schedule";
+        pageTitle = "Manage Schedule";
         scheduleNameOnPageLoad = tempSchedule.name;
-        tempSchedule.loadActivities();
+        //tempSchedule.loadActivities();
       }
       pageInit = false;
     }
@@ -124,7 +114,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
         appBarWidget.preferredSize.height -
         MediaQuery.of(context).viewPadding.top;
     return WillPopScope(
-      onWillPop: addSchedule,
+      onWillPop: validateForm,
       child: Scaffold(
         appBar: appBarWidget,
         body: Padding(
@@ -138,6 +128,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                 children: [
                   TextFormField(
                     textAlign: TextAlign.center,
+                    enabled: tempSchedule.activities.isEmpty,
                     style: Theme.of(context).textTheme.headline4,
                     decoration: const InputDecoration(
                       contentPadding: EdgeInsets.all(10),
@@ -169,6 +160,8 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                       // }
                       return null;
                     },
+                    onFieldSubmitted: (value) =>
+                        FocusScope.of(context).requestFocus(addActivityFocus),
                   ),
                   const Divider(
                     thickness: 0,
@@ -189,14 +182,13 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                   Expanded(
                     child: ActivitiesTimeline(
                       tempSchedule: tempSchedule,
-                      removeActivity: removeActivity,
-                      replaceActivity: replaceActivity,
                     ),
                   ),
                   Row(
                     children: [
                       Expanded(
                         child: TextField(
+                          focusNode: addActivityFocus,
                           decoration: const InputDecoration(
                             label: Text("Add One Liner Task or Activity"),
                             border: OutlineInputBorder(
@@ -209,7 +201,9 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                               return;
                             }
                             addActivity(
-                              Activity(title: addActivityController.text),
+                              Activity(
+                                  title: addActivityController.text,
+                                  activityId: const Uuid().v1()),
                             );
                             addActivityController.clear();
                           },
@@ -221,7 +215,9 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                             return;
                           }
                           addActivity(
-                            Activity(title: addActivityController.text),
+                            Activity(
+                                title: addActivityController.text,
+                                activityId: const Uuid().v1()),
                           );
                           addActivityController.clear();
                         },

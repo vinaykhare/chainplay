@@ -40,7 +40,8 @@ class ScheduleListScreen extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Expanded(
-                  child: ListView.builder(
+                  child: ReorderableListView.builder(
+                    onReorder: (oldIndex, newIndex) {},
                     itemCount: schedules.length,
                     itemBuilder: (context, index) {
                       Schedule schedule = schedules[index];
@@ -48,6 +49,7 @@ class ScheduleListScreen extends StatelessWidget {
                       return ScheduleView(
                         adSchedule: adSchedule,
                         schedule: schedule,
+                        key: Key(index.toString()),
                       );
                     },
                   ),

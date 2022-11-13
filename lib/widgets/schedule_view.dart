@@ -18,7 +18,7 @@ class ScheduleView extends StatelessWidget {
     ScheduleList scheduleList = Provider.of<ScheduleList>(context);
     return Container(
       padding: const EdgeInsets.all(5.0),
-      key: ValueKey("schedule_list_container_${schedule.name}"),
+      key: key,
       child: Card(
         elevation: 5,
         child: adSchedule != null
@@ -34,13 +34,15 @@ class ScheduleView extends StatelessWidget {
                 ),
                 key: ValueKey("schedule_list_dismissible_${schedule.name}"),
                 onDismissed: (direction) {
-                  scheduleList.removeSchedule(schedule.name);
+                  scheduleList.removeSchedule(schedule);
                 },
                 child: ListTile(
-                  onTap: () => Navigator.of(context).pushNamed(
-                    AddScheduleScreen.routename,
-                    arguments: schedule,
-                  ),
+                  onTap: () {
+                    Navigator.of(context).pushNamed(
+                      AddScheduleScreen.routename,
+                      arguments: schedule,
+                    );
+                  },
                   title: Text(schedule.name),
                   subtitle: Text(DateFormat.yMEd()
                       .add_jms()

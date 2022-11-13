@@ -12,6 +12,7 @@ class AddActivityScreen extends StatefulWidget {
 class _AddActivityScreenState extends State<AddActivityScreen> {
   GlobalKey<FormState> activityFormKey = GlobalKey<FormState>();
   Activity tempActivity = Activity(
+    activityId: "",
     title: "",
     activityDuration: const Duration(seconds: 0),
     nextActivityAfter: const Duration(seconds: 0),
@@ -37,6 +38,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
 
     Navigator.of(context).pop(
       Activity(
+        activityId: tempActivity.activityId,
         title: tempActivity.title,
         activityDuration: Duration(
           hours: activityDurationHour,

@@ -7,11 +7,7 @@ const initScript = [
       activityId TEXT PRIMARY KEY, 
       title TEXT, 
       activityDuration INTEGER, 
-      nextActivityAfter INTEGER, 
-      activityDone INTEGER, 
-      scheduleName TEXT,
-      FOREIGN KEY (scheduleName)
-        REFERENCES schedule (scheduleName)
+      nextActivityAfter INTEGER
     )
   ''',
   '''CREATE TABLE schedule (
@@ -26,6 +22,7 @@ const initScript = [
       scheduleName TEXT, 
       activityId TEXT,
       activityIndex INTEGER,
+      activityDone INTEGER, 
       FOREIGN KEY (scheduleName)
         REFERENCES schedule (scheduleName),
       FOREIGN KEY (activityId)
@@ -37,7 +34,7 @@ const initScript = [
 class DBHelper {
   static Future<Database> database() async {
     final dbPath = await sql.getDatabasesPath();
-    return sql.openDatabase(path.join(dbPath, 'places.db'),
+    return sql.openDatabase(path.join(dbPath, 'scheduleit.db'),
         onCreate: (db, version) async {
       for (var script in initScript) {
         await db.execute(script);

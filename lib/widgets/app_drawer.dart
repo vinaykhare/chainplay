@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:schedule_it/screens/acitivity_list_screen.dart';
+import 'package:schedule_it/screens/schedule_list_screen.dart';
 //import 'package:provider/provider.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -18,13 +20,23 @@ class AppDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.branding_watermark),
             title: const Text('Schedules'),
-            onTap: () {},
+            onTap: () {
+              while (Navigator.of(context).canPop()) {
+                Navigator.of(context).pop();
+              }
+              Navigator.of(context).pushNamed(ScheduleListScreen.routename);
+            },
           ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.branding_watermark),
             title: const Text('Activities'),
-            onTap: () {},
+            onTap: () {
+              while (Navigator.of(context).canPop()) {
+                Navigator.of(context).pop();
+              }
+              Navigator.of(context).pushNamed(ActivityListScreen.routename);
+            },
           ),
           const Divider(),
         ],

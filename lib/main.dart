@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:schedule_it/screens/acitivity_list_screen.dart';
 import 'package:schedule_it/screens/add_activity_screen.dart';
 import 'package:schedule_it/screens/add_schedule_screen.dart';
 import 'package:schedule_it/screens/play_rest_screen.dart';
@@ -49,6 +50,7 @@ class ScheduleIt extends StatelessWidget {
       initialRoute: ScheduleListScreen.routename,
       routes: {
         ScheduleListScreen.routename: (context) => const ScheduleListScreen(),
+        ActivityListScreen.routename: (context) => const ActivityListScreen(),
         ScheduleScreen.routename: (context) => const ScheduleScreen(),
         AddScheduleScreen.routename: (context) => const AddScheduleScreen(),
         PlaySchedule.routename: (context) => const PlaySchedule(),
