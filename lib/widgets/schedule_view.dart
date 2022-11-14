@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+//import 'package:schedule_it/models/activity.dart';
 import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_list.dart';
 import 'package:schedule_it/screens/add_schedule_screen.dart';
@@ -16,6 +17,7 @@ class ScheduleView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ScheduleList scheduleList = Provider.of<ScheduleList>(context);
+    NavigatorState nav = Navigator.of(context);
     return Container(
       padding: const EdgeInsets.all(5.0),
       key: key,
@@ -43,27 +45,58 @@ class ScheduleView extends StatelessWidget {
                       arguments: schedule,
                     );
                   },
+                  tileColor: schedule.scheduleStatus == 1
+                      ? Colors.grey
+                      : Theme.of(context).cardColor,
                   title: Text(schedule.name),
                   subtitle: Text(DateFormat.yMEd()
                       .add_jms()
                       .format(schedule.lastUpdatedAt)),
-                  leading: CircleAvatar(
-                    backgroundColor: Colors.green,
-                    child: IconButton(
-                      onPressed: () => Navigator.of(context).pushNamed(
-                        PlaySchedule.routename,
-                        arguments: schedule,
+                  leading: schedule.scheduleStatus == 0
+                      ? CircleAvatar(
+                          backgroundColor: Colors.green,
+                          child: IconButton(
+                            onPressed: () async {
+                              if (schedule.at == null) {
+                                schedule.at = DateTime.now();
+                                await scheduleList.updateSchedule(schedule);
+                              }
+                              await scheduleList.loadActivities(schedule);
+                              await nav.pushNamed(
+                                PlaySchedule.routename,
+                                arguments: schedule,
+                              );
+                            },
+                            icon: schedule.at == null
+                                ? const Icon(Icons.play_arrow)
+                                : const Icon(Icons.pause),
+                          ),
+                        )
+                      : const CircleAvatar(
+                          backgroundColor: Colors.green,
+                          child: Icon(Icons.done),
+                        ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        onPressed: () async {
+                          schedule.at = null;
+                          schedule.scheduleStatus = 0;
+                          await scheduleList.updateSchedule(schedule);
+                          await scheduleList.resetActivities(schedule);
+                        },
+                        icon: const Icon(Icons.restore),
                       ),
-                      icon: const Icon(Icons.play_arrow),
-                    ),
-                  ),
-                  trailing: IconButton(
-                    icon: schedule.pinned
-                        ? const Icon(Icons.flag)
-                        : const Icon(Icons.outlined_flag),
-                    onPressed: () {
-                      scheduleList.pinSchedule(schedule);
-                    },
+                      IconButton(
+                        icon: schedule.pinned
+                            ? const Icon(Icons.flag)
+                            : const Icon(Icons.outlined_flag),
+                        onPressed: () async {
+                          await scheduleList.pinSchedule(schedule);
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ),

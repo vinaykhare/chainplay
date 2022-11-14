@@ -87,7 +87,7 @@ class ActivitiesTimeline extends StatelessWidget {
                           // setState(() {
                           //   activity.activityDone = value ?? false;
                           // });
-                          scheduleList.flipDoneActivity(activity);
+                          scheduleList.flipDoneActivity(tempSchedule, activity);
                         },
                       ),
                     ),

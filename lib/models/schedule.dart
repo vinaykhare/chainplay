@@ -9,4 +9,5 @@ class Schedule with ChangeNotifier {
   List<Activity> activities = [];
   BannerAd? adBanner;
   bool pinned = false;
+  int scheduleStatus = 0;
 }

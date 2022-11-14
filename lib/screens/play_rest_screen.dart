@@ -13,19 +13,20 @@ class PlayRest extends StatefulWidget {
 class _PlayRestState extends State<PlayRest> {
   Timer? countdownTimer;
   late Duration myDuration;
-  bool initParams = true;
+  //bool initParams = true;
   String displaySeconds = "";
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   startTimer();
-  // }
 
   @override
   void dispose() {
     if (countdownTimer != null) countdownTimer?.cancel();
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    myDuration = ModalRoute.of(context)?.settings.arguments as Duration;
+    startTimer();
   }
 
   void startTimer() {
@@ -68,13 +69,13 @@ class _PlayRestState extends State<PlayRest> {
 
   @override
   Widget build(BuildContext context) {
-    if (initParams) {
-      myDuration = ModalRoute.of(context)?.settings.arguments as Duration;
-      startTimer();
-      initParams = false;
-    }
+    // if (initParams) {
+    //   myDuration = ModalRoute.of(context)?.settings.arguments as Duration;
+    //   startTimer();
+    //   initParams = false;
+    // }
 
-    String timeLeft = "Let's Start";
+    String timeLeft = "Rest Complete";
 
     if (myDuration.inSeconds > 0) {
       final String displayHours = strDigits(myDuration.inHours.remainder(60));
@@ -113,7 +114,7 @@ class _PlayRestState extends State<PlayRest> {
                   child: FittedBox(
                     child: Text(
                       timeLeft,
-                      style: Theme.of(context).textTheme.headline2,
+                      style: Theme.of(context).textTheme.headline3,
                       textAlign: TextAlign.center,
                     ),
                   ),

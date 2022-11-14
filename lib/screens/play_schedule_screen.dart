@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
+import 'package:provider/provider.dart';
 import 'package:schedule_it/helpers/transform_functions.dart';
 import 'package:schedule_it/models/activity.dart';
 import 'package:schedule_it/models/schedule.dart';
+import 'package:schedule_it/models/schedule_list.dart';
 import 'package:schedule_it/screens/play_rest_screen.dart';
 
 class PlaySchedule extends StatefulWidget {
@@ -16,17 +18,88 @@ class PlaySchedule extends StatefulWidget {
 
 class _PlayScheduleState extends State<PlaySchedule> {
   Timer? countdownTimer;
-  late Duration myDuration;
+  late Duration waitDuration;
   late Schedule schedule;
+  late ScheduleList scheduleList;
   List<Activity> activities = [];
   int invokeCounter = 0;
+  bool exitPlaySchedule = false;
   bool initializing = true;
 
   @override
   void dispose() {
-    if (countdownTimer != null) countdownTimer?.cancel();
     super.dispose();
+    if (countdownTimer != null) countdownTimer?.cancel();
   }
+
+  void updateWaitDuration() {
+    while (invokeCounter < schedule.activities.length &&
+        activities[invokeCounter].activityDone) {
+      invokeCounter++;
+    }
+    if (invokeCounter < schedule.activities.length) {
+      setState(() {
+        waitDuration = activities[invokeCounter].activityDuration;
+      });
+    } else {
+      exitPlaySchedule = true;
+      waitDuration = const Duration(seconds: 0);
+      // temp solution to skip failure on executing shcedule without activities (all done).
+      invokeCounter = 0;
+    }
+  }
+
+  Future<void> nextActivity() async {
+    setState(() {});
+    NavigatorState nav = Navigator.of(context);
+    if (exitPlaySchedule) {
+      schedule.at = null;
+      schedule.scheduleStatus = 1;
+      await scheduleList.updateSchedule(schedule);
+      await scheduleList.completeScheduleActivity(schedule);
+      nav.pop();
+    } else if (waitDuration.inSeconds != 0) {
+      startTimer();
+    }
+  }
+
+  Future<void> goToNextPage() async {
+    if (activities[invokeCounter].nextActivityAfter.inSeconds > 0) {
+      await Navigator.of(context).pushNamed(
+        PlayRest.routename,
+        arguments: activities[invokeCounter].nextActivityAfter,
+      );
+    }
+    invokeCounter++;
+    updateWaitDuration();
+    nextActivity();
+  }
+
+  Future<void> setCountDown() async {
+    final seconds = waitDuration.inSeconds - 1;
+
+    if (seconds == 0) {
+      // FlutterRingtonePlayer.play(
+      //     fromAsset: "assets/ringtone.wav", ios: IosSounds.glass);
+      FlutterRingtonePlayer.play(
+        android: AndroidSounds.notification,
+        ios: IosSounds.glass,
+      );
+    }
+
+    if (seconds < 0) {
+      stopTimer();
+      await scheduleList.flipDoneActivity(schedule, activities[invokeCounter]);
+      return goToNextPage();
+    } else {
+      setState(() {
+        waitDuration = Duration(seconds: seconds);
+      });
+    }
+  }
+
+  // Generic Timer Functions
+  String strDigits(int n) => n.toString().padLeft(2, '0');
 
   void startTimer() {
     countdownTimer = Timer.periodic(
@@ -37,116 +110,37 @@ class _PlayScheduleState extends State<PlaySchedule> {
     );
   }
 
-  // Step 4
   void stopTimer() {
     setState(() {
       if (countdownTimer != null) countdownTimer?.cancel();
     });
   }
 
-  // Step 5
   void resetTimer() {
     stopTimer();
-    setState(() => myDuration = activities[invokeCounter].activityDuration);
+    setState(() => waitDuration = activities[invokeCounter].activityDuration);
   }
 
-  // Step 6
-  void setCountDown() async {
-    const reduceSecondsBy = 1;
-    final seconds = myDuration.inSeconds - reduceSecondsBy;
-
-    if (invokeCounter > schedule.activities.length) {
-      //stopTimer();
-      Navigator.of(context).pop();
-    }
-
-    if (seconds == 0) {
-      FlutterRingtonePlayer.playNotification();
-    }
-
-    if (seconds < 0) {
-      stopTimer();
-      if (invokeCounter + 1 == schedule.activities.length) {
-        Navigator.of(context).pop();
-      } else {
-        goToRestPage();
-      }
-    } else {
-      setState(() {
-        myDuration = Duration(seconds: seconds);
-      });
-    }
-  }
-
-  void updateMyDuration() {
-    while (invokeCounter < schedule.activities.length &&
-        activities[invokeCounter].activityDone) {
-      invokeCounter++;
-    }
-    if (invokeCounter < schedule.activities.length) {
-      setState(() {
-        myDuration = activities[invokeCounter].activityDuration;
-      });
-    } else {
-      Navigator.of(context).pop();
-      // await showDialog<bool>(
-      //   context: context,
-      //   builder: (context) => AlertDialog(
-      //     content: const Text("Flow is Over Now"),
-      //     actions: [
-      //       TextButton(
-      //         onPressed: () {
-      //           Navigator.of(context).pop();
-      //           Navigator.of(context).pop();
-      //         },
-      //         child: const Text("Ok"),
-      //       ),
-      //     ],
-      //   ),
-      // );
-    }
-  }
-
-  void goToRestPage() async {
-    // setState(() {
-    //   myDuration = const Duration(seconds: 0);
-    // });
-    activities[invokeCounter].activityDone = true;
-    await Navigator.of(context).pushNamed(
-      PlayRest.routename,
-      arguments: activities[invokeCounter].nextActivityAfter,
-    );
-
-    invokeCounter++;
-    updateMyDuration();
-
-    if (myDuration.inSeconds != 0) {
-      startTimer();
-    }
-  }
-
-  String strDigits(int n) => n.toString().padLeft(2, '0');
+  //Build Function
 
   @override
   Widget build(BuildContext context) {
-    //if (invokeCounter == 0) {
     if (initializing) {
+      scheduleList = Provider.of<ScheduleList>(context);
       schedule = ModalRoute.of(context)?.settings.arguments as Schedule;
-      activities = schedule.activities.reversed.toList();
-      updateMyDuration();
-      if (myDuration.inSeconds != 0) {
-        startTimer();
-      }
+      activities = schedule.activities.toList();
+      updateWaitDuration();
+      nextActivity();
       initializing = false;
     }
     String timeLeft = "Done";
-    //if (myDuration.inSeconds > 0) {
-    final int hours = myDuration.inHours.remainder(60);
-    final int minutes = myDuration.inMinutes.remainder(60);
-    final int seconds = myDuration.inSeconds.remainder(60);
-    final String displaySeconds = myDuration.inSeconds == 0
+    //if (waitDuration.inSeconds > 0) {
+    final int hours = waitDuration.inHours.remainder(60);
+    final int minutes = waitDuration.inMinutes.remainder(60);
+    final int seconds = waitDuration.inSeconds.remainder(60);
+    final String displaySeconds = waitDuration.inSeconds == 0
         ? "Done"
-        : strDigits(myDuration.inSeconds.remainder(60));
+        : strDigits(waitDuration.inSeconds.remainder(60));
     // timeLeft = "$hours:$minutes:$displaySeconds";
     timeLeft = hours == 0 && minutes == 0 && seconds != 0
         ? " in "
@@ -180,10 +174,12 @@ class _PlayScheduleState extends State<PlaySchedule> {
                 textAlign: TextAlign.center,
               ),
               InkWell(
-                onTap: () {
+                onTap: () async {
                   FlutterRingtonePlayer.playNotification();
                   stopTimer();
-                  goToRestPage();
+                  await scheduleList.flipDoneActivity(
+                      schedule, activities[invokeCounter]);
+                  goToNextPage();
                 },
                 child: CircleAvatar(
                   radius: 150,
@@ -196,7 +192,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
                   ),
                 ),
               ),
-              if (myDuration.inSeconds != 0)
+              if (waitDuration.inSeconds != 0)
                 Text(
                   "Seconds.",
                   style: Theme.of(context).textTheme.headline5,

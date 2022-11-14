@@ -15,7 +15,7 @@ class ScheduleListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //ScheduleList scheduleList = Provider.of<ScheduleList>(context);
+    ScheduleList scheduleList = Provider.of<ScheduleList>(context);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -41,7 +41,8 @@ class ScheduleListScreen extends StatelessWidget {
               children: [
                 Expanded(
                   child: ReorderableListView.builder(
-                    onReorder: (oldIndex, newIndex) {},
+                    onReorder: (oldIndex, newIndex) =>
+                        scheduleList.rearrangeSchedules(oldIndex, newIndex),
                     itemCount: schedules.length,
                     itemBuilder: (context, index) {
                       Schedule schedule = schedules[index];

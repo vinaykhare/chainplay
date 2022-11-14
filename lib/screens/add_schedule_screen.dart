@@ -29,10 +29,9 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
       restDurationAfterMinute = 0,
       restDurationAfterSecond = 0;
 
-  //final TextEditingController scheduleAtController = TextEditingController();
   final TextEditingController addActivityController = TextEditingController();
 
-  //DateTime formDateTime = DateTime.now();
+  DateTime formDateTime = DateTime.now();
   //String durHour = "", durMin = "", durSec = "";
   GlobalKey<FormState> scheduleFormKey = GlobalKey<FormState>();
 
@@ -45,21 +44,6 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     addActivityFocus.dispose();
     addActivityController.dispose();
   }
-
-  // void getDatePicker() {
-  //   showDatePicker(
-  //     context: context,
-  //     firstDate: DateTime(2022),
-  //     lastDate: DateTime.now(),
-  //     initialDate: DateTime.now(),
-  //   ).then((value) {
-  //     setState(() {
-  //       formDateTime = value ?? DateTime.now();
-  //       scheduleAtController.text =
-  //           DateFormat.yMEd().add_jms().format(formDateTime);
-  //     });
-  //   });
-  // }
 
   Future<bool> validateForm() async {
     bool? valid = scheduleFormKey.currentState?.validate();
@@ -89,6 +73,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
       scheduleList.addSchedule(
           tempSchedule, scheduleNameOnPageLoad, newActivity);
       //Navigator.of(context).pop();
+      setState(() {});
       return true;
     }
   }
@@ -167,18 +152,6 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                     thickness: 0,
                     color: Colors.transparent,
                   ),
-                  // TextFormField(
-                  //   decoration: InputDecoration(
-                  //     label: const Text("Schedule At"),
-                  //   ),
-                  //   controller: scheduleAtController,
-                  //   // initialValue:
-                  //   //     DateFormat.yMEd().add_jms().format(formDateTime),
-                  //   onSaved: (_) {
-                  //     tempSchedule.at = formDateTime;
-                  //   },
-                  //   onTap: getDatePicker,
-                  // ),
                   Expanded(
                     child: ActivitiesTimeline(
                       tempSchedule: tempSchedule,
@@ -206,6 +179,9 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                                   activityId: const Uuid().v1()),
                             );
                             addActivityController.clear();
+
+                            FocusScope.of(context)
+                                .requestFocus(addActivityFocus);
                           },
                         ),
                       ),
@@ -220,6 +196,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                                 activityId: const Uuid().v1()),
                           );
                           addActivityController.clear();
+                          FocusScope.of(context).requestFocus(addActivityFocus);
                         },
                         icon: const Icon(Icons.add_task),
                       ),
