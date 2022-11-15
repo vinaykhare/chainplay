@@ -48,10 +48,25 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
   Future<bool> validateForm() async {
     bool? valid = scheduleFormKey.currentState?.validate();
     scheduleFormKey.currentState?.save();
+
+    ScheduleList scheduleList =
+        Provider.of<ScheduleList>(context, listen: false);
+    if (valid != null && valid) {
+      if (tempSchedule.activities.isEmpty && tempSchedule.name == "") {
+        tempSchedule.name = scheduleNameOnPageLoad;
+        scheduleList.removeSchedule(tempSchedule);
+      } else if (tempSchedule.activities.isNotEmpty &&
+          tempSchedule.name != scheduleNameOnPageLoad) {
+        scheduleList.renameSchedule(
+          scheduleNameOnPageLoad,
+          tempSchedule.name,
+        );
+      }
+    }
     return valid ?? true;
   }
 
-  Future<bool> addActivity(Activity newActivity) async {
+  Future<void> addActivity(Activity newActivity) async {
     tempSchedule.activities.insert(
       0,
       newActivity,
@@ -62,19 +77,10 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     bool? valid = scheduleFormKey.currentState?.validate();
     scheduleFormKey.currentState?.save();
 
-    if (valid != null && !valid) {
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   const SnackBar(
-      //     content: Text("Add Activity to Create Schedule!"),
-      //   ),
-      // );
-      return false;
-    } else {
-      scheduleList.addSchedule(
-          tempSchedule, scheduleNameOnPageLoad, newActivity);
+    if (valid != null && valid) {
+      scheduleList.addSchedule(tempSchedule, newActivity);
       //Navigator.of(context).pop();
       setState(() {});
-      return true;
     }
   }
 
@@ -113,7 +119,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                 children: [
                   TextFormField(
                     textAlign: TextAlign.center,
-                    enabled: tempSchedule.activities.isEmpty,
+                    //enabled: tempSchedule.activities.isEmpty,
                     style: Theme.of(context).textTheme.headline4,
                     decoration: const InputDecoration(
                       contentPadding: EdgeInsets.all(10),
@@ -129,12 +135,14 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                     onSaved: (newValue) => tempSchedule.name = newValue ??
                         "Schedule ${DateFormat.yMEd().add_jms().format(DateTime.now())}",
                     validator: (value) {
-                      if (((value == null || value == "") &&
-                              tempSchedule.activities.isNotEmpty) ||
-                          (value != null &&
-                              value != "" &&
-                              tempSchedule.activities.isEmpty)) {
-                        return "Schdule must have a Unique Name and atleast one Activity.";
+                      if (tempSchedule.activities.isNotEmpty) {
+                        if (value == null || value == "") {
+                          return "Schedule must have a name.";
+                        }
+                      } else {
+                        if (value != null && value != "") {
+                          return "Add one or more activities to this Schedule.";
+                        }
                       }
                       // int foundActivityIndex =
                       //     Provider.of<ScheduleList>(context, listen: false)

@@ -43,8 +43,7 @@ class ScheduleList with ChangeNotifier {
     this.adState,
   );
 
-  addSchedule(
-      Schedule schedule, String oldScheduleName, Activity activity) async {
+  addSchedule(Schedule schedule, Activity activity) async {
     int index =
         schedules.indexWhere((element) => element.name == schedule.name);
 
@@ -115,6 +114,28 @@ class ScheduleList with ChangeNotifier {
         [acitivty.activityId],
       );
     }
+    notifyListeners();
+  }
+
+  renameSchedule(String oldScheduleName, String newScheduleName) async {
+    await DBHelper.update(
+      "schedule",
+      {
+        "scheduleName": newScheduleName,
+      },
+      "scheduleName = ?",
+      [oldScheduleName],
+    );
+
+    await DBHelper.update(
+      "schedule_activity",
+      {
+        "scheduleName": newScheduleName,
+      },
+      "scheduleName = ?",
+      [oldScheduleName],
+    );
+
     notifyListeners();
   }
 
@@ -338,7 +359,8 @@ class ScheduleList with ChangeNotifier {
         activityDuration: Duration(seconds: activity['activityDuration']),
         nextActivityAfter: Duration(seconds: activity['nextActivityAfter']),
       );
-      schedule.activities.insert(activity['activityIndex'], tempActivity);
+      //schedule.activities.insert(activity['activityIndex'], tempActivity);
+      schedule.activities.add(tempActivity);
     }
     return schedule.activities;
   }
@@ -383,7 +405,6 @@ class ScheduleList with ChangeNotifier {
       )..load();
       schedules.insert(i, adSchedule);
     }
-
     return schedules;
   }
 

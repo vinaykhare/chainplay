@@ -18,7 +18,8 @@ class ActivitiesTimeline extends StatelessWidget {
     return FutureBuilder(
       future: scheduleList.loadActivities(tempSchedule),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+        if (snapshot.connectionState == ConnectionState.waiting ||
+            snapshot.data == null) {
           return const Center(
             child: CircularProgressIndicator(),
           );
