@@ -108,16 +108,16 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
       onWillPop: validateForm,
       child: Scaffold(
         appBar: appBarWidget,
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Form(
-            key: scheduleFormKey,
-            child: SizedBox(
-              height: appHeight,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextFormField(
+        body: Form(
+          key: scheduleFormKey,
+          child: SizedBox(
+            height: appHeight,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
                     textAlign: TextAlign.center,
                     //enabled: tempSchedule.activities.isEmpty,
                     style: Theme.of(context).textTheme.headline4,
@@ -156,23 +156,32 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                     onFieldSubmitted: (value) =>
                         FocusScope.of(context).requestFocus(addActivityFocus),
                   ),
-                  const Divider(
-                    thickness: 0,
-                    color: Colors.transparent,
-                  ),
-                  Expanded(
+                ),
+                const Divider(
+                  thickness: 0,
+                  color: Colors.transparent,
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
                     child: ActivitiesTimeline(
                       tempSchedule: tempSchedule,
                     ),
                   ),
-                  Row(
+                ),
+                AppBar(
+                  automaticallyImplyLeading: false,
+                  title: Row(
                     children: [
                       Expanded(
                         child: TextField(
+                          cursorColor: Theme.of(context).cardColor,
                           focusNode: addActivityFocus,
-                          decoration: const InputDecoration(
-                            label: Text("Add One Liner Task or Activity"),
-                            border: OutlineInputBorder(
+                          decoration: InputDecoration(
+                            label: Text(tempSchedule.activities.isEmpty
+                                ? 'Insert Schedule Name'
+                                : 'Add One Liner Task or Activity'),
+                            border: const OutlineInputBorder(
                               borderSide: BorderSide.none,
                             ),
                           ),
@@ -209,9 +218,9 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                         icon: const Icon(Icons.add_task),
                       ),
                     ],
-                  )
-                ],
-              ),
+                  ),
+                )
+              ],
             ),
           ),
         ),

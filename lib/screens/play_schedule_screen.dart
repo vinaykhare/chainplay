@@ -19,6 +19,7 @@ class PlaySchedule extends StatefulWidget {
 class _PlayScheduleState extends State<PlaySchedule> {
   Timer? countdownTimer;
   late Duration waitDuration;
+  Duration waitDurationDifferenceForRestScreen = const Duration(seconds: 0);
   late Schedule schedule;
   late ScheduleList scheduleList;
   List<Activity> activities = [];
@@ -32,20 +33,49 @@ class _PlayScheduleState extends State<PlaySchedule> {
     if (countdownTimer != null) countdownTimer?.cancel();
   }
 
-  void updateWaitDuration() {
-    while (invokeCounter < schedule.activities.length &&
-        activities[invokeCounter].activityDone) {
-      invokeCounter++;
+  void updateWaitDuration() async {
+    Duration calculatedWaitDuration = const Duration(seconds: 0);
+    Duration timeSpentSinceStartOfSchedule =
+        DateTime.now().difference(schedule.at!);
+    for (Duration appExecutedFor = const Duration(seconds: 0);
+        invokeCounter < schedule.activities.length;
+        invokeCounter++) {
+      if (activities[invokeCounter].activityDone) {
+        continue;
+      }
+      if (activities[invokeCounter].activityDuration.inSeconds == 0 &&
+          activities[invokeCounter].at == null) {
+        break;
+      }
+      appExecutedFor += activities[invokeCounter].activityDuration;
+
+      if (timeSpentSinceStartOfSchedule < appExecutedFor) {
+        calculatedWaitDuration = appExecutedFor - timeSpentSinceStartOfSchedule;
+        break;
+      }
+
+      appExecutedFor += activities[invokeCounter].nextActivityAfter;
+      if (timeSpentSinceStartOfSchedule < appExecutedFor) {
+        waitDurationDifferenceForRestScreen =
+            appExecutedFor - timeSpentSinceStartOfSchedule;
+        break;
+      }
+      if (activities[invokeCounter].at == null) {
+        activities[invokeCounter].at = DateTime.now();
+        await scheduleList.updateActivity(activities[invokeCounter]);
+      }
+      //await scheduleList.loadActivities(schedule);
     }
+
     if (invokeCounter < schedule.activities.length) {
       setState(() {
-        waitDuration = activities[invokeCounter].activityDuration;
+        waitDuration = calculatedWaitDuration;
       });
     } else {
       exitPlaySchedule = true;
       waitDuration = const Duration(seconds: 0);
       // temp solution to skip failure on executing shcedule without activities (all done).
-      invokeCounter = 0;
+      invokeCounter--;
     }
   }
 
@@ -58,18 +88,35 @@ class _PlayScheduleState extends State<PlaySchedule> {
       await scheduleList.updateSchedule(schedule);
       await scheduleList.completeScheduleActivity(schedule);
       nav.pop();
-    } else if (waitDuration.inSeconds != 0) {
+    } else if (activities[invokeCounter].activityDuration.inSeconds != 0 ||
+        activities[invokeCounter].at != null) {
       startTimer();
     }
   }
 
   Future<void> goToNextPage() async {
+    NavigatorState nav = Navigator.of(context);
+
+    activities[invokeCounter].at = DateTime.now();
+    await scheduleList.updateActivity(activities[invokeCounter]);
+
     if (activities[invokeCounter].nextActivityAfter.inSeconds > 0) {
-      await Navigator.of(context).pushNamed(
+      var restScreenResponse = await nav.pushNamed(
         PlayRest.routename,
-        arguments: activities[invokeCounter].nextActivityAfter,
+        arguments: waitDurationDifferenceForRestScreen.inSeconds != 0
+            ? waitDurationDifferenceForRestScreen
+            : activities[invokeCounter].nextActivityAfter,
       );
+      if (restScreenResponse == null) {
+        nav.pop();
+      } else {
+        await scheduleList.flipDoneActivity(
+            schedule, activities[invokeCounter]);
+      }
+    } else {
+      await scheduleList.flipDoneActivity(schedule, activities[invokeCounter]);
     }
+    waitDurationDifferenceForRestScreen = const Duration(seconds: 0);
     invokeCounter++;
     updateWaitDuration();
     nextActivity();
@@ -89,7 +136,6 @@ class _PlayScheduleState extends State<PlaySchedule> {
 
     if (seconds < 0) {
       stopTimer();
-      await scheduleList.flipDoneActivity(schedule, activities[invokeCounter]);
       return goToNextPage();
     } else {
       setState(() {
@@ -126,7 +172,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
   @override
   Widget build(BuildContext context) {
     if (initializing) {
-      scheduleList = Provider.of<ScheduleList>(context);
+      scheduleList = Provider.of<ScheduleList>(context, listen: false);
       schedule = ModalRoute.of(context)?.settings.arguments as Schedule;
       activities = schedule.activities.toList();
       updateWaitDuration();
@@ -177,9 +223,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
                 onTap: () async {
                   FlutterRingtonePlayer.playNotification();
                   stopTimer();
-                  await scheduleList.flipDoneActivity(
-                      schedule, activities[invokeCounter]);
-                  goToNextPage();
+                  await goToNextPage();
                 },
                 child: CircleAvatar(
                   radius: 150,

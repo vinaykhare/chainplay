@@ -7,23 +7,34 @@ import 'package:schedule_it/screens/play_rest_screen.dart';
 import 'package:schedule_it/screens/play_schedule_screen.dart';
 import 'package:schedule_it/screens/schedule_list_screen.dart';
 import 'package:schedule_it/screens/schedule_screen.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+// import 'package:google_mobile_ads/google_mobile_ads.dart';
 
-import 'helpers/ad_state.dart';
+// import 'helpers/ad_state.dart';
 import 'models/schedule_list.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  final initFuture = MobileAds.instance.initialize();
-  final adState = AdState(initFuture);
+  //WidgetsFlutterBinding.ensureInitialized();
+  // final initFuture = MobileAds.instance.initialize();
+  // final adState = AdState(initFuture);
+  // runApp(
+  //   MultiProvider(
+  //     providers: [
+  //       Provider.value(
+  //         value: adState,
+  //       ),
+  //       ChangeNotifierProvider(
+  //         create: (context) => ScheduleList(context, adState),
+  //       ),
+  //     ],
+  //     child: const ScheduleIt(),
+  //   ),
+  // );
+
   runApp(
     MultiProvider(
       providers: [
-        Provider.value(
-          value: adState,
-        ),
         ChangeNotifierProvider(
-          create: (context) => ScheduleList(context, adState),
+          create: (context) => ScheduleList(context),
         ),
       ],
       child: const ScheduleIt(),

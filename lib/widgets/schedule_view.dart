@@ -39,11 +39,19 @@ class ScheduleView extends StatelessWidget {
                   scheduleList.removeSchedule(schedule);
                 },
                 child: ListTile(
-                  onTap: () {
-                    Navigator.of(context).pushNamed(
-                      AddScheduleScreen.routename,
-                      arguments: schedule,
-                    );
+                  onTap: () async {
+                    if (schedule.at == null) {
+                      await Navigator.of(context).pushNamed(
+                        AddScheduleScreen.routename,
+                        arguments: schedule,
+                      );
+                    } else {
+                      await scheduleList.loadActivities(schedule);
+                      await nav.pushNamed(
+                        PlaySchedule.routename,
+                        arguments: schedule,
+                      );
+                    }
                   },
                   tileColor: schedule.scheduleStatus == 1
                       ? Colors.grey
@@ -69,7 +77,7 @@ class ScheduleView extends StatelessWidget {
                             },
                             icon: schedule.at == null
                                 ? const Icon(Icons.play_arrow)
-                                : const Icon(Icons.pause),
+                                : const Icon(Icons.directions_walk),
                           ),
                         )
                       : const CircleAvatar(
@@ -79,15 +87,16 @@ class ScheduleView extends StatelessWidget {
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      IconButton(
-                        onPressed: () async {
-                          schedule.at = null;
-                          schedule.scheduleStatus = 0;
-                          await scheduleList.updateSchedule(schedule);
-                          await scheduleList.resetActivities(schedule);
-                        },
-                        icon: const Icon(Icons.restore),
-                      ),
+                      if (schedule.scheduleStatus == 1 || schedule.at != null)
+                        IconButton(
+                          onPressed: () async {
+                            schedule.at = null;
+                            schedule.scheduleStatus = 0;
+                            await scheduleList.updateSchedule(schedule);
+                            await scheduleList.resetActivities(schedule);
+                          },
+                          icon: const Icon(Icons.restore),
+                        ),
                       IconButton(
                         icon: schedule.pinned
                             ? const Icon(Icons.flag)

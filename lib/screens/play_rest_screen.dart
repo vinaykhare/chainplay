@@ -58,7 +58,7 @@ class _PlayRestState extends State<PlayRest> {
       if (seconds < 0) {
         if (countdownTimer != null) countdownTimer?.cancel();
 
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(1);
       } else {
         myDuration = Duration(seconds: seconds);
       }
@@ -107,7 +107,7 @@ class _PlayRestState extends State<PlayRest> {
                 onTap: () {
                   FlutterRingtonePlayer.playNotification();
                   stopTimer();
-                  Navigator.of(context).pop();
+                  Navigator.of(context).pop(1);
                 },
                 child: CircleAvatar(
                   radius: 150,
