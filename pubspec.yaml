@@ -40,6 +40,8 @@ dependencies:
   uuid: ^3.0.6
   
   flutter_ringtone_player: ^3.2.0
+  flutter_local_notifications: ^12.0.3
+  timezone: ^0.9.0
 
   # Library for Google Ads
   google_mobile_ads: ^2.2.0

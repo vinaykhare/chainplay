@@ -40,8 +40,10 @@ class ScheduleView extends StatelessWidget {
                 },
                 child: ListTile(
                   onTap: () async {
+                    NavigatorState nav = Navigator.of(context);
                     if (schedule.at == null) {
-                      await Navigator.of(context).pushNamed(
+                      await scheduleList.loadActivities(schedule);
+                      await nav.pushNamed(
                         AddScheduleScreen.routename,
                         arguments: schedule,
                       );
@@ -80,9 +82,9 @@ class ScheduleView extends StatelessWidget {
                                 : const Icon(Icons.directions_walk),
                           ),
                         )
-                      : const CircleAvatar(
-                          backgroundColor: Colors.green,
-                          child: Icon(Icons.done),
+                      : CircleAvatar(
+                          backgroundColor: Theme.of(context).focusColor,
+                          child: const Icon(Icons.done),
                         ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -102,7 +104,8 @@ class ScheduleView extends StatelessWidget {
                             ? const Icon(Icons.flag)
                             : const Icon(Icons.outlined_flag),
                         onPressed: () async {
-                          await scheduleList.pinSchedule(schedule);
+                          schedule.pinned = !schedule.pinned;
+                          await scheduleList.updateSchedule(schedule);
                         },
                       ),
                     ],

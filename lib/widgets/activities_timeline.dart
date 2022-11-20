@@ -3,8 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:schedule_it/helpers/transform_functions.dart';
 import 'package:schedule_it/models/activity.dart';
 import 'package:schedule_it/models/schedule.dart';
+import 'package:schedule_it/models/schedule_activity.dart';
 import 'package:schedule_it/models/schedule_list.dart';
-import 'package:schedule_it/screens/add_activity_screen.dart';
+import 'package:schedule_it/screens/add_schedule_activity_screen.dart';
 
 class ActivitiesTimeline extends StatelessWidget {
   final Schedule tempSchedule;
@@ -24,7 +25,8 @@ class ActivitiesTimeline extends StatelessWidget {
             child: CircularProgressIndicator(),
           );
         }
-        List<Activity> activities = snapshot.data as List<Activity>;
+        List<ScheduleActivity> activities =
+            snapshot.data as List<ScheduleActivity>;
         activities = activities.reversed.toList();
         return ReorderableListView.builder(
           reverse: true,
@@ -36,7 +38,7 @@ class ActivitiesTimeline extends StatelessWidget {
           },
           itemCount: activities.length,
           itemBuilder: (context, index) {
-            Activity activity = activities[index];
+            ScheduleActivity scheduleActivity = activities[index];
             return Column(
               key: Key(index.toString()),
               children: [
@@ -55,40 +57,47 @@ class ActivitiesTimeline extends StatelessWidget {
                       ),
                     ),
                     key: ValueKey(
-                        'activities_dimissible_${activity.activityId}'),
+                        'activities_dimissible_${scheduleActivity.activity.activityId}'),
                     onDismissed: (_) async {
-                      await scheduleList.removeActivity(tempSchedule, activity);
+                      await scheduleList.removeActivityFromSchedule(
+                          tempSchedule, scheduleActivity);
                     },
                     child: ListTile(
-                      tileColor: activity.activityDone
+                      tileColor: scheduleActivity.activityDone
                           ? Colors.grey
                           : Theme.of(context).cardColor,
                       onTap: () async {
                         var updatedActivity = await Navigator.of(context)
-                            .pushNamed(AddActivityScreen.routename,
-                                arguments: activity);
+                            .pushNamed(AddScheduleActivityScreen.routename,
+                                arguments: scheduleActivity);
                         if (updatedActivity != null) {
                           //replaceActivity(index, updatedActivity as Activity);
+                          await scheduleList.updateScheduleActivityByActivityId(
+                            tempSchedule,
+                            updatedActivity as ScheduleActivity,
+                          );
                           await scheduleList
-                              .updateActivity(updatedActivity as Activity);
+                              .updateActivity(updatedActivity.activity);
                         }
                       },
-                      title: Text(activity.title),
+                      title: Text(scheduleActivity.activity.title),
                       subtitle: Text(
-                        "will complete ${TransformFunctions.durationToString(activity.activityDuration)}.",
+                        "will complete ${TransformFunctions.durationToString(scheduleActivity.activityDuration)}.",
                       ),
                       trailing: ReorderableDragStartListener(
                         index: index,
                         child: const Icon(Icons.drag_handle),
                       ),
                       leading: Checkbox(
-                        key: ValueKey('activities_checkbox_${activity.title}'),
-                        value: activity.activityDone,
-                        onChanged: (value) {
+                        key: ValueKey(
+                            'activities_checkbox_${scheduleActivity.activity.title}'),
+                        value: scheduleActivity.activityDone,
+                        onChanged: (value) async {
                           // setState(() {
                           //   activity.activityDone = value ?? false;
                           // });
-                          scheduleList.flipDoneActivity(tempSchedule, activity);
+                          scheduleList.flipDoneActivity(
+                              tempSchedule, scheduleActivity);
                         },
                       ),
                     ),
@@ -103,7 +112,7 @@ class ActivitiesTimeline extends StatelessWidget {
                     index != 0 &&
                     !activities[index - 1].activityDone)
                   Text(
-                    "Rest will end ${TransformFunctions.durationToString(activity.nextActivityAfter)}.",
+                    "Rest will end ${TransformFunctions.durationToString(scheduleActivity.nextActivityAfter)}.",
                   ),
                 if (index == 0)
                   Container(

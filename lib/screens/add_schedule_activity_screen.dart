@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:schedule_it/models/activity.dart';
+import 'package:schedule_it/models/schedule_activity.dart';
 
-class AddActivityScreen extends StatefulWidget {
+class AddScheduleActivityScreen extends StatefulWidget {
   static String routename = "/add_activity";
-  const AddActivityScreen({super.key});
+  const AddScheduleActivityScreen({super.key});
 
   @override
-  State<AddActivityScreen> createState() => _AddActivityScreenState();
+  State<AddScheduleActivityScreen> createState() =>
+      _AddScheduleActivityScreenState();
 }
 
-class _AddActivityScreenState extends State<AddActivityScreen> {
+class _AddScheduleActivityScreenState extends State<AddScheduleActivityScreen> {
   GlobalKey<FormState> activityFormKey = GlobalKey<FormState>();
-  Activity tempActivity = Activity(
-    activityId: "",
-    title: "",
+  ScheduleActivity tempScheudleActivity = ScheduleActivity(
+    activity: Activity(
+      activityId: "",
+      title: "",
+      createdAt: DateTime.now(),
+      lastUpdatedAt: DateTime.now(),
+    ),
     activityDuration: const Duration(seconds: 0),
     nextActivityAfter: const Duration(seconds: 0),
   );
@@ -37,9 +43,13 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
     activityFormKey.currentState?.save();
 
     Navigator.of(context).pop(
-      Activity(
-        activityId: tempActivity.activityId,
-        title: tempActivity.title,
+      ScheduleActivity(
+        activity: Activity(
+          activityId: tempScheudleActivity.activity.activityId,
+          title: tempScheudleActivity.activity.title,
+          createdAt: DateTime.now(),
+          lastUpdatedAt: DateTime.now(),
+        ),
         activityDuration: Duration(
           hours: activityDurationHour,
           minutes: activityDurationMinute,
@@ -88,13 +98,14 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
   Widget build(BuildContext context) {
     if (pageInit) {
       if (ModalRoute.of(context)?.settings.arguments != null) {
-        tempActivity = ModalRoute.of(context)?.settings.arguments as Activity;
+        tempScheudleActivity =
+            ModalRoute.of(context)?.settings.arguments as ScheduleActivity;
         pageTitle = "Edit Activity";
         buttonText = "Update Activity";
-        activityTitleOnPageLoad = tempActivity.title;
+        activityTitleOnPageLoad = tempScheudleActivity.activity.title;
 
-        Duration activityDuration = tempActivity.activityDuration;
-        Duration restDuration = tempActivity.nextActivityAfter;
+        Duration activityDuration = tempScheudleActivity.activityDuration;
+        Duration restDuration = tempScheudleActivity.nextActivityAfter;
 
         activityDurationHour = activityDuration.inHours;
         activityDurationMinute =
@@ -134,9 +145,9 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     TextFormField(
-                      keyboardType: TextInputType.number,
+                      keyboardType: TextInputType.text,
                       textAlign: TextAlign.center,
-                      initialValue: tempActivity.title,
+                      initialValue: tempScheudleActivity.activity.title,
                       decoration: const InputDecoration(
                         label: Text(
                           "Activity Title",
@@ -144,7 +155,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                         ),
                       ),
                       onSaved: (newValue) =>
-                          tempActivity.title = newValue ?? "",
+                          tempScheudleActivity.activity.title = newValue ?? "",
                       validator: (value) =>
                           value == null || value == "" ? "Title Missing" : null,
                     ),

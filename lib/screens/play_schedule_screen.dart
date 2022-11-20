@@ -3,9 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:provider/provider.dart';
+import 'package:schedule_it/helpers/constants.dart';
 import 'package:schedule_it/helpers/transform_functions.dart';
-import 'package:schedule_it/models/activity.dart';
 import 'package:schedule_it/models/schedule.dart';
+import 'package:schedule_it/models/schedule_activity.dart';
 import 'package:schedule_it/models/schedule_list.dart';
 import 'package:schedule_it/screens/play_rest_screen.dart';
 
@@ -22,7 +23,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
   Duration waitDurationDifferenceForRestScreen = const Duration(seconds: 0);
   late Schedule schedule;
   late ScheduleList scheduleList;
-  List<Activity> activities = [];
+  List<ScheduleActivity> activities = [];
   int invokeCounter = 0;
   bool exitPlaySchedule = false;
   bool initializing = true;
@@ -62,7 +63,8 @@ class _PlayScheduleState extends State<PlaySchedule> {
       }
       if (activities[invokeCounter].at == null) {
         activities[invokeCounter].at = DateTime.now();
-        await scheduleList.updateActivity(activities[invokeCounter]);
+        await scheduleList.updateScheduleActivityByActivityId(
+            schedule, activities[invokeCounter]);
       }
       //await scheduleList.loadActivities(schedule);
     }
@@ -84,9 +86,9 @@ class _PlayScheduleState extends State<PlaySchedule> {
     NavigatorState nav = Navigator.of(context);
     if (exitPlaySchedule) {
       schedule.at = null;
-      schedule.scheduleStatus = 1;
+      schedule.scheduleStatus = statusDone;
       await scheduleList.updateSchedule(schedule);
-      await scheduleList.completeScheduleActivity(schedule);
+      await scheduleList.updatScheduleActivityByScheduleName(schedule);
       nav.pop();
     } else if (activities[invokeCounter].activityDuration.inSeconds != 0 ||
         activities[invokeCounter].at != null) {
@@ -98,7 +100,8 @@ class _PlayScheduleState extends State<PlaySchedule> {
     NavigatorState nav = Navigator.of(context);
 
     activities[invokeCounter].at = DateTime.now();
-    await scheduleList.updateActivity(activities[invokeCounter]);
+    await scheduleList.updateScheduleActivityByActivityId(
+        schedule, activities[invokeCounter]);
 
     if (activities[invokeCounter].nextActivityAfter.inSeconds > 0) {
       var restScreenResponse = await nav.pushNamed(
@@ -210,7 +213,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Text(
-                activities[invokeCounter].title,
+                activities[invokeCounter].activity.title,
                 style: Theme.of(context).textTheme.headline2,
                 textAlign: TextAlign.center,
               ),

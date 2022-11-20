@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_list.dart';
 import 'package:schedule_it/screens/add_schedule_screen.dart';
+import 'package:schedule_it/widgets/app_drawer.dart';
 //import 'package:schedule_it/widgets/app_drawer.dart';
 import 'package:schedule_it/widgets/schedule_view.dart';
 
@@ -20,7 +21,7 @@ class ScheduleListScreen extends StatelessWidget {
         centerTitle: true,
         title: const Text("Schedules"),
       ),
-      //drawer: const AppDrawer(),
+      drawer: const AppDrawer(),
       body: FutureBuilder(
         future: Provider.of<ScheduleList>(context).fetchSchedules(),
         builder: (context, snapshot) {
@@ -55,40 +56,41 @@ class ScheduleListScreen extends StatelessWidget {
                   ),
                 ),
                 AppBar(
-                    centerTitle: true,
-                    automaticallyImplyLeading: false,
-                    title: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            keyboardType: TextInputType.none,
-                            cursorColor: Theme.of(context).cardColor,
-                            showCursor: false,
-                            onTap: () {},
-                            decoration: const InputDecoration(
-                              label: Text("Search Schedules"),
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                              ),
-                              filled: true,
-                              prefixIcon: Icon(
-                                Icons.search,
-                                color: Colors.black,
-                              ),
+                  centerTitle: true,
+                  automaticallyImplyLeading: false,
+                  title: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          keyboardType: TextInputType.none,
+                          cursorColor: Theme.of(context).cardColor,
+                          showCursor: false,
+                          onTap: () {},
+                          decoration: const InputDecoration(
+                            label: Text("Search Schedules"),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                            ),
+                            filled: true,
+                            prefixIcon: Icon(
+                              Icons.search,
+                              color: Colors.black,
                             ),
                           ),
                         ),
-                        IconButton(
-                          onPressed: () {
-                            Navigator.of(context)
-                                .pushNamed(AddScheduleScreen.routename);
-                          },
-                          icon: const Icon(
-                            Icons.library_add,
-                          ),
-                        )
-                      ],
-                    )),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          Navigator.of(context)
+                              .pushNamed(AddScheduleScreen.routename);
+                        },
+                        icon: const Icon(
+                          Icons.library_add,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
               ],
             );
           }

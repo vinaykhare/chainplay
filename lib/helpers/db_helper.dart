@@ -6,18 +6,21 @@ const initScript = [
   '''CREATE TABLE activity (
       activityId TEXT PRIMARY KEY, 
       title TEXT, 
-      activityDuration INTEGER, 
-      nextActivityAfter INTEGER,
-      startedAt INTEGER
+      type INTEGER,
+      createdAt INTEGER, 
+      lastUpdatedAt INTEGER
     )
   ''',
   '''CREATE TABLE schedule (
       scheduleName TEXT PRIMARY KEY,
       scheduleIndex INTEGER,
-      startedAt INTEGER,
+      createdAt INTEGER, 
       lastUpdatedAt INTEGER, 
       pinned INTEGER,
-      scheduleStatus INTEGER
+      startedAt INTEGER,
+      endedAt INTEGER,
+      scheduleStatus INTEGER,
+      notificationId INTEGER
     )
   ''',
   '''CREATE TABLE schedule_activity (
@@ -25,6 +28,11 @@ const initScript = [
       activityId TEXT,
       activityIndex INTEGER,
       activityDone INTEGER,
+      notificationId INTEGER,
+      activityDuration INTEGER,
+      nextActivityAfter INTEGER,
+      startedAt INTEGER,
+      endedAt INTEGER,
       FOREIGN KEY (scheduleName)
         REFERENCES schedule (scheduleName),
       FOREIGN KEY (activityId)
