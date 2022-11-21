@@ -211,27 +211,34 @@ class LocalNotificationService with WidgetsBindingObserver {
     final details = await _getNotificationWithActions();
     await flutterLocalNotificationsPlugin.show(
         id++, 'plain title with action', 'plain body with aciton', details,
-        payload: 'item action notification');
+        payload: 'play_schedule');
   }
 
   Future<void> showNotification() async {
     final details = await _getNotification();
     await flutterLocalNotificationsPlugin.show(
         id++, 'plain title', 'plain body', details,
-        payload: 'item plain notificaiton');
+        payload: 'play_schedule');
   }
 
-  Future<void> scheduleNotificationWithActions(DateTime scheduleAt) async {
+  Future<int> scheduleNotificationWithActions(
+      DateTime scheduleAt, String title, String body) async {
     final details = await _getNotificationWithActions();
     await flutterLocalNotificationsPlugin.zonedSchedule(
       id++,
-      'plain scheduled title with action',
-      'plain scheduled body with aciton',
+      title,
+      body,
       TZDateTime.from(scheduleAt, local),
       details,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       androidAllowWhileIdle: true,
+      payload: "play_schedule",
     );
+    return id;
+  }
+
+  Future<void> cancelScheduledNotification(int notificationId) async {
+    await flutterLocalNotificationsPlugin.cancel(notificationId);
   }
 }

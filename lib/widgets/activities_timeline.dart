@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:schedule_it/helpers/transform_functions.dart';
-import 'package:schedule_it/models/activity.dart';
 import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_activity.dart';
 import 'package:schedule_it/models/schedule_list.dart';
-import 'package:schedule_it/screens/add_schedule_activity_screen.dart';
+//import 'package:schedule_it/screens/add_schedule_activity_screen.dart';
 
 class ActivitiesTimeline extends StatelessWidget {
   final Schedule tempSchedule;
+  final Function editActivity;
   const ActivitiesTimeline({
     super.key,
     required this.tempSchedule,
+    required this.editActivity,
   });
+
   @override
   Widget build(BuildContext context) {
     ScheduleList scheduleList = Provider.of<ScheduleList>(context);
@@ -67,18 +69,19 @@ class ActivitiesTimeline extends StatelessWidget {
                           ? Colors.grey
                           : Theme.of(context).cardColor,
                       onTap: () async {
-                        var updatedActivity = await Navigator.of(context)
-                            .pushNamed(AddScheduleActivityScreen.routename,
-                                arguments: scheduleActivity);
-                        if (updatedActivity != null) {
-                          //replaceActivity(index, updatedActivity as Activity);
-                          await scheduleList.updateScheduleActivityByActivityId(
-                            tempSchedule,
-                            updatedActivity as ScheduleActivity,
-                          );
-                          await scheduleList
-                              .updateActivity(updatedActivity.activity);
-                        }
+                        // var updatedActivity = await Navigator.of(context)
+                        //     .pushNamed(AddScheduleActivityScreen.routename,
+                        //         arguments: scheduleActivity);
+                        // if (updatedActivity != null) {
+                        //   //replaceActivity(index, updatedActivity as Activity);
+                        //   await scheduleList.updateScheduleActivityByActivityId(
+                        //     tempSchedule,
+                        //     updatedActivity as ScheduleActivity,
+                        //   );
+                        //   await scheduleList
+                        //       .updateActivity(updatedActivity.activity);
+                        // }
+                        editActivity(scheduleActivity, false);
                       },
                       title: Text(scheduleActivity.activity.title),
                       subtitle: Text(
@@ -108,12 +111,22 @@ class ActivitiesTimeline extends StatelessWidget {
                   height: 15,
                   decoration: const BoxDecoration(color: Colors.amber),
                 ),
-                if (activities[index].nextActivityAfter.inSeconds != 0 &&
-                    index != 0 &&
-                    !activities[index - 1].activityDone)
-                  Text(
-                    "Rest will end ${TransformFunctions.durationToString(scheduleActivity.nextActivityAfter)}.",
-                  ),
+                InkWell(
+                  onTap: () {
+                    editActivity(scheduleActivity, true);
+                  },
+                  child: (activities[index].nextActivityAfter.inSeconds != 0 &&
+                          index != 0 &&
+                          !activities[index - 1].activityDone)
+                      ? Text(
+                          "Rest will end ${TransformFunctions.durationToString(scheduleActivity.nextActivityAfter)}.",
+                        )
+                      : const Icon(
+                          Icons.circle_outlined,
+                          size: 15,
+                          color: Colors.amber,
+                        ),
+                ),
                 if (index == 0)
                   Container(
                     width: 5,

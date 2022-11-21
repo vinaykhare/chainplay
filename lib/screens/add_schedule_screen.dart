@@ -22,19 +22,20 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
   FocusNode addActivityFocus = FocusNode();
   String pageTitle = "Add Schedule";
   Schedule tempSchedule = Schedule();
+  ScheduleActivity? scheduleActivityInEditMode;
   String activityTitle = "", errorString = "";
+  bool addingDurationToActivity = false,
+      updatingNextActivityAfterDuration = false;
   int activityDurationHour = 0,
       activityDurationMinute = 0,
-      activityDurationSecond = 0,
-      restDurationAfterHour = 0,
-      restDurationAfterMinute = 0,
-      restDurationAfterSecond = 0;
+      activityDurationSecond = 0;
 
   final TextEditingController addActivityController = TextEditingController();
 
   DateTime formDateTime = DateTime.now();
   //String durHour = "", durMin = "", durSec = "";
   GlobalKey<FormState> scheduleFormKey = GlobalKey<FormState>();
+  GlobalKey<FormState> durationFormKey = GlobalKey<FormState>();
 
   bool pageInit = true;
   String scheduleNameOnPageLoad = "";
@@ -100,15 +101,33 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     setState(() {});
   }
 
+  //scheduleActivityInEditMode should not be null before calling this function.
+  Future<void> updateActivity(ScheduleActivity newActivity) async {
+    ScheduleList scheduleList =
+        Provider.of<ScheduleList>(context, listen: false);
+
+    await scheduleList.updateScheduleActivityByActivityId(
+      tempSchedule,
+      newActivity,
+    );
+    await scheduleList.updateActivity(newActivity.activity);
+    setState(() {
+      scheduleActivityInEditMode = null;
+      updatingNextActivityAfterDuration = false;
+    });
+  }
+
   void onSubmitText() {
     setState(() {
       errorString = "";
     });
-    bool valid = scheduleFormKey.currentState!.validate();
-    if (!valid) {
+    bool validScheduleForm = scheduleFormKey.currentState!.validate();
+    bool validDurationForm = durationFormKey.currentState?.validate() ?? true;
+    if (!validScheduleForm || !validDurationForm) {
       return;
     }
     scheduleFormKey.currentState?.save();
+    durationFormKey.currentState?.save();
     if (tempSchedule.name == "") {
       setState(() {
         errorString =
@@ -119,20 +138,122 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     if (addActivityController.text.isEmpty) {
       return;
     }
-    addActivity(
-      ScheduleActivity(
-        activity: Activity(
-          title: addActivityController.text,
-          createdAt: DateTime.now(),
-          lastUpdatedAt: DateTime.now(),
-          activityId: const Uuid().v1(),
+
+    if (scheduleActivityInEditMode != null) {
+      scheduleActivityInEditMode!.activity.title = addActivityController.text;
+      scheduleActivityInEditMode!.activity.lastUpdatedAt = DateTime.now();
+      if (updatingNextActivityAfterDuration) {
+        scheduleActivityInEditMode!.nextActivityAfter = Duration(
+          hours: activityDurationHour,
+          minutes: activityDurationMinute,
+          seconds: activityDurationSecond,
+        );
+      } else {
+        scheduleActivityInEditMode!.activityDuration = Duration(
+          hours: activityDurationHour,
+          minutes: activityDurationMinute,
+          seconds: activityDurationSecond,
+        );
+      }
+
+      updateActivity(scheduleActivityInEditMode!);
+    } else {
+      addActivity(
+        ScheduleActivity(
+          activity: Activity(
+            title: addActivityController.text,
+            createdAt: DateTime.now(),
+            lastUpdatedAt: DateTime.now(),
+            activityId: const Uuid().v1(),
+          ),
+          activityDuration: Duration(
+            hours: activityDurationHour,
+            minutes: activityDurationMinute,
+            seconds: activityDurationSecond,
+          ),
         ),
-      ),
-    );
+      );
+
+      FocusScope.of(context).requestFocus(addActivityFocus);
+    }
 
     addActivityController.clear();
+    setState(() {
+      activityDurationHour = 0;
+      activityDurationMinute = 0;
+      activityDurationSecond = 0;
+      addingDurationToActivity = false;
+    });
+  }
 
+  String? validateMinuteOrSecond(String? value) {
+    try {
+      if (value == null || value == "") {
+        return null;
+      }
+      int intValue = int.parse(value);
+      if (intValue > 59 || intValue < 0) {
+        return "00-59";
+      }
+      return null;
+    } catch (e) {
+      return "Number 00-59";
+    }
+  }
+
+  String? validateHour(String? value) {
+    try {
+      if (value == null || value == "") {
+        return null;
+      }
+      int intValue = int.parse(value);
+      if (intValue > 23 || intValue < 0) {
+        return "00-23";
+      }
+      return null;
+    } catch (e) {
+      return "Number 00-23";
+    }
+  }
+
+  void editNextActivityAfterDuration(ScheduleActivity scheduleActivity) {
+    scheduleActivityInEditMode = scheduleActivity;
+    Duration scheduleActivityDuration = scheduleActivity.nextActivityAfter;
+
+    setState(() {
+      addingDurationToActivity = true;
+      activityDurationHour = scheduleActivityDuration.inHours;
+      activityDurationMinute =
+          scheduleActivityDuration.inMinutes - (activityDurationHour * 60);
+      activityDurationSecond = scheduleActivityDuration.inSeconds -
+          (activityDurationHour * 3600) -
+          (activityDurationMinute * 60);
+    });
+    updatingNextActivityAfterDuration = true;
     FocusScope.of(context).requestFocus(addActivityFocus);
+  }
+
+  void editActivity(ScheduleActivity scheduleActivity, bool forNextActivity) {
+    scheduleActivityInEditMode = scheduleActivity;
+    updatingNextActivityAfterDuration = forNextActivity;
+    Duration scheduleActivityDuration = forNextActivity
+        ? scheduleActivity.nextActivityAfter
+        : scheduleActivity.activityDuration;
+    if (scheduleActivityDuration.inSeconds != 0 || forNextActivity) {
+      setState(() {
+        addingDurationToActivity = true;
+        activityDurationHour = scheduleActivityDuration.inHours;
+        activityDurationMinute =
+            scheduleActivityDuration.inMinutes - (activityDurationHour * 60);
+        activityDurationSecond = scheduleActivityDuration.inSeconds -
+            (activityDurationHour * 3600) -
+            (activityDurationMinute * 60);
+      });
+    }
+    addActivityController.text = scheduleActivity.activity.title;
+    if (!forNextActivity) {
+      FocusScope.of(context).requestFocus(addActivityFocus);
+    }
   }
 
   @override
@@ -255,37 +376,132 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                   padding: const EdgeInsets.all(8.0),
                   child: ActivitiesTimeline(
                     tempSchedule: tempSchedule,
+                    editActivity: editActivity,
                   ),
                 ),
               ),
+              if (addingDurationToActivity)
+                Form(
+                  key: durationFormKey,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                          initialValue: activityDurationHour == 0
+                              ? null
+                              : activityDurationHour.toString().padLeft(2, '0'),
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
+                            label: const Text("Hour"),
+                            hintText:
+                                activityDurationHour.toString().padLeft(2, '0'),
+                          ),
+                          onSaved: (newValue) => activityDurationHour =
+                              newValue != "" && newValue != null
+                                  ? int.parse(newValue)
+                                  : 0,
+                          validator: (value) => validateHour(value),
+                        ),
+                      ),
+                      Expanded(
+                        child: TextFormField(
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                          initialValue: activityDurationMinute == 0
+                              ? null
+                              : activityDurationMinute
+                                  .toString()
+                                  .padLeft(2, '0'),
+                          onSaved: (newValue) => activityDurationMinute =
+                              newValue != "" && newValue != null
+                                  ? int.parse(newValue)
+                                  : 0,
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
+                            label: const Text(
+                              "Minute",
+                            ),
+                            hintText: activityDurationMinute
+                                .toString()
+                                .padLeft(2, '0'),
+                          ),
+                          validator: (value) => validateMinuteOrSecond(value),
+                        ),
+                      ),
+                      Expanded(
+                        child: TextFormField(
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                          initialValue: activityDurationSecond == 0
+                              ? null
+                              : activityDurationSecond
+                                  .toString()
+                                  .padLeft(2, '0'),
+                          onSaved: (newValue) => activityDurationSecond =
+                              newValue != "" && newValue != null
+                                  ? int.parse(newValue)
+                                  : 0,
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
+                            label: const Text("Second"),
+                            hintText: activityDurationSecond
+                                .toString()
+                                .padLeft(2, '0'),
+                            alignLabelWithHint: true,
+                          ),
+                          validator: (value) => validateMinuteOrSecond(value),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               AppBar(
                 automaticallyImplyLeading: false,
                 title: Row(
                   children: [
                     Expanded(
-                      child: TextField(
-                        cursorColor: Theme.of(context).shadowColor,
-                        focusNode: addActivityFocus,
-                        decoration: const InputDecoration(
-                          label: Text(
-                            'Add Task or Activity',
-                          ),
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                        controller: addActivityController,
-                        onSubmitted: (_) {
-                          onSubmitText();
-                        },
+                      child: updatingNextActivityAfterDuration
+                          ? IconButton(
+                              onPressed: onSubmitText,
+                              icon: const Icon(Icons.done),
+                            )
+                          : TextField(
+                              cursorColor: Theme.of(context).shadowColor,
+                              focusNode: addActivityFocus,
+                              decoration: InputDecoration(
+                                label: const Text(
+                                  'Add Task or Activity',
+                                ),
+                                border: const OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                ),
+                                filled: true,
+                                prefixIcon: IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      addingDurationToActivity =
+                                          !addingDurationToActivity;
+                                    });
+                                  },
+                                  icon: const Icon(
+                                    Icons.timelapse,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                              controller: addActivityController,
+                              onSubmitted: (_) {
+                                onSubmitText();
+                              },
+                            ),
+                    ),
+                    if (!updatingNextActivityAfterDuration)
+                      IconButton(
+                        onPressed: onSubmitText,
+                        icon: const Icon(Icons.add_task),
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        onSubmitText();
-                      },
-                      icon: const Icon(Icons.add_task),
-                    ),
                   ],
                 ),
               ),

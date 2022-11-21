@@ -70,8 +70,15 @@ class ScheduleView extends StatelessWidget {
                               if (schedule.at == null) {
                                 schedule.at = DateTime.now();
                                 await scheduleList.updateSchedule(schedule);
+                                // await scheduleList.scheduleNotification(
+                                //   schedule,
+                                //   schedule.at!,
+                                //   0,
+                                // );
                               }
                               await scheduleList.loadActivities(schedule);
+                              await scheduleList
+                                  .cancelScheduleNotifications(schedule);
                               await nav.pushNamed(
                                 PlaySchedule.routename,
                                 arguments: schedule,

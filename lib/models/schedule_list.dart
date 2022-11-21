@@ -117,8 +117,8 @@ class ScheduleList with ChangeNotifier {
     notifyListeners();
   }
 
-  removeSchedule(Schedule schedule) {
-    //schedules.removeWhere((sc) => sc.name == schedule.name);
+  removeSchedule(Schedule schedule) async {
+    await cancelScheduleNotifications(schedule);
 
     DBHelper.removeData(
       "schedule_activity",
@@ -218,7 +218,9 @@ class ScheduleList with ChangeNotifier {
     notifyListeners();
   }
 
-  resetActivities(Schedule schedule) {
+  resetActivities(Schedule schedule) async {
+    await cancelScheduleNotifications(schedule);
+
     DBHelper.update(
       "schedule_activity",
       {
@@ -234,8 +236,14 @@ class ScheduleList with ChangeNotifier {
   }
 
   removeActivityFromSchedule(
-      Schedule schedule, ScheduleActivity scheduleActivity) {
+      Schedule schedule, ScheduleActivity scheduleActivity) async {
     //schedules.removeWhere((sc) => sc.name == schedule.name);
+
+    //Cancel Notification
+    if (scheduleActivity.notificationId != noValueInDB) {
+      await localNotificationService
+          .cancelScheduledNotification(scheduleActivity.notificationId);
+    }
 
     DBHelper.removeData(
       "schedule_activity",
@@ -514,5 +522,62 @@ class ScheduleList with ChangeNotifier {
     }
 
     return activities;
+  }
+
+  scheduleNotification(
+    Schedule schedule,
+    DateTime fromDateTime,
+    int fromIndex,
+  ) async {
+    for (int i = fromIndex; i < schedule.activities.length; i++) {
+      if (schedule.activities[i].activityDuration.inSeconds == 0) {
+        break;
+      }
+
+      fromDateTime = fromDateTime.add(schedule.activities[i].activityDuration);
+      schedule.activities[i].notificationId =
+          await localNotificationService.scheduleNotificationWithActions(
+        fromDateTime,
+        schedule.name,
+        schedule.activities[i].activity.title,
+      );
+      await updateScheduleActivityByActivityId(
+        schedule,
+        schedule.activities[i],
+      );
+      // if (schedule.activities[i].nextActivityAfter.inSeconds == 0) {
+      //   continue;
+      // }
+      fromDateTime = fromDateTime.add(schedule.activities[i].nextActivityAfter);
+      // schedule.activities[i].notificationId = await localNotificationService
+      //     .scheduleNotificationWithActions(fromDateTime);
+    }
+  }
+
+  cancelScheduleNotifications(Schedule schedule) async {
+    //Cancel Notifications
+    if (schedule.notificationId != noValueInDB) {
+      await localNotificationService
+          .cancelScheduledNotification(schedule.notificationId);
+      schedule.notificationId = noValueInDB;
+      await updateSchedule(schedule);
+    }
+    for (ScheduleActivity scheduleActivity in schedule.activities) {
+      if (scheduleActivity.notificationId != noValueInDB) {
+        await localNotificationService
+            .cancelScheduledNotification(scheduleActivity.notificationId);
+        scheduleActivity.notificationId = noValueInDB;
+        //await updateScheduleActivityByActivityId(schedule, scheduleActivity);
+      }
+    }
+
+    await DBHelper.update(
+      "schedule_activity",
+      {
+        "notificationId": noValueInDB,
+      },
+      "scheduleName = ?",
+      [schedule.name],
+    );
   }
 }

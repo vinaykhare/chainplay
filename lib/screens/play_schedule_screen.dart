@@ -45,7 +45,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
         continue;
       }
       if (activities[invokeCounter].activityDuration.inSeconds == 0 &&
-          activities[invokeCounter].at == null) {
+          activities[invokeCounter].endedAt == null) {
         break;
       }
       appExecutedFor += activities[invokeCounter].activityDuration;
@@ -61,8 +61,8 @@ class _PlayScheduleState extends State<PlaySchedule> {
             appExecutedFor - timeSpentSinceStartOfSchedule;
         break;
       }
-      if (activities[invokeCounter].at == null) {
-        activities[invokeCounter].at = DateTime.now();
+      if (activities[invokeCounter].endedAt == null) {
+        activities[invokeCounter].endedAt = DateTime.now();
         await scheduleList.updateScheduleActivityByActivityId(
             schedule, activities[invokeCounter]);
       }
@@ -91,7 +91,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
       await scheduleList.updatScheduleActivityByScheduleName(schedule);
       nav.pop();
     } else if (activities[invokeCounter].activityDuration.inSeconds != 0 ||
-        activities[invokeCounter].at != null) {
+        activities[invokeCounter].endedAt != null) {
       startTimer();
     }
   }
@@ -99,7 +99,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
   Future<void> goToNextPage() async {
     NavigatorState nav = Navigator.of(context);
 
-    activities[invokeCounter].at = DateTime.now();
+    activities[invokeCounter].endedAt = DateTime.now();
     await scheduleList.updateScheduleActivityByActivityId(
         schedule, activities[invokeCounter]);
 
@@ -111,6 +111,8 @@ class _PlayScheduleState extends State<PlaySchedule> {
             : activities[invokeCounter].nextActivityAfter,
       );
       if (restScreenResponse == null) {
+        await scheduleList.scheduleNotification(
+            schedule, DateTime.now(), invokeCounter);
         nav.pop();
       } else {
         await scheduleList.flipDoneActivity(
@@ -121,6 +123,15 @@ class _PlayScheduleState extends State<PlaySchedule> {
     }
     waitDurationDifferenceForRestScreen = const Duration(seconds: 0);
     invokeCounter++;
+    if (invokeCounter < activities.length) {
+      activities[invokeCounter].at = DateTime.now();
+      await scheduleList.scheduleNotification(
+        schedule,
+        activities[invokeCounter].at!,
+        invokeCounter,
+      );
+    }
+
     updateWaitDuration();
     nextActivity();
   }
