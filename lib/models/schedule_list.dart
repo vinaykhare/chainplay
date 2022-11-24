@@ -483,18 +483,9 @@ class ScheduleList with ChangeNotifier {
     return schedule.activities;
   }
 
-  fetchSchedules([String filter = ""]) async {
-    List<Map<String, dynamic>> loadedSchedule;
-    if (filter != "") {
-      loadedSchedule = await DBHelper.getData(
-          "schedule",
-          "pinned, lastUpdatedAt, scheduleIndex DESC",
-          "scheduleName like ?",
-          [filter]);
-    } else {
-      loadedSchedule = await DBHelper.getData(
-          "schedule", "pinned, lastUpdatedAt, scheduleIndex DESC");
-    }
+  fetchSchedules() async {
+    List<Map<String, dynamic>> loadedSchedule =
+        await DBHelper.getData("schedule", "scheduleIndex DESC");
     schedules = [];
     for (var schedule in loadedSchedule) {
       Schedule tempSchedule = Schedule();
@@ -508,7 +499,7 @@ class ScheduleList with ChangeNotifier {
       tempSchedule.scheduleStatus = schedule["scheduleStatus"];
       //await loadActivities(tempSchedule);
       tempSchedule.edit = schedule["editSchedule"] == 1;
-      schedules.insert(0, tempSchedule);
+      schedules.add(tempSchedule);
     }
 
     //Add ads to Schedule

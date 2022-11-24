@@ -20,86 +20,89 @@ class ScheduleListScreen extends StatelessWidget {
         Provider.of<ScheduleList>(context, listen: true);
 
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text("Schedules"),
-      ),
+      // appBar: AppBar(
+      //   centerTitle: true,
+      //   title: const Text("Schedules"),
+      //   backgroundColor: Colors.transparent,
+      //   shadowColor: Theme.of(context).primaryColor,
+      // ),
       drawer: const AppDrawer(),
-      body: FutureBuilder(
-        future: scheduleList.fetchSchedules(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            final schedules = snapshot.data as List<Schedule>;
-            // final pinnedSchedules =
-            //     schedules.where((schedule) => schedule.pinned == true).toList();
-            //final otherSchedules = schedules.where((schedule) => schedule.pinned != true).toList();
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              //mainAxisSize: MainAxisSize.min,
-              children: [
-                Expanded(
-                  child: ReorderableListView.builder(
-                    onReorder: (oldIndex, newIndex) =>
-                        scheduleList.rearrangeSchedules(oldIndex, newIndex),
-                    itemCount: schedules.length,
-                    itemBuilder: (context, index) {
-                      Schedule schedule = schedules[index];
-                      BannerAd? adSchedule = schedule.adBanner;
-                      return ScheduleView(
-                        adSchedule: adSchedule,
-                        schedule: schedule,
-                        key: Key(index.toString()),
-                      );
-                    },
+      body: SafeArea(
+        child: FutureBuilder(
+          future: scheduleList.fetchSchedules(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            } else {
+              final schedules = snapshot.data as List<Schedule>;
+              // final pinnedSchedules =
+              //     schedules.where((schedule) => schedule.pinned == true).toList();
+              //final otherSchedules = schedules.where((schedule) => schedule.pinned != true).toList();
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                //mainAxisSize: MainAxisSize.min,
+                children: [
+                  Expanded(
+                    child: ReorderableListView.builder(
+                      onReorder: (oldIndex, newIndex) =>
+                          scheduleList.rearrangeSchedules(oldIndex, newIndex),
+                      itemCount: schedules.length,
+                      itemBuilder: (context, index) {
+                        Schedule schedule = schedules[index];
+                        BannerAd? adSchedule = schedule.adBanner;
+                        return ScheduleView(
+                          adSchedule: adSchedule,
+                          schedule: schedule,
+                          key: Key(index.toString()),
+                        );
+                      },
+                    ),
                   ),
-                ),
-                AppBar(
-                  centerTitle: true,
-                  automaticallyImplyLeading: false,
-                  title: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          keyboardType: TextInputType.none,
-                          cursorColor: Theme.of(context).cardColor,
-                          showCursor: false,
-                          onTap: () => Navigator.of(context)
-                              .pushReplacementNamed(
-                                  SearchScheduleScreen.routename),
-                          decoration: const InputDecoration(
-                            label: Text("Search Schedules"),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                            ),
-                            filled: true,
-                            prefixIcon: Icon(
-                              Icons.search,
-                              color: Colors.black,
+                  AppBar(
+                    centerTitle: true,
+                    //automaticallyImplyLeading: false,
+                    title: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            keyboardType: TextInputType.none,
+                            cursorColor: Theme.of(context).cardColor,
+                            showCursor: false,
+                            onTap: () => Navigator.of(context)
+                                .pushNamed(SearchScheduleScreen.routename),
+                            decoration: const InputDecoration(
+                              label: Text("Search Schedules"),
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                              ),
+                              filled: true,
+                              prefixIcon: Icon(
+                                Icons.search,
+                                color: Colors.black,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          Navigator.of(context)
-                              .pushNamed(AddScheduleScreen.routename);
-                        },
-                        icon: const Icon(
-                          Icons.library_add,
-                        ),
-                      )
-                    ],
+                        IconButton(
+                          onPressed: () {
+                            Navigator.of(context)
+                                .pushNamed(AddScheduleScreen.routename);
+                          },
+                          icon: const Icon(
+                            Icons.library_add,
+                          ),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            );
-          }
-        },
+                ],
+              );
+            }
+          },
+        ),
       ),
 
       // floatingActionButton: FloatingActionButton(

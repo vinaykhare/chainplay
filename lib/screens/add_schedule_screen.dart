@@ -65,6 +65,9 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
   Future<bool> validateForm() async {
     ScheduleList scheduleList =
         Provider.of<ScheduleList>(context, listen: false);
+    if (scheduleFormKey.currentState == null) {
+      return true;
+    }
     bool valid = scheduleFormKey.currentState!.validate();
 
     scheduleFormKey.currentState?.save();
@@ -335,220 +338,264 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
       //FocusScope.of(context).requestFocus(addActivityFocus);
     }
 
-    final appBarWidget = AppBar(
-      centerTitle: true,
-      title: Form(
-        key: scheduleFormKey,
-        child: TextFormField(
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.headline5,
-          decoration: const InputDecoration(
-            contentPadding: EdgeInsets.only(
-              bottom: 20,
+    final scheduleInputForm = Form(
+      key: scheduleFormKey,
+      child: Padding(
+        padding: const EdgeInsets.all(0.8),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                // Center(
+                //   child: IconButton(
+                //     onPressed: () {},
+                //     icon: Icon(
+                //       Icons.play_circle,
+                //       color: Theme.of(context).cardColor,
+                //       size: 40,
+                //     ),
+                //   ),
+                // ),
+                Expanded(
+                  child: TextFormField(
+                    textAlign: TextAlign.center,
+                    // style: TextStyle(
+                    //   color: Theme.of(context).cardColor,
+                    //   fontSize: 22,
+                    //   fontWeight: FontWeight.bold,
+                    // ),
+                    style: Theme.of(context).textTheme.headline6,
+                    decoration: const InputDecoration(
+                      //border: InputBorder.none,
+                      floatingLabelAlignment: FloatingLabelAlignment.center,
+                      floatingLabelBehavior: FloatingLabelBehavior.never,
+                      label: Center(
+                        child: Text(
+                          "Unique Schedule Name",
+                        ),
+                      ),
+                    ),
+                    initialValue: tempSchedule.name,
+                    validator: (value) {
+                      if ((value == null || value == "") &&
+                          tempSchedule.activities.isNotEmpty) {
+                        return "Inesrt valid Schedule Name";
+                      }
+                      return null;
+                    },
+                    onSaved: (value) {
+                      tempSchedule.name = value ?? "";
+                    },
+                  ),
+                ),
+                // Center(
+                //   child: IconButton(
+                //     onPressed: () {},
+                //     icon: Icon(
+                //       Icons.favorite,
+                //       color: Theme.of(context).cardColor,
+                //       size: 40,
+                //     ),
+                //   ),
+                // ),
+              ],
             ),
-            floatingLabelBehavior: FloatingLabelBehavior.never,
-            label: Text("Unique Schedule Name"),
-            // border: OutlineInputBorder(
-            //   borderRadius: BorderRadius.all(
-            //     Radius.circular(20),
-            //   ),
-            // ),
-          ),
-          initialValue: tempSchedule.name,
-          validator: (value) {
-            if ((value == null || value == "") &&
-                tempSchedule.activities.isNotEmpty) {
-              return "Inesrt valid Schedule Name";
-            }
-            return null;
-          },
-          onSaved: (value) {
-            tempSchedule.name = value ?? "";
-          },
+          ],
         ),
       ),
-      actions: const [],
     );
 
-    double appHeight = MediaQuery.of(context).size.height -
-        appBarWidget.preferredSize.height -
-        MediaQuery.of(context).viewPadding.top;
+    // final appBarWidget = AppBar(
+    //   centerTitle: true,
+    //   title: scheduleInputForm,
+    //   actions: const [],
+    // );
+
+    // double appHeight = MediaQuery.of(context).size.height -
+    //     appBarWidget.preferredSize.height -
+    //     MediaQuery.of(context).viewPadding.top;
 
     return WillPopScope(
       onWillPop: validateForm,
       child: Scaffold(
-        appBar: appBarWidget,
-        body: SizedBox(
-          height: appHeight,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              if (errorString != "")
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    errorString,
-                    style: TextStyle(color: Theme.of(context).errorColor),
-                    textAlign: TextAlign.center,
+        //appBar: appBarWidget,
+        body: SafeArea(
+          child: SizedBox(
+            //height: appHeight,
+            child: Column(
+              //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                scheduleInputForm,
+                if (errorString != "")
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      errorString,
+                      style: TextStyle(color: Theme.of(context).errorColor),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                if (errorString != "" &&
+                    errorString.contains("is already present"))
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      child: const Text("Continue Adding here"),
+                      onPressed: () {
+                        setState(() {
+                          continueAddingHere = true;
+                          errorString = "";
+                        });
+                      },
+                    ),
+                  ),
+                const Divider(
+                  thickness: 0,
+                  color: Colors.transparent,
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ActivitiesTimeline(
+                      tempSchedule: tempSchedule,
+                      editActivity: editActivity,
+                      undoEdit: undoEdit,
+                      error: errorString,
+                    ),
                   ),
                 ),
-              if (errorString != "" &&
-                  errorString.contains("is already present"))
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    child: const Text("Continue Adding here"),
-                    onPressed: () {
-                      setState(() {
-                        continueAddingHere = true;
-                        errorString = "";
-                      });
-                    },
+                if (addingDurationToActivity)
+                  Form(
+                    key: durationFormKey,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            initialValue: activityDurationHour == 0
+                                ? null
+                                : activityDurationHour
+                                    .toString()
+                                    .padLeft(2, '0'),
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              label: const Text("Hour"),
+                              hintText: activityDurationHour
+                                  .toString()
+                                  .padLeft(2, '0'),
+                            ),
+                            onSaved: (newValue) => activityDurationHour =
+                                newValue != "" && newValue != null
+                                    ? int.parse(newValue)
+                                    : 0,
+                            validator: (value) => validateHour(value),
+                          ),
+                        ),
+                        Expanded(
+                          child: TextFormField(
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            initialValue: activityDurationMinute == 0
+                                ? null
+                                : activityDurationMinute
+                                    .toString()
+                                    .padLeft(2, '0'),
+                            onSaved: (newValue) => activityDurationMinute =
+                                newValue != "" && newValue != null
+                                    ? int.parse(newValue)
+                                    : 0,
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              label: const Text(
+                                "Minute",
+                              ),
+                              hintText: activityDurationMinute
+                                  .toString()
+                                  .padLeft(2, '0'),
+                            ),
+                            validator: (value) => validateMinuteOrSecond(value),
+                          ),
+                        ),
+                        Expanded(
+                          child: TextFormField(
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            initialValue: activityDurationSecond == 0
+                                ? null
+                                : activityDurationSecond
+                                    .toString()
+                                    .padLeft(2, '0'),
+                            onSaved: (newValue) => activityDurationSecond =
+                                newValue != "" && newValue != null
+                                    ? int.parse(newValue)
+                                    : 0,
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              label: const Text("Second"),
+                              hintText: activityDurationSecond
+                                  .toString()
+                                  .padLeft(2, '0'),
+                              alignLabelWithHint: true,
+                            ),
+                            validator: (value) => validateMinuteOrSecond(value),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              const Divider(
-                thickness: 0,
-                color: Colors.transparent,
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ActivitiesTimeline(
-                    tempSchedule: tempSchedule,
-                    editActivity: editActivity,
-                    undoEdit: undoEdit,
-                    error: errorString,
-                  ),
-                ),
-              ),
-              if (addingDurationToActivity)
-                Form(
-                  key: durationFormKey,
-                  child: Row(
+                AppBar(
+                  //automaticallyImplyLeading: false,
+                  title: Row(
                     children: [
                       Expanded(
-                        child: TextFormField(
-                          keyboardType: TextInputType.number,
-                          textAlign: TextAlign.center,
-                          initialValue: activityDurationHour == 0
-                              ? null
-                              : activityDurationHour.toString().padLeft(2, '0'),
-                          decoration: InputDecoration(
-                            border: const OutlineInputBorder(),
-                            label: const Text("Hour"),
-                            hintText:
-                                activityDurationHour.toString().padLeft(2, '0'),
-                          ),
-                          onSaved: (newValue) => activityDurationHour =
-                              newValue != "" && newValue != null
-                                  ? int.parse(newValue)
-                                  : 0,
-                          validator: (value) => validateHour(value),
-                        ),
+                        child: updatingNextActivityAfterDuration
+                            ? IconButton(
+                                onPressed: onSubmitText,
+                                icon: const Icon(Icons.done),
+                              )
+                            : TextField(
+                                cursorColor: Theme.of(context).shadowColor,
+                                focusNode: addActivityFocus,
+                                decoration: InputDecoration(
+                                  label: const Text(
+                                    'Add Task or Activity',
+                                  ),
+                                  border: const OutlineInputBorder(
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  filled: true,
+                                  prefixIcon: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        addingDurationToActivity =
+                                            !addingDurationToActivity;
+                                      });
+                                    },
+                                    icon: const Icon(
+                                      Icons.timelapse,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                                controller: addActivityController,
+                                onSubmitted: (_) {
+                                  onSubmitText();
+                                },
+                              ),
                       ),
-                      Expanded(
-                        child: TextFormField(
-                          keyboardType: TextInputType.number,
-                          textAlign: TextAlign.center,
-                          initialValue: activityDurationMinute == 0
-                              ? null
-                              : activityDurationMinute
-                                  .toString()
-                                  .padLeft(2, '0'),
-                          onSaved: (newValue) => activityDurationMinute =
-                              newValue != "" && newValue != null
-                                  ? int.parse(newValue)
-                                  : 0,
-                          decoration: InputDecoration(
-                            border: const OutlineInputBorder(),
-                            label: const Text(
-                              "Minute",
-                            ),
-                            hintText: activityDurationMinute
-                                .toString()
-                                .padLeft(2, '0'),
-                          ),
-                          validator: (value) => validateMinuteOrSecond(value),
+                      if (!updatingNextActivityAfterDuration)
+                        IconButton(
+                          onPressed: onSubmitText,
+                          icon: scheduleActivityInEditMode != null
+                              ? const Icon(Icons.done_outline)
+                              : const Icon(Icons.add_task_outlined),
                         ),
-                      ),
-                      Expanded(
-                        child: TextFormField(
-                          keyboardType: TextInputType.number,
-                          textAlign: TextAlign.center,
-                          initialValue: activityDurationSecond == 0
-                              ? null
-                              : activityDurationSecond
-                                  .toString()
-                                  .padLeft(2, '0'),
-                          onSaved: (newValue) => activityDurationSecond =
-                              newValue != "" && newValue != null
-                                  ? int.parse(newValue)
-                                  : 0,
-                          decoration: InputDecoration(
-                            border: const OutlineInputBorder(),
-                            label: const Text("Second"),
-                            hintText: activityDurationSecond
-                                .toString()
-                                .padLeft(2, '0'),
-                            alignLabelWithHint: true,
-                          ),
-                          validator: (value) => validateMinuteOrSecond(value),
-                        ),
-                      ),
                     ],
                   ),
                 ),
-              AppBar(
-                automaticallyImplyLeading: false,
-                title: Row(
-                  children: [
-                    Expanded(
-                      child: updatingNextActivityAfterDuration
-                          ? IconButton(
-                              onPressed: onSubmitText,
-                              icon: const Icon(Icons.done),
-                            )
-                          : TextField(
-                              cursorColor: Theme.of(context).shadowColor,
-                              focusNode: addActivityFocus,
-                              decoration: InputDecoration(
-                                label: const Text(
-                                  'Add Task or Activity',
-                                ),
-                                border: const OutlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                ),
-                                filled: true,
-                                prefixIcon: IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      addingDurationToActivity =
-                                          !addingDurationToActivity;
-                                    });
-                                  },
-                                  icon: const Icon(
-                                    Icons.timelapse,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ),
-                              controller: addActivityController,
-                              onSubmitted: (_) {
-                                onSubmitText();
-                              },
-                            ),
-                    ),
-                    if (!updatingNextActivityAfterDuration)
-                      IconButton(
-                        onPressed: onSubmitText,
-                        icon: scheduleActivityInEditMode != null
-                            ? const Icon(Icons.done_outline)
-                            : const Icon(Icons.add_task_outlined),
-                      ),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

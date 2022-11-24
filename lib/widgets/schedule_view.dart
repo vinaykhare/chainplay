@@ -110,8 +110,8 @@ class ScheduleView extends StatelessWidget {
                         ),
                       IconButton(
                         icon: schedule.pinned
-                            ? const Icon(Icons.flag)
-                            : const Icon(Icons.outlined_flag),
+                            ? const Icon(Icons.favorite)
+                            : const Icon(Icons.favorite_border_outlined),
                         onPressed: () async {
                           schedule.pinned = !schedule.pinned;
                           await scheduleList.updateSchedule(schedule);

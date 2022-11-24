@@ -3,8 +3,6 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_list.dart';
-import 'package:schedule_it/screens/add_schedule_screen.dart';
-import 'package:schedule_it/widgets/app_drawer.dart';
 //import 'package:schedule_it/widgets/app_drawer.dart';
 import 'package:schedule_it/widgets/schedule_view.dart';
 
@@ -21,6 +19,8 @@ class _SearchScheduleScreenState extends State<SearchScheduleScreen> {
   List<Schedule> displaySchedules = [];
   late ScheduleList scheduleList;
 
+  bool showFlagged = false, showRunning = false;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -28,14 +28,38 @@ class _SearchScheduleScreenState extends State<SearchScheduleScreen> {
     displaySchedules = scheduleList.schedules;
   }
 
+  runPredefinedFilter() {
+    if (showFlagged || showRunning) {
+      setState(
+        () {
+          displaySchedules = scheduleList.schedules
+              .where(
+                (element) =>
+                    (showFlagged && element.pinned == true) ||
+                    (showRunning && element.at != null),
+              )
+              .toList();
+        },
+      );
+    } else {
+      setState(() {
+        displaySchedules = scheduleList.schedules;
+      });
+    }
+  }
+
   runFilter(filter) {
+    setState(() {
+      showFlagged = false;
+      showRunning = false;
+    });
     if (filter == '') {
       setState(() {
         displaySchedules = scheduleList.schedules;
       });
     } else {
       setState(() {
-        displaySchedules = displaySchedules
+        displaySchedules = scheduleList.schedules
             .where((element) => element.name
                 .toLowerCase()
                 .contains(filter.toString().toLowerCase()))
@@ -49,70 +73,113 @@ class _SearchScheduleScreenState extends State<SearchScheduleScreen> {
     scheduleList = Provider.of<ScheduleList>(context, listen: true);
 
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text("Schedules"),
-      ),
-      drawer: const AppDrawer(),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        //mainAxisSize: MainAxisSize.min,
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: displaySchedules.length,
-              itemBuilder: (context, index) {
-                Schedule schedule = displaySchedules[index];
-                BannerAd? adSchedule = schedule.adBanner;
-                return ScheduleView(
-                  adSchedule: adSchedule,
-                  schedule: schedule,
-                  key: Key(index.toString()),
-                );
-              },
+      body: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          //mainAxisSize: MainAxisSize.min,
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: displaySchedules.length,
+                itemBuilder: (context, index) {
+                  Schedule schedule = displaySchedules[index];
+                  BannerAd? adSchedule = schedule.adBanner;
+                  return ScheduleView(
+                    adSchedule: adSchedule,
+                    schedule: schedule,
+                    key: Key(index.toString()),
+                  );
+                },
+              ),
             ),
-          ),
-          AppBar(
-            centerTitle: true,
-            automaticallyImplyLeading: false,
-            title: Row(
+            Row(
               children: [
                 Expanded(
-                  child: TextField(
-                    autofocus: true,
-                    textInputAction: TextInputAction.search,
-                    keyboardType: TextInputType.text,
-                    cursorColor: Theme.of(context).cardColor,
-                    onChanged: (value) {
-                      runFilter(value);
-                    },
-                    decoration: const InputDecoration(
-                      label: Text("Search Schedules"),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
+                  child: Card(
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.green,
+                            Colors.amber,
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
                       ),
-                      filled: true,
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: Colors.black,
+                      child: TextButton.icon(
+                        icon: Icon(
+                          Icons.favorite,
+                          color: showFlagged
+                              ? Theme.of(context).secondaryHeaderColor
+                              : Theme.of(context).disabledColor,
+                        ),
+                        label: const Text("Flagged"),
+                        onPressed: () {
+                          showFlagged = !showFlagged;
+                          runPredefinedFilter();
+                        },
                       ),
                     ),
                   ),
                 ),
-                IconButton(
-                  onPressed: () {
-                    Navigator.of(context)
-                        .pushNamed(AddScheduleScreen.routename);
-                  },
-                  icon: const Icon(
-                    Icons.library_add,
+                Expanded(
+                  child: Card(
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.green,
+                            Colors.amber,
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                      ),
+                      child: TextButton.icon(
+                        icon: Icon(
+                          Icons.run_circle,
+                          color: showRunning
+                              ? Theme.of(context).secondaryHeaderColor
+                              : Theme.of(context).disabledColor,
+                        ),
+                        label: const Text("Running"),
+                        onPressed: () {
+                          showRunning = !showRunning;
+                          runPredefinedFilter();
+                        },
+                      ),
+                    ),
                   ),
-                )
+                ),
               ],
             ),
-          ),
-        ],
+            AppBar(
+              title: TextField(
+                autofocus: true,
+                textInputAction: TextInputAction.search,
+                keyboardType: TextInputType.text,
+                cursorColor: Colors.black,
+                onChanged: (value) {
+                  runFilter(value);
+                },
+                decoration: InputDecoration(
+                  label: const Text("Search Schedules"),
+                  border: const OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  prefixIcon: const Icon(
+                    Icons.search,
+                    color: Colors.black,
+                  ),
+                  fillColor: Theme.of(context).primaryColor,
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
