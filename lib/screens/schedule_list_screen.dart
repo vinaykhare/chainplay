@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_list.dart';
 import 'package:schedule_it/screens/add_schedule_screen.dart';
+import 'package:schedule_it/screens/search_schedule_screen.dart';
 import 'package:schedule_it/widgets/app_drawer.dart';
 //import 'package:schedule_it/widgets/app_drawer.dart';
 import 'package:schedule_it/widgets/schedule_view.dart';
@@ -15,7 +16,9 @@ class ScheduleListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ScheduleList scheduleList = Provider.of<ScheduleList>(context);
+    ScheduleList scheduleList =
+        Provider.of<ScheduleList>(context, listen: true);
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -23,7 +26,7 @@ class ScheduleListScreen extends StatelessWidget {
       ),
       drawer: const AppDrawer(),
       body: FutureBuilder(
-        future: Provider.of<ScheduleList>(context).fetchSchedules(),
+        future: scheduleList.fetchSchedules(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -65,7 +68,9 @@ class ScheduleListScreen extends StatelessWidget {
                           keyboardType: TextInputType.none,
                           cursorColor: Theme.of(context).cardColor,
                           showCursor: false,
-                          onTap: () {},
+                          onTap: () => Navigator.of(context)
+                              .pushReplacementNamed(
+                                  SearchScheduleScreen.routename),
                           decoration: const InputDecoration(
                             label: Text("Search Schedules"),
                             border: OutlineInputBorder(

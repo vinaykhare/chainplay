@@ -8,16 +8,44 @@ import 'package:schedule_it/models/schedule_list.dart';
 
 class ActivitiesTimeline extends StatelessWidget {
   final Schedule tempSchedule;
-  final Function editActivity;
+  final Function editActivity, undoEdit;
+  final String error;
   const ActivitiesTimeline({
     super.key,
     required this.tempSchedule,
     required this.editActivity,
+    required this.undoEdit,
+    required this.error,
   });
 
   @override
   Widget build(BuildContext context) {
     ScheduleList scheduleList = Provider.of<ScheduleList>(context);
+
+    final Widget lineWidget = Container(
+      width: 2,
+      height: 15,
+      decoration: const BoxDecoration(color: Colors.amber),
+    );
+    // final Widget arrowWidget = Column(
+    //   children: [
+    //     lineWidget,
+    //     const Icon(
+    //       Icons.arrow_downward,
+    //       color: Colors.amber,
+    //     )
+    //   ],
+    // );
+
+    const Widget arrowWidget = Icon(
+      Icons.arrow_downward,
+      color: Colors.amber,
+    );
+
+    if (error != "") {
+      tempSchedule.activities = [];
+    }
+
     return FutureBuilder(
       future: scheduleList.loadActivities(tempSchedule),
       builder: (context, snapshot) {
@@ -45,17 +73,13 @@ class ActivitiesTimeline extends StatelessWidget {
               key: Key(index.toString()),
               children: [
                 if (index == activities.length - 1) const Text("Start"),
-                Container(
-                  width: 5,
-                  height: 15,
-                  decoration: const BoxDecoration(color: Colors.amber),
-                ),
+                arrowWidget,
                 Card(
                   elevation: 10,
                   child: Dismissible(
                     background: Container(
                       decoration: const BoxDecoration(
-                        color: Colors.red,
+                        color: Colors.yellow,
                       ),
                     ),
                     key: ValueKey(
@@ -65,32 +89,28 @@ class ActivitiesTimeline extends StatelessWidget {
                           tempSchedule, scheduleActivity);
                     },
                     child: ListTile(
-                      tileColor: scheduleActivity.activityDone
-                          ? Colors.grey
-                          : Theme.of(context).cardColor,
+                      tileColor: scheduleActivity.edit
+                          ? Colors.yellow
+                          : scheduleActivity.activityDone
+                              ? Colors.grey
+                              : Theme.of(context).cardColor,
                       onTap: () async {
-                        // var updatedActivity = await Navigator.of(context)
-                        //     .pushNamed(AddScheduleActivityScreen.routename,
-                        //         arguments: scheduleActivity);
-                        // if (updatedActivity != null) {
-                        //   //replaceActivity(index, updatedActivity as Activity);
-                        //   await scheduleList.updateScheduleActivityByActivityId(
-                        //     tempSchedule,
-                        //     updatedActivity as ScheduleActivity,
-                        //   );
-                        //   await scheduleList
-                        //       .updateActivity(updatedActivity.activity);
-                        // }
-                        editActivity(scheduleActivity, false);
+                        if (!scheduleActivity.edit) {
+                          editActivity(scheduleActivity, false);
+                        } else {
+                          undoEdit(scheduleActivity, false);
+                        }
                       },
                       title: Text(scheduleActivity.activity.title),
                       subtitle: Text(
-                        "will complete ${TransformFunctions.durationToString(scheduleActivity.activityDuration)}.",
+                        "${scheduleActivity.activityDone ? 'Completed' : 'will Complete'} ${TransformFunctions.durationToString(scheduleActivity.activityDuration)}.",
                       ),
-                      trailing: ReorderableDragStartListener(
-                        index: index,
-                        child: const Icon(Icons.drag_handle),
-                      ),
+                      trailing: scheduleActivity.activityDone
+                          ? null
+                          : ReorderableDragStartListener(
+                              index: index,
+                              child: const Icon(Icons.drag_handle),
+                            ),
                       leading: Checkbox(
                         key: ValueKey(
                             'activities_checkbox_${scheduleActivity.activity.title}'),
@@ -106,33 +126,28 @@ class ActivitiesTimeline extends StatelessWidget {
                     ),
                   ),
                 ),
-                Container(
-                  width: 5,
-                  height: 15,
-                  decoration: const BoxDecoration(color: Colors.amber),
-                ),
+                lineWidget,
                 InkWell(
                   onTap: () {
-                    editActivity(scheduleActivity, true);
+                    if (!scheduleActivity.editNextActivity) {
+                      editActivity(scheduleActivity, true);
+                    } else {
+                      undoEdit(scheduleActivity, true);
+                    }
                   },
-                  child: (activities[index].nextActivityAfter.inSeconds != 0 &&
-                          index != 0 &&
-                          !activities[index - 1].activityDone)
+                  child: (activities[index].nextActivityAfter.inSeconds != 0)
                       ? Text(
-                          "Rest will end ${TransformFunctions.durationToString(scheduleActivity.nextActivityAfter)}.",
+                          "${activities[index].activityDone ? 'Rest Ended ' : 'Rest will end '}${TransformFunctions.durationToString(scheduleActivity.nextActivityAfter)}.",
                         )
-                      : const Icon(
+                      : Icon(
                           Icons.circle_outlined,
                           size: 15,
-                          color: Colors.amber,
+                          color: activities[index].editNextActivity
+                              ? Colors.red
+                              : Colors.amber,
                         ),
                 ),
-                if (index == 0)
-                  Container(
-                    width: 5,
-                    height: 15,
-                    decoration: const BoxDecoration(color: Colors.amber),
-                  ),
+                if (index == 0) arrowWidget,
                 if (index == 0) const Text("End"),
               ],
             );

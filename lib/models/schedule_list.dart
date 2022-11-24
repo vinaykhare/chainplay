@@ -75,6 +75,7 @@ class ScheduleList with ChangeNotifier {
         "createdAt": scheduleActivity.activity.createdAt.millisecondsSinceEpoch,
         "lastUpdatedAt":
             scheduleActivity.activity.lastUpdatedAt.millisecondsSinceEpoch,
+        "editActivity": scheduleActivity.activity.edit ? 1 : 0,
       },
     );
     DBHelper.insert(
@@ -93,6 +94,7 @@ class ScheduleList with ChangeNotifier {
             ? noValueInDB
             : schedule.endedAt!.millisecondsSinceEpoch,
         "notificationId": schedule.notificationId,
+        "editSchedule": 1,
       },
     );
     DBHelper.insert(
@@ -111,6 +113,8 @@ class ScheduleList with ChangeNotifier {
         "endedAt": scheduleActivity.endedAt == null
             ? noValueInDB
             : scheduleActivity.endedAt!.millisecondsSinceEpoch,
+        "editScheduleActivity": scheduleActivity.edit ? 1 : 0,
+        "editNextActivity": scheduleActivity.editNextActivity ? 1 : 0,
       },
     );
     // }
@@ -139,6 +143,16 @@ class ScheduleList with ChangeNotifier {
     //   );
     // }
     notifyListeners();
+  }
+
+  Future<bool> nameExistInDB(String scheduleName) async {
+    List<Map<String, dynamic>> result = await DBHelper.getDataBySQL(
+        'Select scheduleName, editSchedule from schedule where editSchedule = 0 and scheduleName = ?',
+        [scheduleName]);
+    if (result.isNotEmpty && result[0]['scheduleName'] != "") {
+      return true;
+    }
+    return false;
   }
 
   renameSchedule(String oldScheduleName, String newScheduleName) async {
@@ -177,6 +191,7 @@ class ScheduleList with ChangeNotifier {
             : noValueInDB,
         "scheduleStatus": schedule.scheduleStatus,
         "notificationId": schedule.notificationId,
+        "editSchedule": schedule.edit ? 1 : 0,
       },
       "scheduleName = ?",
       [schedule.name],
@@ -199,6 +214,8 @@ class ScheduleList with ChangeNotifier {
         "endedAt": scheduleActivity.endedAt != null
             ? scheduleActivity.endedAt!.millisecondsSinceEpoch
             : -1,
+        "editScheduleActivity": scheduleActivity.edit ? 1 : 0,
+        "editNextActivity": scheduleActivity.editNextActivity ? 1 : 0,
       },
       "scheduleName = ? and activityId = ?",
       [schedule.name, scheduleActivity.activity.activityId],
@@ -227,6 +244,8 @@ class ScheduleList with ChangeNotifier {
         "activityDone": statusNotStarted,
         "startedAt": noValueInDB,
         "endedAt": noValueInDB,
+        "editScheduleActivity": 0,
+        "editNextActivity": 0,
       },
       "scheduleName = ?",
       [schedule.name],
@@ -280,6 +299,7 @@ class ScheduleList with ChangeNotifier {
         "title": activity.title,
         "type": activity.type,
         "lastUpdatedAt": activity.lastUpdatedAt.millisecondsSinceEpoch,
+        "editActivity": activity.edit ? 1 : 0,
       },
       "activityId = ?",
       [activity.activityId],
@@ -455,15 +475,26 @@ class ScheduleList with ChangeNotifier {
       );
       tempActivity.at = getDateValueFromDB(scheduleActivity["startedAt"]);
       tempActivity.endedAt = getDateValueFromDB(scheduleActivity["endedAt"]);
-
+      tempActivity.activity.edit = scheduleActivity['editActivity'] == 1;
+      tempActivity.edit = scheduleActivity['editScheduleActivity'] == 1;
+      tempActivity.editNextActivity = scheduleActivity['editNextActivity'] == 1;
       schedule.activities.add(tempActivity);
     }
     return schedule.activities;
   }
 
-  fetchSchedules() async {
-    List<Map<String, dynamic>> loadedSchedule = await DBHelper.getData(
-        "schedule", "pinned, lastUpdatedAt, scheduleIndex DESC");
+  fetchSchedules([String filter = ""]) async {
+    List<Map<String, dynamic>> loadedSchedule;
+    if (filter != "") {
+      loadedSchedule = await DBHelper.getData(
+          "schedule",
+          "pinned, lastUpdatedAt, scheduleIndex DESC",
+          "scheduleName like ?",
+          [filter]);
+    } else {
+      loadedSchedule = await DBHelper.getData(
+          "schedule", "pinned, lastUpdatedAt, scheduleIndex DESC");
+    }
     schedules = [];
     for (var schedule in loadedSchedule) {
       Schedule tempSchedule = Schedule();
@@ -476,7 +507,7 @@ class ScheduleList with ChangeNotifier {
       tempSchedule.pinned = schedule["pinned"] == 1;
       tempSchedule.scheduleStatus = schedule["scheduleStatus"];
       //await loadActivities(tempSchedule);
-
+      tempSchedule.edit = schedule["editSchedule"] == 1;
       schedules.insert(0, tempSchedule);
     }
 
@@ -517,7 +548,7 @@ class ScheduleList with ChangeNotifier {
       //     Duration(seconds: activity["nextActivityAfter"] ?? 0);
       // tempActivity.at = getDateValueFromDB(activity["startedAt"]);
       // tempActivity.endedAt = getDateValueFromDB(activity["endedAt"]);
-
+      tempActivity.edit = activity["editActivity"] == 1;
       activities.insert(0, tempActivity);
     }
 
@@ -539,7 +570,7 @@ class ScheduleList with ChangeNotifier {
           await localNotificationService.scheduleNotificationWithActions(
         fromDateTime,
         schedule.name,
-        schedule.activities[i].activity.title,
+        "${schedule.activities[i].activity.title} is completed.",
       );
       await updateScheduleActivityByActivityId(
         schedule,

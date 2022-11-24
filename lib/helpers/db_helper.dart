@@ -8,7 +8,8 @@ const initScript = [
       title TEXT, 
       type INTEGER,
       createdAt INTEGER, 
-      lastUpdatedAt INTEGER
+      lastUpdatedAt INTEGER,
+      editActivity INTEGER
     )
   ''',
   '''CREATE TABLE schedule (
@@ -20,7 +21,8 @@ const initScript = [
       startedAt INTEGER,
       endedAt INTEGER,
       scheduleStatus INTEGER,
-      notificationId INTEGER
+      notificationId INTEGER,
+      editSchedule INTEGER
     )
   ''',
   '''CREATE TABLE schedule_activity (
@@ -33,6 +35,8 @@ const initScript = [
       nextActivityAfter INTEGER,
       startedAt INTEGER,
       endedAt INTEGER,
+      editScheduleActivity INTEGER,
+      editNextActivity INTEGER,
       FOREIGN KEY (scheduleName)
         REFERENCES schedule (scheduleName),
       FOREIGN KEY (activityId)
@@ -74,12 +78,23 @@ class DBHelper {
   }
 
   static Future<List<Map<String, dynamic>>> getData(
-      String table, String orderBy) async {
+      String table, String orderBy,
+      [String condition = "", List<dynamic> conditionArgs = const []]) async {
     final db = await DBHelper.database();
-    return db.query(
-      table,
-      orderBy: orderBy, //"pinned DESC, lastUpdatedAt DESC",
-    );
+
+    if (condition == "") {
+      return db.query(
+        table,
+        orderBy: orderBy, //"pinned DESC, lastUpdatedAt DESC",
+      );
+    } else {
+      return db.query(
+        table,
+        orderBy: orderBy, //"pinned DESC, lastUpdatedAt DESC",
+        where: condition,
+        whereArgs: conditionArgs,
+      );
+    }
   }
 
   static Future<List<Map<String, dynamic>>> getDataBySQL(

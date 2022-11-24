@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:schedule_it/helpers/notifications/local_notification_service.dart';
 import 'package:schedule_it/screens/acitivity_list_screen.dart';
-import 'package:schedule_it/screens/add_schedule_activity_screen.dart';
 import 'package:schedule_it/screens/add_schedule_screen.dart';
 import 'package:schedule_it/screens/play_rest_screen.dart';
 import 'package:schedule_it/screens/play_schedule_screen.dart';
 import 'package:schedule_it/screens/schedule_list_screen.dart';
-import 'package:schedule_it/screens/schedule_screen.dart';
+import 'package:schedule_it/screens/search_schedule_screen.dart';
 // import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 // import 'helpers/ad_state.dart';
@@ -58,12 +57,11 @@ class ScheduleIt extends StatelessWidget {
       routes: {
         ScheduleListScreen.routename: (context) => const ScheduleListScreen(),
         ActivityListScreen.routename: (context) => const ActivityListScreen(),
-        ScheduleScreen.routename: (context) => const ScheduleScreen(),
         AddScheduleScreen.routename: (context) => const AddScheduleScreen(),
         PlaySchedule.routename: (context) => const PlaySchedule(),
         PlayRest.routename: (context) => const PlayRest(),
-        AddScheduleActivityScreen.routename: (context) =>
-            const AddScheduleActivityScreen(),
+        SearchScheduleScreen.routename: (context) =>
+            const SearchScheduleScreen(),
       },
     );
   }

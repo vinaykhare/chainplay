@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:schedule_it/screens/acitivity_list_screen.dart';
 import 'package:schedule_it/screens/schedule_list_screen.dart';
+
+//import '../screens/search_schedule_screen.dart';
 //import 'package:provider/provider.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -17,6 +19,17 @@ class AppDrawer extends StatelessWidget {
             title: const Text('Schedule It'),
             automaticallyImplyLeading: false,
           ),
+          // ListTile(
+          //   leading: const Icon(Icons.branding_watermark),
+          //   title: const Text('Schedule Search'),
+          //   onTap: () {
+          //     while (Navigator.of(context).canPop()) {
+          //       Navigator.of(context).pop();
+          //     }
+          //     Navigator.of(context)
+          //         .pushReplacementNamed(SearchScheduleScreen.routename);
+          //   },
+          // ),
           ListTile(
             leading: const Icon(Icons.branding_watermark),
             title: const Text('Schedules'),
@@ -24,7 +37,8 @@ class AppDrawer extends StatelessWidget {
               while (Navigator.of(context).canPop()) {
                 Navigator.of(context).pop();
               }
-              Navigator.of(context).pushNamed(ScheduleListScreen.routename);
+              Navigator.of(context)
+                  .pushReplacementNamed(ScheduleListScreen.routename);
             },
           ),
           const Divider(),
@@ -35,7 +49,8 @@ class AppDrawer extends StatelessWidget {
               while (Navigator.of(context).canPop()) {
                 Navigator.of(context).pop();
               }
-              Navigator.of(context).pushNamed(ActivityListScreen.routename);
+              Navigator.of(context)
+                  .pushReplacementNamed(ActivityListScreen.routename);
             },
           ),
           const Divider(),

@@ -5,6 +5,7 @@ class Activity {
   String title;
   int type;
   DateTime createdAt, lastUpdatedAt;
+  bool edit = false;
 
   Activity({
     required this.activityId,

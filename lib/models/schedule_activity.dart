@@ -9,6 +9,7 @@ class ScheduleActivity {
   bool activityDone = false;
   DateTime? at, endedAt;
   Activity activity;
+  bool edit = false, editNextActivity = false;
 
   ScheduleActivity({
     required this.activity,

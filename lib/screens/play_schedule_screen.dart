@@ -111,8 +111,6 @@ class _PlayScheduleState extends State<PlaySchedule> {
             : activities[invokeCounter].nextActivityAfter,
       );
       if (restScreenResponse == null) {
-        await scheduleList.scheduleNotification(
-            schedule, DateTime.now(), invokeCounter);
         nav.pop();
       } else {
         await scheduleList.flipDoneActivity(
@@ -181,6 +179,12 @@ class _PlayScheduleState extends State<PlaySchedule> {
     setState(() => waitDuration = activities[invokeCounter].activityDuration);
   }
 
+  Future<bool> onPopOut() async {
+    await scheduleList.scheduleNotification(
+        schedule, DateTime.now(), invokeCounter);
+    return true;
+  }
+
   //Build Function
 
   @override
@@ -213,50 +217,53 @@ class _PlayScheduleState extends State<PlaySchedule> {
     //}
     double appHeight = MediaQuery.of(context).size.height -
         MediaQuery.of(context).viewPadding.top;
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          margin: const EdgeInsets.only(top: 50),
-          padding: const EdgeInsets.all(10),
-          height: appHeight,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Text(
-                activities[invokeCounter].activity.title,
-                style: Theme.of(context).textTheme.headline2,
-                textAlign: TextAlign.center,
-              ),
-              Text(
-                "will compelte\n$timeLeft\n${(hours != 0 || minutes != 0) && seconds != 0 ? 'and' : ''}",
-                style: Theme.of(context).textTheme.headline5,
-                textAlign: TextAlign.center,
-              ),
-              InkWell(
-                onTap: () async {
-                  FlutterRingtonePlayer.playNotification();
-                  stopTimer();
-                  await goToNextPage();
-                },
-                child: CircleAvatar(
-                  radius: 150,
-                  child: FittedBox(
-                    child: Text(
-                      displaySeconds,
-                      style: Theme.of(context).textTheme.headline1,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-              ),
-              if (waitDuration.inSeconds != 0)
+    return WillPopScope(
+      onWillPop: onPopOut,
+      child: Scaffold(
+        body: SingleChildScrollView(
+          child: Container(
+            margin: const EdgeInsets.only(top: 50),
+            padding: const EdgeInsets.all(10),
+            height: appHeight,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
                 Text(
-                  "Seconds.",
+                  activities[invokeCounter].activity.title,
+                  style: Theme.of(context).textTheme.headline2,
+                  textAlign: TextAlign.center,
+                ),
+                Text(
+                  "will compelte\n$timeLeft\n${(hours != 0 || minutes != 0) && seconds != 0 ? 'and' : ''}",
                   style: Theme.of(context).textTheme.headline5,
                   textAlign: TextAlign.center,
                 ),
-            ],
+                InkWell(
+                  onTap: () async {
+                    FlutterRingtonePlayer.playNotification();
+                    stopTimer();
+                    await goToNextPage();
+                  },
+                  child: CircleAvatar(
+                    radius: 150,
+                    child: FittedBox(
+                      child: Text(
+                        displaySeconds,
+                        style: Theme.of(context).textTheme.headline1,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ),
+                if (waitDuration.inSeconds != 0)
+                  Text(
+                    "Seconds.",
+                    style: Theme.of(context).textTheme.headline5,
+                    textAlign: TextAlign.center,
+                  ),
+              ],
+            ),
           ),
         ),
       ),

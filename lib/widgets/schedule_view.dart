@@ -43,6 +43,8 @@ class ScheduleView extends StatelessWidget {
                     NavigatorState nav = Navigator.of(context);
                     if (schedule.at == null) {
                       await scheduleList.loadActivities(schedule);
+                      schedule.edit = true;
+                      await scheduleList.updateSchedule(schedule);
                       await nav.pushNamed(
                         AddScheduleScreen.routename,
                         arguments: schedule,

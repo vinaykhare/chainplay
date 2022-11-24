@@ -25,7 +25,8 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
   ScheduleActivity? scheduleActivityInEditMode;
   String activityTitle = "", errorString = "";
   bool addingDurationToActivity = false,
-      updatingNextActivityAfterDuration = false;
+      updatingNextActivityAfterDuration = false,
+      continueAddingHere = false;
   int activityDurationHour = 0,
       activityDurationMinute = 0,
       activityDurationSecond = 0;
@@ -47,15 +48,31 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     addActivityController.dispose();
   }
 
-  Future<bool> validateForm() async {
-    bool valid = scheduleFormKey.currentState!.validate();
-    if (!valid) {
-      return false;
-    }
-    scheduleFormKey.currentState?.save();
-
+  Future<bool> isNameValid() async {
     ScheduleList scheduleList =
         Provider.of<ScheduleList>(context, listen: false);
+    bool nameExist = await scheduleList.nameExistInDB(tempSchedule.name);
+    if (nameExist && !continueAddingHere) {
+      setState(() {
+        errorString =
+            "Schedule name ${tempSchedule.name} is already present with following activities";
+      });
+      return false;
+    }
+    return true;
+  }
+
+  Future<bool> validateForm() async {
+    ScheduleList scheduleList =
+        Provider.of<ScheduleList>(context, listen: false);
+    bool valid = scheduleFormKey.currentState!.validate();
+
+    scheduleFormKey.currentState?.save();
+
+    bool validName = await isNameValid();
+    if (!valid || !(validName || continueAddingHere)) {
+      return false;
+    }
 
     if (tempSchedule.activities.isNotEmpty && tempSchedule.name == "") {
       setState(() {
@@ -78,23 +95,32 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
       tempSchedule.name = scheduleNameOnPageLoad;
       scheduleList.removeSchedule(tempSchedule);
     } else if (tempSchedule.activities.isNotEmpty &&
-        tempSchedule.name != scheduleNameOnPageLoad) {
+        tempSchedule.name != scheduleNameOnPageLoad &&
+        !continueAddingHere) {
       scheduleList.renameSchedule(
         scheduleNameOnPageLoad,
         tempSchedule.name,
       );
     }
 
+    tempSchedule.edit = false;
+    await scheduleList.updateSchedule(tempSchedule);
+
     return true;
   }
 
   Future<void> addActivity(ScheduleActivity newActivity) async {
+    ScheduleList scheduleList =
+        Provider.of<ScheduleList>(context, listen: false);
+    bool validName = await isNameValid();
+
+    if (!(validName || continueAddingHere)) {
+      return;
+    }
     tempSchedule.activities.insert(
       0,
       newActivity,
     );
-    ScheduleList scheduleList =
-        Provider.of<ScheduleList>(context, listen: false);
 
     scheduleList.addSchedule(tempSchedule, newActivity);
     //Navigator.of(context).pop();
@@ -105,6 +131,11 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
   Future<void> updateActivity(ScheduleActivity newActivity) async {
     ScheduleList scheduleList =
         Provider.of<ScheduleList>(context, listen: false);
+    bool validName = await isNameValid();
+
+    if (!(validName || continueAddingHere)) {
+      return;
+    }
 
     await scheduleList.updateScheduleActivityByActivityId(
       tempSchedule,
@@ -121,11 +152,13 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     setState(() {
       errorString = "";
     });
+
     bool validScheduleForm = scheduleFormKey.currentState!.validate();
     bool validDurationForm = durationFormKey.currentState?.validate() ?? true;
     if (!validScheduleForm || !validDurationForm) {
       return;
     }
+
     scheduleFormKey.currentState?.save();
     durationFormKey.currentState?.save();
     if (tempSchedule.name == "") {
@@ -141,6 +174,8 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
 
     if (scheduleActivityInEditMode != null) {
       scheduleActivityInEditMode!.activity.title = addActivityController.text;
+      scheduleActivityInEditMode!.edit = false;
+      scheduleActivityInEditMode!.editNextActivity = false;
       scheduleActivityInEditMode!.activity.lastUpdatedAt = DateTime.now();
       if (updatingNextActivityAfterDuration) {
         scheduleActivityInEditMode!.nextActivityAfter = Duration(
@@ -216,10 +251,61 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     }
   }
 
-  void editNextActivityAfterDuration(ScheduleActivity scheduleActivity) {
+  void undoEdit(ScheduleActivity scheduleActivity, bool forNextActivity) async {
+    addActivityController.clear();
     scheduleActivityInEditMode = scheduleActivity;
-    Duration scheduleActivityDuration = scheduleActivity.nextActivityAfter;
 
+    if (forNextActivity) {
+      scheduleActivityInEditMode!.editNextActivity = false;
+      scheduleActivityInEditMode!.edit = false;
+    } else {
+      scheduleActivityInEditMode!.editNextActivity = false;
+      scheduleActivityInEditMode!.edit = false;
+    }
+
+    ScheduleList scheduleList =
+        Provider.of<ScheduleList>(context, listen: false);
+
+    await scheduleList.resetActivities(tempSchedule);
+    await scheduleList.updateScheduleActivityByActivityId(
+        tempSchedule, scheduleActivityInEditMode!);
+
+    setState(() {
+      scheduleActivityInEditMode = null;
+      addingDurationToActivity = false;
+      activityDurationHour = 0;
+      activityDurationMinute = 0;
+      activityDurationSecond = 0;
+      addingDurationToActivity = false;
+      updatingNextActivityAfterDuration = false;
+    });
+  }
+
+  void editActivity(
+      ScheduleActivity scheduleActivity, bool forNextActivity) async {
+    FocusScopeNode focusScope = FocusScope.of(context);
+    ScheduleList scheduleList =
+        Provider.of<ScheduleList>(context, listen: false);
+    scheduleActivityInEditMode = scheduleActivity;
+
+    if (forNextActivity) {
+      scheduleActivityInEditMode!.editNextActivity = true;
+      scheduleActivityInEditMode!.edit = false;
+    } else {
+      scheduleActivityInEditMode!.edit = true;
+      scheduleActivityInEditMode!.editNextActivity = false;
+    }
+
+    await scheduleList.resetActivities(tempSchedule);
+    await scheduleList.updateScheduleActivityByActivityId(
+      tempSchedule,
+      scheduleActivityInEditMode!,
+    );
+    updatingNextActivityAfterDuration = forNextActivity;
+    Duration scheduleActivityDuration = forNextActivity
+        ? scheduleActivity.nextActivityAfter
+        : scheduleActivity.activityDuration;
+    //if (scheduleActivityDuration.inSeconds != 0 || forNextActivity) {
     setState(() {
       addingDurationToActivity = true;
       activityDurationHour = scheduleActivityDuration.inHours;
@@ -229,30 +315,10 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
           (activityDurationHour * 3600) -
           (activityDurationMinute * 60);
     });
-    updatingNextActivityAfterDuration = true;
-    FocusScope.of(context).requestFocus(addActivityFocus);
-  }
-
-  void editActivity(ScheduleActivity scheduleActivity, bool forNextActivity) {
-    scheduleActivityInEditMode = scheduleActivity;
-    updatingNextActivityAfterDuration = forNextActivity;
-    Duration scheduleActivityDuration = forNextActivity
-        ? scheduleActivity.nextActivityAfter
-        : scheduleActivity.activityDuration;
-    if (scheduleActivityDuration.inSeconds != 0 || forNextActivity) {
-      setState(() {
-        addingDurationToActivity = true;
-        activityDurationHour = scheduleActivityDuration.inHours;
-        activityDurationMinute =
-            scheduleActivityDuration.inMinutes - (activityDurationHour * 60);
-        activityDurationSecond = scheduleActivityDuration.inSeconds -
-            (activityDurationHour * 3600) -
-            (activityDurationMinute * 60);
-      });
-    }
+    //}
     addActivityController.text = scheduleActivity.activity.title;
     if (!forNextActivity) {
-      FocusScope.of(context).requestFocus(addActivityFocus);
+      focusScope.requestFocus(addActivityFocus);
     }
   }
 
@@ -317,54 +383,27 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Padding(
-              //   padding: const EdgeInsets.all(8.0),
-              //   child: TextFormField(
-              //     textAlign: TextAlign.center,
-              //     //enabled: tempSchedule.activities.isEmpty,
-              //     style: Theme.of(context).textTheme.headline4,
-              //     decoration: const InputDecoration(
-              //       contentPadding: EdgeInsets.all(10),
-              //       floatingLabelBehavior: FloatingLabelBehavior.never,
-              //       label: Text("Unique Schedule Name"),
-              //       border: OutlineInputBorder(
-              //         borderRadius: BorderRadius.all(
-              //           Radius.circular(20),
-              //         ),
-              //       ),
-              //     ),
-              //     initialValue: tempSchedule.name,
-              //     onSaved: (newValue) => tempSchedule.name = newValue ??
-              //         "Schedule ${DateFormat.yMEd().add_jms().format(DateTime.now())}",
-              //     validator: (value) {
-              //       if (tempSchedule.activities.isNotEmpty) {
-              //         if (value == null || value == "") {
-              //           return "Schedule must have a name.";
-              //         }
-              //       } else {
-              //         if (value != null && value != "") {
-              //           return "Add one or more activities to this Schedule.";
-              //         }
-              //       }
-              //       // int foundActivityIndex =
-              //       //     Provider.of<ScheduleList>(context, listen: false)
-              //       //         .schedules
-              //       //         .indexWhere((activity) => activity.name == value);
-              //       // if (foundActivityIndex != -1) {
-              //       //   return "Unique Name needed.";
-              //       // }
-              //       return null;
-              //     },
-              //     onFieldSubmitted: (value) =>
-              //         FocusScope.of(context).requestFocus(addActivityFocus),
-              //   ),
-              // ),
               if (errorString != "")
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     errorString,
                     style: TextStyle(color: Theme.of(context).errorColor),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              if (errorString != "" &&
+                  errorString.contains("is already present"))
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    child: const Text("Continue Adding here"),
+                    onPressed: () {
+                      setState(() {
+                        continueAddingHere = true;
+                        errorString = "";
+                      });
+                    },
                   ),
                 ),
               const Divider(
@@ -377,6 +416,8 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                   child: ActivitiesTimeline(
                     tempSchedule: tempSchedule,
                     editActivity: editActivity,
+                    undoEdit: undoEdit,
+                    error: errorString,
                   ),
                 ),
               ),
@@ -500,7 +541,9 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                     if (!updatingNextActivityAfterDuration)
                       IconButton(
                         onPressed: onSubmitText,
-                        icon: const Icon(Icons.add_task),
+                        icon: scheduleActivityInEditMode != null
+                            ? const Icon(Icons.done_outline)
+                            : const Icon(Icons.add_task_outlined),
                       ),
                   ],
                 ),

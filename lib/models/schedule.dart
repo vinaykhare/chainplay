@@ -13,4 +13,5 @@ class Schedule with ChangeNotifier {
   bool pinned = false;
   int scheduleStatus = statusNotStarted;
   int notificationId = noValueInDB;
+  bool edit = false;
 }
