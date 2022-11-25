@@ -366,7 +366,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                     // ),
                     style: Theme.of(context).textTheme.headline6,
                     decoration: const InputDecoration(
-                      //border: InputBorder.none,
+                      border: InputBorder.none,
                       floatingLabelAlignment: FloatingLabelAlignment.center,
                       floatingLabelBehavior: FloatingLabelBehavior.never,
                       label: Center(

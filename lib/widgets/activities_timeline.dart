@@ -4,6 +4,8 @@ import 'package:schedule_it/helpers/transform_functions.dart';
 import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_activity.dart';
 import 'package:schedule_it/models/schedule_list.dart';
+import 'package:schedule_it/widgets/rest_task.dart';
+import 'package:schedule_it/widgets/rest_task_with_duration.dart';
 //import 'package:schedule_it/screens/add_schedule_activity_screen.dart';
 
 class ActivitiesTimeline extends StatelessWidget {
@@ -27,15 +29,6 @@ class ActivitiesTimeline extends StatelessWidget {
       height: 15,
       decoration: const BoxDecoration(color: Colors.amber),
     );
-    // final Widget arrowWidget = Column(
-    //   children: [
-    //     lineWidget,
-    //     const Icon(
-    //       Icons.arrow_downward,
-    //       color: Colors.amber,
-    //     )
-    //   ],
-    // );
 
     const Widget arrowWidget = Icon(
       Icons.arrow_downward,
@@ -72,7 +65,8 @@ class ActivitiesTimeline extends StatelessWidget {
             return Column(
               key: Key(index.toString()),
               children: [
-                if (index == activities.length - 1) const Text("Start"),
+                if (index == activities.length - 1)
+                  const RestTask(taskText: "Start"),
                 arrowWidget,
                 Card(
                   elevation: 10,
@@ -126,29 +120,54 @@ class ActivitiesTimeline extends StatelessWidget {
                     ),
                   ),
                 ),
-                lineWidget,
-                InkWell(
-                  onTap: () {
-                    if (!scheduleActivity.editNextActivity) {
-                      editActivity(scheduleActivity, true);
-                    } else {
-                      undoEdit(scheduleActivity, true);
-                    }
-                  },
-                  child: (activities[index].nextActivityAfter.inSeconds != 0)
-                      ? Text(
-                          "${activities[index].activityDone ? 'Rest Ended ' : 'Rest will end '}${TransformFunctions.durationToString(scheduleActivity.nextActivityAfter)}.",
-                        )
-                      : Icon(
-                          Icons.circle_outlined,
-                          size: 15,
-                          color: activities[index].editNextActivity
-                              ? Colors.red
-                              : Colors.amber,
-                        ),
-                ),
+                if (index != 0) lineWidget,
+                if (index != 0)
+                  InkWell(
+                    onTap: () {
+                      if (!scheduleActivity.editNextActivity) {
+                        editActivity(scheduleActivity, true);
+                      } else {
+                        undoEdit(scheduleActivity, true);
+                      }
+                    },
+                    child: (activities[index].nextActivityAfter.inSeconds != 0)
+                        ? Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(20),
+                              ),
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            child: Text(
+                              "${activities[index].activityDone ? 'Rest Ended ' : 'Rest will end '}${TransformFunctions.durationToString(scheduleActivity.nextActivityAfter)}.",
+                            ),
+                          )
+                        : Icon(
+                            Icons.circle_outlined,
+                            size: 15,
+                            color: activities[index].editNextActivity
+                                ? Colors.red
+                                : Colors.amber,
+                          ),
+                  ),
                 if (index == 0) arrowWidget,
-                if (index == 0) const Text("End"),
+                if (index == 0)
+                  InkWell(
+                      onTap: () {
+                        if (!scheduleActivity.editNextActivity) {
+                          editActivity(scheduleActivity, true);
+                        } else {
+                          undoEdit(scheduleActivity, true);
+                        }
+                      },
+                      child:
+                          (activities[index].nextActivityAfter.inSeconds != 0)
+                              ? RestTaskWithDuration(
+                                  taskText:
+                                      "${activities[index].activityDone ? 'Schedule Ended ' : 'Schedule will end '}${TransformFunctions.durationToString(scheduleActivity.nextActivityAfter)}.",
+                                )
+                              : const RestTask(taskText: "End")),
               ],
             );
           },
