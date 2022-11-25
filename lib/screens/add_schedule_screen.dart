@@ -7,6 +7,7 @@ import 'package:schedule_it/models/schedule_activity.dart';
 import 'package:schedule_it/models/schedule_list.dart';
 //import 'package:schedule_it/screens/add_activity_screen.dart';
 import 'package:schedule_it/widgets/activities_timeline.dart';
+import 'package:schedule_it/widgets/schedule_activities.dart';
 import 'package:uuid/uuid.dart';
 
 class AddScheduleScreen extends StatefulWidget {
@@ -358,6 +359,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                 // ),
                 Expanded(
                   child: TextFormField(
+                    autofocus: tempSchedule.name == "",
                     textAlign: TextAlign.center,
                     // style: TextStyle(
                     //   color: Theme.of(context).cardColor,
@@ -386,6 +388,8 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                     onSaved: (value) {
                       tempSchedule.name = value ?? "";
                     },
+                    onFieldSubmitted: (value) =>
+                        FocusScope.of(context).requestFocus(addActivityFocus),
                   ),
                 ),
                 // Center(
@@ -455,11 +459,16 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: ActivitiesTimeline(
+                    // child: ActivitiesTimeline(
+                    //   tempSchedule: tempSchedule,
+                    //   editActivity: editActivity,
+                    //   undoEdit: undoEdit,
+                    //   error: errorString,
+                    // ),
+                    child: ScheduleActivities(
                       tempSchedule: tempSchedule,
                       editActivity: editActivity,
                       undoEdit: undoEdit,
-                      error: errorString,
                     ),
                   ),
                 ),
