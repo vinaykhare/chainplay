@@ -19,7 +19,7 @@ class _SearchScheduleScreenState extends State<SearchScheduleScreen> {
   List<Schedule> displaySchedules = [];
   late ScheduleList scheduleList;
 
-  bool showFlagged = false, showRunning = false;
+  bool showFavorites = false, showRunning = false;
 
   @override
   void didChangeDependencies() {
@@ -29,13 +29,13 @@ class _SearchScheduleScreenState extends State<SearchScheduleScreen> {
   }
 
   runPredefinedFilter() {
-    if (showFlagged || showRunning) {
+    if (showFavorites || showRunning) {
       setState(
         () {
           displaySchedules = scheduleList.schedules
               .where(
                 (element) =>
-                    (showFlagged && element.pinned == true) ||
+                    (showFavorites && element.pinned == true) ||
                     (showRunning && element.at != null),
               )
               .toList();
@@ -50,7 +50,7 @@ class _SearchScheduleScreenState extends State<SearchScheduleScreen> {
 
   runFilter(filter) {
     setState(() {
-      showFlagged = false;
+      showFavorites = false;
       showRunning = false;
     });
     if (filter == '') {
@@ -81,6 +81,7 @@ class _SearchScheduleScreenState extends State<SearchScheduleScreen> {
           children: [
             Expanded(
               child: ListView.builder(
+                reverse: true,
                 itemCount: displaySchedules.length,
                 itemBuilder: (context, index) {
                   Schedule schedule = displaySchedules[index];
@@ -111,13 +112,13 @@ class _SearchScheduleScreenState extends State<SearchScheduleScreen> {
                       child: TextButton.icon(
                         icon: Icon(
                           Icons.favorite,
-                          color: showFlagged
+                          color: showFavorites
                               ? Theme.of(context).secondaryHeaderColor
                               : Theme.of(context).disabledColor,
                         ),
-                        label: const Text("Flagged"),
+                        label: const Text("Favorites"),
                         onPressed: () {
-                          showFlagged = !showFlagged;
+                          showFavorites = !showFavorites;
                           runPredefinedFilter();
                         },
                       ),
@@ -170,10 +171,6 @@ class _SearchScheduleScreenState extends State<SearchScheduleScreen> {
                     borderSide: BorderSide.none,
                   ),
                   filled: true,
-                  prefixIcon: const Icon(
-                    Icons.search,
-                    color: Colors.black,
-                  ),
                   fillColor: Theme.of(context).primaryColor,
                 ),
               ),

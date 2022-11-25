@@ -47,6 +47,7 @@ class ScheduleListScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: ReorderableListView.builder(
+                      reverse: true,
                       onReorder: (oldIndex, newIndex) =>
                           scheduleList.rearrangeSchedules(oldIndex, newIndex),
                       itemCount: schedules.length,

@@ -425,7 +425,6 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
             child: Column(
               //mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                scheduleInputForm,
                 if (errorString != "")
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -464,6 +463,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                     ),
                   ),
                 ),
+                scheduleInputForm,
                 if (addingDurationToActivity)
                   Form(
                     key: durationFormKey,
