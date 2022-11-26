@@ -26,6 +26,8 @@ class _SearchScheduleScreenState extends State<SearchScheduleScreen> {
     super.didChangeDependencies();
     scheduleList = Provider.of<ScheduleList>(context, listen: true);
     displaySchedules = scheduleList.schedules;
+    showFavorites = false;
+    showRunning = false;
   }
 
   runPredefinedFilter() {

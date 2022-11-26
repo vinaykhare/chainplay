@@ -66,6 +66,8 @@ class ScheduleList with ChangeNotifier {
     // if (activity.syncedWithDb) {
     //   continue;
     // }
+
+    var scheduleExist = schedules.any((s) => s.name == schedule.name);
     DBHelper.insert(
       "activity",
       {
@@ -78,25 +80,27 @@ class ScheduleList with ChangeNotifier {
         "editActivity": scheduleActivity.activity.edit ? 1 : 0,
       },
     );
-    DBHelper.insert(
-      "schedule",
-      {
-        "scheduleName": schedule.name,
-        "scheduleIndex": index == -1 ? schedules.length : index,
-        "createdAt": schedule.createdAt.millisecondsSinceEpoch,
-        "lastUpdatedAt": schedule.lastUpdatedAt.millisecondsSinceEpoch,
-        "pinned": schedule.pinned ? 1 : 0,
-        "scheduleStatus": schedule.scheduleStatus,
-        "startedAt": schedule.at == null
-            ? noValueInDB
-            : schedule.at!.millisecondsSinceEpoch,
-        "endedAt": schedule.endedAt == null
-            ? noValueInDB
-            : schedule.endedAt!.millisecondsSinceEpoch,
-        "notificationId": schedule.notificationId,
-        "editSchedule": 1,
-      },
-    );
+    if (!scheduleExist) {
+      DBHelper.insert(
+        "schedule",
+        {
+          "scheduleName": schedule.name,
+          "scheduleIndex": index == -1 ? schedules.length : index,
+          "createdAt": schedule.createdAt.millisecondsSinceEpoch,
+          "lastUpdatedAt": schedule.lastUpdatedAt.millisecondsSinceEpoch,
+          "pinned": schedule.pinned ? 1 : 0,
+          "scheduleStatus": schedule.scheduleStatus,
+          "startedAt": schedule.at == null
+              ? noValueInDB
+              : schedule.at!.millisecondsSinceEpoch,
+          "endedAt": schedule.endedAt == null
+              ? noValueInDB
+              : schedule.endedAt!.millisecondsSinceEpoch,
+          "notificationId": schedule.notificationId,
+          "editSchedule": 1,
+        },
+      );
+    }
     DBHelper.insert(
       "schedule_activity",
       {
@@ -178,6 +182,10 @@ class ScheduleList with ChangeNotifier {
   }
 
   updateSchedule(Schedule schedule) {
+    int scheduleIndex =
+        schedules.indexWhere((sch) => sch.name == schedule.name);
+    schedules.removeAt(scheduleIndex);
+    schedules.insert(scheduleIndex, schedule);
     DBHelper.update(
       "schedule",
       {
@@ -223,11 +231,17 @@ class ScheduleList with ChangeNotifier {
     notifyListeners();
   }
 
-  updatScheduleActivityByScheduleName(Schedule schedule) {
+  updatScheduleActivityByScheduleName(
+    Schedule schedule, [
+    bool editScheduleActivity = false,
+    bool editNextActivity = false,
+  ]) {
     DBHelper.update(
       "schedule_activity",
       {
         "activityDone": schedule.scheduleStatus,
+        "editScheduleActivity": editScheduleActivity,
+        "editNextActivity": editNextActivity,
       },
       "scheduleName = ?",
       [schedule.name],
@@ -237,6 +251,14 @@ class ScheduleList with ChangeNotifier {
 
   resetActivities(Schedule schedule) async {
     await cancelScheduleNotifications(schedule);
+
+    for (ScheduleActivity activity in schedule.activities) {
+      activity.edit = false;
+      activity.editNextActivity = false;
+      activity.activityDone = false;
+      activity.at = null;
+      activity.endedAt = null;
+    }
 
     DBHelper.update(
       "schedule_activity",
@@ -519,7 +541,7 @@ class ScheduleList with ChangeNotifier {
     return schedules;
   }
 
-  fetchActivities() async {
+  Future<List<Activity>> fetchActivities() async {
     List<Map<String, dynamic>> loadedActivities =
         await DBHelper.getData("activity", "activityId");
 

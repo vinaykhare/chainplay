@@ -6,7 +6,7 @@ import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_activity.dart';
 import 'package:schedule_it/models/schedule_list.dart';
 //import 'package:schedule_it/screens/add_activity_screen.dart';
-import 'package:schedule_it/widgets/activities_timeline.dart';
+//import 'package:schedule_it/widgets/activities_timeline.dart';
 import 'package:schedule_it/widgets/schedule_activities.dart';
 import 'package:uuid/uuid.dart';
 
@@ -109,6 +109,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
 
     tempSchedule.edit = false;
     await scheduleList.updateSchedule(tempSchedule);
+    await scheduleList.updatScheduleActivityByScheduleName(tempSchedule);
 
     return true;
   }
@@ -121,8 +122,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     if (!(validName || continueAddingHere)) {
       return;
     }
-    tempSchedule.activities.insert(
-      0,
+    tempSchedule.activities.add(
       newActivity,
     );
 
@@ -290,6 +290,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     FocusScopeNode focusScope = FocusScope.of(context);
     ScheduleList scheduleList =
         Provider.of<ScheduleList>(context, listen: false);
+    await scheduleList.resetActivities(tempSchedule);
     scheduleActivityInEditMode = scheduleActivity;
 
     if (forNextActivity) {
@@ -300,7 +301,6 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
       scheduleActivityInEditMode!.editNextActivity = false;
     }
 
-    await scheduleList.resetActivities(tempSchedule);
     await scheduleList.updateScheduleActivityByActivityId(
       tempSchedule,
       scheduleActivityInEditMode!,
@@ -338,6 +338,27 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
       pageInit = false;
       //FocusScope.of(context).requestFocus(addActivityFocus);
     }
+
+    // Autocomplete<String>(
+    //   optionsBuilder: (TextEditingValue textEditingValue) async {
+    //     if (textEditingValue.text == '') {
+    //       return const Iterable<String>.empty();
+    //     } else {
+    //       List<Activity> matches = <Activity>[];
+    //       final suggestions =
+    //           await Provider.of<ScheduleList>(context, listen: false)
+    //               .fetchActivities();
+    //       matches.addAll(suggestions);
+
+    //       matches.retainWhere((s) {
+    //         return s.title
+    //             .toLowerCase()
+    //             .contains(textEditingValue.text.toLowerCase());
+    //       });
+    //       return matches.map((e) => e.title);
+    //     }
+    //   },
+    // );
 
     final scheduleInputForm = Form(
       key: scheduleFormKey,
