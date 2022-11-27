@@ -18,6 +18,7 @@ void main() {
   localNotifyService.initialize();
   // final initMobileAds = MobileAds.instance.initialize();
   // final adState = AdState(initMobileAds);
+
   runApp(
     MultiProvider(
       providers: [

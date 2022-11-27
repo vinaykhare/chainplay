@@ -28,6 +28,16 @@ class AppDrawer extends StatelessWidget {
           ),
           Column(
             children: [
+              // const Divider(),
+              // ListTile(
+              //   leading: const Icon(Icons.data_array),
+              //   title: const Text('Schedule DB Table'),
+              //   onTap: () {
+              //     while (Navigator.of(context).canPop()) {
+              //       Navigator.of(context).pop();
+              //     }
+              //   },
+              // ),
               const Divider(),
               ListTile(
                 leading: const Icon(Icons.task_alt_sharp),

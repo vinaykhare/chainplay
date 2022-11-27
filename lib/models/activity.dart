@@ -12,6 +12,6 @@ class Activity {
     required this.title,
     required this.createdAt,
     required this.lastUpdatedAt,
-    this.type = taskActivityInDB,
+    this.type = waitActivityInDB,
   });
 }

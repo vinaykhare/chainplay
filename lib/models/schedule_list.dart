@@ -37,6 +37,7 @@ Util:
 
 class ScheduleList with ChangeNotifier {
   List<Schedule> schedules = [];
+  List<Activity> activities = [];
   //List<int> adIndexInSchedules = [];
   //final AdState adState;
   final BuildContext context;
@@ -48,44 +49,50 @@ class ScheduleList with ChangeNotifier {
     //this.adState,
   );
 
-  addSchedule(Schedule schedule, ScheduleActivity scheduleActivity) async {
-    int index =
-        schedules.indexWhere((element) => element.name == schedule.name);
+  Future<void> addSchedule(
+      Schedule schedule, ScheduleActivity scheduleActivity) async {
+    int scheduleIndex =
+        schedules.indexWhere((sch) => sch.name == schedule.name);
 
-    // if (index == -1) {
-    //   schedules.add(schedule);
-    // } else {
-    //   //schedules[index] = schedule;
-    //   removeSchedule(oldScheduleName);
-    // }
+    if (scheduleIndex == -1) {
+      schedules.add(schedule);
+    } else {
+      schedules[scheduleIndex] = schedule;
+    }
 
-    //maxScheduleIndex = (await DBHelper.getMax("Activity", "scheduleIndex")) as int;
-    int activityIndex =
+    int activityIndex = activities
+        .indexWhere((act) => act.title == scheduleActivity.activity.title);
+
+    if (activityIndex == -1) {
+      activities.add(scheduleActivity.activity);
+    } else {
+      scheduleActivity.activity = activities[activityIndex];
+    }
+
+    int scheduleActivityIndex =
         schedule.activities.isEmpty ? 0 : schedule.activities.length - 1;
-    //for (var activity in schedule.activities) {
-    // if (activity.syncedWithDb) {
-    //   continue;
-    // }
 
-    var scheduleExist = schedules.any((s) => s.name == schedule.name);
-    DBHelper.insert(
-      "activity",
-      {
-        "activityId": scheduleActivity.activity.activityId,
-        "title": scheduleActivity.activity.title,
-        "type": scheduleActivity.activity.type,
-        "createdAt": scheduleActivity.activity.createdAt.millisecondsSinceEpoch,
-        "lastUpdatedAt":
-            scheduleActivity.activity.lastUpdatedAt.millisecondsSinceEpoch,
-        "editActivity": scheduleActivity.activity.edit ? 1 : 0,
-      },
-    );
-    if (!scheduleExist) {
-      DBHelper.insert(
+    if (activityIndex == -1) {
+      await DBHelper.insert(
+        "activity",
+        {
+          "activityId": scheduleActivity.activity.activityId,
+          "title": scheduleActivity.activity.title,
+          "type": scheduleActivity.activity.type,
+          "createdAt":
+              scheduleActivity.activity.createdAt.millisecondsSinceEpoch,
+          "lastUpdatedAt":
+              scheduleActivity.activity.lastUpdatedAt.millisecondsSinceEpoch,
+          "editActivity": scheduleActivity.activity.edit ? 1 : 0,
+        },
+      );
+    }
+    if (scheduleIndex == -1) {
+      await DBHelper.insert(
         "schedule",
         {
           "scheduleName": schedule.name,
-          "scheduleIndex": index == -1 ? schedules.length : index,
+          "scheduleIndex": schedules.length,
           "createdAt": schedule.createdAt.millisecondsSinceEpoch,
           "lastUpdatedAt": schedule.lastUpdatedAt.millisecondsSinceEpoch,
           "pinned": schedule.pinned ? 1 : 0,
@@ -101,12 +108,12 @@ class ScheduleList with ChangeNotifier {
         },
       );
     }
-    DBHelper.insert(
+    await DBHelper.insert(
       "schedule_activity",
       {
         "scheduleName": schedule.name,
         "activityId": scheduleActivity.activity.activityId,
-        "activityIndex": activityIndex,
+        "activityIndex": scheduleActivityIndex,
         "activityDone": scheduleActivity.activityDone ? 1 : 0,
         "notificationId": scheduleActivity.notificationId,
         "activityDuration": scheduleActivity.activityDuration.inSeconds,
@@ -125,7 +132,8 @@ class ScheduleList with ChangeNotifier {
     notifyListeners();
   }
 
-  removeSchedule(Schedule schedule) async {
+  Future<void> removeSchedule(Schedule schedule) async {
+    schedules.removeWhere((sch) => sch.name == schedule.name);
     await cancelScheduleNotifications(schedule);
 
     DBHelper.removeData(
@@ -159,7 +167,8 @@ class ScheduleList with ChangeNotifier {
     return false;
   }
 
-  renameSchedule(String oldScheduleName, String newScheduleName) async {
+  Future<void> renameSchedule(
+      String oldScheduleName, String newScheduleName) async {
     await DBHelper.update(
       "schedule",
       {
@@ -181,12 +190,11 @@ class ScheduleList with ChangeNotifier {
     notifyListeners();
   }
 
-  updateSchedule(Schedule schedule) {
+  Future<void> updateSchedule(Schedule schedule) async {
     int scheduleIndex =
         schedules.indexWhere((sch) => sch.name == schedule.name);
-    schedules.removeAt(scheduleIndex);
-    schedules.insert(scheduleIndex, schedule);
-    DBHelper.update(
+    schedules[scheduleIndex] = schedule;
+    await DBHelper.update(
       "schedule",
       {
         "lastUpdatedAt": schedule.lastUpdatedAt.millisecondsSinceEpoch,
@@ -207,9 +215,9 @@ class ScheduleList with ChangeNotifier {
     notifyListeners();
   }
 
-  updateScheduleActivityByActivityId(
-      Schedule schedule, ScheduleActivity scheduleActivity) {
-    DBHelper.update(
+  Future<void> updateScheduleActivityByActivityId(
+      Schedule schedule, ScheduleActivity scheduleActivity) async {
+    await DBHelper.update(
       "schedule_activity",
       {
         "activityDone": scheduleActivity.activityDone,
@@ -231,12 +239,12 @@ class ScheduleList with ChangeNotifier {
     notifyListeners();
   }
 
-  updatScheduleActivityByScheduleName(
+  Future<void> updatScheduleActivityByScheduleName(
     Schedule schedule, [
     bool editScheduleActivity = false,
     bool editNextActivity = false,
-  ]) {
-    DBHelper.update(
+  ]) async {
+    await DBHelper.update(
       "schedule_activity",
       {
         "activityDone": schedule.scheduleStatus,
@@ -249,7 +257,7 @@ class ScheduleList with ChangeNotifier {
     notifyListeners();
   }
 
-  resetActivities(Schedule schedule) async {
+  Future<void> resetActivities(Schedule schedule) async {
     await cancelScheduleNotifications(schedule);
 
     for (ScheduleActivity activity in schedule.activities) {
@@ -260,7 +268,7 @@ class ScheduleList with ChangeNotifier {
       activity.endedAt = null;
     }
 
-    DBHelper.update(
+    await DBHelper.update(
       "schedule_activity",
       {
         "activityDone": statusNotStarted,
@@ -276,7 +284,7 @@ class ScheduleList with ChangeNotifier {
     notifyListeners();
   }
 
-  removeActivityFromSchedule(
+  Future<void> removeActivityFromSchedule(
       Schedule schedule, ScheduleActivity scheduleActivity) async {
     //schedules.removeWhere((sc) => sc.name == schedule.name);
 
@@ -306,7 +314,7 @@ class ScheduleList with ChangeNotifier {
     notifyListeners();
   }
 
-  removeActivity(Activity activity) {
+  Future<void> removeActivity(Activity activity) async {
     DBHelper.removeData(
       "activity",
       "activityId = ?",
@@ -314,8 +322,8 @@ class ScheduleList with ChangeNotifier {
     );
   }
 
-  updateActivity(Activity activity) {
-    DBHelper.update(
+  Future<void> updateActivity(Activity activity) async {
+    await DBHelper.update(
       "activity",
       {
         "title": activity.title,
@@ -330,25 +338,26 @@ class ScheduleList with ChangeNotifier {
   }
 
   /* Just for testing */
-  clearDataBase() async {
+  Future<void> clearDataBase() async {
     await DBHelper.removeData('schedule_activity', "", []);
     await DBHelper.removeData('activity', "", []);
     await DBHelper.removeData('schedule', "", []);
     notifyListeners();
   }
 
-  rearrangeSchedules(int oldIndex, int newIndex) {
+  Future<void> rearrangeSchedules(int oldIndex, int newIndex) async {
     if (oldIndex < newIndex) {
       newIndex -= 1;
     }
     var itemAtOldIndex = schedules.removeAt(oldIndex);
     schedules.insert(newIndex, itemAtOldIndex);
 
-    updateScheduleIndex();
+    await updateScheduleIndex();
     notifyListeners();
   }
 
-  rearrangeActivites(Schedule schedule, int oldIndex, int newIndex) {
+  Future<void> rearrangeActivites(
+      Schedule schedule, int oldIndex, int newIndex) async {
     // if (oldIndex == newIndex) {
     //   return;
     // }
@@ -359,15 +368,15 @@ class ScheduleList with ChangeNotifier {
 
     var itemAtOldIndex = schedule.activities.removeAt(oldIndex);
     schedule.activities.insert(newIndex, itemAtOldIndex);
-    updateActivityIndex(schedule);
+    await updateActivityIndex(schedule);
     notifyListeners();
   }
 
   //helper function
-  updateActivityIndex(Schedule schedule) {
+  Future<void> updateActivityIndex(Schedule schedule) async {
     int dbIndex = 0;
     for (ScheduleActivity scheduleActivity in schedule.activities) {
-      DBHelper.update(
+      await DBHelper.update(
         "schedule_activity",
         {
           "activityIndex": dbIndex,
@@ -380,13 +389,13 @@ class ScheduleList with ChangeNotifier {
   }
 
   //helper function
-  updateScheduleIndex() {
+  Future<void> updateScheduleIndex() async {
     int dbIndex = 0;
     for (Schedule schedule in schedules) {
       if (schedule.adBanner != null) {
         continue;
       }
-      DBHelper.update(
+      await DBHelper.update(
         "schedule",
         {
           "scheduleIndex": dbIndex,
@@ -411,7 +420,8 @@ class ScheduleList with ChangeNotifier {
     return allDone;
   }
 
-  flipDoneActivity(Schedule schedule, ScheduleActivity scheduleActivity) async {
+  Future<void> flipDoneActivity(
+      Schedule schedule, ScheduleActivity scheduleActivity) async {
     // activity.activityDone = !activity.activityDone;
 
     // if (allActivitiesDone(schedule)) {
@@ -420,7 +430,7 @@ class ScheduleList with ChangeNotifier {
     //   schedule.scheduleStatus = 0;
     // }
 
-    // DBHelper.update(
+    // await DBHelper.update(
     //   "schedule_activity",
     //   {
     //     "activityDone": activity.activityDone ? 1 : 0,
@@ -428,7 +438,7 @@ class ScheduleList with ChangeNotifier {
     //   "activityId = ?",
     //   [activity.activityId],
     // );
-    // DBHelper.update(
+    // await DBHelper.update(
     //   "schedule",
     //   {
     //     "scheduleStatus": schedule.scheduleStatus,
@@ -505,7 +515,7 @@ class ScheduleList with ChangeNotifier {
     return schedule.activities;
   }
 
-  fetchSchedules() async {
+  Future<List<Schedule>> fetchSchedules() async {
     List<Map<String, dynamic>> loadedSchedule =
         await DBHelper.getData("schedule", "scheduleIndex DESC");
     schedules = [];
@@ -545,7 +555,7 @@ class ScheduleList with ChangeNotifier {
     List<Map<String, dynamic>> loadedActivities =
         await DBHelper.getData("activity", "activityId");
 
-    List<Activity> activities = [];
+    activities = [];
 
     for (var activity in loadedActivities) {
       Activity tempActivity = Activity(
@@ -568,7 +578,7 @@ class ScheduleList with ChangeNotifier {
     return activities;
   }
 
-  scheduleNotification(
+  Future<void> scheduleNotification(
     Schedule schedule,
     DateTime fromDateTime,
     int fromIndex,
@@ -598,7 +608,7 @@ class ScheduleList with ChangeNotifier {
     }
   }
 
-  cancelScheduleNotifications(Schedule schedule) async {
+  Future<void> cancelScheduleNotifications(Schedule schedule) async {
     //Cancel Notifications
     if (schedule.notificationId != noValueInDB) {
       await localNotificationService

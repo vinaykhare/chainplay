@@ -72,8 +72,6 @@ class _SearchScheduleScreenState extends State<SearchScheduleScreen> {
 
   @override
   Widget build(BuildContext context) {
-    scheduleList = Provider.of<ScheduleList>(context, listen: true);
-
     return Scaffold(
       body: SafeArea(
         child: Column(

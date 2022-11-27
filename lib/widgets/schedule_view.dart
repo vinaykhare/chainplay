@@ -35,8 +35,8 @@ class ScheduleView extends StatelessWidget {
                   ),
                 ),
                 key: ValueKey("schedule_list_dismissible_${schedule.name}"),
-                onDismissed: (direction) {
-                  scheduleList.removeSchedule(schedule);
+                onDismissed: (direction) async {
+                  await scheduleList.removeSchedule(schedule);
                 },
                 child: ListTile(
                   onTap: () async {
