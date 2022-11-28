@@ -1,14 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:provider/provider.dart';
 import 'package:schedule_it/helpers/constants.dart';
-import 'package:schedule_it/helpers/transform_functions.dart';
 import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_activity.dart';
 import 'package:schedule_it/models/schedule_list.dart';
 import 'package:schedule_it/screens/play_rest_screen.dart';
+import 'package:schedule_it/screens/play_activity_screen.dart';
+import 'package:schedule_it/widgets/schedule_activities.dart';
 
 class PlaySchedule extends StatefulWidget {
   static String routename = "play_schedule";
@@ -18,27 +18,21 @@ class PlaySchedule extends StatefulWidget {
 }
 
 class _PlayScheduleState extends State<PlaySchedule> {
-  Timer? countdownTimer;
-  late Duration waitDuration;
   Duration waitDurationDifferenceForRestScreen = const Duration(seconds: 0);
   late Schedule schedule;
   late ScheduleList scheduleList;
   List<ScheduleActivity> activities = [];
   int invokeCounter = 0;
-  bool exitPlaySchedule = false;
   bool initializing = true;
 
-  @override
-  void dispose() {
-    super.dispose();
-    if (countdownTimer != null) countdownTimer?.cancel();
-  }
-
   void updateWaitDuration() async {
+    dynamic popResponse;
+    NavigatorState nav = Navigator.of(context);
+    await Future.delayed(const Duration(seconds: 1));
     Duration calculatedWaitDuration = const Duration(seconds: 0);
     Duration timeSpentSinceStartOfSchedule =
         DateTime.now().difference(schedule.at!);
-    for (Duration appExecutedFor = const Duration(seconds: 0);
+    for (Duration appExecutedFor = calculatedWaitDuration;
         invokeCounter < schedule.activities.length;
         invokeCounter++) {
       if (activities[invokeCounter].activityDone) {
@@ -61,127 +55,77 @@ class _PlayScheduleState extends State<PlaySchedule> {
             appExecutedFor - timeSpentSinceStartOfSchedule;
         break;
       }
-      if (activities[invokeCounter].endedAt == null) {
-        activities[invokeCounter].endedAt = DateTime.now();
-        await scheduleList.updateScheduleActivityByActivityId(
-            schedule, activities[invokeCounter]);
-      }
+
+      activities[invokeCounter].endedAt = schedule.at!.add(appExecutedFor);
+      activities[invokeCounter].activityDone = true;
+      await scheduleList.updateScheduleActivityByActivityId(
+          schedule, activities[invokeCounter]);
+
       //await scheduleList.loadActivities(schedule);
     }
 
-    if (invokeCounter < schedule.activities.length) {
-      setState(() {
-        waitDuration = calculatedWaitDuration;
-      });
-    } else {
-      exitPlaySchedule = true;
-      waitDuration = const Duration(seconds: 0);
-      // temp solution to skip failure on executing shcedule without activities (all done).
-      invokeCounter--;
-    }
-  }
+    for (; invokeCounter < schedule.activities.length; invokeCounter++) {
+      activities[invokeCounter].at = DateTime.now();
+      // await scheduleList.scheduleNotification(
+      //   schedule,
+      //   activities[invokeCounter].at!,
+      //   invokeCounter,
+      // );
 
-  Future<void> nextActivity() async {
-    setState(() {});
-    NavigatorState nav = Navigator.of(context);
-    if (exitPlaySchedule) {
-      schedule.at = null;
-      schedule.scheduleStatus = statusDone;
+      popResponse = await nav.pushNamed(
+        PlayActivity.routename,
+        arguments: {
+          "waitDuration": calculatedWaitDuration.inSeconds != 0
+              ? calculatedWaitDuration
+              : activities[invokeCounter].activityDuration,
+          "scheduleActivity": activities[invokeCounter],
+        },
+      );
+      if (popResponse == null) {
+        break;
+      }
+      activities[invokeCounter].endedAt = DateTime.now();
+      await scheduleList.updateScheduleActivityByActivityId(
+          schedule, activities[invokeCounter]);
+
+      calculatedWaitDuration = const Duration(seconds: 0);
+
+      if (activities[invokeCounter].nextActivityAfter.inSeconds > 0) {
+        //var restScreenResponse =
+        popResponse = await nav.pushNamed(
+          PlayRest.routename,
+          arguments: waitDurationDifferenceForRestScreen.inSeconds != 0
+              ? waitDurationDifferenceForRestScreen
+              : activities[invokeCounter].nextActivityAfter,
+        );
+
+        if (popResponse == null) {
+          break;
+        }
+
+        await Future.delayed(const Duration(seconds: 1));
+        //}
+      }
+      await scheduleList.flipDoneActivity(schedule, activities[invokeCounter]);
+      waitDurationDifferenceForRestScreen = const Duration(seconds: 0);
+    }
+    if (popResponse == null) {
+      await scheduleList.scheduleNotification(
+          schedule, DateTime.now(), invokeCounter);
+    } else {
+      setState(() {
+        schedule.at = null;
+        schedule.scheduleStatus = statusDone;
+      });
       await scheduleList.updateSchedule(schedule);
       await scheduleList.updatScheduleActivityByScheduleName(schedule);
-      nav.pop();
-    } else if (activities[invokeCounter].activityDuration.inSeconds != 0 ||
-        activities[invokeCounter].endedAt != null) {
-      startTimer();
     }
-  }
-
-  Future<void> goToNextPage() async {
-    NavigatorState nav = Navigator.of(context);
-
-    activities[invokeCounter].endedAt = DateTime.now();
-    await scheduleList.updateScheduleActivityByActivityId(
-        schedule, activities[invokeCounter]);
-
-    if (activities[invokeCounter].nextActivityAfter.inSeconds > 0) {
-      var restScreenResponse = await nav.pushNamed(
-        PlayRest.routename,
-        arguments: waitDurationDifferenceForRestScreen.inSeconds != 0
-            ? waitDurationDifferenceForRestScreen
-            : activities[invokeCounter].nextActivityAfter,
-      );
-      if (restScreenResponse == null) {
-        nav.pop();
-      } else {
-        await scheduleList.flipDoneActivity(
-            schedule, activities[invokeCounter]);
-      }
-    } else {
-      await scheduleList.flipDoneActivity(schedule, activities[invokeCounter]);
-    }
-    waitDurationDifferenceForRestScreen = const Duration(seconds: 0);
-    invokeCounter++;
-    if (invokeCounter < activities.length) {
-      activities[invokeCounter].at = DateTime.now();
-      await scheduleList.scheduleNotification(
-        schedule,
-        activities[invokeCounter].at!,
-        invokeCounter,
-      );
-    }
-
-    updateWaitDuration();
-    nextActivity();
-  }
-
-  Future<void> setCountDown() async {
-    final seconds = waitDuration.inSeconds - 1;
-
-    if (seconds == 0) {
-      // FlutterRingtonePlayer.play(
-      //     fromAsset: "assets/ringtone.wav", ios: IosSounds.glass);
-      FlutterRingtonePlayer.play(
-        android: AndroidSounds.notification,
-        ios: IosSounds.glass,
-      );
-    }
-
-    if (seconds < 0) {
-      stopTimer();
-      return goToNextPage();
-    } else {
-      setState(() {
-        waitDuration = Duration(seconds: seconds);
-      });
-    }
-  }
-
-  // Generic Timer Functions
-  String strDigits(int n) => n.toString().padLeft(2, '0');
-
-  void startTimer() {
-    countdownTimer = Timer.periodic(
-      const Duration(
-        seconds: 1,
-      ),
-      (_) => setCountDown(),
-    );
-  }
-
-  void stopTimer() {
-    setState(() {
-      if (countdownTimer != null) countdownTimer?.cancel();
-    });
-  }
-
-  void resetTimer() {
-    stopTimer();
-    setState(() => waitDuration = activities[invokeCounter].activityDuration);
+    //nav.pop();
   }
 
   Future<bool> onPopOut() async {
-    await scheduleList.scheduleNotification(
-        schedule, DateTime.now(), invokeCounter);
+    // await scheduleList.scheduleNotification(
+    //     schedule, DateTime.now(), invokeCounter);
     return true;
   }
 
@@ -192,29 +136,10 @@ class _PlayScheduleState extends State<PlaySchedule> {
     if (initializing) {
       scheduleList = Provider.of<ScheduleList>(context, listen: false);
       schedule = ModalRoute.of(context)?.settings.arguments as Schedule;
-      activities = schedule.activities.toList();
+      activities = schedule.activities;
       updateWaitDuration();
-      nextActivity();
       initializing = false;
     }
-    String timeLeft = "Done";
-    //if (waitDuration.inSeconds > 0) {
-    final int hours = waitDuration.inHours.remainder(60);
-    final int minutes = waitDuration.inMinutes.remainder(60);
-    final int seconds = waitDuration.inSeconds.remainder(60);
-    final String displaySeconds = waitDuration.inSeconds == 0
-        ? "Done"
-        : strDigits(waitDuration.inSeconds.remainder(60));
-    // timeLeft = "$hours:$minutes:$displaySeconds";
-    timeLeft = hours == 0 && minutes == 0 && seconds != 0
-        ? " in "
-        : TransformFunctions.durationToString(
-            Duration(
-              hours: hours,
-              minutes: minutes,
-            ),
-          );
-    //}
     double appHeight = MediaQuery.of(context).size.height -
         MediaQuery.of(context).viewPadding.top;
     return WillPopScope(
@@ -227,41 +152,54 @@ class _PlayScheduleState extends State<PlaySchedule> {
             height: appHeight,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  activities[invokeCounter].activity.title,
-                  style: Theme.of(context).textTheme.headline2,
-                  textAlign: TextAlign.center,
-                ),
-                Text(
-                  "will compelte\n$timeLeft\n${(hours != 0 || minutes != 0) && seconds != 0 ? 'and' : ''}",
-                  style: Theme.of(context).textTheme.headline5,
-                  textAlign: TextAlign.center,
-                ),
-                InkWell(
-                  onTap: () async {
-                    FlutterRingtonePlayer.playNotification();
-                    stopTimer();
-                    await goToNextPage();
-                  },
-                  child: CircleAvatar(
-                    radius: 150,
-                    child: FittedBox(
-                      child: Text(
-                        displaySeconds,
-                        style: Theme.of(context).textTheme.headline1,
-                        textAlign: TextAlign.center,
-                      ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    // child: ActivitiesTimeline(
+                    //   tempSchedule: tempSchedule,
+                    //   editActivity: editActivity,
+                    //   undoEdit: undoEdit,
+                    //   error: errorString,
+                    // ),
+                    child: ScheduleActivities(
+                      tempSchedule: schedule,
+                      editActivity: null,
+                      undoEdit: null,
                     ),
                   ),
                 ),
-                if (waitDuration.inSeconds != 0)
-                  Text(
-                    "Seconds.",
-                    style: Theme.of(context).textTheme.headline5,
-                    textAlign: TextAlign.center,
-                  ),
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.arrow_back),
+                    ),
+                    Expanded(
+                      child: TextFormField(
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.headline6,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          floatingLabelAlignment: FloatingLabelAlignment.center,
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                        ),
+                        initialValue: schedule.name,
+                        enabled: false,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: schedule.scheduleStatus == statusDone
+                          ? null
+                          : () {
+                              invokeCounter = 0;
+                              updateWaitDuration();
+                            },
+                      icon: const Icon(Icons.play_arrow),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

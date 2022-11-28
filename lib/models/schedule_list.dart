@@ -7,6 +7,7 @@ import 'package:schedule_it/helpers/notifications/local_notification_service.dar
 import 'package:schedule_it/models/activity.dart';
 import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_activity.dart';
+import 'package:schedule_it/models/system_setting.dart';
 
 /*
 
@@ -38,6 +39,7 @@ Util:
 class ScheduleList with ChangeNotifier {
   List<Schedule> schedules = [];
   List<Activity> activities = [];
+  List<SystemSetting> systemSettings = [];
   //List<int> adIndexInSchedules = [];
   //final AdState adState;
   final BuildContext context;
@@ -48,6 +50,12 @@ class ScheduleList with ChangeNotifier {
     this.localNotificationService,
     //this.adState,
   );
+
+  Future<void> initialize() async {
+    await fetchSchedules();
+    await fetchActivities();
+    await fetchSettings();
+  }
 
   Future<void> addSchedule(
       Schedule schedule, ScheduleActivity scheduleActivity) async {
@@ -103,7 +111,7 @@ class ScheduleList with ChangeNotifier {
           "endedAt": schedule.endedAt == null
               ? noValueInDB
               : schedule.endedAt!.millisecondsSinceEpoch,
-          "notificationId": schedule.notificationId,
+          "notificationId": schedule.notificationId.toString(),
           "editSchedule": 1,
         },
       );
@@ -115,7 +123,7 @@ class ScheduleList with ChangeNotifier {
         "activityId": scheduleActivity.activity.activityId,
         "activityIndex": scheduleActivityIndex,
         "activityDone": scheduleActivity.activityDone ? 1 : 0,
-        "notificationId": scheduleActivity.notificationId,
+        "notificationId": scheduleActivity.notificationId.toString(),
         "activityDuration": scheduleActivity.activityDuration.inSeconds,
         "nextActivityAfter ": scheduleActivity.nextActivityAfter.inSeconds,
         "startedAt": scheduleActivity.at == null
@@ -206,7 +214,7 @@ class ScheduleList with ChangeNotifier {
             ? schedule.endedAt!.millisecondsSinceEpoch
             : noValueInDB,
         "scheduleStatus": schedule.scheduleStatus,
-        "notificationId": schedule.notificationId,
+        "notificationId": schedule.notificationId.toString(),
         "editSchedule": schedule.edit ? 1 : 0,
       },
       "scheduleName = ?",
@@ -221,7 +229,7 @@ class ScheduleList with ChangeNotifier {
       "schedule_activity",
       {
         "activityDone": scheduleActivity.activityDone,
-        "notificationId": scheduleActivity.notificationId,
+        "notificationId": scheduleActivity.notificationId.toString(),
         "activityDuration": scheduleActivity.activityDuration.inSeconds,
         "nextActivityAfter": scheduleActivity.nextActivityAfter.inSeconds,
         "startedAt": scheduleActivity.at != null
@@ -475,6 +483,35 @@ class ScheduleList with ChangeNotifier {
     }
   }
 
+  Future<void> setSetting(String key, String value) async {
+    int keyIndex = systemSettings.indexWhere((set) => set.key == key);
+    systemSettings[keyIndex].value = value;
+    await DBHelper.update(
+      'settings',
+      {
+        'value': value,
+      },
+      'key = ?',
+      [key],
+    );
+    notifyListeners();
+  }
+
+  Future<List<SystemSetting>> fetchSettings() async {
+    List<Map<String, dynamic>> loadedSettings =
+        await DBHelper.getData("settings", "key DESC");
+    systemSettings = [];
+    for (var loadedSetting in loadedSettings) {
+      SystemSetting setting = SystemSetting();
+      setting.key = loadedSetting["key"];
+      setting.value = loadedSetting["value"];
+
+      systemSettings.add(setting);
+    }
+
+    return systemSettings;
+  }
+
   Future<List<ScheduleActivity>> loadActivities(Schedule schedule) async {
     List<Map<String, dynamic>> loadedScheduleActivity =
         await DBHelper.getDataBySQL(
@@ -510,6 +547,8 @@ class ScheduleList with ChangeNotifier {
       tempActivity.activity.edit = scheduleActivity['editActivity'] == 1;
       tempActivity.edit = scheduleActivity['editScheduleActivity'] == 1;
       tempActivity.editNextActivity = scheduleActivity['editNextActivity'] == 1;
+      tempActivity.notificationId =
+          int.parse(scheduleActivity['notificationId']);
       schedule.activities.add(tempActivity);
     }
     return schedule.activities;
@@ -531,6 +570,7 @@ class ScheduleList with ChangeNotifier {
       tempSchedule.scheduleStatus = schedule["scheduleStatus"];
       //await loadActivities(tempSchedule);
       tempSchedule.edit = schedule["editSchedule"] == 1;
+      tempSchedule.notificationId = int.parse(schedule["notificationId"]);
       schedules.add(tempSchedule);
     }
 
@@ -606,6 +646,7 @@ class ScheduleList with ChangeNotifier {
       // schedule.activities[i].notificationId = await localNotificationService
       //     .scheduleNotificationWithActions(fromDateTime);
     }
+    notifyListeners();
   }
 
   Future<void> cancelScheduleNotifications(Schedule schedule) async {
@@ -628,10 +669,11 @@ class ScheduleList with ChangeNotifier {
     await DBHelper.update(
       "schedule_activity",
       {
-        "notificationId": noValueInDB,
+        "notificationId": noValueInDB.toString(),
       },
       "scheduleName = ?",
       [schedule.name],
     );
+    notifyListeners();
   }
 }

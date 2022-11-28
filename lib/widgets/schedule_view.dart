@@ -38,87 +38,96 @@ class ScheduleView extends StatelessWidget {
                 onDismissed: (direction) async {
                   await scheduleList.removeSchedule(schedule);
                 },
-                child: ListTile(
-                  onTap: () async {
-                    NavigatorState nav = Navigator.of(context);
-                    if (schedule.at == null) {
-                      await scheduleList.loadActivities(schedule);
-                      schedule.edit = true;
-                      await scheduleList.updateSchedule(schedule);
-                      await nav.pushNamed(
-                        AddScheduleScreen.routename,
-                        arguments: schedule,
-                      );
-                    } else {
-                      await scheduleList.loadActivities(schedule);
-                      await nav.pushNamed(
-                        PlaySchedule.routename,
-                        arguments: schedule,
-                      );
-                    }
-                  },
-                  tileColor: schedule.scheduleStatus == 1
-                      ? Colors.grey
-                      : Theme.of(context).cardColor,
-                  title: Text(schedule.name),
-                  subtitle: Text(DateFormat.yMEd()
-                      .add_jms()
-                      .format(schedule.lastUpdatedAt)),
-                  leading: schedule.scheduleStatus == 0
-                      ? CircleAvatar(
-                          backgroundColor: Colors.green,
-                          child: IconButton(
-                            onPressed: () async {
-                              if (schedule.at == null) {
-                                schedule.at = DateTime.now();
-                                await scheduleList.updateSchedule(schedule);
-                                // await scheduleList.scheduleNotification(
-                                //   schedule,
-                                //   schedule.at!,
-                                //   0,
-                                // );
-                              }
-                              await scheduleList.loadActivities(schedule);
-                              await scheduleList
-                                  .cancelScheduleNotifications(schedule);
-                              await nav.pushNamed(
-                                PlaySchedule.routename,
-                                arguments: schedule,
-                              );
-                            },
-                            icon: schedule.at == null
-                                ? const Icon(Icons.play_arrow)
-                                : const Icon(Icons.directions_walk),
-                          ),
-                        )
-                      : CircleAvatar(
-                          backgroundColor: Theme.of(context).focusColor,
-                          child: const Icon(Icons.done),
-                        ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (schedule.scheduleStatus == 1 || schedule.at != null)
-                        IconButton(
-                          onPressed: () async {
-                            schedule.at = null;
-                            schedule.scheduleStatus = 0;
-                            await scheduleList.updateSchedule(schedule);
-                            await scheduleList.resetActivities(schedule);
-                          },
-                          icon: const Icon(Icons.restore),
-                        ),
-                      IconButton(
-                        icon: schedule.pinned
-                            ? const Icon(Icons.favorite)
-                            : const Icon(Icons.favorite_border_outlined),
-                        onPressed: () async {
-                          schedule.pinned = !schedule.pinned;
+                // Expanded(
+                //   child: ScheduleActivityListView(schedule: schedule),
+                // ),
+                child: Column(
+                  children: [
+                    ListTile(
+                      onTap: () async {
+                        NavigatorState nav = Navigator.of(context);
+                        if (schedule.at == null) {
+                          await scheduleList.loadActivities(schedule);
+                          schedule.edit = true;
                           await scheduleList.updateSchedule(schedule);
-                        },
+                          await nav.pushNamed(
+                            AddScheduleScreen.routename,
+                            arguments: schedule,
+                          );
+                        } else {
+                          await scheduleList.loadActivities(schedule);
+                          await nav.pushNamed(
+                            PlaySchedule.routename,
+                            arguments: schedule,
+                          );
+                        }
+                      },
+                      tileColor: schedule.scheduleStatus == 1
+                          ? Colors.grey
+                          : Theme.of(context).cardColor,
+                      title: Text(schedule.name),
+                      subtitle: Text(DateFormat.yMEd()
+                          .add_jms()
+                          .format(schedule.lastUpdatedAt)),
+                      leading: schedule.scheduleStatus == 0
+                          ? CircleAvatar(
+                              backgroundColor: Colors.green,
+                              child: IconButton(
+                                onPressed: () async {
+                                  if (schedule.at == null) {
+                                    schedule.at = DateTime.now();
+                                    await scheduleList.updateSchedule(schedule);
+                                    // await scheduleList.scheduleNotification(
+                                    //   schedule,
+                                    //   schedule.at!,
+                                    //   0,
+                                    // );
+                                  }
+                                  await scheduleList.loadActivities(schedule);
+                                  await scheduleList
+                                      .cancelScheduleNotifications(schedule);
+                                  await nav.pushNamed(
+                                    PlaySchedule.routename,
+                                    arguments: schedule,
+                                  );
+                                },
+                                icon: schedule.at == null
+                                    ? const Icon(Icons.play_arrow)
+                                    : const Icon(Icons.directions_walk),
+                              ),
+                            )
+                          : CircleAvatar(
+                              backgroundColor: Theme.of(context).focusColor,
+                              child: const Icon(Icons.done),
+                            ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (schedule.scheduleStatus == 1 ||
+                              schedule.at != null)
+                            IconButton(
+                              onPressed: () async {
+                                schedule.at = null;
+                                schedule.scheduleStatus = 0;
+                                await scheduleList.updateSchedule(schedule);
+                                await scheduleList.resetActivities(schedule);
+                              },
+                              icon: const Icon(Icons.restore),
+                            ),
+                          IconButton(
+                            icon: schedule.pinned
+                                ? const Icon(Icons.favorite)
+                                : const Icon(Icons.favorite_border_outlined),
+                            onPressed: () async {
+                              schedule.pinned = !schedule.pinned;
+                              await scheduleList.updateSchedule(schedule);
+                            },
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    //ScheduleActivityListView(schedule: schedule),
+                  ],
                 ),
               ),
       ),

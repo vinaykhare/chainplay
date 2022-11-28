@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:schedule_it/screens/acitivity_list_screen.dart';
 import 'package:schedule_it/screens/schedule_list_screen.dart';
+import 'package:schedule_it/screens/settings_screen.dart';
 
 //import '../screens/search_schedule_screen.dart';
 //import 'package:provider/provider.dart';
@@ -21,7 +22,13 @@ class AppDrawer extends StatelessWidget {
             automaticallyImplyLeading: false,
             actions: [
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  while (Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
+                  }
+                  Navigator.of(context)
+                      .pushReplacementNamed(SettingsScreen.routename);
+                },
                 icon: const Icon(Icons.settings),
               ),
             ],

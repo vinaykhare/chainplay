@@ -15,6 +15,7 @@ class _PlayRestState extends State<PlayRest> {
   late Duration myDuration;
   //bool initParams = true;
   String displaySeconds = "";
+  bool running = true;
 
   @override
   void dispose() {
@@ -87,40 +88,77 @@ class _PlayRestState extends State<PlayRest> {
     }
 
     double appHeight = MediaQuery.of(context).size.height -
-        MediaQuery.of(context).viewPadding.top;
+        MediaQuery.of(context).viewPadding.top -
+        60;
     return Scaffold(
       body: SingleChildScrollView(
-        child: Container(
-          margin: const EdgeInsets.only(top: 50),
-          padding: const EdgeInsets.all(10),
-          height: appHeight,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Text(
-                "Take Rest",
-                style: Theme.of(context).textTheme.headline2,
-                textAlign: TextAlign.center,
-              ),
-              InkWell(
-                onTap: () {
-                  FlutterRingtonePlayer.playNotification();
-                  stopTimer();
-                  Navigator.of(context).pop(1);
-                },
-                child: CircleAvatar(
-                  radius: 150,
-                  child: FittedBox(
-                    child: Text(
-                      timeLeft,
-                      style: Theme.of(context).textTheme.headline3,
-                      textAlign: TextAlign.center,
+        child: SafeArea(
+          child: Container(
+            margin: const EdgeInsets.only(top: 50),
+            padding: const EdgeInsets.all(10),
+            height: appHeight,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Take Rest",
+                  style: Theme.of(context).textTheme.headline2,
+                  textAlign: TextAlign.center,
+                ),
+                InkWell(
+                  onTap: () {
+                    FlutterRingtonePlayer.playNotification();
+                    stopTimer();
+                    Navigator.of(context).pop(1);
+                  },
+                  child: CircleAvatar(
+                    radius: 150,
+                    child: FittedBox(
+                      child: Text(
+                        timeLeft,
+                        style: Theme.of(context).textTheme.headline3,
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.arrow_back),
+                    ),
+                    Expanded(
+                      child: IconButton(
+                        onPressed: () {
+                          if (running) {
+                            stopTimer();
+                          } else {
+                            startTimer();
+                          }
+
+                          setState(() {
+                            running = !running;
+                          });
+                        },
+                        icon: Icon(
+                          running ? Icons.stop : Icons.pause,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        FlutterRingtonePlayer.playNotification();
+                        stopTimer();
+                        Navigator.of(context).pop(1);
+                      },
+                      icon: const Icon(Icons.arrow_forward),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

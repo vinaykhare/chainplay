@@ -21,7 +21,7 @@ const initScript = [
       startedAt INTEGER,
       endedAt INTEGER,
       scheduleStatus INTEGER,
-      notificationId INTEGER,
+      notificationId TEXT,
       editSchedule INTEGER
     )
   ''',
@@ -30,7 +30,7 @@ const initScript = [
       activityId TEXT,
       activityIndex INTEGER,
       activityDone INTEGER,
-      notificationId INTEGER,
+      notificationId TEXT,
       activityDuration INTEGER,
       nextActivityAfter INTEGER,
       startedAt INTEGER,
@@ -41,6 +41,16 @@ const initScript = [
         REFERENCES schedule (scheduleName),
       FOREIGN KEY (activityId)
         REFERENCES activity (activityId)
+    )
+  ''',
+  '''CREATE TABLE settings (
+      key TEXT PRIMARY KEY, 
+      value TEXT
+    )
+  ''',
+  '''INSERT INTO settings(key, value) VALUES (
+      'DARK THEME', 
+      'FALSE'
     )
   ''',
 ];

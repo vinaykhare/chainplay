@@ -26,8 +26,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
   ScheduleActivity? scheduleActivityInEditMode;
   String activityTitle = "", errorString = "";
   bool addingDurationToActivity = false,
-      updatingNextActivityAfterDuration = false,
-      continueAddingHere = false;
+      updatingNextActivityAfterDuration = false;
   int activityDurationHour = 0,
       activityDurationMinute = 0,
       activityDurationSecond = 0;
@@ -53,10 +52,9 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     ScheduleList scheduleList =
         Provider.of<ScheduleList>(context, listen: false);
     bool nameExist = await scheduleList.nameExistInDB(tempSchedule.name);
-    if (nameExist && !continueAddingHere) {
+    if (nameExist) {
       setState(() {
-        errorString =
-            "Schedule name ${tempSchedule.name} is already present with following activities";
+        errorString = "Schedule name ${tempSchedule.name} is taken.";
       });
       return false;
     }
@@ -74,7 +72,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     scheduleFormKey.currentState?.save();
 
     bool validName = await isNameValid();
-    if (!valid || !(validName || continueAddingHere)) {
+    if (!valid || !validName) {
       return false;
     }
 
@@ -95,22 +93,28 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
 
     //tempSchedule.name = pageTitle;
 
-    if (tempSchedule.activities.isEmpty && tempSchedule.name == "") {
+    if (tempSchedule.activities.isEmpty &&
+        tempSchedule.name == "" &&
+        scheduleNameOnPageLoad != "") {
       tempSchedule.name = scheduleNameOnPageLoad;
       scheduleList.removeSchedule(tempSchedule);
-    } else if (tempSchedule.activities.isNotEmpty &&
-        tempSchedule.name != scheduleNameOnPageLoad &&
-        !continueAddingHere) {
+    }
+
+    if (tempSchedule.activities.isNotEmpty &&
+        tempSchedule.name != scheduleNameOnPageLoad) {
       scheduleList.renameSchedule(
         scheduleNameOnPageLoad,
         tempSchedule.name,
       );
     }
 
-    tempSchedule.edit = false;
-    await scheduleList.updateSchedule(tempSchedule);
-    await scheduleList.updatScheduleActivityByScheduleName(tempSchedule);
-
+    if (!(tempSchedule.name == "" &&
+        tempSchedule.activities.isEmpty &&
+        scheduleNameOnPageLoad == "")) {
+      tempSchedule.edit = false;
+      await scheduleList.updateSchedule(tempSchedule);
+      await scheduleList.updatScheduleActivityByScheduleName(tempSchedule);
+    }
     return true;
   }
 
@@ -119,7 +123,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
         Provider.of<ScheduleList>(context, listen: false);
     bool validName = await isNameValid();
 
-    if (!(validName || continueAddingHere)) {
+    if (!(validName)) {
       return;
     }
     tempSchedule.activities.add(
@@ -137,7 +141,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
         Provider.of<ScheduleList>(context, listen: false);
     bool validName = await isNameValid();
 
-    if (!(validName || continueAddingHere)) {
+    if (!(validName)) {
       return;
     }
 
@@ -457,20 +461,6 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                       errorString,
                       style: TextStyle(color: Theme.of(context).errorColor),
                       textAlign: TextAlign.center,
-                    ),
-                  ),
-                if (errorString != "" &&
-                    errorString.contains("is already present"))
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
-                      child: const Text("Continue Adding here"),
-                      onPressed: () {
-                        setState(() {
-                          continueAddingHere = true;
-                          errorString = "";
-                        });
-                      },
                     ),
                   ),
                 const Divider(

@@ -72,8 +72,8 @@ class ActivitiesTimeline extends StatelessWidget {
                   elevation: 10,
                   child: Dismissible(
                     background: Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.yellow,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).focusColor,
                       ),
                     ),
                     key: ValueKey(
@@ -84,7 +84,7 @@ class ActivitiesTimeline extends StatelessWidget {
                     },
                     child: ListTile(
                       tileColor: scheduleActivity.edit
-                          ? Colors.yellow
+                          ? Theme.of(context).focusColor
                           : scheduleActivity.activityDone
                               ? Colors.grey
                               : Theme.of(context).cardColor,
