@@ -4,10 +4,13 @@ import 'package:schedule_it/helpers/constants.dart';
 //import 'package:schedule_it/helpers/ad_state.dart';
 import 'package:schedule_it/helpers/db_helper.dart';
 import 'package:schedule_it/helpers/notifications/local_notification_service.dart';
+
 import 'package:schedule_it/models/activity.dart';
 import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_activity.dart';
 import 'package:schedule_it/models/system_setting.dart';
+import 'package:schedule_it/screens/play_schedule_screen.dart';
+//import 'package:schedule_it/screens/play_schedule_screen.dart';
 
 /*
 
@@ -37,17 +40,21 @@ Util:
 */
 
 class ScheduleList with ChangeNotifier {
+  bool loaded = false;
   List<Schedule> schedules = [];
   List<Activity> activities = [];
   List<SystemSetting> systemSettings = [];
+  LocalNotificationService localNotificationService =
+      LocalNotificationService();
+  Schedule? notificationCameForSchedule;
+  String? notificaitonCameForUrl;
   //List<int> adIndexInSchedules = [];
   //final AdState adState;
   final BuildContext context;
-  final LocalNotificationService localNotificationService;
 
   ScheduleList(
     this.context,
-    this.localNotificationService,
+    //this.localNotificationService,
     //this.adState,
   );
 
@@ -55,6 +62,25 @@ class ScheduleList with ChangeNotifier {
     await fetchSchedules();
     await fetchActivities();
     await fetchSettings();
+    await localNotificationService.initialize();
+    Map<String, dynamic>? responsePayload =
+        await localNotificationService.checkForNotification();
+    if (responsePayload != null &&
+        responsePayload["scheduleName"] != "" &&
+        responsePayload["scheduleName"] != null) {
+      int indexOfScheduleNotified = schedules
+          .indexWhere((sch) => sch.name == responsePayload!["scheduleName"]);
+      notificationCameForSchedule = indexOfScheduleNotified == -1
+          ? null
+          : schedules[indexOfScheduleNotified];
+      notificaitonCameForUrl = responsePayload["url"];
+    } else {
+      notificationCameForSchedule = null;
+      notificaitonCameForUrl = null;
+      responsePayload = null;
+    }
+    loaded = true;
+    notifyListeners();
   }
 
   Future<void> addSchedule(
@@ -350,6 +376,8 @@ class ScheduleList with ChangeNotifier {
     await DBHelper.removeData('schedule_activity', "", []);
     await DBHelper.removeData('activity', "", []);
     await DBHelper.removeData('schedule', "", []);
+    schedules = [];
+    activities = [];
     notifyListeners();
   }
 
@@ -499,13 +527,13 @@ class ScheduleList with ChangeNotifier {
 
   Future<List<SystemSetting>> fetchSettings() async {
     List<Map<String, dynamic>> loadedSettings =
-        await DBHelper.getData("settings", "key DESC");
+        await DBHelper.getData("settings", "type ASC");
     systemSettings = [];
     for (var loadedSetting in loadedSettings) {
       SystemSetting setting = SystemSetting();
       setting.key = loadedSetting["key"];
       setting.value = loadedSetting["value"];
-
+      setting.type = loadedSetting["type"];
       systemSettings.add(setting);
     }
 
@@ -568,7 +596,7 @@ class ScheduleList with ChangeNotifier {
           getDateValueFromDB(schedule["lastUpdatedAt"])!;
       tempSchedule.pinned = schedule["pinned"] == 1;
       tempSchedule.scheduleStatus = schedule["scheduleStatus"];
-      //await loadActivities(tempSchedule);
+      tempSchedule.activities = await loadActivities(tempSchedule);
       tempSchedule.edit = schedule["editSchedule"] == 1;
       tempSchedule.notificationId = int.parse(schedule["notificationId"]);
       schedules.add(tempSchedule);
@@ -625,15 +653,33 @@ class ScheduleList with ChangeNotifier {
   ) async {
     for (int i = fromIndex; i < schedule.activities.length; i++) {
       if (schedule.activities[i].activityDuration.inSeconds == 0) {
+        schedule.activities[i].notificationId =
+            await localNotificationService.scheduleNotification(
+          DateTime.now().add(const Duration(seconds: 1)),
+          schedule.name,
+          "${schedule.activities[i].activity.title} has Started.",
+          {
+            "scheduleName": schedule.name,
+            "url": PlaySchedule.routename,
+          },
+        );
+        await updateScheduleActivityByActivityId(
+          schedule,
+          schedule.activities[i],
+        );
         break;
       }
 
       fromDateTime = fromDateTime.add(schedule.activities[i].activityDuration);
       schedule.activities[i].notificationId =
-          await localNotificationService.scheduleNotificationWithActions(
+          await localNotificationService.scheduleNotification(
         fromDateTime,
         schedule.name,
         "${schedule.activities[i].activity.title} is completed.",
+        {
+          "scheduleName": schedule.name,
+          "url": PlaySchedule.routename,
+        },
       );
       await updateScheduleActivityByActivityId(
         schedule,

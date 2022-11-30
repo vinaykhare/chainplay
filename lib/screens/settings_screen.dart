@@ -35,27 +35,76 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            ElevatedButton.icon(
+              label: const Text("Reset App"),
+              onPressed: Provider.of<ScheduleList>(context).clearDataBase,
+              icon: const Icon(Icons.clear),
+              style: ButtonStyle(
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18.0),
+                  ),
+                ),
+              ),
+            ),
             Expanded(
               child: Container(
                 margin: const EdgeInsets.all(10),
                 child: ListView.builder(
+                  reverse: true,
                   itemCount: settings.length,
                   itemBuilder: (context, index) {
+                    List<String> listOfValues = [];
+                    String dropdownValue = "";
+                    if (settings[index].type == "LIST") {
+                      listOfValues = settings[index].value.split(",").toList();
+                      dropdownValue = listOfValues.first;
+                    }
+
                     return Row(
+                      key: ValueKey(settings[index].key),
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Expanded(child: Text(settings[index].key)),
-                        Switch(
+                        if (settings[index].type == "BOOL")
+                          Switch(
                             value: settings[index].value == "TRUE",
                             onChanged: (value) async {
                               await scheduleList.setSetting(
                                 settings[index].key,
                                 value == true ? "TRUE" : "FALSE",
                               );
-                            }),
+                            },
+                          )
+                        else if (settings[index].type == "LIST")
+                          DropdownButton<String>(
+                            value: dropdownValue,
+                            onChanged: (String? value) async {
+                              if (value == null || value == "") {
+                                return;
+                              }
+                              listOfValues.remove(value);
+                              listOfValues.insert(0, value);
+                              String result = "";
+                              for (String value in listOfValues) {
+                                result += '$value,';
+                              }
+                              await scheduleList.setSetting(
+                                settings[index].key,
+                                result.substring(0, result.length - 1),
+                              );
+                            },
+                            items: listOfValues
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
                       ],
                     );
                   },

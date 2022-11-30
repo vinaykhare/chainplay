@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:schedule_it/screens/acitivity_list_screen.dart';
 import 'package:schedule_it/screens/schedule_list_screen.dart';
 import 'package:schedule_it/screens/settings_screen.dart';
-
-//import '../screens/search_schedule_screen.dart';
-//import 'package:provider/provider.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({
@@ -45,17 +41,23 @@ class AppDrawer extends StatelessWidget {
               //     }
               //   },
               // ),
+              // const Divider(),
+              // ListTile(
+              //   leading: const Icon(Icons.task_alt_sharp),
+              //   title: const Text('Activities'),
+              //   onTap: () {
+              //     while (Navigator.of(context).canPop()) {
+              //       Navigator.of(context).pop();
+              //     }
+              //     Navigator.of(context)
+              //         .pushReplacementNamed(ActivityListScreen.routename);
+              //   },
+              // ),
               const Divider(),
               ListTile(
-                leading: const Icon(Icons.task_alt_sharp),
-                title: const Text('Activities'),
-                onTap: () {
-                  while (Navigator.of(context).canPop()) {
-                    Navigator.of(context).pop();
-                  }
-                  Navigator.of(context)
-                      .pushReplacementNamed(ActivityListScreen.routename);
-                },
+                leading: const Icon(Icons.help),
+                title: const Text('How Schedule It Works'),
+                onTap: () {},
               ),
               const Divider(),
               ListTile(

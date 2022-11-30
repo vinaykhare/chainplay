@@ -89,7 +89,7 @@ class _PlayRestState extends State<PlayRest> {
 
     double appHeight = MediaQuery.of(context).size.height -
         MediaQuery.of(context).viewPadding.top -
-        60;
+        MediaQuery.of(context).viewPadding.bottom;
     return Scaffold(
       body: SingleChildScrollView(
         child: SafeArea(

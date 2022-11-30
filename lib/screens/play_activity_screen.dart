@@ -2,8 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
+import 'package:provider/provider.dart';
+import 'package:schedule_it/helpers/constants.dart';
 import 'package:schedule_it/helpers/transform_functions.dart';
 import 'package:schedule_it/models/schedule_activity.dart';
+import 'package:schedule_it/models/schedule_list.dart';
+import 'package:schedule_it/models/system_setting.dart';
 
 class PlayActivity extends StatefulWidget {
   static String routename = "run_activity";
@@ -14,10 +18,14 @@ class PlayActivity extends StatefulWidget {
 
 class _PlayActivityState extends State<PlayActivity> {
   Timer? countdownTimer;
+  List<SystemSetting> systemSettings = [];
   late Duration waitDuration, initialWaitDuration;
   late ScheduleActivity scheduleActivity;
   bool initializing = true;
-  bool running = true, showPlayPause = true;
+  bool running = true,
+      showPlayPause = true,
+      appSoundEnabled = true,
+      playingRest = false;
 
   @override
   void dispose() {
@@ -25,116 +33,15 @@ class _PlayActivityState extends State<PlayActivity> {
     if (countdownTimer != null) countdownTimer?.cancel();
   }
 
-  // void updateWaitDuration() async {
-  //   Duration calculatedWaitDuration = const Duration(seconds: 0);
-  //   Duration timeSpentSinceStartOfSchedule =
-  //       DateTime.now().difference(schedule.at!);
-  //   for (Duration appExecutedFor = const Duration(seconds: 0);
-  //       invokeCounter < schedule.activities.length;
-  //       invokeCounter++) {
-  //     if (activities[invokeCounter].activityDone) {
-  //       continue;
-  //     }
-  //     if (activities[invokeCounter].activityDuration.inSeconds == 0 &&
-  //         activities[invokeCounter].endedAt == null) {
-  //       break;
-  //     }
-  //     appExecutedFor += activities[invokeCounter].activityDuration;
-
-  //     if (timeSpentSinceStartOfSchedule < appExecutedFor) {
-  //       calculatedWaitDuration = appExecutedFor - timeSpentSinceStartOfSchedule;
-  //       break;
-  //     }
-
-  //     appExecutedFor += activities[invokeCounter].nextActivityAfter;
-  //     if (timeSpentSinceStartOfSchedule < appExecutedFor) {
-  //       waitDurationDifferenceForRestScreen =
-  //           appExecutedFor - timeSpentSinceStartOfSchedule;
-  //       break;
-  //     }
-  //     if (activities[invokeCounter].endedAt == null) {
-  //       activities[invokeCounter].endedAt = DateTime.now();
-  //       await scheduleList.updateScheduleActivityByActivityId(
-  //           schedule, activities[invokeCounter]);
-  //     }
-  //     //await scheduleList.loadActivities(schedule);
-  //   }
-
-  //   if (invokeCounter < schedule.activities.length) {
-  //     setState(() {
-  //       waitDuration = calculatedWaitDuration;
-  //     });
-  //   } else {
-  //     exitPlayActivity = true;
-  //     waitDuration = const Duration(seconds: 0);
-  //     // temp solution to skip failure on executing shcedule without activities (all done).
-  //     invokeCounter--;
-  //   }
-  // }
-
-  // Future<void> nextActivity() async {
-  //   setState(() {});
-  //   NavigatorState nav = Navigator.of(context);
-  //   if (exitPlayActivity) {
-  //     schedule.at = null;
-  //     schedule.scheduleStatus = statusDone;
-  //     await scheduleList.updateSchedule(schedule);
-  //     await scheduleList.updatScheduleActivityByScheduleName(schedule);
-  //     nav.pop();
-  //   } else if (activities[invokeCounter].activityDuration.inSeconds != 0 ||
-  //       activities[invokeCounter].endedAt != null) {
-  //     startTimer();
-  //   }
-  // }
-
-  // Future<void> goToNextPage() async {
-  //   NavigatorState nav = Navigator.of(context);
-
-  //   activities[invokeCounter].endedAt = DateTime.now();
-  //   await scheduleList.updateScheduleActivityByActivityId(
-  //       schedule, activities[invokeCounter]);
-
-  //   if (activities[invokeCounter].nextActivityAfter.inSeconds > 0) {
-  //     var restScreenResponse = await nav.pushNamed(
-  //       PlayRest.routename,
-  //       arguments: waitDurationDifferenceForRestScreen.inSeconds != 0
-  //           ? waitDurationDifferenceForRestScreen
-  //           : activities[invokeCounter].nextActivityAfter,
-  //     );
-  //     if (restScreenResponse == null) {
-  //       nav.pop();
-  //     } else {
-  //       await scheduleList.flipDoneActivity(
-  //           schedule, activities[invokeCounter]);
-  //     }
-  //   } else {
-  //     await scheduleList.flipDoneActivity(schedule, activities[invokeCounter]);
-  //   }
-  //   waitDurationDifferenceForRestScreen = const Duration(seconds: 0);
-  //   invokeCounter++;
-  //   if (invokeCounter < activities.length) {
-  //     activities[invokeCounter].at = DateTime.now();
-  //     await scheduleList.scheduleNotification(
-  //       schedule,
-  //       activities[invokeCounter].at!,
-  //       invokeCounter,
-  //     );
-  //   }
-
-  //   updateWaitDuration();
-  //   nextActivity();
-  // }
-
   Future<void> setCountDown() async {
     final seconds = waitDuration.inSeconds - 1;
 
     if (seconds == 0) {
       // FlutterRingtonePlayer.play(
       //     fromAsset: "assets/ringtone.wav", ios: IosSounds.glass);
-      FlutterRingtonePlayer.play(
-        android: AndroidSounds.notification,
-        ios: IosSounds.glass,
-      );
+      if (appSoundEnabled) {
+        FlutterRingtonePlayer.playNotification();
+      }
     }
 
     if (seconds < 0) {
@@ -175,7 +82,11 @@ class _PlayActivityState extends State<PlayActivity> {
   @override
   Widget build(BuildContext context) {
     if (initializing) {
-      // scheduleList = Provider.of<ScheduleList>(context, listen: false);
+      systemSettings =
+          Provider.of<ScheduleList>(context, listen: false).systemSettings;
+      SystemSetting appSoundSetting =
+          systemSettings.firstWhere((set) => set.key == appSoundSettingKey);
+      appSoundEnabled = appSoundSetting.value == trueSettingValue;
       // schedule = ModalRoute.of(context)?.settings.arguments as Schedule;
       // activities = schedule.activities.toList();
       // updateWaitDuration();
@@ -184,7 +95,8 @@ class _PlayActivityState extends State<PlayActivity> {
           ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
       initialWaitDuration = waitDuration = input["waitDuration"];
       scheduleActivity = input["scheduleActivity"];
-      if (waitDuration.inSeconds > 0) {
+      playingRest = input["playRest"];
+      if (waitDuration.inSeconds > 0 || playingRest) {
         startTimer();
       } else {
         setState(() {
@@ -214,20 +126,21 @@ class _PlayActivityState extends State<PlayActivity> {
     //}
     double appHeight = MediaQuery.of(context).size.height -
         MediaQuery.of(context).viewPadding.top -
-        50;
+        MediaQuery.of(context).viewPadding.bottom;
     return Scaffold(
       body: SingleChildScrollView(
         child: SafeArea(
-          child: Container(
-            margin: const EdgeInsets.only(top: 50),
-            padding: const EdgeInsets.all(10),
+          child: SizedBox(
+            // margin: const EdgeInsets.only(top: 50),
+            // padding: const EdgeInsets.all(10),
             height: appHeight,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                const SizedBox(),
                 Text(
-                  scheduleActivity.activity.title,
+                  playingRest ? "Rest" : scheduleActivity.activity.title,
                   style: Theme.of(context).textTheme.headline2,
                   textAlign: TextAlign.center,
                 ),
@@ -238,12 +151,17 @@ class _PlayActivityState extends State<PlayActivity> {
                 ),
                 InkWell(
                   onTap: () async {
-                    FlutterRingtonePlayer.playNotification();
+                    if (appSoundEnabled) {
+                      FlutterRingtonePlayer.playNotification();
+                    }
                     stopTimer();
                     Navigator.of(context).pop(1);
                   },
                   child: CircleAvatar(
                     radius: 150,
+                    backgroundColor: playingRest
+                        ? Theme.of(context).focusColor
+                        : Theme.of(context).canvasColor,
                     child: FittedBox(
                       child: Text(
                         displaySeconds,
@@ -290,7 +208,9 @@ class _PlayActivityState extends State<PlayActivity> {
                       ),
                     IconButton(
                       onPressed: () {
-                        FlutterRingtonePlayer.playNotification();
+                        if (appSoundEnabled) {
+                          FlutterRingtonePlayer.playNotification();
+                        }
                         stopTimer();
                         Navigator.of(context).pop(1);
                       },

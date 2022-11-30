@@ -16,6 +16,7 @@ class SearchBar extends StatelessWidget {
         showCursor: false,
         onTap: () {},
         decoration: const InputDecoration(
+          floatingLabelBehavior: FloatingLabelBehavior.never,
           label: Text(
             "Search Schedule!",
             style: TextStyle(

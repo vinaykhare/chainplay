@@ -154,20 +154,20 @@ class ActivitiesTimeline extends StatelessWidget {
                 if (index == 0) arrowWidget,
                 if (index == 0)
                   InkWell(
-                      onTap: () {
-                        if (!scheduleActivity.editNextActivity) {
-                          editActivity(scheduleActivity, true);
-                        } else {
-                          undoEdit(scheduleActivity, true);
-                        }
-                      },
-                      child:
-                          (activities[index].nextActivityAfter.inSeconds != 0)
-                              ? RestTaskWithDuration(
-                                  taskText:
-                                      "${activities[index].activityDone ? 'Schedule Ended ' : 'Schedule will end '}${TransformFunctions.durationToString(scheduleActivity.nextActivityAfter)}.",
-                                )
-                              : const RestTask(taskText: "End")),
+                    onTap: () {
+                      if (!scheduleActivity.editNextActivity) {
+                        editActivity(scheduleActivity, true);
+                      } else {
+                        undoEdit(scheduleActivity, true);
+                      }
+                    },
+                    child: (activities[index].nextActivityAfter.inSeconds != 0)
+                        ? RestTaskWithDuration(
+                            taskText:
+                                "${activities[index].activityDone ? 'Schedule Ended ' : 'Schedule will end '}${TransformFunctions.durationToString(scheduleActivity.nextActivityAfter)}.",
+                          )
+                        : const RestTask(taskText: "End"),
+                  ),
               ],
             );
           },

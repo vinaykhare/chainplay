@@ -6,7 +6,6 @@ import 'package:schedule_it/helpers/constants.dart';
 import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_activity.dart';
 import 'package:schedule_it/models/schedule_list.dart';
-import 'package:schedule_it/screens/play_rest_screen.dart';
 import 'package:schedule_it/screens/play_activity_screen.dart';
 import 'package:schedule_it/widgets/schedule_activities.dart';
 
@@ -79,6 +78,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
               ? calculatedWaitDuration
               : activities[invokeCounter].activityDuration,
           "scheduleActivity": activities[invokeCounter],
+          "playRest": false,
         },
       );
       if (popResponse == null) {
@@ -92,11 +92,22 @@ class _PlayScheduleState extends State<PlaySchedule> {
 
       if (activities[invokeCounter].nextActivityAfter.inSeconds > 0) {
         //var restScreenResponse =
+        // popResponse = await nav.pushNamed(
+        //   PlayRest.routename,
+        //   arguments: waitDurationDifferenceForRestScreen.inSeconds != 0
+        //       ? waitDurationDifferenceForRestScreen
+        //       : activities[invokeCounter].nextActivityAfter,
+        // );
+
         popResponse = await nav.pushNamed(
-          PlayRest.routename,
-          arguments: waitDurationDifferenceForRestScreen.inSeconds != 0
-              ? waitDurationDifferenceForRestScreen
-              : activities[invokeCounter].nextActivityAfter,
+          PlayActivity.routename,
+          arguments: {
+            "waitDuration": waitDurationDifferenceForRestScreen.inSeconds != 0
+                ? waitDurationDifferenceForRestScreen
+                : activities[invokeCounter].nextActivityAfter,
+            "scheduleActivity": activities[invokeCounter],
+            "playRest": true,
+          },
         );
 
         if (popResponse == null) {
@@ -135,72 +146,81 @@ class _PlayScheduleState extends State<PlaySchedule> {
   Widget build(BuildContext context) {
     if (initializing) {
       scheduleList = Provider.of<ScheduleList>(context, listen: false);
-      schedule = ModalRoute.of(context)?.settings.arguments as Schedule;
+      if (scheduleList.notificationCameForSchedule != null) {
+        schedule = scheduleList.notificationCameForSchedule!;
+        scheduleList.notificationCameForSchedule = null;
+      } else {
+        schedule = ModalRoute.of(context)?.settings.arguments as Schedule;
+      }
       activities = schedule.activities;
       updateWaitDuration();
       initializing = false;
     }
     double appHeight = MediaQuery.of(context).size.height -
-        MediaQuery.of(context).viewPadding.top;
+        MediaQuery.of(context).viewPadding.top -
+        MediaQuery.of(context).viewPadding.bottom;
     return WillPopScope(
       onWillPop: onPopOut,
       child: Scaffold(
         body: SingleChildScrollView(
-          child: Container(
-            margin: const EdgeInsets.only(top: 50),
-            padding: const EdgeInsets.all(10),
-            height: appHeight,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    // child: ActivitiesTimeline(
-                    //   tempSchedule: tempSchedule,
-                    //   editActivity: editActivity,
-                    //   undoEdit: undoEdit,
-                    //   error: errorString,
-                    // ),
-                    child: ScheduleActivities(
-                      tempSchedule: schedule,
-                      editActivity: null,
-                      undoEdit: null,
-                    ),
-                  ),
-                ),
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      icon: const Icon(Icons.arrow_back),
-                    ),
-                    Expanded(
-                      child: TextFormField(
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.headline6,
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          floatingLabelAlignment: FloatingLabelAlignment.center,
-                          floatingLabelBehavior: FloatingLabelBehavior.never,
-                        ),
-                        initialValue: schedule.name,
-                        enabled: false,
+          child: SafeArea(
+            child: SizedBox(
+              // margin: const EdgeInsets.only(top: 50),
+              // padding: const EdgeInsets.all(10),
+              height: appHeight,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      // child: ActivitiesTimeline(
+                      //   tempSchedule: tempSchedule,
+                      //   editActivity: editActivity,
+                      //   undoEdit: undoEdit,
+                      //   error: errorString,
+                      // ),
+                      child: ScheduleActivities(
+                        tempSchedule: schedule,
+                        editActivity: null,
+                        undoEdit: null,
                       ),
                     ),
-                    IconButton(
-                      onPressed: schedule.scheduleStatus == statusDone
-                          ? null
-                          : () {
-                              invokeCounter = 0;
-                              updateWaitDuration();
-                            },
-                      icon: const Icon(Icons.play_arrow),
-                    ),
-                  ],
-                ),
-              ],
+                  ),
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        icon: const Icon(Icons.arrow_back),
+                      ),
+                      Expanded(
+                        child: TextFormField(
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.headline6,
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            floatingLabelAlignment:
+                                FloatingLabelAlignment.center,
+                            floatingLabelBehavior: FloatingLabelBehavior.never,
+                          ),
+                          initialValue: schedule.name,
+                          enabled: false,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: schedule.scheduleStatus == statusDone
+                            ? null
+                            : () {
+                                invokeCounter = 0;
+                                updateWaitDuration();
+                              },
+                        icon: const Icon(Icons.arrow_forward),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

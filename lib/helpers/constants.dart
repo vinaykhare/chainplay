@@ -10,3 +10,10 @@ const int waitActivityInDB = 0;
 
 const int statusNotStarted = 0;
 const int statusDone = 1;
+
+//Settings
+const String appSoundSettingKey = "App Sound";
+const String notificationTypeSettingKey = "Notification Type";
+const String darkThemeSettingKey = "DARK THEME";
+const String trueSettingValue = "TRUE";
+const String falseSettingValue = "FALSE";

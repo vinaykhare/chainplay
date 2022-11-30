@@ -166,6 +166,7 @@ class _SearchScheduleScreenState extends State<SearchScheduleScreen> {
                   runFilter(value);
                 },
                 decoration: InputDecoration(
+                  floatingLabelBehavior: FloatingLabelBehavior.never,
                   label: const Text("Search Schedules"),
                   border: const OutlineInputBorder(
                     borderSide: BorderSide.none,

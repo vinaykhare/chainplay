@@ -9,33 +9,29 @@ import 'package:schedule_it/widgets/app_drawer.dart';
 //import 'package:schedule_it/widgets/app_drawer.dart';
 import 'package:schedule_it/widgets/schedule_view.dart';
 
-class ScheduleListScreen extends StatefulWidget {
+class ScheduleListScreen extends StatelessWidget {
   static String routename = "/schedules";
 
   const ScheduleListScreen({super.key});
 
-  @override
-  State<ScheduleListScreen> createState() => _ScheduleListScreenState();
-}
+  // late ScheduleList scheduleList;
+  // List<Schedule> schedules = [];
 
-class _ScheduleListScreenState extends State<ScheduleListScreen> {
-  late ScheduleList scheduleList;
-  List<Schedule> schedules = [];
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    scheduleList = Provider.of<ScheduleList>(context, listen: true);
-    scheduleList.fetchSchedules().then((value) {
-      setState(() {
-        schedules = value;
-      });
-    });
-  }
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   scheduleList = Provider.of<ScheduleList>(context, listen: true);
+  //   // scheduleList.fetchSchedules().then((value) {
+  //   //   setState(() {
+  //   //     schedules = value;
+  //   //   });
+  //   // });
+  // }
 
   @override
   Widget build(BuildContext context) {
-    schedules = scheduleList.schedules;
+    List<Schedule> schedules =
+        Provider.of<ScheduleList>(context, listen: true).schedules;
     return Scaffold(
       // appBar: AppBar(
       //   centerTitle: true,
@@ -54,7 +50,8 @@ class _ScheduleListScreenState extends State<ScheduleListScreen> {
               child: ReorderableListView.builder(
                 reverse: true,
                 onReorder: (oldIndex, newIndex) =>
-                    scheduleList.rearrangeSchedules(oldIndex, newIndex),
+                    Provider.of<ScheduleList>(context, listen: false)
+                        .rearrangeSchedules(oldIndex, newIndex),
                 itemCount: schedules.length,
                 itemBuilder: (context, index) {
                   Schedule schedule = schedules[index];
@@ -80,6 +77,7 @@ class _ScheduleListScreenState extends State<ScheduleListScreen> {
                       onTap: () => Navigator.of(context)
                           .pushNamed(SearchScheduleScreen.routename),
                       decoration: const InputDecoration(
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
                         label: Text("Search Schedules"),
                         border: OutlineInputBorder(
                           borderSide: BorderSide.none,

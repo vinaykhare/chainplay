@@ -578,6 +578,8 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                                 cursorColor: Theme.of(context).shadowColor,
                                 focusNode: addActivityFocus,
                                 decoration: InputDecoration(
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.never,
                                   label: const Text(
                                     'Add Task or Activity',
                                   ),

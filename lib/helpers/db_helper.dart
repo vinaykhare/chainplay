@@ -45,12 +45,26 @@ const initScript = [
   ''',
   '''CREATE TABLE settings (
       key TEXT PRIMARY KEY, 
-      value TEXT
+      value TEXT,
+      type TEXT
     )
   ''',
-  '''INSERT INTO settings(key, value) VALUES (
+  '''INSERT INTO settings(key, value, type) VALUES (
       'DARK THEME', 
-      'FALSE'
+      'FALSE',
+      'BOOL'
+    )
+  ''',
+  '''INSERT INTO settings(key, value, type) VALUES (
+      'Notification Type',
+      'App Notification,Alarm,Calendar',
+      'LIST'
+    )
+  ''',
+  '''INSERT INTO settings(key, value, type) VALUES (
+      'App Sound', 
+      'TRUE',
+      'BOOL'
     )
   ''',
 ];

@@ -1,12 +1,14 @@
 //import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'dart:async';
+import 'dart:convert';
 //import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:schedule_it/helpers/notifications/notification_tap_background.dart';
 import 'package:schedule_it/helpers/notifications/received_notification.dart';
+import 'package:schedule_it/screens/play_schedule_screen.dart';
 import 'package:timezone/data/latest_10y.dart';
 import 'package:timezone/timezone.dart';
 
@@ -42,6 +44,8 @@ class LocalNotificationService with WidgetsBindingObserver {
 
   final StreamController<String?> selectNotificationStream =
       StreamController<String?>.broadcast();
+
+  //late InitializationSettings initializationSettings;
 
   Future<void> initialize() async {
     initializeTimeZones();
@@ -116,13 +120,12 @@ class LocalNotificationService with WidgetsBindingObserver {
       notificationCategories: darwinNotificationCategories,
     );
 
-    final InitializationSettings initializationSettings =
-        InitializationSettings(
+    InitializationSettings initializationSettings = InitializationSettings(
       android: androidInitializationSettings,
       iOS: initializationSettingsDarwin,
     );
 
-    await flutterLocalNotificationsPlugin.initialize(
+    flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse:
           (NotificationResponse notificationResponse) {
@@ -131,7 +134,8 @@ class LocalNotificationService with WidgetsBindingObserver {
             selectNotificationStream.add(notificationResponse.payload);
             break;
           case NotificationResponseType.selectedNotificationAction:
-            if (notificationResponse.actionId == navigationActionId) {
+            if (notificationResponse.actionId ==
+                LocalNotificationService.navigationActionId) {
               selectNotificationStream.add(notificationResponse.payload);
             }
             break;
@@ -141,15 +145,39 @@ class LocalNotificationService with WidgetsBindingObserver {
     );
   }
 
+  Future<Map<String, dynamic>?> checkForNotification() async {
+    NotificationAppLaunchDetails? notificationAppLaunchDetails =
+        await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+    Map<String, dynamic>? result;
+
+    if (notificationAppLaunchDetails != null) {
+      if (notificationAppLaunchDetails.didNotificationLaunchApp) {
+        NotificationResponse? notificationResponse =
+            notificationAppLaunchDetails.notificationResponse;
+
+        if (notificationResponse != null) {
+          String? response = notificationResponse.payload;
+          if (response != null) {
+            result = jsonDecode(response) as Map<String, dynamic>;
+          }
+        }
+      }
+
+      notificationAppLaunchDetails = null;
+    }
+
+    return result;
+  }
+
   Future<NotificationDetails> _getNotification() async {
     const AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
-      'your channel id',
-      'your channel name',
-      channelDescription: 'your channel description',
+      "SCHEDULE_IT_CHANNEL_ID",
+      "SCHEDULE_IT_CHANNEL_NAME",
+      channelDescription: 'Schedule It Channel',
       importance: Importance.max,
       priority: Priority.high,
-      ticker: 'ticker',
+      ticker: 'Schedult It',
       playSound: true,
     );
 
@@ -163,34 +191,34 @@ class LocalNotificationService with WidgetsBindingObserver {
   Future<NotificationDetails> _getNotificationWithActions() async {
     const AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
-      'your channel id',
-      'your channel name',
-      channelDescription: 'your channel description',
+      "SCHEDULE_IT_CHANNEL_ID",
+      "SCHEDULE_IT_CHANNEL_NAME",
+      channelDescription: 'Schedule It Channel with Action.',
       importance: Importance.max,
       priority: Priority.high,
-      ticker: 'ticker',
+      ticker: 'Schedult It',
       actions: <AndroidNotificationAction>[
-        AndroidNotificationAction(
-          urlLaunchActionId,
-          'Action 1',
-          icon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
-          contextual: true,
-        ),
+        // AndroidNotificationAction(
+        //   urlLaunchActionId,
+        //   'Action 1',
+        //   icon: DrawableResourceAndroidBitmap('@drawable/ic_launcher'),
+        //   contextual: true,
+        // ),
         AndroidNotificationAction(
           'id_2',
-          'Action 2',
+          'Done',
           titleColor: Color.fromARGB(255, 255, 0, 0),
           icon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
         ),
-        AndroidNotificationAction(
-          navigationActionId,
-          'Action 3',
-          icon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
-          showsUserInterface: true,
-          // By default, Android plugin will dismiss the notification when the
-          // user tapped on a action (this mimics the behavior on iOS).
-          cancelNotification: false,
-        ),
+        // AndroidNotificationAction(
+        //   navigationActionId,
+        //   'Action 3',
+        //   icon: DrawableResourceAndroidBitmap('@drawable/ic_launcher'),
+        //   showsUserInterface: true,
+        //   // By default, Android plugin will dismiss the notification when the
+        //   // user tapped on a action (this mimics the behavior on iOS).
+        //   cancelNotification: false,
+        // ),
       ],
     );
 
@@ -211,18 +239,22 @@ class LocalNotificationService with WidgetsBindingObserver {
     final details = await _getNotificationWithActions();
     await flutterLocalNotificationsPlugin.show(
         id++, 'plain title with action', 'plain body with aciton', details,
-        payload: 'play_schedule');
+        payload: PlaySchedule.routename);
   }
 
   Future<void> showNotification() async {
     final details = await _getNotification();
     await flutterLocalNotificationsPlugin.show(
         id++, 'plain title', 'plain body', details,
-        payload: 'play_schedule');
+        payload: PlaySchedule.routename);
   }
 
-  Future<int> scheduleNotificationWithActions(
-      DateTime scheduleAt, String title, String body) async {
+  Future<int> scheduleNotificationWithAction(
+    DateTime scheduleAt,
+    String title,
+    String body,
+    Map<String, String> payLoad,
+  ) async {
     final details = await _getNotificationWithActions();
     await flutterLocalNotificationsPlugin.zonedSchedule(
       id++,
@@ -233,7 +265,28 @@ class LocalNotificationService with WidgetsBindingObserver {
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       androidAllowWhileIdle: true,
-      payload: "play_schedule",
+      payload: jsonEncode(payLoad),
+    );
+    return id;
+  }
+
+  Future<int> scheduleNotification(
+    DateTime scheduleAt,
+    String title,
+    String body,
+    Map<String, String> payLoad,
+  ) async {
+    final details = await _getNotification();
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      id++,
+      title,
+      body,
+      TZDateTime.from(scheduleAt, local),
+      details,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      androidAllowWhileIdle: true,
+      payload: jsonEncode(payLoad),
     );
     return id;
   }
