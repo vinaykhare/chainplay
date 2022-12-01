@@ -40,7 +40,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ElevatedButton.icon(
               label: const Text("Reset App"),
               onPressed: Provider.of<ScheduleList>(context).clearDataBase,
-              icon: const Icon(Icons.clear),
+              icon: const Icon(
+                Icons.clear,
+              ),
               style: ButtonStyle(
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(

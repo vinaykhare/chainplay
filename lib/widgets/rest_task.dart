@@ -15,7 +15,9 @@ class RestTask extends StatelessWidget {
       backgroundColor: Theme.of(context).primaryColor,
       child: Text(
         taskText,
-        style: const TextStyle(color: Colors.black),
+        style: TextStyle(
+          color: Theme.of(context).textTheme.headline6?.color,
+        ),
       ),
     );
   }

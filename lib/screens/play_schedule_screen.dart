@@ -124,10 +124,8 @@ class _PlayScheduleState extends State<PlaySchedule> {
       await scheduleList.scheduleNotification(
           schedule, DateTime.now(), invokeCounter);
     } else {
-      setState(() {
-        schedule.at = null;
-        schedule.scheduleStatus = statusDone;
-      });
+      schedule.at = null;
+      schedule.scheduleStatus = statusDone;
       await scheduleList.updateSchedule(schedule);
       await scheduleList.updatScheduleActivityByScheduleName(schedule);
     }
@@ -175,12 +173,6 @@ class _PlayScheduleState extends State<PlaySchedule> {
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      // child: ActivitiesTimeline(
-                      //   tempSchedule: tempSchedule,
-                      //   editActivity: editActivity,
-                      //   undoEdit: undoEdit,
-                      //   error: errorString,
-                      // ),
                       child: ScheduleActivities(
                         tempSchedule: schedule,
                         editActivity: null,

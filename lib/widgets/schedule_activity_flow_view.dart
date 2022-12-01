@@ -56,7 +56,7 @@ class ScheduleActivityFlowView extends StatelessWidget {
               tileColor: scheduleActivity.edit
                   ? Theme.of(context).focusColor
                   : scheduleActivity.activityDone
-                      ? Colors.grey
+                      ? Theme.of(context).disabledColor
                       : Theme.of(context).cardColor,
               onTap: editActivity != null && undoEdit != null
                   ? () async {
@@ -130,8 +130,8 @@ class ScheduleActivityFlowView extends StatelessWidget {
                     Icons.circle_outlined,
                     size: 15,
                     color: activities[index].editNextActivity
-                        ? Colors.red
-                        : Colors.amber,
+                        ? Theme.of(context).cardColor
+                        : Theme.of(context).primaryColor,
                   ),
           ),
         if (index == 0) arrowWidget,

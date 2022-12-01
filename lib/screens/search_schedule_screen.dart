@@ -99,11 +99,11 @@ class _SearchScheduleScreenState extends State<SearchScheduleScreen> {
                 Expanded(
                   child: Card(
                     child: Container(
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            Colors.green,
-                            Colors.amber,
+                            Theme.of(context).cardColor,
+                            Theme.of(context).primaryColor,
                           ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
@@ -128,11 +128,11 @@ class _SearchScheduleScreenState extends State<SearchScheduleScreen> {
                 Expanded(
                   child: Card(
                     child: Container(
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            Colors.green,
-                            Colors.amber,
+                            Theme.of(context).cardColor,
+                            Theme.of(context).primaryColor,
                           ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
@@ -161,7 +161,7 @@ class _SearchScheduleScreenState extends State<SearchScheduleScreen> {
                 autofocus: true,
                 textInputAction: TextInputAction.search,
                 keyboardType: TextInputType.text,
-                cursorColor: Colors.black,
+                cursorColor: Theme.of(context).iconTheme.color,
                 onChanged: (value) {
                   runFilter(value);
                 },

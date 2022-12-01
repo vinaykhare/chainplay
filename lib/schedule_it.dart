@@ -6,7 +6,6 @@ import 'package:schedule_it/models/system_setting.dart';
 import 'package:schedule_it/screens/acitivity_list_screen.dart';
 import 'package:schedule_it/screens/add_schedule_screen.dart';
 import 'package:schedule_it/screens/load_screen.dart';
-import 'package:schedule_it/screens/play_rest_screen.dart';
 import 'package:schedule_it/screens/play_schedule_screen.dart';
 import 'package:schedule_it/screens/play_activity_screen.dart';
 import 'package:schedule_it/screens/schedule_list_screen.dart';
@@ -93,7 +92,6 @@ class _ScheduleItState extends State<ScheduleIt> {
         ActivityListScreen.routename: (context) => const ActivityListScreen(),
         AddScheduleScreen.routename: (context) => const AddScheduleScreen(),
         PlaySchedule.routename: (context) => const PlaySchedule(),
-        PlayRest.routename: (context) => const PlayRest(),
         SearchScheduleScreen.routename: (context) =>
             const SearchScheduleScreen(),
         SettingsScreen.routename: (context) => const SettingsScreen(),

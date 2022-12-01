@@ -24,12 +24,12 @@ class ScheduleActivities extends StatelessWidget {
     final Widget lineWidget = Container(
       width: 2,
       height: 15,
-      decoration: const BoxDecoration(color: Colors.amber),
+      decoration: BoxDecoration(color: Theme.of(context).primaryColor),
     );
 
-    const Widget arrowWidget = Icon(
+    Widget arrowWidget = Icon(
       Icons.arrow_downward,
-      color: Colors.amber,
+      color: Theme.of(context).primaryColor,
     );
 
     List<ScheduleActivity> activities = tempSchedule.activities;

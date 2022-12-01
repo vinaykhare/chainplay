@@ -30,8 +30,8 @@ class ScheduleView extends StatelessWidget {
               )
             : Dismissible(
                 background: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).errorColor,
                   ),
                 ),
                 key: ValueKey("schedule_list_dismissible_${schedule.name}"),
@@ -63,7 +63,7 @@ class ScheduleView extends StatelessWidget {
                         }
                       },
                       tileColor: schedule.scheduleStatus == 1
-                          ? Colors.grey
+                          ? Theme.of(context).disabledColor
                           : Theme.of(context).cardColor,
                       title: Text(schedule.name),
                       subtitle: Text(DateFormat.yMEd()
@@ -71,7 +71,8 @@ class ScheduleView extends StatelessWidget {
                           .format(schedule.lastUpdatedAt)),
                       leading: schedule.scheduleStatus == 0
                           ? CircleAvatar(
-                              backgroundColor: Colors.green,
+                              backgroundColor:
+                                  Theme.of(context).primaryColorLight,
                               child: IconButton(
                                 onPressed: () async {
                                   if (schedule.at == null) {

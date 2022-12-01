@@ -33,12 +33,6 @@ class ScheduleListScreen extends StatelessWidget {
     List<Schedule> schedules =
         Provider.of<ScheduleList>(context, listen: true).schedules;
     return Scaffold(
-      // appBar: AppBar(
-      //   centerTitle: true,
-      //   title: const Text("Schedules"),
-      //   backgroundColor: Colors.transparent,
-      //   shadowColor: Theme.of(context).primaryColor,
-      // ),
       drawer: const AppDrawer(),
       body: SafeArea(
         child: Column(
@@ -76,16 +70,16 @@ class ScheduleListScreen extends StatelessWidget {
                       showCursor: false,
                       onTap: () => Navigator.of(context)
                           .pushNamed(SearchScheduleScreen.routename),
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         floatingLabelBehavior: FloatingLabelBehavior.never,
-                        label: Text("Search Schedules"),
-                        border: OutlineInputBorder(
+                        label: const Text("Search Schedules"),
+                        border: const OutlineInputBorder(
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
                         prefixIcon: Icon(
                           Icons.search,
-                          color: Colors.black,
+                          color: Theme.of(context).iconTheme.color,
                         ),
                       ),
                     ),

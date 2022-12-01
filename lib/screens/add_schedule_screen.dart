@@ -463,19 +463,14 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                const Divider(
-                  thickness: 0,
-                  color: Colors.transparent,
-                ),
+                if (errorString != "")
+                  Divider(
+                    thickness: 0,
+                    color: Theme.of(context).dividerTheme.color,
+                  ),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    // child: ActivitiesTimeline(
-                    //   tempSchedule: tempSchedule,
-                    //   editActivity: editActivity,
-                    //   undoEdit: undoEdit,
-                    //   error: errorString,
-                    // ),
                     child: ScheduleActivities(
                       tempSchedule: tempSchedule,
                       editActivity: editActivity,
@@ -594,9 +589,9 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                                             !addingDurationToActivity;
                                       });
                                     },
-                                    icon: const Icon(
+                                    icon: Icon(
                                       Icons.timelapse,
-                                      color: Colors.black,
+                                      color: Theme.of(context).iconTheme.color,
                                     ),
                                   ),
                                 ),
