@@ -151,7 +151,9 @@ class _PlayScheduleState extends State<PlaySchedule> {
         schedule = ModalRoute.of(context)?.settings.arguments as Schedule;
       }
       activities = schedule.activities;
-      updateWaitDuration();
+      if (schedule.at != null) {
+        updateWaitDuration();
+      }
       initializing = false;
     }
     double appHeight = MediaQuery.of(context).size.height -

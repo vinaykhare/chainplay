@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:schedule_it/screens/how_it_works.dart';
 import 'package:schedule_it/screens/schedule_list_screen.dart';
 import 'package:schedule_it/screens/settings_screen.dart';
 
@@ -31,39 +32,21 @@ class AppDrawer extends StatelessWidget {
           ),
           Column(
             children: [
-              // const Divider(),
-              // ListTile(
-              //   leading: const Icon(Icons.data_array),
-              //   title: const Text('Schedule DB Table'),
-              //   onTap: () {
-              //     while (Navigator.of(context).canPop()) {
-              //       Navigator.of(context).pop();
-              //     }
-              //   },
-              // ),
-              // const Divider(),
-              // ListTile(
-              //   leading: const Icon(Icons.task_alt_sharp),
-              //   title: const Text('Activities'),
-              //   onTap: () {
-              //     while (Navigator.of(context).canPop()) {
-              //       Navigator.of(context).pop();
-              //     }
-              //     Navigator.of(context)
-              //         .pushReplacementNamed(ActivityListScreen.routename);
-              //   },
-              // ),
               const Divider(),
               ListTile(
                 leading: const Icon(Icons.help),
-                title: const Text('How Schedule It Works'),
-                onTap: () {},
+                title: const Text('How "Schedule It" Works'),
+                onTap: () {
+                  while (Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
+                  }
+                  Navigator.of(context)
+                      .pushReplacementNamed(HowItWorks.routename);
+                },
               ),
               const Divider(),
               ListTile(
-                leading: const Icon(
-                  Icons.watch_later,
-                ),
+                leading: const Icon(Icons.watch_later),
                 title: Text(
                   'Schedules',
                   style: Theme.of(context).textTheme.titleMedium,

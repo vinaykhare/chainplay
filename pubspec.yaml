@@ -43,6 +43,8 @@ dependencies:
   flutter_local_notifications: ^12.0.3
   timezone: ^0.9.0
 
+  native_pdf_view: ^6.0.0+1
+
   # Library for Google Ads
   google_mobile_ads: ^2.2.0
 
@@ -92,6 +94,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/logo/logo.png
+    - assets/help/howitworks.pdf
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
