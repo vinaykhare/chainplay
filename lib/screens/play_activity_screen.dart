@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:provider/provider.dart';
-import 'package:schedule_it/helpers/constants.dart';
+import 'package:schedule_it/helpers/notification_helper.dart';
 import 'package:schedule_it/helpers/transform_functions.dart';
 import 'package:schedule_it/models/schedule_activity.dart';
 import 'package:schedule_it/models/schedule_list.dart';
 import 'package:schedule_it/models/system_setting.dart';
+import 'package:schedule_it/screens/play_schedule_screen.dart';
 
 class PlayActivity extends StatefulWidget {
   static String routename = "run_activity";
@@ -26,6 +26,7 @@ class _PlayActivityState extends State<PlayActivity> {
       showPlayPause = true,
       appSoundEnabled = true,
       playingRest = false;
+  NotificationHelper notificationHelper = NotificationHelper();
 
   @override
   void dispose() {
@@ -35,18 +36,18 @@ class _PlayActivityState extends State<PlayActivity> {
 
   Future<void> setCountDown() async {
     final seconds = waitDuration.inSeconds - 1;
+    NavigatorState nav = Navigator.of(context);
 
     if (seconds == 0) {
       // FlutterRingtonePlayer.play(
       //     fromAsset: "assets/ringtone.wav", ios: IosSounds.glass);
-      if (appSoundEnabled) {
-        FlutterRingtonePlayer.playNotification();
-      }
+      await Provider.of<ScheduleList>(context, listen: false)
+          .playNotificationSound();
     }
 
     if (seconds < 0) {
       stopTimer();
-      Navigator.of(context).pop(1);
+      nav.pop(1);
     } else {
       setState(() {
         waitDuration = Duration(seconds: seconds);
@@ -82,11 +83,11 @@ class _PlayActivityState extends State<PlayActivity> {
   @override
   Widget build(BuildContext context) {
     if (initializing) {
-      systemSettings =
-          Provider.of<ScheduleList>(context, listen: false).systemSettings;
-      SystemSetting appSoundSetting =
-          systemSettings.firstWhere((set) => set.key == appSoundSettingKey);
-      appSoundEnabled = appSoundSetting.value == trueSettingValue;
+      // systemSettings =
+      //     Provider.of<ScheduleList>(context, listen: false).systemSettings;
+      // SystemSetting appSoundSetting =
+      //     systemSettings.firstWhere((set) => set.key == appSoundSettingKey);
+      // appSoundEnabled = appSoundSetting.value == trueSettingValue;
       // schedule = ModalRoute.of(context)?.settings.arguments as Schedule;
       // activities = schedule.activities.toList();
       // updateWaitDuration();
@@ -151,11 +152,11 @@ class _PlayActivityState extends State<PlayActivity> {
                 ),
                 InkWell(
                   onTap: () async {
-                    if (appSoundEnabled) {
-                      FlutterRingtonePlayer.playNotification();
-                    }
+                    NavigatorState nav = Navigator.of(context);
+                    await Provider.of<ScheduleList>(context, listen: false)
+                        .playNotificationSound();
                     stopTimer();
-                    Navigator.of(context).pop(1);
+                    nav.pop(1);
                   },
                   child: CircleAvatar(
                     radius: 150,
@@ -180,7 +181,12 @@ class _PlayActivityState extends State<PlayActivity> {
                 Row(
                   children: [
                     IconButton(
-                      onPressed: () => Navigator.of(context).pop(),
+                      onPressed: () {
+                        Navigator.of(context).canPop()
+                            ? Navigator.of(context).pop()
+                            : Navigator.of(context)
+                                .pushReplacementNamed(PlaySchedule.routename);
+                      },
                       icon: const Icon(Icons.arrow_back),
                     ),
                     if (showPlayPause)
@@ -207,12 +213,12 @@ class _PlayActivityState extends State<PlayActivity> {
                         child: SizedBox(),
                       ),
                     IconButton(
-                      onPressed: () {
-                        if (appSoundEnabled) {
-                          FlutterRingtonePlayer.playNotification();
-                        }
+                      onPressed: () async {
+                        NavigatorState nav = Navigator.of(context);
+                        await Provider.of<ScheduleList>(context, listen: false)
+                            .playNotificationSound();
                         stopTimer();
-                        Navigator.of(context).pop(1);
+                        nav.pop(1);
                       },
                       icon: const Icon(Icons.arrow_forward),
                     ),

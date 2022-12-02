@@ -7,6 +7,7 @@ import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_activity.dart';
 import 'package:schedule_it/models/schedule_list.dart';
 import 'package:schedule_it/screens/play_activity_screen.dart';
+import 'package:schedule_it/screens/schedule_list_screen.dart';
 import 'package:schedule_it/widgets/schedule_activities.dart';
 
 class PlaySchedule extends StatefulWidget {
@@ -124,8 +125,10 @@ class _PlayScheduleState extends State<PlaySchedule> {
       await scheduleList.scheduleNotification(
           schedule, DateTime.now(), invokeCounter);
     } else {
-      schedule.at = null;
-      schedule.scheduleStatus = statusDone;
+      setState(() {
+        schedule.at = null;
+        schedule.scheduleStatus = statusDone;
+      });
       await scheduleList.updateSchedule(schedule);
       await scheduleList.updatScheduleActivityByScheduleName(schedule);
     }
@@ -185,7 +188,12 @@ class _PlayScheduleState extends State<PlaySchedule> {
                   Row(
                     children: [
                       IconButton(
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () {
+                          Navigator.of(context).canPop()
+                              ? Navigator.of(context).pop()
+                              : Navigator.of(context).pushReplacementNamed(
+                                  ScheduleListScreen.routename);
+                        },
                         icon: const Icon(Icons.arrow_back),
                       ),
                       Expanded(

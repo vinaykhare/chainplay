@@ -1,3 +1,6 @@
+import 'package:schedule_it/helpers/constants.dart';
+import 'package:schedule_it/models/system_setting.dart';
+
 class TransformFunctions {
   static String durationToString(Duration activityDuration) {
     String drStr = "in ";
@@ -61,5 +64,11 @@ class TransformFunctions {
       drStr += "${activityDurationSecond.toString().padLeft(2, '0')} Seconds";
     }
     return drStr;
+  }
+
+  static String notificationSettingIsFor(List<SystemSetting> systemSettings) {
+    SystemSetting notificationSettingValue = systemSettings
+        .firstWhere((set) => set.key == notificationTypeSettingKey);
+    return notificationSettingValue.value.split(",")[0];
   }
 }

@@ -13,7 +13,13 @@ const int statusDone = 1;
 
 //Settings
 const String appSoundSettingKey = "App Sound";
-const String notificationTypeSettingKey = "Notification Type";
 const String darkThemeSettingKey = "DARK THEME";
 const String trueSettingValue = "TRUE";
 const String falseSettingValue = "FALSE";
+
+const String notificationTypeSettingKey = "Notification Type";
+const String notificationTypeSettingValueAppNotify = "App Notification";
+const String notificationTypeSettingValueAlarm = "Alarm";
+const String notificationTypeSettingValueCalendar = "Calendar";
+const String notificationTypeSettingValueNone = "None";
+const String notificationTypeSettingValueAll = "All";

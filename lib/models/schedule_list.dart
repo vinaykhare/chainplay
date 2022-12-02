@@ -3,7 +3,7 @@ import 'package:schedule_it/helpers/constants.dart';
 //import 'package:google_mobile_ads/google_mobile_ads.dart';
 //import 'package:schedule_it/helpers/ad_state.dart';
 import 'package:schedule_it/helpers/db_helper.dart';
-import 'package:schedule_it/helpers/notifications/local_notification_service.dart';
+import 'package:schedule_it/helpers/notification_helper.dart';
 
 import 'package:schedule_it/models/activity.dart';
 import 'package:schedule_it/models/schedule.dart';
@@ -44,8 +44,7 @@ class ScheduleList with ChangeNotifier {
   List<Schedule> schedules = [];
   List<Activity> activities = [];
   List<SystemSetting> systemSettings = [];
-  LocalNotificationService localNotificationService =
-      LocalNotificationService();
+  NotificationHelper notificationHelper = NotificationHelper();
   Schedule? notificationCameForSchedule;
   String? notificaitonCameForUrl;
   //List<int> adIndexInSchedules = [];
@@ -54,7 +53,7 @@ class ScheduleList with ChangeNotifier {
 
   ScheduleList(
     this.context,
-    //this.localNotificationService,
+    //this.notificationHelper,
     //this.adState,
   );
 
@@ -62,22 +61,16 @@ class ScheduleList with ChangeNotifier {
     await fetchSchedules();
     await fetchActivities();
     await fetchSettings();
-    await localNotificationService.initialize();
-    Map<String, dynamic>? responsePayload =
-        await localNotificationService.checkForNotification();
-    if (responsePayload != null &&
-        responsePayload["scheduleName"] != "" &&
-        responsePayload["scheduleName"] != null) {
-      int indexOfScheduleNotified = schedules
-          .indexWhere((sch) => sch.name == responsePayload!["scheduleName"]);
+    await notificationHelper.initialize(systemSettings);
+
+    if (notificationHelper.notificationCameForScheduleName != "" &&
+        notificationHelper.notificationCameForScheduleName != null) {
+      int indexOfScheduleNotified = schedules.indexWhere((sch) =>
+          sch.name == notificationHelper.notificationCameForScheduleName);
       notificationCameForSchedule = indexOfScheduleNotified == -1
           ? null
           : schedules[indexOfScheduleNotified];
-      notificaitonCameForUrl = responsePayload["url"];
-    } else {
-      notificationCameForSchedule = null;
-      notificaitonCameForUrl = null;
-      responsePayload = null;
+      notificaitonCameForUrl = notificationHelper.notificaitonCameForUrl;
     }
     loaded = true;
     notifyListeners();
@@ -324,8 +317,8 @@ class ScheduleList with ChangeNotifier {
 
     //Cancel Notification
     if (scheduleActivity.notificationId != noValueInDB) {
-      await localNotificationService
-          .cancelScheduledNotification(scheduleActivity.notificationId);
+      await notificationHelper
+          .cancelNotificationById(scheduleActivity.notificationId);
     }
 
     DBHelper.removeData(
@@ -497,6 +490,10 @@ class ScheduleList with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> playNotificationSound() async {
+    await notificationHelper.playNotificationSound();
+  }
+
   // disposeAds() {
   //   for (int i = 0; i < adIndexInSchedules.length; i++) {
   //     schedules[adIndexInSchedules[i]].dispose();
@@ -522,6 +519,7 @@ class ScheduleList with ChangeNotifier {
       'key = ?',
       [key],
     );
+    notificationHelper.systemSetting = systemSettings;
     notifyListeners();
   }
 
@@ -654,7 +652,7 @@ class ScheduleList with ChangeNotifier {
     for (int i = fromIndex; i < schedule.activities.length; i++) {
       if (schedule.activities[i].activityDuration.inSeconds == 0) {
         schedule.activities[i].notificationId =
-            await localNotificationService.scheduleNotification(
+            await notificationHelper.scheduleNotification(
           DateTime.now().add(const Duration(seconds: 1)),
           schedule.name,
           "${schedule.activities[i].activity.title} has Started.",
@@ -672,7 +670,7 @@ class ScheduleList with ChangeNotifier {
 
       fromDateTime = fromDateTime.add(schedule.activities[i].activityDuration);
       schedule.activities[i].notificationId =
-          await localNotificationService.scheduleNotification(
+          await notificationHelper.scheduleNotification(
         fromDateTime,
         schedule.name,
         "${schedule.activities[i].activity.title} is completed.",
@@ -689,7 +687,7 @@ class ScheduleList with ChangeNotifier {
       //   continue;
       // }
       fromDateTime = fromDateTime.add(schedule.activities[i].nextActivityAfter);
-      // schedule.activities[i].notificationId = await localNotificationService
+      // schedule.activities[i].notificationId = await notificationHelper
       //     .scheduleNotificationWithActions(fromDateTime);
     }
     notifyListeners();
@@ -698,15 +696,14 @@ class ScheduleList with ChangeNotifier {
   Future<void> cancelScheduleNotifications(Schedule schedule) async {
     //Cancel Notifications
     if (schedule.notificationId != noValueInDB) {
-      await localNotificationService
-          .cancelScheduledNotification(schedule.notificationId);
+      await notificationHelper.cancelNotificationById(schedule.notificationId);
       schedule.notificationId = noValueInDB;
       await updateSchedule(schedule);
     }
     for (ScheduleActivity scheduleActivity in schedule.activities) {
       if (scheduleActivity.notificationId != noValueInDB) {
-        await localNotificationService
-            .cancelScheduledNotification(scheduleActivity.notificationId);
+        await notificationHelper
+            .cancelNotificationById(scheduleActivity.notificationId);
         scheduleActivity.notificationId = noValueInDB;
         //await updateScheduleActivityByActivityId(schedule, scheduleActivity);
       }
