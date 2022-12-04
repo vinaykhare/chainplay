@@ -40,8 +40,8 @@ class LocalNotificationService with WidgetsBindingObserver {
       didReceiveLocalNotificationStream =
       StreamController<ReceivedNotification>.broadcast();
 
-  final StreamController<String?> selectNotificationStream =
-      StreamController<String?>.broadcast();
+  // final StreamController<String?> selectNotificationStream =
+  //     StreamController<String?>.broadcast();
 
   //late InitializationSettings initializationSettings;
 
@@ -148,10 +148,10 @@ class LocalNotificationService with WidgetsBindingObserver {
         await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
     Map<String, dynamic>? result;
 
-    selectNotificationStream.stream.listen((String? payload) async {
-      result =
-          payload != null ? jsonDecode(payload) as Map<String, dynamic> : {};
-    });
+    // selectNotificationStream.stream.listen((String? payload) async {
+    //   result =
+    //       payload != null ? jsonDecode(payload) as Map<String, dynamic> : {};
+    // });
 
     if (notificationAppLaunchDetails != null) {
       if (notificationAppLaunchDetails.didNotificationLaunchApp) {
