@@ -42,8 +42,8 @@ dependencies:
   flutter_ringtone_player: ^3.2.0
   flutter_local_notifications: ^12.0.3
   timezone: ^0.9.0
-  android_alarm_manager_plus: ^2.1.0
-  add_2_calendar: ^2.2.3
+  #android_alarm_manager_plus: ^2.1.0
+  #add_2_calendar: ^2.2.3
 
   native_pdf_view: ^6.0.0+1
 

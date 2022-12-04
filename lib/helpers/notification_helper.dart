@@ -31,13 +31,26 @@ class NotificationHelper {
     }
   }
 
-  Future<int> scheduleNotification(DateTime scheduleAt, String title,
-      String body, Map<String, String> payload) async {
+  Future<int> scheduleNotification(DateTime scheduleAt, int notificationId,
+      String title, String body, Map<String, String> payload) async {
     String notificationFor = notificationSettingIsFor();
     if (notificationFor == notificationTypeSettingValueAppNotify) {
-      return await localNotificationService.scheduleNotification(
-          scheduleAt, title, body, payload);
+      if (await localNotificationService.scheduleNotification(
+          scheduleAt, notificationId, title, body, payload)) {
+        return notificationId;
+      }
     }
+    // if (notificationFor == notificationTypeSettingValueAlarm) {
+    //   if (await AndroidAlarmManager.oneShotAt(
+    //     scheduleAt,
+    //     notificationId,
+    //     alarmTapBackground,
+    //     alarmClock: true,
+    //     wakeup: true,
+    //   )) {
+    //     return notificationId;
+    //   }
+    // }
     return noValueInDB;
   }
 
@@ -46,6 +59,9 @@ class NotificationHelper {
     if (notificationFor == notificationTypeSettingValueAppNotify) {
       await localNotificationService.cancelScheduledNotification(id);
     }
+    // if (notificationFor == notificationTypeSettingValueAlarm) {
+    //   AndroidAlarmManager.cancel(id);
+    // }
   }
 
   Future<void> playNotificationSound() async {

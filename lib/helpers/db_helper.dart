@@ -57,7 +57,7 @@ const initScript = [
   ''',
   '''INSERT INTO settings(key, value, type) VALUES (
       'Notification Type',
-      'App Notification,Alarm,Calendar,None',
+      'App Notification,None',
       'LIST'
     )
   ''',

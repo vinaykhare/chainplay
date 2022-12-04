@@ -47,6 +47,7 @@ class ScheduleList with ChangeNotifier {
   NotificationHelper notificationHelper = NotificationHelper();
   Schedule? notificationCameForSchedule;
   String? notificaitonCameForUrl;
+  List<int> notificationIdsInDB = [];
   //List<int> adIndexInSchedules = [];
   //final AdState adState;
   final BuildContext context;
@@ -62,7 +63,15 @@ class ScheduleList with ChangeNotifier {
     await fetchActivities();
     await fetchSettings();
     await notificationHelper.initialize(systemSettings);
-
+    for (int scheduleId = 0; scheduleId < schedules.length; scheduleId++) {
+      notificationIdsInDB.add(schedules[scheduleId].notificationId);
+      Schedule sch = schedules[scheduleId];
+      for (int activityId = 0;
+          activityId < sch.activities.length;
+          activityId++) {
+        notificationIdsInDB.add(sch.activities[activityId].notificationId);
+      }
+    }
     if (notificationHelper.notificationCameForScheduleName != "" &&
         notificationHelper.notificationCameForScheduleName != null) {
       int indexOfScheduleNotified = schedules.indexWhere((sch) =>
@@ -72,6 +81,7 @@ class ScheduleList with ChangeNotifier {
           : schedules[indexOfScheduleNotified];
       notificaitonCameForUrl = notificationHelper.notificaitonCameForUrl;
     }
+
     loaded = true;
     notifyListeners();
   }
@@ -644,16 +654,26 @@ class ScheduleList with ChangeNotifier {
     return activities;
   }
 
+  int getNextNotificationId() {
+    int nextNotificationId = 0;
+    while (notificationIdsInDB.contains(nextNotificationId)) {
+      nextNotificationId++;
+    }
+    return nextNotificationId;
+  }
+
   Future<void> scheduleNotification(
     Schedule schedule,
     DateTime fromDateTime,
     int fromIndex,
   ) async {
     for (int i = fromIndex; i < schedule.activities.length; i++) {
+      int nextNotificationId = getNextNotificationId();
       if (schedule.activities[i].activityDuration.inSeconds == 0) {
         schedule.activities[i].notificationId =
             await notificationHelper.scheduleNotification(
           DateTime.now().add(const Duration(seconds: 1)),
+          nextNotificationId,
           schedule.name,
           "${schedule.activities[i].activity.title} has Started.",
           {
@@ -672,6 +692,7 @@ class ScheduleList with ChangeNotifier {
       schedule.activities[i].notificationId =
           await notificationHelper.scheduleNotification(
         fromDateTime,
+        nextNotificationId,
         schedule.name,
         "${schedule.activities[i].activity.title} is completed.",
         {
