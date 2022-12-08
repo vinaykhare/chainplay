@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:schedule_it/helpers/constants.dart';
 //import 'package:schedule_it/models/activity.dart';
 import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_list.dart';
 import 'package:schedule_it/screens/add_schedule_screen.dart';
 import 'package:schedule_it/screens/play_schedule_screen.dart';
+import 'package:schedule_it/screens/schedule_history_screen.dart';
 
 class ScheduleView extends StatelessWidget {
   final BannerAd? adSchedule;
@@ -62,14 +64,14 @@ class ScheduleView extends StatelessWidget {
                           );
                         }
                       },
-                      tileColor: schedule.scheduleStatus == 1
+                      tileColor: schedule.scheduleStatus == statusDone
                           ? Theme.of(context).disabledColor
                           : Theme.of(context).cardColor,
                       title: Text(schedule.name),
                       subtitle: Text(DateFormat.yMEd()
                           .add_jms()
                           .format(schedule.lastUpdatedAt)),
-                      leading: schedule.scheduleStatus == 0
+                      leading: schedule.scheduleStatus == statusNotStarted
                           ? CircleAvatar(
                               backgroundColor:
                                   Theme.of(context).primaryColorLight,
@@ -104,17 +106,6 @@ class ScheduleView extends StatelessWidget {
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          if (schedule.scheduleStatus == 1 ||
-                              schedule.at != null)
-                            IconButton(
-                              onPressed: () async {
-                                schedule.at = null;
-                                schedule.scheduleStatus = 0;
-                                await scheduleList.updateSchedule(schedule);
-                                await scheduleList.resetActivities(schedule);
-                              },
-                              icon: const Icon(Icons.restore),
-                            ),
                           IconButton(
                             icon: schedule.pinned
                                 ? const Icon(Icons.favorite)
@@ -124,6 +115,16 @@ class ScheduleView extends StatelessWidget {
                               await scheduleList.updateSchedule(schedule);
                             },
                           ),
+                          if (schedule.scheduleHistory.isNotEmpty)
+                            IconButton(
+                              onPressed: () async {
+                                Navigator.of(context).pushNamed(
+                                  ScheduleHistoryScreen.routename,
+                                  arguments: schedule,
+                                );
+                              },
+                              icon: const Icon(Icons.arrow_forward),
+                            ),
                         ],
                       ),
                     ),

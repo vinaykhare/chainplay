@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:schedule_it/schedule_it.dart';
 
@@ -9,6 +10,10 @@ import 'models/schedule_list.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   // LocalNotificationService localNotifyService = LocalNotificationService();
   // localNotifyService.initialize();
   // final initMobileAds = MobileAds.instance.initialize();

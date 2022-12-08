@@ -19,10 +19,23 @@ const initScript = [
       lastUpdatedAt INTEGER, 
       pinned INTEGER,
       startedAt INTEGER,
+      pausedAt INTEGER,
       endedAt INTEGER,
       scheduleStatus INTEGER,
       notificationId TEXT,
       editSchedule INTEGER
+    )
+  ''',
+  '''CREATE TABLE schedule_execution (
+      scheduleExecutionId TEXT PRIMARY KEY,
+      scheduleName TEXT,
+      startedAt INTEGER,
+      pausedAt INTEGER,
+      endedAt INTEGER,
+      scheduleStatus INTEGER,
+      notificationId TEXT,
+      FOREIGN KEY (scheduleName)
+        REFERENCES schedule (scheduleName)
     )
   ''',
   '''CREATE TABLE schedule_activity (
@@ -30,6 +43,7 @@ const initScript = [
       activityId TEXT,
       activityIndex INTEGER,
       activityDone INTEGER,
+      restDone INTEGER,
       notificationId TEXT,
       activityDuration INTEGER,
       nextActivityAfter INTEGER,

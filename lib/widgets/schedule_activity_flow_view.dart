@@ -120,7 +120,9 @@ class ScheduleActivityFlowView extends StatelessWidget {
                       borderRadius: const BorderRadius.all(
                         Radius.circular(20),
                       ),
-                      color: Theme.of(context).primaryColor,
+                      color: activities[index].editNextActivity
+                          ? Theme.of(context).focusColor
+                          : Theme.of(context).primaryColor,
                     ),
                     child: Text(
                       "${activities[index].activityDone ? 'Rest Ended ' : 'Rest will end '}${TransformFunctions.durationToString(scheduleActivity.nextActivityAfter)}.",
@@ -130,7 +132,7 @@ class ScheduleActivityFlowView extends StatelessWidget {
                     Icons.circle_outlined,
                     size: 15,
                     color: activities[index].editNextActivity
-                        ? Theme.of(context).cardColor
+                        ? Theme.of(context).errorColor
                         : Theme.of(context).primaryColor,
                   ),
           ),

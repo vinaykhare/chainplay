@@ -24,15 +24,11 @@ class LoadScreen extends StatelessWidget {
                   fit: BoxFit.fill,
                   height: appHeight * 0.5,
                 ),
-                Positioned(
-                  top: 100,
-                  left: 100,
-                  child: Text(
-                    "Loading...",
-                    style: Theme.of(context).textTheme.headline4?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
+                Text(
+                  "Loading...",
+                  style: Theme.of(context).textTheme.headline4?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ],
             ),
