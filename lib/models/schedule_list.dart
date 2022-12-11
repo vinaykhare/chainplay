@@ -263,6 +263,32 @@ class ScheduleList with ChangeNotifier {
         "scheduleStatus": scheduleExecution.scheduleStatus,
       },
     );
+
+    int scheduleActivityIndex = 0;
+
+    for (ScheduleActivity scheduleActivity
+        in scheduleExecution.scheduleActivities) {
+      await DBHelper.insert(
+        "schedule_activity_execution",
+        {
+          "scheduleName": scheduleExecution.scheduleName,
+          "activityId": scheduleActivity.activity.activityId,
+          "activityIndex": scheduleActivityIndex,
+          "activityDone": scheduleActivity.activityDone ? 1 : 0,
+          "restDone": scheduleActivity.restDone ? 1 : 0,
+          "notificationId": scheduleActivity.notificationId.toString(),
+          "activityDuration": scheduleActivity.activityDuration.inSeconds,
+          "nextActivityAfter ": scheduleActivity.nextActivityAfter.inSeconds,
+          "startedAt": scheduleActivity.at == null
+              ? noValueInDB
+              : scheduleActivity.at!.millisecondsSinceEpoch,
+          "endedAt": scheduleActivity.endedAt == null
+              ? noValueInDB
+              : scheduleActivity.endedAt!.millisecondsSinceEpoch,
+        },
+      );
+      scheduleActivityIndex++;
+    }
   }
 
   Future<Schedule> moveScheduleToHistory(Schedule schedule) async {
@@ -274,6 +300,10 @@ class ScheduleList with ChangeNotifier {
     scheduleExecution.endedAt = schedule.endedAt;
     scheduleExecution.scheduleStatus = schedule.scheduleStatus;
     scheduleExecution.notificationId = schedule.notificationId;
+
+    for (ScheduleActivity scheduleActivity in schedule.activities) {
+      scheduleExecution.scheduleActivities.add(scheduleActivity);
+    }
 
     await addScheduleToHistory(scheduleExecution);
     schedule.scheduleHistory.add(scheduleExecution);
@@ -718,6 +748,41 @@ class ScheduleList with ChangeNotifier {
     return schedule.activities;
   }
 
+  Future<List<ScheduleActivity>> loadScheduleActivityHistory(
+      ScheduleExecution scheduleExecution) async {
+    List<Map<String, dynamic>> loadedScheduleActivityHistory =
+        await DBHelper.getData("schedule_activity_execution", "endedAt DESC",
+            "scheduleName = ?", [scheduleExecution.scheduleName]);
+
+    scheduleExecution.scheduleActivities = [];
+    for (var scheduleActivity in loadedScheduleActivityHistory) {
+      ScheduleActivity tempActivity = ScheduleActivity(
+        activity: Activity(
+          activityId: scheduleActivity['activityId'],
+          title: scheduleActivity['title'],
+          createdAt: DateTime.fromMillisecondsSinceEpoch(
+              scheduleActivity["createdAt"]),
+          lastUpdatedAt: DateTime.fromMillisecondsSinceEpoch(
+              scheduleActivity["lastUpdatedAt"]),
+          type: scheduleActivity['type'],
+        ),
+        activityDone: scheduleActivity['activityDone'] == 1,
+        activityDuration:
+            Duration(seconds: scheduleActivity['activityDuration']),
+        nextActivityAfter:
+            Duration(seconds: scheduleActivity['nextActivityAfter']),
+      );
+      tempActivity.restDone = scheduleActivity['restDone'] == 1;
+      tempActivity.at = getDateValueFromDB(scheduleActivity["startedAt"]);
+      tempActivity.endedAt = getDateValueFromDB(scheduleActivity["endedAt"]);
+
+      tempActivity.notificationId =
+          int.parse(scheduleActivity['notificationId']);
+      scheduleExecution.scheduleActivities.add(tempActivity);
+    }
+    return scheduleExecution.scheduleActivities;
+  }
+
   Future<List<ScheduleExecution>> loadScheduleHistory(Schedule schedule) async {
     List<Map<String, dynamic>> loadedScheduleHistory =
         await DBHelper.getData("schedule_execution", "endedAt DESC");
@@ -737,6 +802,9 @@ class ScheduleList with ChangeNotifier {
       scheduleExecution.scheduleStatus = scheduleHistory['scheduleStatus'];
       scheduleExecution.notificationId =
           int.parse(scheduleHistory["notificationId"]);
+      scheduleExecution.scheduleActivities =
+          await loadScheduleActivityHistory(scheduleExecution);
+
       schedule.scheduleHistory.add(scheduleExecution);
     }
     return schedule.scheduleHistory;

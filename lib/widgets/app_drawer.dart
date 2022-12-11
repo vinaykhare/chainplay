@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:schedule_it/screens/how_it_works.dart';
-import 'package:schedule_it/screens/schedule_list_history_screen.dart';
 import 'package:schedule_it/screens/schedule_list_screen.dart';
 import 'package:schedule_it/screens/settings_screen.dart';
 
@@ -43,18 +42,6 @@ class AppDrawer extends StatelessWidget {
                   }
                   Navigator.of(context)
                       .pushReplacementNamed(HowItWorks.routename);
-                },
-              ),
-              const Divider(),
-              ListTile(
-                leading: const Icon(Icons.help),
-                title: const Text('Executed Schedules'),
-                onTap: () {
-                  while (Navigator.of(context).canPop()) {
-                    Navigator.of(context).pop();
-                  }
-                  Navigator.of(context).pushReplacementNamed(
-                      ScheduleListHistoryScreen.routename);
                 },
               ),
               const Divider(),

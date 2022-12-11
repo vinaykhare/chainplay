@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:schedule_it/helpers/constants.dart';
+import 'package:schedule_it/models/schedule_activity.dart';
 
-class ScheduleExecution with ChangeNotifier {
+class ScheduleExecution {
   String scheduleExecutionId = "";
   String scheduleName = "";
   DateTime? startedAt, pausedAt, endedAt;
   int scheduleStatus = statusNotStarted;
   int notificationId = noValueInDB;
+  List<ScheduleActivity> scheduleActivities = [];
 }

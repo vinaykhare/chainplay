@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_execution.dart';
+import 'package:schedule_it/screens/schedule_activities_history_screen.dart';
 
 //import 'package:schedule_it/widgets/app_drawer.dart';
 
@@ -96,20 +97,36 @@ class ScheduleHistoryScreen extends StatelessWidget {
                 itemCount: scheduleHistory.length,
                 itemBuilder: (context, index) {
                   ScheduleExecution scheduleExecution = scheduleHistory[index];
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: scheduleDate("Started At",
-                              scheduleExecution.startedAt ?? DateTime.now()),
+                  return InkWell(
+                    onTap: () => Navigator.of(context).pushNamed(
+                        ScheduleActivitiesHistoryScreen.routename,
+                        arguments: scheduleExecution),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          gradient: RadialGradient(
+                        colors: [
+                          Theme.of(context).backgroundColor,
+                          Theme.of(context).scaffoldBackgroundColor,
+                        ],
+                      )),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: scheduleDate(
+                                  "Started At",
+                                  scheduleExecution.startedAt ??
+                                      DateTime.now()),
+                            ),
+                            const Icon(Icons.arrow_forward),
+                            Expanded(
+                              child: scheduleDate("Ended At",
+                                  scheduleExecution.endedAt ?? DateTime.now()),
+                            ),
+                          ],
                         ),
-                        const Icon(Icons.arrow_forward),
-                        Expanded(
-                          child: scheduleDate("Ended At",
-                              scheduleExecution.endedAt ?? DateTime.now()),
-                        ),
-                      ],
+                      ),
                     ),
                   );
                 },
