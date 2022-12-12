@@ -10,11 +10,13 @@ import 'package:schedule_it/widgets/schedule_activity_flow_view.dart';
 class ScheduleActivities extends StatelessWidget {
   final Schedule tempSchedule;
   final Function? editActivity, undoEdit;
+  final bool showCheckBoxes;
   const ScheduleActivities({
     super.key,
     required this.tempSchedule,
     required this.editActivity,
     required this.undoEdit,
+    required this.showCheckBoxes,
   });
 
   @override
@@ -51,6 +53,7 @@ class ScheduleActivities extends StatelessWidget {
                 undoEdit: undoEdit,
                 lineWidget: lineWidget,
                 index: index,
+                showCheckBox: showCheckBoxes,
               );
             },
           )
@@ -76,6 +79,7 @@ class ScheduleActivities extends StatelessWidget {
                 undoEdit: undoEdit,
                 lineWidget: lineWidget,
                 index: index,
+                showCheckBox: showCheckBoxes,
               );
             },
           );

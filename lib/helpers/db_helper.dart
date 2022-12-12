@@ -58,6 +58,7 @@ const initScript = [
     )
   ''',
   '''CREATE TABLE schedule_activity_execution (
+      scheduleExecutionId TEXT,
       scheduleName TEXT, 
       activityId TEXT,
       activityIndex INTEGER,
@@ -71,7 +72,9 @@ const initScript = [
       FOREIGN KEY (scheduleName)
         REFERENCES schedule (scheduleName),
       FOREIGN KEY (activityId)
-        REFERENCES activity (activityId)
+        REFERENCES activity (activityId),
+      FOREIGN KEY (scheduleExecutionId)
+        REFERENCES schedule_execution (scheduleExecutionId)
     )
   ''',
   '''CREATE TABLE settings (

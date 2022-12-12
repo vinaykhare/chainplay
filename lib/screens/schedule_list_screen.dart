@@ -37,7 +37,6 @@ class ScheduleListScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
           //mainAxisSize: MainAxisSize.min,
           children: [
             Expanded(
@@ -62,6 +61,7 @@ class ScheduleListScreen extends StatelessWidget {
               centerTitle: true,
               //automaticallyImplyLeading: false,
               title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
                     child: TextField(
@@ -90,7 +90,8 @@ class ScheduleListScreen extends StatelessWidget {
                           .pushNamed(AddScheduleScreen.routename);
                     },
                     icon: const Icon(
-                      Icons.library_add,
+                      Icons.watch_later,
+                      size: 30,
                     ),
                   )
                 ],

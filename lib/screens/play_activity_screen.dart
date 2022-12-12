@@ -47,7 +47,7 @@ class _PlayActivityState extends State<PlayActivity> {
 
     if (seconds < 0) {
       stopTimer();
-      nav.pop(1);
+      nav.pop(0);
     } else {
       setState(() {
         waitDuration = Duration(seconds: seconds);
@@ -156,7 +156,7 @@ class _PlayActivityState extends State<PlayActivity> {
                     await Provider.of<ScheduleList>(context, listen: false)
                         .playNotificationSound();
                     stopTimer();
-                    nav.pop(1);
+                    nav.pop(0);
                   },
                   child: CircleAvatar(
                     radius: 150,
@@ -182,8 +182,12 @@ class _PlayActivityState extends State<PlayActivity> {
                   children: [
                     IconButton(
                       onPressed: () {
+                        int? result;
+                        if (!running) {
+                          result = waitDuration.inSeconds;
+                        }
                         Navigator.of(context).canPop()
-                            ? Navigator.of(context).pop()
+                            ? Navigator.of(context).pop(result)
                             : Navigator.of(context)
                                 .pushReplacementNamed(PlaySchedule.routename);
                       },
@@ -218,7 +222,7 @@ class _PlayActivityState extends State<PlayActivity> {
                         await Provider.of<ScheduleList>(context, listen: false)
                             .playNotificationSound();
                         stopTimer();
-                        nav.pop(1);
+                        nav.pop(0);
                       },
                       icon: const Icon(Icons.arrow_forward),
                     ),

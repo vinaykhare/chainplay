@@ -475,6 +475,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                       tempSchedule: tempSchedule,
                       editActivity: editActivity,
                       undoEdit: undoEdit,
+                      showCheckBoxes: true,
                     ),
                   ),
                 ),

@@ -19,6 +19,7 @@ class ScheduleActivityFlowView extends StatelessWidget {
     required this.undoEdit,
     required this.lineWidget,
     required this.index,
+    required this.showCheckBox,
   }) : super(key: key);
 
   final List<ScheduleActivity> activities;
@@ -30,6 +31,7 @@ class ScheduleActivityFlowView extends StatelessWidget {
   final Function? undoEdit;
   final Widget lineWidget;
   final int index;
+  final bool showCheckBox;
 
   @override
   Widget build(BuildContext context) {
@@ -87,17 +89,20 @@ class ScheduleActivityFlowView extends StatelessWidget {
                               child: const Icon(Icons.drag_handle),
                             )
                           : null,
-              leading: Checkbox(
-                key: ValueKey(
-                    'activities_checkbox_${scheduleActivity.activity.title}'),
-                value: scheduleActivity.activityDone,
-                onChanged: (value) async {
-                  // setState(() {
-                  //   activity.activityDone = value ?? false;
-                  // });
-                  scheduleList.flipDoneActivity(tempSchedule, scheduleActivity);
-                },
-              ),
+              leading: showCheckBox
+                  ? Checkbox(
+                      key: ValueKey(
+                          'activities_checkbox_${scheduleActivity.activity.title}'),
+                      value: scheduleActivity.activityDone,
+                      onChanged: (value) async {
+                        // setState(() {
+                        //   activity.activityDone = value ?? false;
+                        // });
+                        scheduleList.flipDoneActivity(
+                            tempSchedule, scheduleActivity);
+                      },
+                    )
+                  : null,
             ),
           ),
         ),

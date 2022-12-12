@@ -271,11 +271,12 @@ class ScheduleList with ChangeNotifier {
       await DBHelper.insert(
         "schedule_activity_execution",
         {
+          "scheduleExecutionId": scheduleExecution.scheduleExecutionId,
           "scheduleName": scheduleExecution.scheduleName,
           "activityId": scheduleActivity.activity.activityId,
           "activityIndex": scheduleActivityIndex,
-          "activityDone": scheduleActivity.activityDone ? 1 : 0,
-          "restDone": scheduleActivity.restDone ? 1 : 0,
+          "activityDone": statusDone,
+          "restDone": statusDone,
           "notificationId": scheduleActivity.notificationId.toString(),
           "activityDuration": scheduleActivity.activityDuration.inSeconds,
           "nextActivityAfter ": scheduleActivity.nextActivityAfter.inSeconds,
@@ -298,19 +299,35 @@ class ScheduleList with ChangeNotifier {
     scheduleExecution.startedAt = schedule.at;
     scheduleExecution.pausedAt = schedule.pausedAt;
     scheduleExecution.endedAt = schedule.endedAt;
-    scheduleExecution.scheduleStatus = schedule.scheduleStatus;
+    scheduleExecution.scheduleStatus = statusDone;
     scheduleExecution.notificationId = schedule.notificationId;
 
     for (ScheduleActivity scheduleActivity in schedule.activities) {
-      scheduleExecution.scheduleActivities.add(scheduleActivity);
+      ScheduleActivity scheduleActivityCopy = ScheduleActivity(
+        activity: scheduleActivity.activity,
+        activityDone: scheduleActivity.activityDone,
+        activityDuration: scheduleActivity.activityDuration,
+        nextActivityAfter: scheduleActivity.nextActivityAfter,
+      );
+
+      scheduleActivityCopy.at = scheduleActivity.at;
+      scheduleActivityCopy.endedAt = scheduleActivity.endedAt;
+      scheduleActivityCopy.restDone = scheduleActivity.restDone;
+      scheduleActivityCopy.edit = scheduleActivity.edit;
+      scheduleActivityCopy.editNextActivity = scheduleActivity.editNextActivity;
+      scheduleActivityCopy.notificationId = scheduleActivity.notificationId;
+
+      scheduleExecution.scheduleActivities.add(scheduleActivityCopy);
     }
 
     await addScheduleToHistory(scheduleExecution);
-    schedule.scheduleHistory.add(scheduleExecution);
+    int scheduleIndex =
+        schedules.indexWhere((sch) => sch.name == schedule.name);
+
+    schedules[scheduleIndex].scheduleHistory.add(scheduleExecution);
     schedule.at = schedule.endedAt = schedule.pausedAt = null;
     schedule.notificationId = noValueInDB;
     schedule.scheduleStatus = statusNotStarted;
-
     return schedule;
   }
 
@@ -387,8 +404,8 @@ class ScheduleList with ChangeNotifier {
     await DBHelper.update(
       "schedule_activity",
       {
-        "activityDone": schedule.scheduleStatus,
-        "restDone": schedule.scheduleStatus,
+        // "activityDone": schedule.scheduleStatus,
+        // "restDone": schedule.scheduleStatus,
         "editScheduleActivity": editScheduleActivity,
         "editNextActivity": editNextActivity,
       },
@@ -748,24 +765,54 @@ class ScheduleList with ChangeNotifier {
     return schedule.activities;
   }
 
+  Future<Activity?> getActivityByActivityId(String activityId) async {
+    List<Map<String, dynamic>> activityFromDB = await DBHelper.getData(
+        'activity', 'activityId', 'activityId = ?', [activityId]);
+    if (activityFromDB.isEmpty) {
+      return null;
+    }
+    return Activity(
+      activityId: activityFromDB[0]['activityId'],
+      title: activityFromDB[0]['title'],
+      createdAt:
+          DateTime.fromMillisecondsSinceEpoch(activityFromDB[0]["createdAt"]),
+      lastUpdatedAt: DateTime.fromMillisecondsSinceEpoch(
+          activityFromDB[0]["lastUpdatedAt"]),
+      type: activityFromDB[0]['type'],
+    );
+  }
+
   Future<List<ScheduleActivity>> loadScheduleActivityHistory(
       ScheduleExecution scheduleExecution) async {
     List<Map<String, dynamic>> loadedScheduleActivityHistory =
-        await DBHelper.getData("schedule_activity_execution", "endedAt DESC",
-            "scheduleName = ?", [scheduleExecution.scheduleName]);
+        await DBHelper.getData(
+      "schedule_activity_execution",
+      "activityIndex",
+      "scheduleExecutionId = ?",
+      [
+        scheduleExecution.scheduleExecutionId,
+      ],
+    );
+    //     await DBHelper.getDataBySQL(
+    //   '''
+    //   SELECT schedule_activity_execution.*, activity.*
+    //   FROM schedule_activity_execution
+    //   JOIN activity ON (schedule_activity_execution.activityId = activity.activityId)
+    //   WHERE schedule_activity_execution.scheduleName = ?
+    //   ORDER BY schedule_activity_execution.activityIndex
+    //   ''',
+    //   [scheduleExecution.scheduleName],
+    // );
 
-    scheduleExecution.scheduleActivities = [];
+    List<ScheduleActivity> result = [];
     for (var scheduleActivity in loadedScheduleActivityHistory) {
+      Activity? activityRetrieved =
+          await getActivityByActivityId(scheduleActivity['activityId']);
+      if (activityRetrieved == null) {
+        continue;
+      }
       ScheduleActivity tempActivity = ScheduleActivity(
-        activity: Activity(
-          activityId: scheduleActivity['activityId'],
-          title: scheduleActivity['title'],
-          createdAt: DateTime.fromMillisecondsSinceEpoch(
-              scheduleActivity["createdAt"]),
-          lastUpdatedAt: DateTime.fromMillisecondsSinceEpoch(
-              scheduleActivity["lastUpdatedAt"]),
-          type: scheduleActivity['type'],
-        ),
+        activity: activityRetrieved,
         activityDone: scheduleActivity['activityDone'] == 1,
         activityDuration:
             Duration(seconds: scheduleActivity['activityDuration']),
@@ -778,15 +825,18 @@ class ScheduleList with ChangeNotifier {
 
       tempActivity.notificationId =
           int.parse(scheduleActivity['notificationId']);
-      scheduleExecution.scheduleActivities.add(tempActivity);
+      result.add(tempActivity);
     }
-    return scheduleExecution.scheduleActivities;
+    return result;
   }
 
   Future<List<ScheduleExecution>> loadScheduleHistory(Schedule schedule) async {
-    List<Map<String, dynamic>> loadedScheduleHistory =
-        await DBHelper.getData("schedule_execution", "endedAt DESC");
-    schedule.scheduleHistory = [];
+    List<Map<String, dynamic>> loadedScheduleHistory = await DBHelper.getData(
+        "schedule_execution",
+        "endedAt DESC",
+        "scheduleName = ?",
+        [schedule.name]);
+    List<ScheduleExecution> result = [];
     for (var scheduleHistory in loadedScheduleHistory) {
       ScheduleExecution scheduleExecution = ScheduleExecution();
 
@@ -805,9 +855,9 @@ class ScheduleList with ChangeNotifier {
       scheduleExecution.scheduleActivities =
           await loadScheduleActivityHistory(scheduleExecution);
 
-      schedule.scheduleHistory.add(scheduleExecution);
+      result.add(scheduleExecution);
     }
-    return schedule.scheduleHistory;
+    return result;
   }
 
   Future<List<Schedule>> fetchSchedules() async {

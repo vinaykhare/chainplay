@@ -69,7 +69,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
 
       //await scheduleList.loadActivities(schedule);
     }
-
+    popResponse = 0;
     for (; invokeCounter < schedule.activities.length; invokeCounter++) {
       activities[invokeCounter].at = DateTime.now();
       // await scheduleList.scheduleNotification(
@@ -94,7 +94,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
             "playRest": false,
           },
         );
-        if (popResponse == null) {
+        if (popResponse == null || popResponse != 0) {
           break;
         }
 
@@ -104,7 +104,9 @@ class _PlayScheduleState extends State<PlaySchedule> {
         calculatedWaitDuration = const Duration(seconds: 0);
       }
       if (activities[invokeCounter].nextActivityAfter.inSeconds > 0 &&
-          !activities[invokeCounter].restDone) {
+          !activities[invokeCounter].restDone &&
+          popResponse != null &&
+          popResponse == 0) {
         //var restScreenResponse =
         // popResponse = await nav.pushNamed(
         //   PlayRest.routename,
@@ -124,7 +126,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
           },
         );
 
-        if (popResponse == null) {
+        if (popResponse == null || popResponse != 0) {
           break;
         }
 
@@ -149,11 +151,18 @@ class _PlayScheduleState extends State<PlaySchedule> {
     if (popResponse == null) {
       await scheduleList.scheduleNotification(
           schedule, DateTime.now(), invokeCounter);
-    } else {
+    } else if (popResponse == 0) {
       setState(() {});
       await scheduleList.updateSchedule(schedule);
       await scheduleList.updatScheduleActivityByScheduleName(schedule);
       scheduleExecuted = true;
+    } else {
+      schedule.pausedAt = activities[invokeCounter].at!.add(
+            Duration(
+              seconds: popResponse,
+            ),
+          );
+      await scheduleList.updateSchedule(schedule);
     }
     //nav.pop();
   }
@@ -206,6 +215,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
                       tempSchedule: schedule,
                       editActivity: null,
                       undoEdit: null,
+                      showCheckBoxes: true,
                     ),
                   ),
                 ),
