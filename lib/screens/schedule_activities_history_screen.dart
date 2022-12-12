@@ -18,7 +18,6 @@ class ScheduleActivitiesHistoryScreen extends StatelessWidget {
     Schedule tempScheudule = Schedule();
     tempScheudule.name = scheduleExecution.scheduleName;
     tempScheudule.at = scheduleExecution.startedAt;
-    tempScheudule.pausedAt = scheduleExecution.pausedAt;
     tempScheudule.endedAt = scheduleExecution.endedAt;
     tempScheudule.activities = scheduleExecution.scheduleActivities;
     tempScheudule.scheduleStatus = scheduleExecution.scheduleStatus;

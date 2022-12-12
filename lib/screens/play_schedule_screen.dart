@@ -156,14 +156,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
       await scheduleList.updateSchedule(schedule);
       await scheduleList.updatScheduleActivityByScheduleName(schedule);
       scheduleExecuted = true;
-    } else {
-      schedule.pausedAt = activities[invokeCounter].at!.add(
-            Duration(
-              seconds: popResponse,
-            ),
-          );
-      await scheduleList.updateSchedule(schedule);
-    }
+    } else {}
     //nav.pop();
   }
 

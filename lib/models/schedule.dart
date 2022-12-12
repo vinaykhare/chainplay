@@ -5,7 +5,7 @@ import 'package:schedule_it/models/schedule_execution.dart';
 
 class Schedule {
   String name = "";
-  DateTime? at, pausedAt, endedAt;
+  DateTime? at, endedAt;
   DateTime lastUpdatedAt = DateTime.now();
   DateTime createdAt = DateTime.now();
   List<ScheduleActivity> activities = [];

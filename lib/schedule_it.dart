@@ -48,6 +48,7 @@ class ScheduleIt extends StatelessWidget {
               backgroundColor: Colors.lightGreen,
               cardColor: Colors.lightGreen,
               canvasColor: Colors.amber,
+              dialogBackgroundColor: Colors.amber,
             ),
       home: scheduleList.loaded
           ? scheduleList.notificationCameForSchedule != null

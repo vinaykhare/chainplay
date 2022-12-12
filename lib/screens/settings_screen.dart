@@ -38,8 +38,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             ElevatedButton.icon(
-              label: const Text("Reset App"),
-              onPressed: Provider.of<ScheduleList>(context).clearDataBase,
+              label: const Text("Reset App to Factory Settings!"),
+              onPressed: () async {
+                await showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      content: const Text("Are you sure?"),
+                      actions: [
+                        IconButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          icon: const Icon(
+                            Icons.close,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            Provider.of<ScheduleList>(context, listen: false)
+                                .clearDataBase();
+                            Navigator.of(context).pop();
+                          },
+                          icon: const Icon(
+                            Icons.check,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
               icon: const Icon(
                 Icons.clear,
               ),

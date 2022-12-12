@@ -193,7 +193,7 @@ class _PlayActivityState extends State<PlayActivity> {
                       },
                       icon: const Icon(Icons.arrow_back),
                     ),
-                    if (showPlayPause)
+                    if (showPlayPause && !playingRest)
                       Expanded(
                         child: IconButton(
                           onPressed: () {
