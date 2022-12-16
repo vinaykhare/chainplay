@@ -78,6 +78,20 @@ class _PlayActivityState extends State<PlayActivity> {
     setState(() => waitDuration = initialWaitDuration);
   }
 
+  void interruptAndCompleteActivity() async {
+    NavigatorState nav = Navigator.of(context);
+    await Provider.of<ScheduleList>(context, listen: false)
+        .playNotificationSound();
+    stopTimer();
+    nav.pop(playingRest || waitDuration.inSeconds <= 0
+        ? null
+        : {
+            "running": running,
+            "waitDuration": waitDuration,
+            "interruptAndCompleted": true,
+          });
+  }
+
   //Build Function
 
   @override
@@ -152,13 +166,7 @@ class _PlayActivityState extends State<PlayActivity> {
                   textAlign: TextAlign.center,
                 ),
                 InkWell(
-                  onTap: () async {
-                    NavigatorState nav = Navigator.of(context);
-                    await Provider.of<ScheduleList>(context, listen: false)
-                        .playNotificationSound();
-                    stopTimer();
-                    nav.pop();
-                  },
+                  onTap: interruptAndCompleteActivity,
                   child: CircleAvatar(
                     radius: 150,
                     backgroundColor: playingRest
@@ -187,6 +195,7 @@ class _PlayActivityState extends State<PlayActivity> {
                             ? Navigator.of(context).pop({
                                 "running": running,
                                 "waitDuration": waitDuration,
+                                "interruptAndCompleted": false,
                               })
                             : Navigator.of(context)
                                 .pushReplacementNamed(PlaySchedule.routename);
@@ -217,13 +226,7 @@ class _PlayActivityState extends State<PlayActivity> {
                         child: SizedBox(),
                       ),
                     IconButton(
-                      onPressed: () async {
-                        NavigatorState nav = Navigator.of(context);
-                        await Provider.of<ScheduleList>(context, listen: false)
-                            .playNotificationSound();
-                        stopTimer();
-                        nav.pop();
-                      },
+                      onPressed: interruptAndCompleteActivity,
                       icon: const Icon(Icons.arrow_forward),
                     ),
                   ],

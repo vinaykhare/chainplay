@@ -69,10 +69,14 @@ class _PlayScheduleState extends State<PlaySchedule> {
         );
 
         if (popResponse != null) {
-          activities[invokeCounter].pausedAt = popResponse["running"] == false
-              ? popResponse["waitDuration"]
-              : null;
-          break;
+          if (popResponse["interruptAndCompleted"] == false) {
+            activities[invokeCounter].pausedAt = popResponse["running"] == false
+                ? popResponse["waitDuration"]
+                : null;
+            break;
+          } else {
+            activities[invokeCounter].restDone = true;
+          }
         }
 
         activities[invokeCounter].activityDone = true;
@@ -89,10 +93,15 @@ class _PlayScheduleState extends State<PlaySchedule> {
           );
 
           if (popResponse != null) {
-            activities[invokeCounter].pausedAt = popResponse["running"] == false
-                ? popResponse["waitDuration"]
-                : null;
-            break;
+            if (popResponse["interruptAndCompleted"] == false) {
+              activities[invokeCounter].pausedAt =
+                  popResponse["running"] == false
+                      ? popResponse["waitDuration"]
+                      : null;
+              break;
+            } else {
+              activities[invokeCounter].restDone = true;
+            }
           }
         }
       } else {
@@ -100,7 +109,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
 
         activityExecutedFor += activities[invokeCounter].nextActivityAfter;
 
-        if (!activities[invokeCounter].restDone &&
+        if (activities[invokeCounter].endedAt == null &&
             timeSpentSinceStartOfActivity < activityExecutedFor) {
           waitDurationDifferenceForRestScreen =
               activityExecutedFor - timeSpentSinceStartOfActivity;
@@ -118,14 +127,19 @@ class _PlayScheduleState extends State<PlaySchedule> {
           );
 
           if (popResponse != null) {
-            activities[invokeCounter].pausedAt = popResponse["running"] == false
-                ? popResponse["waitDuration"]
-                : null;
-            break;
+            if (popResponse["interruptAndCompleted"] == false) {
+              activities[invokeCounter].pausedAt =
+                  popResponse["running"] == false
+                      ? popResponse["waitDuration"]
+                      : null;
+              break;
+            } else {
+              activities[invokeCounter].restDone = true;
+            }
           }
         }
       }
-      activities[invokeCounter].restDone = true;
+      //activities[invokeCounter].restDone = true;
 
       actStartDate = activities[invokeCounter].endedAt =
           activities[invokeCounter].endedAt ?? DateTime.now();
@@ -137,7 +151,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
       );
     }
 
-    if (popResponse != null) {
+    if (popResponse != null && popResponse["interruptAndCompleted"] == false) {
       await scheduleList.scheduleNotification(
           schedule, DateTime.now(), invokeCounter);
     } else {

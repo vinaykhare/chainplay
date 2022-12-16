@@ -71,7 +71,7 @@ class ScheduleActivityFlowView extends StatelessWidget {
                   : null,
               title: Text(scheduleActivity.activity.title),
               subtitle: Text(
-                "${scheduleActivity.activityDone ? 'Completed' : 'will Complete'} ${TransformFunctions.durationToString(scheduleActivity.activityDuration)}.",
+                "${scheduleActivity.activityDone ? 'Completed' : 'will Complete'} ${activities[index].restDone ? ' before scheduled duration' : TransformFunctions.durationToString(scheduleActivity.activityDuration)}.",
               ),
               trailing: scheduleActivity.activityDone
                   ? null
@@ -133,7 +133,7 @@ class ScheduleActivityFlowView extends StatelessWidget {
                           : Theme.of(context).primaryColor,
                     ),
                     child: Text(
-                      "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${TransformFunctions.durationToString(scheduleActivity.nextActivityAfter)}.",
+                      "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].restDone ? ' before scheduled duration' : TransformFunctions.durationToString(scheduleActivity.nextActivityAfter)}.",
                     ),
                   )
                 : Icon(
