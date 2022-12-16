@@ -47,7 +47,7 @@ class _PlayActivityState extends State<PlayActivity> {
 
     if (seconds < 0) {
       stopTimer();
-      nav.pop(0);
+      nav.pop();
     } else {
       setState(() {
         waitDuration = Duration(seconds: seconds);
@@ -97,12 +97,13 @@ class _PlayActivityState extends State<PlayActivity> {
       initialWaitDuration = waitDuration = input["waitDuration"];
       scheduleActivity = input["scheduleActivity"];
       playingRest = input["playRest"];
-      if (waitDuration.inSeconds > 0 || playingRest) {
+      running = input["running"];
+      if (running && (waitDuration.inSeconds > 0 || playingRest)) {
         startTimer();
-      } else {
+      }
+      if (playingRest) {
         setState(() {
           showPlayPause = false;
-          running = false;
         });
       }
       initializing = false;
@@ -156,7 +157,7 @@ class _PlayActivityState extends State<PlayActivity> {
                     await Provider.of<ScheduleList>(context, listen: false)
                         .playNotificationSound();
                     stopTimer();
-                    nav.pop(0);
+                    nav.pop();
                   },
                   child: CircleAvatar(
                     radius: 150,
@@ -182,12 +183,11 @@ class _PlayActivityState extends State<PlayActivity> {
                   children: [
                     IconButton(
                       onPressed: () {
-                        int? result;
-                        if (!running) {
-                          result = waitDuration.inSeconds;
-                        }
                         Navigator.of(context).canPop()
-                            ? Navigator.of(context).pop(result)
+                            ? Navigator.of(context).pop({
+                                "running": running,
+                                "waitDuration": waitDuration,
+                              })
                             : Navigator.of(context)
                                 .pushReplacementNamed(PlaySchedule.routename);
                       },
@@ -222,7 +222,7 @@ class _PlayActivityState extends State<PlayActivity> {
                         await Provider.of<ScheduleList>(context, listen: false)
                             .playNotificationSound();
                         stopTimer();
-                        nav.pop(0);
+                        nav.pop();
                       },
                       icon: const Icon(Icons.arrow_forward),
                     ),

@@ -17,7 +17,7 @@ class PlaySchedule extends StatefulWidget {
 }
 
 class _PlayScheduleState extends State<PlaySchedule> {
-  Duration waitDurationDifferenceForRestScreen = const Duration(seconds: 0);
+  late DateTime scheduleStartedAt;
   late Schedule schedule;
   late ScheduleList scheduleList;
   List<ScheduleActivity> activities = [];
@@ -28,135 +28,125 @@ class _PlayScheduleState extends State<PlaySchedule> {
     dynamic popResponse;
     NavigatorState nav = Navigator.of(context);
     await Future.delayed(const Duration(seconds: 1));
-    Duration calculatedWaitDuration = const Duration(seconds: 0);
-    Duration timeSpentSinceStartOfSchedule =
-        DateTime.now().difference(schedule.at!);
-    for (Duration appExecutedFor = calculatedWaitDuration;
+
+    for (DateTime actStartDate = scheduleStartedAt;
         invokeCounter < schedule.activities.length;
         invokeCounter++) {
-      if (activities[invokeCounter].activityDone &&
-          activities[invokeCounter].restDone) {
-        continue;
+      Duration activityExecutedFor = const Duration(seconds: 0);
+      Duration calculatedWaitDuration = const Duration(seconds: 0);
+      Duration waitDurationDifferenceForRestScreen = const Duration(seconds: 0);
+      activities[invokeCounter].at =
+          activities[invokeCounter].at ?? actStartDate;
+
+      Duration timeSpentSinceStartOfActivity =
+          DateTime.now().difference(actStartDate);
+
+      if (activities[invokeCounter].activityDuration.inSeconds > 0) {
+        activityExecutedFor += activities[invokeCounter].activityDuration;
+      } else {
+        activityExecutedFor = calculatedWaitDuration;
       }
 
-      if (activities[invokeCounter].activityDuration.inSeconds == 0 &&
-          activities[invokeCounter].endedAt == null) {
-        break;
-      }
-      appExecutedFor += activities[invokeCounter].activityDuration;
+      if (!activities[invokeCounter].activityDone &&
+          (timeSpentSinceStartOfActivity < activityExecutedFor ||
+              activities[invokeCounter].activityDuration.inSeconds <= 0 ||
+              activities[invokeCounter].pausedAt != null)) {
+        if (activities[invokeCounter].activityDuration.inSeconds > 0) {
+          calculatedWaitDuration =
+              activityExecutedFor - timeSpentSinceStartOfActivity;
+        }
+        popResponse = await nav.pushNamed(
+          PlayActivity.routename,
+          arguments: {
+            "waitDuration": activities[invokeCounter].pausedAt ??
+                (calculatedWaitDuration.inSeconds > 0
+                    ? calculatedWaitDuration
+                    : activities[invokeCounter].activityDuration),
+            "scheduleActivity": activities[invokeCounter],
+            "playRest": false,
+            "running": activities[invokeCounter].pausedAt == null,
+          },
+        );
 
-      if (timeSpentSinceStartOfSchedule < appExecutedFor &&
-          !activities[invokeCounter].activityDone) {
-        calculatedWaitDuration = appExecutedFor - timeSpentSinceStartOfSchedule;
-        break;
-      }
+        if (popResponse != null) {
+          activities[invokeCounter].pausedAt = popResponse["running"] == false
+              ? popResponse["waitDuration"]
+              : null;
+          break;
+        }
 
-      appExecutedFor += activities[invokeCounter].nextActivityAfter;
-      if (timeSpentSinceStartOfSchedule < appExecutedFor &&
-          !activities[invokeCounter].restDone) {
-        waitDurationDifferenceForRestScreen =
-            appExecutedFor - timeSpentSinceStartOfSchedule;
-        break;
-      }
+        activities[invokeCounter].activityDone = true;
 
-      activities[invokeCounter].endedAt = schedule.at!.add(appExecutedFor);
-      activities[invokeCounter].activityDone = true;
+        if (activities[invokeCounter].nextActivityAfter.inSeconds > 0) {
+          popResponse = await nav.pushNamed(
+            PlayActivity.routename,
+            arguments: {
+              "waitDuration": activities[invokeCounter].nextActivityAfter,
+              "scheduleActivity": activities[invokeCounter],
+              "playRest": true,
+              "running": true,
+            },
+          );
+
+          if (popResponse != null) {
+            activities[invokeCounter].pausedAt = popResponse["running"] == false
+                ? popResponse["waitDuration"]
+                : null;
+            break;
+          }
+        }
+      } else {
+        activities[invokeCounter].activityDone = true;
+
+        activityExecutedFor += activities[invokeCounter].nextActivityAfter;
+
+        if (!activities[invokeCounter].restDone &&
+            timeSpentSinceStartOfActivity < activityExecutedFor) {
+          waitDurationDifferenceForRestScreen =
+              activityExecutedFor - timeSpentSinceStartOfActivity;
+
+          popResponse = await nav.pushNamed(
+            PlayActivity.routename,
+            arguments: {
+              "waitDuration": waitDurationDifferenceForRestScreen.inSeconds > 0
+                  ? waitDurationDifferenceForRestScreen
+                  : activities[invokeCounter].nextActivityAfter,
+              "scheduleActivity": activities[invokeCounter],
+              "playRest": true,
+              "running": true,
+            },
+          );
+
+          if (popResponse != null) {
+            activities[invokeCounter].pausedAt = popResponse["running"] == false
+                ? popResponse["waitDuration"]
+                : null;
+            break;
+          }
+        }
+      }
       activities[invokeCounter].restDone = true;
+
+      actStartDate = activities[invokeCounter].endedAt =
+          activities[invokeCounter].endedAt ?? DateTime.now();
+      //actStartDate.add(activityExecutedFor);
+
       await scheduleList.updateScheduleActivityByActivityId(
         schedule,
         activities[invokeCounter],
       );
-
-      //await scheduleList.loadActivities(schedule);
     }
-    popResponse = 0;
-    for (; invokeCounter < schedule.activities.length; invokeCounter++) {
-      activities[invokeCounter].at = DateTime.now();
-      // await scheduleList.scheduleNotification(
-      //   schedule,
-      //   activities[invokeCounter].at!,
-      //   invokeCounter,
-      // );
 
-      if (!activities[invokeCounter].activityDone) {
-        activities[invokeCounter].at = DateTime.now();
-
-        await scheduleList.updateScheduleActivityByActivityId(
-            schedule, activities[invokeCounter]);
-
-        popResponse = await nav.pushNamed(
-          PlayActivity.routename,
-          arguments: {
-            "waitDuration": calculatedWaitDuration.inSeconds != 0
-                ? calculatedWaitDuration
-                : activities[invokeCounter].activityDuration,
-            "scheduleActivity": activities[invokeCounter],
-            "playRest": false,
-          },
-        );
-        if (popResponse == null || popResponse != 0) {
-          break;
-        }
-
-        await scheduleList.flipDoneActivity(
-            schedule, activities[invokeCounter]);
-        activities[invokeCounter].activityDone = true;
-        calculatedWaitDuration = const Duration(seconds: 0);
-      }
-      if (activities[invokeCounter].nextActivityAfter.inSeconds > 0 &&
-          !activities[invokeCounter].restDone &&
-          popResponse != null &&
-          popResponse == 0) {
-        //var restScreenResponse =
-        // popResponse = await nav.pushNamed(
-        //   PlayRest.routename,
-        //   arguments: waitDurationDifferenceForRestScreen.inSeconds != 0
-        //       ? waitDurationDifferenceForRestScreen
-        //       : activities[invokeCounter].nextActivityAfter,
-        // );
-
-        popResponse = await nav.pushNamed(
-          PlayActivity.routename,
-          arguments: {
-            "waitDuration": waitDurationDifferenceForRestScreen.inSeconds != 0
-                ? waitDurationDifferenceForRestScreen
-                : activities[invokeCounter].nextActivityAfter,
-            "scheduleActivity": activities[invokeCounter],
-            "playRest": true,
-          },
-        );
-
-        if (popResponse == null || popResponse != 0) {
-          break;
-        }
-
-        // activities[invokeCounter].restDone = true;
-
-        // await scheduleList.updateScheduleActivityByActivityId(
-        //     schedule, activities[invokeCounter]);
-
-        await Future.delayed(const Duration(seconds: 1));
-        //}
-      }
-
-      await scheduleList.flipDoneRestAfterActivity(
-          schedule, activities[invokeCounter]);
-      activities[invokeCounter].restDone = true;
-      activities[invokeCounter].endedAt = DateTime.now();
-
-      await scheduleList.updateScheduleActivityByActivityId(
-          schedule, activities[invokeCounter]);
-      waitDurationDifferenceForRestScreen = const Duration(seconds: 0);
-    }
-    if (popResponse == null) {
+    if (popResponse != null) {
       await scheduleList.scheduleNotification(
           schedule, DateTime.now(), invokeCounter);
-    } else if (popResponse == 0) {
-      setState(() {});
-      await scheduleList.updateSchedule(schedule);
-      await scheduleList.updatScheduleActivityByScheduleName(schedule);
-      scheduleExecuted = true;
-    } else {}
+    } else {
+      setState(() {
+        scheduleExecuted = true;
+      });
+
+      await scheduleList.moveScheduleToHistory(schedule);
+    }
     //nav.pop();
   }
 
@@ -183,6 +173,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
       }
       activities = schedule.activities;
       if (schedule.at != null) {
+        scheduleStartedAt = schedule.at!;
         updateWaitDuration();
       }
       initializing = false;

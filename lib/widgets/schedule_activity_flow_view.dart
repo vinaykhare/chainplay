@@ -98,7 +98,7 @@ class ScheduleActivityFlowView extends StatelessWidget {
                         // setState(() {
                         //   activity.activityDone = value ?? false;
                         // });
-                        scheduleList.flipDoneActivity(
+                        await scheduleList.flipDoneActivity(
                             tempSchedule, scheduleActivity);
                       },
                     )
@@ -117,7 +117,10 @@ class ScheduleActivityFlowView extends StatelessWidget {
                       undoEdit!(scheduleActivity, true);
                     }
                   }
-                : null,
+                : () async {
+                    await scheduleList.flipDoneRestAfterActivity(
+                        tempSchedule, scheduleActivity);
+                  },
             child: (activities[index].nextActivityAfter.inSeconds != 0)
                 ? Container(
                     padding: const EdgeInsets.all(10),
@@ -130,7 +133,7 @@ class ScheduleActivityFlowView extends StatelessWidget {
                           : Theme.of(context).primaryColor,
                     ),
                     child: Text(
-                      "${activities[index].activityDone ? 'Rest Ended ' : 'Rest will end '}${TransformFunctions.durationToString(scheduleActivity.nextActivityAfter)}.",
+                      "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${TransformFunctions.durationToString(scheduleActivity.nextActivityAfter)}.",
                     ),
                   )
                 : Icon(

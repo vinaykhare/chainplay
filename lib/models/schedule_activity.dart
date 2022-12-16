@@ -6,8 +6,9 @@ class ScheduleActivity {
 
   Duration activityDuration; // 0 = No time bound
   Duration nextActivityAfter;
+  Duration? pausedAt;
   bool activityDone = false, restDone = false;
-  DateTime? at, pausedAt, endedAt;
+  DateTime? at, endedAt;
   Activity activity;
   bool edit = false, editNextActivity = false;
 
