@@ -139,15 +139,6 @@ class ScheduleHistoryScreen extends StatelessWidget {
           ],
         ),
       ),
-
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     Navigator.of(context).pushNamed(AddScheduleScreen.routename);
-      //   },
-      //   child: const Icon(
-      //     Icons.add,
-      //   ),
-      // ),
     );
   }
 }

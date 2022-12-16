@@ -5,6 +5,10 @@ const int falseInDB = 0;
 //Activity types
 
 const int waitActivityInDB = 0;
+const int systemWaitActivityInDB = 1;
+
+//System Activity Names
+const String systemWaitActivityTitle = "systemWaitActivity";
 
 //Status
 

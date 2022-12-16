@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 //import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:schedule_it/helpers/constants.dart';
 import 'package:schedule_it/models/activity.dart';
 import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_activity.dart';
@@ -23,6 +24,13 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
   FocusNode addActivityFocus = FocusNode();
   String pageTitle = "Add Schedule";
   Schedule tempSchedule = Schedule();
+  Activity restActivity = Activity(
+    activityId: const Uuid().v1(),
+    title: systemWaitActivityTitle,
+    createdAt: DateTime.now(),
+    lastUpdatedAt: DateTime.now(),
+    type: systemWaitActivityInDB,
+  );
   ScheduleActivity? scheduleActivityInEditMode;
   String activityTitle = "", errorString = "";
   bool addingDurationToActivity = false,
@@ -130,7 +138,17 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
       newActivity,
     );
 
-    scheduleList.addSchedule(tempSchedule, newActivity);
+    await scheduleList.addSchedule(tempSchedule, newActivity);
+    ScheduleActivity restScheduleActivity = ScheduleActivity(
+      activity: restActivity,
+    );
+    tempSchedule.activities.add(
+      restScheduleActivity,
+    );
+    await scheduleList.addSchedule(
+      tempSchedule,
+      restScheduleActivity,
+    );
     //Navigator.of(context).pop();
     setState(() {});
   }
@@ -366,71 +384,64 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
 
     final scheduleInputForm = Form(
       key: scheduleFormKey,
-      child: Padding(
-        padding: const EdgeInsets.all(0.8),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                // Center(
-                //   child: IconButton(
-                //     onPressed: () {},
-                //     icon: Icon(
-                //       Icons.play_circle,
-                //       color: Theme.of(context).cardColor,
-                //       size: 40,
-                //     ),
-                //   ),
-                // ),
-                Expanded(
-                  child: TextFormField(
-                    autofocus: tempSchedule.name == "",
-                    textAlign: TextAlign.center,
-                    // style: TextStyle(
-                    //   color: Theme.of(context).cardColor,
-                    //   fontSize: 22,
-                    //   fontWeight: FontWeight.bold,
-                    // ),
-                    style: Theme.of(context).textTheme.headline6,
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      floatingLabelAlignment: FloatingLabelAlignment.center,
-                      floatingLabelBehavior: FloatingLabelBehavior.never,
-                      label: Center(
-                        child: Text(
-                          "Unique Schedule Name",
-                        ),
-                      ),
-                    ),
-                    initialValue: tempSchedule.name,
-                    validator: (value) {
-                      if ((value == null || value == "") &&
-                          tempSchedule.activities.isNotEmpty) {
-                        return "Inesrt valid Schedule Name";
-                      }
-                      return null;
-                    },
-                    onSaved: (value) {
-                      tempSchedule.name = value ?? "";
-                    },
-                    onFieldSubmitted: (value) =>
-                        FocusScope.of(context).requestFocus(addActivityFocus),
+      child: Row(
+        children: [
+          // Center(
+          //   child: IconButton(
+          //     onPressed: () {},
+          //     icon: Icon(
+          //       Icons.play_circle,
+          //       color: Theme.of(context).cardColor,
+          //       size: 40,
+          //     ),
+          //   ),
+          // ),
+          Expanded(
+            child: TextFormField(
+              autofocus: tempSchedule.name == "",
+              textAlign: TextAlign.center,
+              // style: TextStyle(
+              //   color: Theme.of(context).cardColor,
+              //   fontSize: 22,
+              //   fontWeight: FontWeight.bold,
+              // ),
+              style: Theme.of(context).textTheme.headline6,
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                floatingLabelAlignment: FloatingLabelAlignment.center,
+                floatingLabelBehavior: FloatingLabelBehavior.never,
+                label: Center(
+                  child: Text(
+                    "Unique Schedule Name",
                   ),
                 ),
-                // Center(
-                //   child: IconButton(
-                //     onPressed: () {},
-                //     icon: Icon(
-                //       Icons.favorite,
-                //       color: Theme.of(context).cardColor,
-                //       size: 40,
-                //     ),
-                //   ),
-                // ),
-              ],
+              ),
+              initialValue: tempSchedule.name,
+              validator: (value) {
+                if ((value == null || value == "") &&
+                    tempSchedule.activities.isNotEmpty) {
+                  return "Inesrt valid Schedule Name";
+                }
+                return null;
+              },
+              onSaved: (value) {
+                tempSchedule.name = value ?? "";
+              },
+              onFieldSubmitted: (value) =>
+                  FocusScope.of(context).requestFocus(addActivityFocus),
             ),
-          ],
-        ),
+          ),
+          // Center(
+          //   child: IconButton(
+          //     onPressed: () {},
+          //     icon: Icon(
+          //       Icons.favorite,
+          //       color: Theme.of(context).cardColor,
+          //       size: 40,
+          //     ),
+          //   ),
+          // ),
+        ],
       ),
     );
 

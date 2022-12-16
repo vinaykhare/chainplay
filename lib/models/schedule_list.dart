@@ -347,9 +347,9 @@ class ScheduleList with ChangeNotifier {
     int scheduleIndex =
         schedules.indexWhere((sch) => sch.name == schedule.name);
 
-    // if (scheduleIndex == -1) {
-    //   return;
-    // }
+    if (scheduleIndex == -1) {
+      return;
+    }
     schedules[scheduleIndex] = schedule;
     // if (schedule.scheduleStatus != statusDone) {
     //   schedules[scheduleIndex] = schedule;
@@ -561,8 +561,50 @@ class ScheduleList with ChangeNotifier {
       newIndex += 1;
     }
 
-    var itemAtOldIndex = schedule.activities.removeAt(oldIndex);
-    schedule.activities.insert(newIndex, itemAtOldIndex);
+    if (schedule.activities[newIndex].activity.title ==
+        systemWaitActivityTitle) {
+      if (oldIndex > newIndex) {
+        newIndex += 1;
+      } else {
+        newIndex -= 1;
+      }
+    }
+
+    if (oldIndex < newIndex) {
+      ScheduleActivity tempActivity = schedule.activities[oldIndex];
+      for (int i = oldIndex; i < newIndex; i += 2) {
+        schedule.activities[i] = schedule.activities[i + 2];
+      }
+      schedule.activities[newIndex] = tempActivity;
+    } else {
+      ScheduleActivity tempActivity = schedule.activities[oldIndex];
+      for (int i = oldIndex; i > newIndex; i -= 2) {
+        schedule.activities[i] = schedule.activities[i - 2];
+      }
+      schedule.activities[newIndex] = tempActivity;
+    }
+
+    // if (schedule.activities[newIndex].activity.title ==
+    //     systemWaitActivityTitle) {
+    //   if (oldIndex > newIndex) {
+    //     newIndex += 1;
+    //   } else {
+    //     newIndex -= 1;
+    //   }
+    // }
+
+    // if (schedule.activities[oldIndex].activity.title ==
+    //     systemWaitActivityTitle) {
+    //   if (oldIndex > newIndex) {
+    //     oldIndex -= 1;
+    //   } else {
+    //     oldIndex += 1;
+    //   }
+    // }
+
+    // var itemAtOldIndex = schedule.activities.removeAt(oldIndex);
+    // schedule.activities.insert(newIndex, itemAtOldIndex);
+
     await updateActivityIndex(schedule);
     notifyListeners();
   }
@@ -571,6 +613,9 @@ class ScheduleList with ChangeNotifier {
   Future<void> updateActivityIndex(Schedule schedule) async {
     int dbIndex = 0;
     for (ScheduleActivity scheduleActivity in schedule.activities) {
+      if (scheduleActivity.activity.title == systemWaitActivityTitle) {
+        continue;
+      }
       await DBHelper.update(
         "schedule_activity",
         {
@@ -579,7 +624,7 @@ class ScheduleList with ChangeNotifier {
         "scheduleName = ? and activityId = ?",
         [schedule.name, scheduleActivity.activity.activityId],
       );
-      dbIndex++;
+      dbIndex += 2;
     }
   }
 

@@ -5,7 +5,6 @@ import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_activity.dart';
 import 'package:schedule_it/models/schedule_list.dart';
 import 'package:schedule_it/widgets/rest_task.dart';
-import 'package:schedule_it/widgets/rest_task_with_duration.dart';
 
 class ScheduleActivityFlowView extends StatelessWidget {
   const ScheduleActivityFlowView({
@@ -36,7 +35,6 @@ class ScheduleActivityFlowView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      key: Key(index.toString()),
       children: [
         if (index == activities.length - 1) const RestTask(taskText: "Start"),
         arrowWidget,
@@ -106,62 +104,6 @@ class ScheduleActivityFlowView extends StatelessWidget {
             ),
           ),
         ),
-        if (index != 0) lineWidget,
-        if (index != 0)
-          InkWell(
-            onTap: editActivity != null && undoEdit != null
-                ? () {
-                    if (!scheduleActivity.editNextActivity) {
-                      editActivity!(scheduleActivity, true);
-                    } else {
-                      undoEdit!(scheduleActivity, true);
-                    }
-                  }
-                : () async {
-                    await scheduleList.flipDoneRestAfterActivity(
-                        tempSchedule, scheduleActivity);
-                  },
-            child: (activities[index].nextActivityAfter.inSeconds != 0)
-                ? Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(20),
-                      ),
-                      color: activities[index].editNextActivity
-                          ? Theme.of(context).focusColor
-                          : Theme.of(context).primaryColor,
-                    ),
-                    child: Text(
-                      "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].restDone ? ' before scheduled duration' : TransformFunctions.durationToString(scheduleActivity.nextActivityAfter)}.",
-                    ),
-                  )
-                : Icon(
-                    Icons.circle_outlined,
-                    size: 15,
-                    color: activities[index].editNextActivity
-                        ? Theme.of(context).errorColor
-                        : Theme.of(context).primaryColor,
-                  ),
-          ),
-        if (index == 0) arrowWidget,
-        if (index == 0)
-          InkWell(
-              onTap: editActivity != null && undoEdit != null
-                  ? () {
-                      if (!scheduleActivity.editNextActivity) {
-                        editActivity!(scheduleActivity, true);
-                      } else {
-                        undoEdit!(scheduleActivity, true);
-                      }
-                    }
-                  : null,
-              child: (activities[index].nextActivityAfter.inSeconds != 0)
-                  ? RestTaskWithDuration(
-                      taskText:
-                          "${activities[index].activityDone ? 'Schedule Ended ' : 'Schedule will end '}${TransformFunctions.durationToString(scheduleActivity.nextActivityAfter)}.",
-                    )
-                  : const RestTask(taskText: "End")),
       ],
     );
   }
