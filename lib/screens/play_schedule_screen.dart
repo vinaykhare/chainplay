@@ -49,6 +49,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
       }
 
       if (!activities[invokeCounter].activityDone &&
+          activities[invokeCounter].activity.type != systemStartActivityInDB &&
           (timeSpentSinceStartOfActivity < activityExecutedFor ||
               (activities[invokeCounter].activityDuration.inSeconds <= 0 &&
                   activities[invokeCounter].activity.type !=

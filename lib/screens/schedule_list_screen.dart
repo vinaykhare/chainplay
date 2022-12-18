@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+//import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_list.dart';
@@ -48,9 +48,9 @@ class ScheduleListScreen extends StatelessWidget {
                 itemCount: schedules.length,
                 itemBuilder: (context, index) {
                   Schedule schedule = schedules[index];
-                  BannerAd? adSchedule = schedule.adBanner;
+                  //BannerAd? adSchedule = schedule.adBanner;
                   return ScheduleView(
-                    adSchedule: adSchedule,
+                    //adSchedule: adSchedule,
                     schedule: schedule,
                     key: Key(index.toString()),
                   );

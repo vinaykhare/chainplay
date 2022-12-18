@@ -48,7 +48,7 @@ dependencies:
   native_pdf_view: ^6.0.0+1
 
   # Library for Google Ads
-  google_mobile_ads: ^2.2.0
+  # google_mobile_ads: ^2.2.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

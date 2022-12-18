@@ -4,7 +4,6 @@ import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_activity.dart';
 import 'package:schedule_it/models/schedule_list.dart';
 import 'package:schedule_it/widgets/rest_task.dart';
-import 'package:schedule_it/widgets/rest_task_with_duration.dart';
 
 class ScheduleSystemActivityFlowView extends StatelessWidget {
   const ScheduleSystemActivityFlowView({

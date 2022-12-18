@@ -669,9 +669,9 @@ class ScheduleList with ChangeNotifier {
   Future<void> updateScheduleIndex() async {
     int dbIndex = 0;
     for (Schedule schedule in schedules) {
-      if (schedule.adBanner != null) {
-        continue;
-      }
+      // if (schedule.adBanner != null) {
+      //   continue;
+      // }
       await DBHelper.update(
         "schedule",
         {

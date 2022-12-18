@@ -114,7 +114,8 @@ class _PlayActivityState extends State<PlayActivity> {
       running = input["running"];
       if (running && (waitDuration.inSeconds > 0)) {
         startTimer();
-      } else {
+      }
+      if (waitDuration.inSeconds <= 0) {
         setState(() {
           showPlayPause = false;
         });
