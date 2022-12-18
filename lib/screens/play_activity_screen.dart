@@ -83,7 +83,7 @@ class _PlayActivityState extends State<PlayActivity> {
     await Provider.of<ScheduleList>(context, listen: false)
         .playNotificationSound();
     stopTimer();
-    nav.pop(playingRest || waitDuration.inSeconds <= 0
+    nav.pop(waitDuration.inSeconds <= 0
         ? null
         : {
             "running": running,
@@ -112,10 +112,9 @@ class _PlayActivityState extends State<PlayActivity> {
       scheduleActivity = input["scheduleActivity"];
       playingRest = input["playRest"];
       running = input["running"];
-      if (running && (waitDuration.inSeconds > 0 || playingRest)) {
+      if (running && (waitDuration.inSeconds > 0)) {
         startTimer();
-      }
-      if (playingRest) {
+      } else {
         setState(() {
           showPlayPause = false;
         });
@@ -202,7 +201,7 @@ class _PlayActivityState extends State<PlayActivity> {
                       },
                       icon: const Icon(Icons.arrow_back),
                     ),
-                    if (showPlayPause && !playingRest)
+                    if (showPlayPause)
                       Expanded(
                         child: IconButton(
                           onPressed: () {

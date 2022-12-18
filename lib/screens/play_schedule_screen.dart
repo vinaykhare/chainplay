@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:schedule_it/helpers/constants.dart';
 import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_activity.dart';
 import 'package:schedule_it/models/schedule_list.dart';
@@ -49,7 +50,9 @@ class _PlayScheduleState extends State<PlaySchedule> {
 
       if (!activities[invokeCounter].activityDone &&
           (timeSpentSinceStartOfActivity < activityExecutedFor ||
-              activities[invokeCounter].activityDuration.inSeconds <= 0 ||
+              (activities[invokeCounter].activityDuration.inSeconds <= 0 &&
+                  activities[invokeCounter].activity.type !=
+                      systemWaitActivityInDB) ||
               activities[invokeCounter].pausedAt != null)) {
         if (activities[invokeCounter].activityDuration.inSeconds > 0) {
           calculatedWaitDuration =
@@ -63,7 +66,8 @@ class _PlayScheduleState extends State<PlaySchedule> {
                     ? calculatedWaitDuration
                     : activities[invokeCounter].activityDuration),
             "scheduleActivity": activities[invokeCounter],
-            "playRest": false,
+            "playRest": activities[invokeCounter].activity.type ==
+                systemWaitActivityInDB,
             "running": activities[invokeCounter].pausedAt == null,
           },
         );
@@ -110,6 +114,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
         activityExecutedFor += activities[invokeCounter].nextActivityAfter;
 
         if (activities[invokeCounter].endedAt == null &&
+            activities[invokeCounter].nextActivityAfter.inSeconds > 0 &&
             timeSpentSinceStartOfActivity < activityExecutedFor) {
           waitDurationDifferenceForRestScreen =
               activityExecutedFor - timeSpentSinceStartOfActivity;
@@ -133,9 +138,9 @@ class _PlayScheduleState extends State<PlaySchedule> {
                       ? popResponse["waitDuration"]
                       : null;
               break;
-            } else {
-              activities[invokeCounter].restDone = true;
             }
+          } else {
+            activities[invokeCounter].restDone = true;
           }
         }
       }

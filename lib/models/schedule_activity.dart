@@ -11,6 +11,7 @@ class ScheduleActivity {
   DateTime? at, endedAt;
   Activity activity;
   bool edit = false, editNextActivity = false;
+  int index = -1;
 
   ScheduleActivity({
     required this.activity,

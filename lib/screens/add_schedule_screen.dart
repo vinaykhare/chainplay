@@ -24,6 +24,13 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
   FocusNode addActivityFocus = FocusNode();
   String pageTitle = "Add Schedule";
   Schedule tempSchedule = Schedule();
+  Activity startActivity = Activity(
+    activityId: const Uuid().v1(),
+    title: systemStartActivityInTitle,
+    createdAt: DateTime.now(),
+    lastUpdatedAt: DateTime.now(),
+    type: systemStartActivityInDB,
+  );
   Activity restActivity = Activity(
     activityId: const Uuid().v1(),
     title: systemWaitActivityTitle,
@@ -129,19 +136,33 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
   Future<void> addActivity(ScheduleActivity newActivity) async {
     ScheduleList scheduleList =
         Provider.of<ScheduleList>(context, listen: false);
+    ScheduleActivity restScheduleActivity = ScheduleActivity(
+      activity: restActivity,
+    );
     bool validName = await isNameValid();
 
     if (!(validName)) {
       return;
+    }
+
+    if (tempSchedule.activities.isEmpty) {
+      ScheduleActivity startScheduleActivity = ScheduleActivity(
+        activity: startActivity,
+      );
+      tempSchedule.activities.add(
+        startScheduleActivity,
+      );
+      await scheduleList.addSchedule(
+        tempSchedule,
+        startScheduleActivity,
+      );
     }
     tempSchedule.activities.add(
       newActivity,
     );
 
     await scheduleList.addSchedule(tempSchedule, newActivity);
-    ScheduleActivity restScheduleActivity = ScheduleActivity(
-      activity: restActivity,
-    );
+
     tempSchedule.activities.add(
       restScheduleActivity,
     );
@@ -203,19 +224,24 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
       scheduleActivityInEditMode!.edit = false;
       scheduleActivityInEditMode!.editNextActivity = false;
       scheduleActivityInEditMode!.activity.lastUpdatedAt = DateTime.now();
-      if (updatingNextActivityAfterDuration) {
-        scheduleActivityInEditMode!.nextActivityAfter = Duration(
-          hours: activityDurationHour,
-          minutes: activityDurationMinute,
-          seconds: activityDurationSecond,
-        );
-      } else {
-        scheduleActivityInEditMode!.activityDuration = Duration(
-          hours: activityDurationHour,
-          minutes: activityDurationMinute,
-          seconds: activityDurationSecond,
-        );
-      }
+      scheduleActivityInEditMode!.activityDuration = Duration(
+        hours: activityDurationHour,
+        minutes: activityDurationMinute,
+        seconds: activityDurationSecond,
+      );
+      // if (updatingNextActivityAfterDuration) {
+      //   scheduleActivityInEditMode!.nextActivityAfter = Duration(
+      //     hours: activityDurationHour,
+      //     minutes: activityDurationMinute,
+      //     seconds: activityDurationSecond,
+      //   );
+      // } else {
+      //   scheduleActivityInEditMode!.activityDuration = Duration(
+      //     hours: activityDurationHour,
+      //     minutes: activityDurationMinute,
+      //     seconds: activityDurationSecond,
+      //   );
+      // }
 
       updateActivity(scheduleActivityInEditMode!);
     } else {
@@ -327,7 +353,8 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
       tempSchedule,
       scheduleActivityInEditMode!,
     );
-    updatingNextActivityAfterDuration = forNextActivity;
+    updatingNextActivityAfterDuration = scheduleActivity.activity.type ==
+        systemWaitActivityInDB; //forNextActivity;
     Duration scheduleActivityDuration = forNextActivity
         ? scheduleActivity.nextActivityAfter
         : scheduleActivity.activityDuration;
@@ -341,6 +368,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
           (activityDurationHour * 3600) -
           (activityDurationMinute * 60);
     });
+
     //}
     addActivityController.text = scheduleActivity.activity.title;
     if (!forNextActivity) {
@@ -498,6 +526,9 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                       children: [
                         Expanded(
                           child: TextFormField(
+                            key: ValueKey(
+                              "${scheduleActivityInEditMode!.activity.title.toString()}_${scheduleActivityInEditMode!.index.toString()}_hours",
+                            ),
                             keyboardType: TextInputType.number,
                             textAlign: TextAlign.center,
                             initialValue: activityDurationHour == 0
@@ -521,6 +552,9 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                         ),
                         Expanded(
                           child: TextFormField(
+                            key: ValueKey(
+                              "${scheduleActivityInEditMode!.activity.title.toString()}_${scheduleActivityInEditMode!.index.toString()}_minutes",
+                            ),
                             keyboardType: TextInputType.number,
                             textAlign: TextAlign.center,
                             initialValue: activityDurationMinute == 0
@@ -546,6 +580,9 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                         ),
                         Expanded(
                           child: TextFormField(
+                            key: ValueKey(
+                              "${scheduleActivityInEditMode!.activity.title.toString()}_${scheduleActivityInEditMode!.index.toString()}_seconds",
+                            ),
                             keyboardType: TextInputType.number,
                             textAlign: TextAlign.center,
                             initialValue: activityDurationSecond == 0
@@ -572,7 +609,8 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                     ),
                   ),
                 AppBar(
-                  //automaticallyImplyLeading: false,
+                  automaticallyImplyLeading:
+                      MediaQuery.of(context).viewInsets.bottom == 0,
                   title: Row(
                     children: [
                       Expanded(

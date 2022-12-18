@@ -15,4 +15,5 @@ class Schedule {
   int scheduleStatus = statusNotStarted;
   int notificationId = noValueInDB;
   bool edit = false;
+  int index = -1;
 }

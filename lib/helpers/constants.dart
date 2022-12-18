@@ -3,12 +3,13 @@ const int trueInDB = 1;
 const int falseInDB = 0;
 
 //Activity types
-
-const int waitActivityInDB = 0;
+const int systemStartActivityInDB = 0;
 const int systemWaitActivityInDB = 1;
+const int waitActivityInDB = 2;
 
 //System Activity Names
-const String systemWaitActivityTitle = "systemWaitActivity";
+const String systemWaitActivityTitle = "System Wait Activity";
+const String systemStartActivityInTitle = "System Start Activity";
 
 //Status
 

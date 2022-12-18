@@ -4,7 +4,6 @@ import 'package:schedule_it/helpers/transform_functions.dart';
 import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_activity.dart';
 import 'package:schedule_it/models/schedule_list.dart';
-import 'package:schedule_it/widgets/rest_task.dart';
 
 class ScheduleActivityFlowView extends StatelessWidget {
   const ScheduleActivityFlowView({
@@ -36,7 +35,6 @@ class ScheduleActivityFlowView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (index == activities.length - 1) const RestTask(taskText: "Start"),
         arrowWidget,
         Card(
           elevation: 10,

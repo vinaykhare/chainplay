@@ -94,8 +94,10 @@ class ScheduleList with ChangeNotifier {
         schedules.indexWhere((sch) => sch.name == schedule.name);
 
     if (scheduleIndex == -1) {
+      schedule.index = schedules.length;
       schedules.add(schedule);
     } else {
+      schedule.index = scheduleIndex;
       schedules[scheduleIndex] = schedule;
     }
 
@@ -108,8 +110,7 @@ class ScheduleList with ChangeNotifier {
       scheduleActivity.activity = activities[activityIndex];
     }
 
-    int scheduleActivityIndex =
-        schedule.activities.isEmpty ? 0 : schedule.activities.length - 1;
+    scheduleActivity.index = schedule.activities.length;
 
     if (activityIndex == -1) {
       await DBHelper.insert(
@@ -131,7 +132,7 @@ class ScheduleList with ChangeNotifier {
         "schedule",
         {
           "scheduleName": schedule.name,
-          "scheduleIndex": schedules.length,
+          "scheduleIndex": schedule.index,
           "createdAt": schedule.createdAt.millisecondsSinceEpoch,
           "lastUpdatedAt": schedule.lastUpdatedAt.millisecondsSinceEpoch,
           "pinned": schedule.pinned ? 1 : 0,
@@ -152,7 +153,7 @@ class ScheduleList with ChangeNotifier {
       {
         "scheduleName": schedule.name,
         "activityId": scheduleActivity.activity.activityId,
-        "activityIndex": scheduleActivityIndex,
+        "activityIndex": scheduleActivity.index,
         "activityDone": scheduleActivity.activityDone ? 1 : 0,
         "restDone": scheduleActivity.restDone ? 1 : 0,
         "notificationId": scheduleActivity.notificationId.toString(),
@@ -402,8 +403,12 @@ class ScheduleList with ChangeNotifier {
         "editScheduleActivity": scheduleActivity.edit ? 1 : 0,
         "editNextActivity": scheduleActivity.editNextActivity ? 1 : 0,
       },
-      "scheduleName = ? and activityId = ?",
-      [schedule.name, scheduleActivity.activity.activityId],
+      "scheduleName = ? and activityId = ? and activityIndex = ?",
+      [
+        schedule.name,
+        scheduleActivity.activity.activityId,
+        scheduleActivity.index,
+      ],
     );
     notifyListeners();
   }
@@ -467,11 +472,43 @@ class ScheduleList with ChangeNotifier {
           .cancelNotificationById(scheduleActivity.notificationId);
     }
 
-    DBHelper.removeData(
+    // DBHelper.removeData(
+    //   "schedule_activity",
+    //   "activityId = ?",
+    //   [scheduleActivity.activity.activityId],
+    // );
+
+    await DBHelper.removeData(
       "schedule_activity",
-      "activityId = ?",
-      [scheduleActivity.activity.activityId],
+      "scheduleName = ? and activityId = ? and activityIndex = ?",
+      [
+        schedule.name,
+        scheduleActivity.activity.activityId,
+        scheduleActivity.index
+      ],
     );
+    await DBHelper.removeData(
+      "schedule_activity",
+      "scheduleName = ? and activityIndex = ?",
+      [
+        schedule.name,
+        scheduleActivity.index + 1,
+      ],
+    );
+
+    int indexOfScheduleActivity = schedule.activities.indexWhere(
+        (activityArg) =>
+            activityArg.activity.activityId ==
+            scheduleActivity.activity.activityId);
+
+    // schedule.activities.removeWhere((activityArg) =>
+    //     activityArg.activity.activityId ==
+    //     scheduleActivity.activity.activityId);
+
+    schedule.activities.removeAt(indexOfScheduleActivity);
+    schedule.activities.removeAt(indexOfScheduleActivity);
+
+    updateActivityIndex(schedule);
 
     // DBHelper.removeData(
     //   "activity",
@@ -479,11 +516,6 @@ class ScheduleList with ChangeNotifier {
     //   [activity.activityId],
     // );
 
-    schedule.activities.removeWhere((activityArg) =>
-        activityArg.activity.activityId ==
-        scheduleActivity.activity.activityId);
-
-    updateActivityIndex(schedule);
     notifyListeners();
   }
 
@@ -613,18 +645,23 @@ class ScheduleList with ChangeNotifier {
   Future<void> updateActivityIndex(Schedule schedule) async {
     int dbIndex = 0;
     for (ScheduleActivity scheduleActivity in schedule.activities) {
-      if (scheduleActivity.activity.title == systemWaitActivityTitle) {
-        continue;
-      }
+      // if (scheduleActivity.activity.title == systemWaitActivityTitle) {
+      //   continue;
+      // }
       await DBHelper.update(
         "schedule_activity",
         {
           "activityIndex": dbIndex,
         },
-        "scheduleName = ? and activityId = ?",
-        [schedule.name, scheduleActivity.activity.activityId],
+        "scheduleName = ? and activityId = ? and activityIndex = ?",
+        [
+          schedule.name,
+          scheduleActivity.activity.activityId,
+          scheduleActivity.index
+        ],
       );
-      dbIndex += 2;
+      scheduleActivity.index = dbIndex;
+      dbIndex += 1;
     }
   }
 
@@ -845,6 +882,7 @@ class ScheduleList with ChangeNotifier {
       tempActivity.editNextActivity = scheduleActivity['editNextActivity'] == 1;
       tempActivity.notificationId =
           int.parse(scheduleActivity['notificationId']);
+      tempActivity.index = scheduleActivity['activityIndex'];
       schedule.activities.add(tempActivity);
     }
     return schedule.activities;
@@ -914,6 +952,7 @@ class ScheduleList with ChangeNotifier {
 
       tempActivity.notificationId =
           int.parse(scheduleActivity['notificationId']);
+      tempActivity.index = scheduleActivity['activityIndex'];
       result.add(tempActivity);
     }
     return result;
@@ -965,6 +1004,7 @@ class ScheduleList with ChangeNotifier {
       tempSchedule.scheduleHistory = await loadScheduleHistory(tempSchedule);
       tempSchedule.edit = schedule["editSchedule"] == 1;
       tempSchedule.notificationId = int.parse(schedule["notificationId"]);
+      tempSchedule.index = schedule["scheduleIndex"];
       schedules.add(tempSchedule);
     }
 
