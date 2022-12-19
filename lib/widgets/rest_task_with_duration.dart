@@ -21,6 +21,7 @@ class RestTaskWithDuration extends StatelessWidget {
       ),
       child: Text(
         taskText,
+        textAlign: TextAlign.center,
       ),
     );
   }

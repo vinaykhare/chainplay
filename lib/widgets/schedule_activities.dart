@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:schedule_it/helpers/constants.dart';
 import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_activity.dart';
 import 'package:schedule_it/models/schedule_list.dart';
 import 'package:schedule_it/widgets/rest_task.dart';
+import 'package:schedule_it/widgets/rest_task_with_duration.dart';
 
 import 'package:schedule_it/widgets/schedule_activity_flow_view.dart';
 import 'package:schedule_it/widgets/schedule_system_activity_flow_view.dart';
@@ -12,13 +14,14 @@ import 'package:schedule_it/widgets/schedule_system_activity_flow_view.dart';
 
 class ScheduleActivities extends StatelessWidget {
   final Schedule tempSchedule;
-  final Function? editActivity, undoEdit;
+  final Function? editActivity, undoEdit, addScheduleDateToSchedule;
   final bool showCheckBoxes;
   const ScheduleActivities({
     super.key,
     required this.tempSchedule,
     required this.editActivity,
     required this.undoEdit,
+    this.addScheduleDateToSchedule,
     required this.showCheckBoxes,
   });
 
@@ -44,33 +47,21 @@ class ScheduleActivities extends StatelessWidget {
       ScheduleActivity scheduleActivity = activities[index];
       switch (scheduleActivity.activity.type) {
         case systemStartActivityInDB:
-          return GestureDetector(
-            onLongPressMoveUpdate: (details) {},
-            onTap: () {
-              showModalBottomSheet<void>(
-                context: context,
-                builder: (BuildContext context) {
-                  return SizedBox(
-                    height: 200,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Schedule It'),
-                        ),
-                        ElevatedButton(
-                          child: const Text('Done'),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              );
-            },
-            child: const RestTask(taskText: "Start"),
+          return Column(
+            key: Key(index.toString()),
+            children: [
+              GestureDetector(
+                onLongPressMoveUpdate: (details) {},
+                onTap:
+                    showCheckBoxes ? () => addScheduleDateToSchedule!() : null,
+                child: tempSchedule.at != null
+                    ? RestTaskWithDuration(
+                        taskText:
+                            "${showCheckBoxes ? 'Scheduled to Start at' : 'Started on '} \n${DateFormat.yMd().add_jms().format(tempSchedule.at!)}",
+                      )
+                    : const RestTask(taskText: "Start"),
+              ),
+            ],
           );
         case systemWaitActivityInDB:
           return ScheduleSystemActivityFlowView(

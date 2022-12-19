@@ -50,10 +50,12 @@ class ScheduleSystemActivityFlowView extends StatelessWidget {
                         undoEdit!(scheduleActivity, false);
                       }
                     }
-                  : () async {
-                      await scheduleList.flipDoneRestAfterActivity(
-                          tempSchedule, scheduleActivity);
-                    },
+                  : showCheckBox
+                      ? () async {
+                          await scheduleList.flipDoneRestAfterActivity(
+                              tempSchedule, scheduleActivity);
+                        }
+                      : null,
               child: (activities[index].activityDuration.inSeconds != 0)
                   ? Container(
                       padding: const EdgeInsets.all(10),

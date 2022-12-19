@@ -23,7 +23,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
   late ScheduleList scheduleList;
   List<ScheduleActivity> activities = [];
   int invokeCounter = 0;
-  bool initializing = true, scheduleExecuted = false;
+  bool initializing = true;
 
   void updateWaitDuration() async {
     dynamic popResponse;
@@ -151,21 +151,27 @@ class _PlayScheduleState extends State<PlaySchedule> {
           activities[invokeCounter].endedAt ?? DateTime.now();
       //actStartDate.add(activityExecutedFor);
 
-      await scheduleList.updateScheduleActivityByActivityId(
+      await scheduleList.updateScheduleActivityExecutionByActivityId(
         schedule,
         activities[invokeCounter],
       );
     }
 
     if (popResponse != null && popResponse["interruptAndCompleted"] == false) {
-      await scheduleList.scheduleNotification(
-          schedule, DateTime.now(), invokeCounter);
+      // await scheduleList.scheduleNotification(
+      //     schedule, DateTime.now(), invokeCounter);
     } else {
+      Schedule parentSchedule =
+          scheduleList.schedules.firstWhere((sch) => sch.name == schedule.name);
       setState(() {
-        scheduleExecuted = true;
+        schedule.scheduleStatus = statusDone;
+        parentSchedule.scheduleStatus = statusNotStarted;
       });
 
-      await scheduleList.moveScheduleToHistory(schedule);
+      await scheduleList.updateSchedule(parentSchedule);
+      await scheduleList.updateScheduleExecution(schedule);
+
+      //await scheduleList.moveScheduleToHistory(schedule);
     }
     //nav.pop();
   }
@@ -173,8 +179,11 @@ class _PlayScheduleState extends State<PlaySchedule> {
   Future<bool> onPopOut() async {
     // await scheduleList.scheduleNotification(
     //     schedule, DateTime.now(), invokeCounter);
-    if (scheduleExecuted) {
+    if (schedule.scheduleStatus == statusDone) {
       await scheduleList.resetActivities(schedule);
+    } else {
+      await scheduleList.scheduleNotification(
+          schedule, DateTime.now(), invokeCounter);
     }
     return true;
   }
@@ -192,7 +201,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
         schedule = ModalRoute.of(context)?.settings.arguments as Schedule;
       }
       activities = schedule.activities;
-      if (schedule.at != null) {
+      if (schedule.scheduleStatus == statusExecuting) {
         scheduleStartedAt = schedule.at!;
         updateWaitDuration();
       }

@@ -41,6 +41,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
   ScheduleActivity? scheduleActivityInEditMode;
   String activityTitle = "", errorString = "";
   bool addingDurationToActivity = false,
+      addingScheduleToSchedule = false,
       updatingNextActivityAfterDuration = false;
   int activityDurationHour = 0,
       activityDurationMinute = 0,
@@ -304,6 +305,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
   }
 
   void undoEdit(ScheduleActivity scheduleActivity, bool forNextActivity) async {
+    FocusScopeNode focusScope = FocusScope.of(context);
     addActivityController.clear();
     scheduleActivityInEditMode = scheduleActivity;
 
@@ -331,6 +333,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
       addingDurationToActivity = false;
       updatingNextActivityAfterDuration = false;
     });
+    focusScope.unfocus();
   }
 
   void editActivity(
@@ -371,9 +374,15 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
 
     //}
     addActivityController.text = scheduleActivity.activity.title;
-    if (!forNextActivity) {
+    if (!updatingNextActivityAfterDuration) {
       focusScope.requestFocus(addActivityFocus);
     }
+  }
+
+  void addScheduleDateToSchedule() {
+    setState(() {
+      addingScheduleToSchedule = true;
+    });
   }
 
   @override
@@ -410,65 +419,115 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     //   },
     // );
 
-    final scheduleInputForm = Form(
-      key: scheduleFormKey,
+    final duraitonInputForm = Form(
+      key: durationFormKey,
       child: Row(
         children: [
-          // Center(
-          //   child: IconButton(
-          //     onPressed: () {},
-          //     icon: Icon(
-          //       Icons.play_circle,
-          //       color: Theme.of(context).cardColor,
-          //       size: 40,
-          //     ),
-          //   ),
-          // ),
           Expanded(
             child: TextFormField(
-              autofocus: tempSchedule.name == "",
-              textAlign: TextAlign.center,
-              // style: TextStyle(
-              //   color: Theme.of(context).cardColor,
-              //   fontSize: 22,
-              //   fontWeight: FontWeight.bold,
-              // ),
-              style: Theme.of(context).textTheme.headline6,
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                floatingLabelAlignment: FloatingLabelAlignment.center,
-                floatingLabelBehavior: FloatingLabelBehavior.never,
-                label: Center(
-                  child: Text(
-                    "Unique Schedule Name",
-                  ),
-                ),
+              key: ValueKey(
+                "${scheduleActivityInEditMode?.activity.title}_${scheduleActivityInEditMode?.index.toString()}_hours",
               ),
-              initialValue: tempSchedule.name,
-              validator: (value) {
-                if ((value == null || value == "") &&
-                    tempSchedule.activities.isNotEmpty) {
-                  return "Inesrt valid Schedule Name";
-                }
-                return null;
-              },
-              onSaved: (value) {
-                tempSchedule.name = value ?? "";
-              },
-              onFieldSubmitted: (value) =>
-                  FocusScope.of(context).requestFocus(addActivityFocus),
+              keyboardType: TextInputType.number,
+              textInputAction: TextInputAction.none,
+              textAlign: TextAlign.center,
+              initialValue: activityDurationHour == 0
+                  ? null
+                  : activityDurationHour.toString().padLeft(2, '0'),
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                label: const Text("Hour"),
+                hintText: activityDurationHour.toString().padLeft(2, '0'),
+              ),
+              onSaved: (newValue) => activityDurationHour =
+                  newValue != "" && newValue != null ? int.parse(newValue) : 0,
+              validator: (value) => validateHour(value),
             ),
           ),
-          // Center(
-          //   child: IconButton(
-          //     onPressed: () {},
-          //     icon: Icon(
-          //       Icons.favorite,
-          //       color: Theme.of(context).cardColor,
-          //       size: 40,
-          //     ),
-          //   ),
-          // ),
+          Expanded(
+            child: TextFormField(
+              key: ValueKey(
+                "${scheduleActivityInEditMode?.activity.title.toString()}_${scheduleActivityInEditMode?.index.toString()}_minutes",
+              ),
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.center,
+              initialValue: activityDurationMinute == 0
+                  ? null
+                  : activityDurationMinute.toString().padLeft(2, '0'),
+              onSaved: (newValue) => activityDurationMinute =
+                  newValue != "" && newValue != null ? int.parse(newValue) : 0,
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                label: const Text(
+                  "Minute",
+                ),
+                hintText: activityDurationMinute.toString().padLeft(2, '0'),
+              ),
+              validator: (value) => validateMinuteOrSecond(value),
+            ),
+          ),
+          Expanded(
+            child: TextFormField(
+              key: ValueKey(
+                "${scheduleActivityInEditMode?.activity.title.toString()}_${scheduleActivityInEditMode?.index.toString()}_seconds",
+              ),
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.center,
+              initialValue: activityDurationSecond == 0
+                  ? null
+                  : activityDurationSecond.toString().padLeft(2, '0'),
+              onSaved: (newValue) => activityDurationSecond =
+                  newValue != "" && newValue != null ? int.parse(newValue) : 0,
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                label: const Text("Second"),
+                hintText: activityDurationSecond.toString().padLeft(2, '0'),
+                alignLabelWithHint: true,
+              ),
+              validator: (value) => validateMinuteOrSecond(value),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    final scheduleInputForm = Form(
+      key: scheduleFormKey,
+      child: Column(
+        children: [
+          TextFormField(
+            autofocus: tempSchedule.name == "",
+            textAlign: TextAlign.center,
+            // style: TextStyle(
+            //   color: Theme.of(context).cardColor,
+            //   fontSize: 22,
+            //   fontWeight: FontWeight.bold,
+            // ),
+            style: Theme.of(context).textTheme.headline6,
+            decoration: const InputDecoration(
+              border: InputBorder.none,
+              floatingLabelAlignment: FloatingLabelAlignment.center,
+              floatingLabelBehavior: FloatingLabelBehavior.never,
+              label: Center(
+                child: Text(
+                  "Unique Schedule Name",
+                ),
+              ),
+            ),
+            initialValue: tempSchedule.name,
+            validator: (value) {
+              if ((value == null || value == "") &&
+                  tempSchedule.activities.isNotEmpty) {
+                return "Inesrt valid Schedule Name";
+              }
+              return null;
+            },
+            onSaved: (value) {
+              tempSchedule.name = value ?? "";
+            },
+            onFieldSubmitted: (value) =>
+                FocusScope.of(context).requestFocus(addActivityFocus),
+          ),
         ],
       ),
     );
@@ -514,150 +573,69 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                       tempSchedule: tempSchedule,
                       editActivity: editActivity,
                       undoEdit: undoEdit,
+                      addScheduleDateToSchedule: addScheduleDateToSchedule,
                       showCheckBoxes: true,
                     ),
                   ),
                 ),
                 scheduleInputForm,
-                if (addingDurationToActivity)
-                  Form(
-                    key: durationFormKey,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            key: ValueKey(
-                              "${scheduleActivityInEditMode!.activity.title.toString()}_${scheduleActivityInEditMode!.index.toString()}_hours",
-                            ),
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            initialValue: activityDurationHour == 0
-                                ? null
-                                : activityDurationHour
-                                    .toString()
-                                    .padLeft(2, '0'),
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              label: const Text("Hour"),
-                              hintText: activityDurationHour
-                                  .toString()
-                                  .padLeft(2, '0'),
-                            ),
-                            onSaved: (newValue) => activityDurationHour =
-                                newValue != "" && newValue != null
-                                    ? int.parse(newValue)
-                                    : 0,
-                            validator: (value) => validateHour(value),
-                          ),
-                        ),
-                        Expanded(
-                          child: TextFormField(
-                            key: ValueKey(
-                              "${scheduleActivityInEditMode!.activity.title.toString()}_${scheduleActivityInEditMode!.index.toString()}_minutes",
-                            ),
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            initialValue: activityDurationMinute == 0
-                                ? null
-                                : activityDurationMinute
-                                    .toString()
-                                    .padLeft(2, '0'),
-                            onSaved: (newValue) => activityDurationMinute =
-                                newValue != "" && newValue != null
-                                    ? int.parse(newValue)
-                                    : 0,
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              label: const Text(
-                                "Minute",
-                              ),
-                              hintText: activityDurationMinute
-                                  .toString()
-                                  .padLeft(2, '0'),
-                            ),
-                            validator: (value) => validateMinuteOrSecond(value),
-                          ),
-                        ),
-                        Expanded(
-                          child: TextFormField(
-                            key: ValueKey(
-                              "${scheduleActivityInEditMode!.activity.title.toString()}_${scheduleActivityInEditMode!.index.toString()}_seconds",
-                            ),
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            initialValue: activityDurationSecond == 0
-                                ? null
-                                : activityDurationSecond
-                                    .toString()
-                                    .padLeft(2, '0'),
-                            onSaved: (newValue) => activityDurationSecond =
-                                newValue != "" && newValue != null
-                                    ? int.parse(newValue)
-                                    : 0,
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              label: const Text("Second"),
-                              hintText: activityDurationSecond
-                                  .toString()
-                                  .padLeft(2, '0'),
-                              alignLabelWithHint: true,
-                            ),
-                            validator: (value) => validateMinuteOrSecond(value),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                if (addingDurationToActivity) duraitonInputForm,
                 AppBar(
                   automaticallyImplyLeading:
-                      MediaQuery.of(context).viewInsets.bottom == 0,
+                      !updatingNextActivityAfterDuration &&
+                          MediaQuery.of(context).viewInsets.bottom == 0,
                   title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Expanded(
-                        child: updatingNextActivityAfterDuration
-                            ? IconButton(
-                                onPressed: onSubmitText,
-                                icon: const Icon(Icons.done),
-                              )
-                            : TextField(
-                                cursorColor: Theme.of(context).shadowColor,
-                                focusNode: addActivityFocus,
-                                decoration: InputDecoration(
-                                  floatingLabelBehavior:
-                                      FloatingLabelBehavior.never,
-                                  label: const Text(
-                                    'Add Task or Activity',
-                                  ),
-                                  border: const OutlineInputBorder(
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  filled: true,
-                                  prefixIcon: IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        addingDurationToActivity =
-                                            !addingDurationToActivity;
-                                      });
-                                    },
-                                    icon: Icon(
-                                      Icons.timelapse,
-                                      color: Theme.of(context).iconTheme.color,
-                                    ),
-                                  ),
-                                ),
-                                controller: addActivityController,
-                                onSubmitted: (_) {
-                                  onSubmitText();
-                                },
-                              ),
-                      ),
                       if (!updatingNextActivityAfterDuration)
-                        IconButton(
-                          onPressed: onSubmitText,
-                          icon: scheduleActivityInEditMode != null
-                              ? const Icon(Icons.done_outline)
-                              : const Icon(Icons.add_task_outlined),
+                        Expanded(
+                          child: TextField(
+                            cursorColor: Theme.of(context).shadowColor,
+                            focusNode: addActivityFocus,
+                            decoration: InputDecoration(
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.never,
+                              label: const Text(
+                                'Add Task or Activity',
+                              ),
+                              border: const OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                              ),
+                              filled: true,
+                              prefixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    addingDurationToActivity =
+                                        !addingDurationToActivity;
+                                  });
+                                },
+                                icon: Icon(
+                                  Icons.timelapse,
+                                  color: Theme.of(context).iconTheme.color,
+                                ),
+                              ),
+                            ),
+                            controller: addActivityController,
+                            onSubmitted: (_) {
+                              onSubmitText();
+                            },
+                          ),
                         ),
+                      if (updatingNextActivityAfterDuration)
+                        IconButton(
+                          onPressed: () {
+                            undoEdit(scheduleActivityInEditMode!, false);
+                          },
+                          icon: const Icon(Icons.cancel_outlined),
+                        ),
+                      IconButton(
+                        onPressed: onSubmitText,
+                        icon: scheduleActivityInEditMode != null
+                            ? const Icon(Icons.done_outline)
+                            : updatingNextActivityAfterDuration
+                                ? const Icon(Icons.done)
+                                : const Icon(Icons.add_task_outlined),
+                      ),
                     ],
                   ),
                 ),

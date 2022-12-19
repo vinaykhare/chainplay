@@ -15,6 +15,7 @@ const String systemStartActivityInTitle = "System Start Activity";
 
 const int statusNotStarted = 0;
 const int statusDone = 1;
+const int statusExecuting = 2;
 
 //Settings
 const String appSoundSettingKey = "App Sound";

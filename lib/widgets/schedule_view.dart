@@ -55,8 +55,8 @@ class ScheduleView extends StatelessWidget {
               ListTile(
                 onTap: () async {
                   NavigatorState nav = Navigator.of(context);
-                  if (schedule.at == null) {
-                    await scheduleList.loadActivities(schedule);
+                  if (schedule.scheduleStatus == statusNotStarted) {
+                    //await scheduleList.loadActivities(schedule);
                     schedule.edit = true;
                     await scheduleList.updateSchedule(schedule);
                     await nav.pushNamed(
@@ -64,10 +64,12 @@ class ScheduleView extends StatelessWidget {
                       arguments: schedule,
                     );
                   } else {
-                    await scheduleList.loadActivities(schedule);
+                    Schedule scheduleExecution =
+                        await scheduleList.startScheduleExecution(schedule);
+                    //await scheduleList.loadActivities(schedule);
                     await nav.pushNamed(
                       PlaySchedule.routename,
-                      arguments: schedule,
+                      arguments: scheduleExecution,
                     );
                   }
                 },
@@ -77,37 +79,24 @@ class ScheduleView extends StatelessWidget {
                 title: Text(schedule.name),
                 subtitle: Text(
                     DateFormat.yMEd().add_jms().format(schedule.lastUpdatedAt)),
-                leading: schedule.scheduleStatus == statusNotStarted
-                    ? CircleAvatar(
-                        backgroundColor: Theme.of(context).primaryColorLight,
-                        child: IconButton(
-                          onPressed: () async {
-                            if (schedule.at == null) {
-                              schedule.at = DateTime.now();
-                              await scheduleList.updateSchedule(schedule);
-                              // await scheduleList.scheduleNotification(
-                              //   schedule,
-                              //   schedule.at!,
-                              //   0,
-                              // );
-                            }
-                            await scheduleList.loadActivities(schedule);
-                            await scheduleList
-                                .cancelScheduleNotifications(schedule);
-                            await nav.pushNamed(
-                              PlaySchedule.routename,
-                              arguments: schedule,
-                            );
-                          },
-                          icon: schedule.at == null
-                              ? const Icon(Icons.play_arrow)
-                              : const Icon(Icons.directions_walk),
-                        ),
-                      )
-                    : CircleAvatar(
-                        backgroundColor: Theme.of(context).focusColor,
-                        child: const Icon(Icons.done),
-                      ),
+                leading: CircleAvatar(
+                  backgroundColor: Theme.of(context).primaryColorLight,
+                  child: IconButton(
+                    onPressed: () async {
+                      Schedule scheduleExecution =
+                          await scheduleList.startScheduleExecution(schedule);
+                      //await scheduleList.loadActivities(schedule);
+
+                      await nav.pushNamed(
+                        PlaySchedule.routename,
+                        arguments: scheduleExecution,
+                      );
+                    },
+                    icon: schedule.scheduleStatus == statusExecuting
+                        ? const Icon(Icons.directions_walk)
+                        : const Icon(Icons.play_arrow),
+                  ),
+                ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:schedule_it/models/schedule.dart';
-import 'package:schedule_it/models/schedule_execution.dart';
 import 'package:schedule_it/widgets/schedule_activities.dart';
 
 class ScheduleActivitiesHistoryScreen extends StatelessWidget {
@@ -13,15 +12,15 @@ class ScheduleActivitiesHistoryScreen extends StatelessWidget {
         MediaQuery.of(context).viewPadding.top -
         MediaQuery.of(context).viewPadding.bottom;
 
-    ScheduleExecution scheduleExecution =
-        ModalRoute.of(context)?.settings.arguments as ScheduleExecution;
-    Schedule tempScheudule = Schedule();
-    tempScheudule.name = scheduleExecution.scheduleName;
-    tempScheudule.at = scheduleExecution.startedAt;
-    tempScheudule.endedAt = scheduleExecution.endedAt;
-    tempScheudule.activities = scheduleExecution.scheduleActivities;
-    tempScheudule.scheduleStatus = scheduleExecution.scheduleStatus;
-    tempScheudule.notificationId = scheduleExecution.notificationId;
+    Schedule scheduleExecution =
+        ModalRoute.of(context)?.settings.arguments as Schedule;
+    // Schedule tempScheudule = Schedule();
+    // tempScheudule.name = scheduleExecution.name;
+    // tempScheudule.at = scheduleExecution.at;
+    // tempScheudule.endedAt = scheduleExecution.endedAt;
+    // tempScheudule.activities = scheduleExecution.scheduleActivities;
+    // tempScheudule.scheduleStatus = scheduleExecution.scheduleStatus;
+    // tempScheudule.notificationId = scheduleExecution.notificationId;
     return Scaffold(
       body: SingleChildScrollView(
         child: SafeArea(
@@ -37,7 +36,7 @@ class ScheduleActivitiesHistoryScreen extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ScheduleActivities(
-                      tempSchedule: tempScheudule,
+                      tempSchedule: scheduleExecution,
                       editActivity: null,
                       undoEdit: null,
                       showCheckBoxes: false,
@@ -53,7 +52,7 @@ class ScheduleActivitiesHistoryScreen extends StatelessWidget {
                       floatingLabelAlignment: FloatingLabelAlignment.center,
                       floatingLabelBehavior: FloatingLabelBehavior.never,
                     ),
-                    initialValue: scheduleExecution.scheduleName,
+                    initialValue: scheduleExecution.name,
                     enabled: false,
                   ),
                 ),

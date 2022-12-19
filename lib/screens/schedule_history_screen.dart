@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:schedule_it/helpers/constants.dart';
 
 import 'package:schedule_it/models/schedule.dart';
-import 'package:schedule_it/models/schedule_execution.dart';
+import 'package:schedule_it/screens/play_schedule_screen.dart';
 import 'package:schedule_it/screens/schedule_activities_history_screen.dart';
 
 //import 'package:schedule_it/widgets/app_drawer.dart';
@@ -74,7 +75,7 @@ class ScheduleHistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Schedule schedule = Schedule();
-    List<ScheduleExecution> scheduleHistory = [];
+    List<Schedule> scheduleHistory = [];
     if (ModalRoute.of(context)?.settings.arguments != null) {
       schedule = ModalRoute.of(context)?.settings.arguments as Schedule;
       scheduleHistory = schedule.scheduleHistory;
@@ -96,16 +97,25 @@ class ScheduleHistoryScreen extends StatelessWidget {
                 //         .rearrangeSchedules(oldIndex, newIndex),
                 itemCount: scheduleHistory.length,
                 itemBuilder: (context, index) {
-                  ScheduleExecution scheduleExecution = scheduleHistory[index];
+                  Schedule scheduleExecution = scheduleHistory[index];
                   return InkWell(
-                    onTap: () => Navigator.of(context).pushNamed(
-                        ScheduleActivitiesHistoryScreen.routename,
-                        arguments: scheduleExecution),
+                    onTap: () =>
+                        scheduleExecution.scheduleStatus == statusExecuting
+                            ? Navigator.of(context).pushNamed(
+                                PlaySchedule.routename,
+                                arguments: scheduleExecution,
+                              )
+                            : Navigator.of(context).pushNamed(
+                                ScheduleActivitiesHistoryScreen.routename,
+                                arguments: scheduleExecution,
+                              ),
                     child: Container(
                       decoration: BoxDecoration(
                           gradient: RadialGradient(
                         colors: [
-                          Theme.of(context).backgroundColor,
+                          scheduleExecution.scheduleStatus == statusDone
+                              ? Theme.of(context).backgroundColor
+                              : Colors.blue,
                           Theme.of(context).scaffoldBackgroundColor,
                         ],
                       )),
@@ -114,10 +124,8 @@ class ScheduleHistoryScreen extends StatelessWidget {
                         child: Row(
                           children: [
                             Expanded(
-                              child: scheduleDate(
-                                  "Started At",
-                                  scheduleExecution.startedAt ??
-                                      DateTime.now()),
+                              child: scheduleDate("Started At",
+                                  scheduleExecution.at ?? DateTime.now()),
                             ),
                             const Icon(Icons.arrow_forward),
                             Expanded(
