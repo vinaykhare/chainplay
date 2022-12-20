@@ -59,7 +59,7 @@ const initScript = [
     )
   ''',
   '''CREATE TABLE schedule_activity_execution (
-      scheduleExecutionId TEXT PRIMARY KEY,
+      scheduleExecutionId TEXT,
       scheduleName TEXT, 
       activityId TEXT,
       activityIndex INTEGER,
@@ -108,7 +108,10 @@ const initScript = [
 class DBHelper {
   static Future<Database> database() async {
     final dbPath = await sql.getDatabasesPath();
-    return sql.openDatabase(path.join(dbPath, 'scheduleit.db'),
+    if (await sql.databaseExists(path.join(dbPath, 'scheduleit.db'))) {
+      sql.deleteDatabase(path.join(dbPath, 'scheduleit.db'));
+    }
+    return sql.openDatabase(path.join(dbPath, 'testscheduleit.db'),
         onCreate: (db, version) async {
       for (var script in initScript) {
         await db.execute(script);
@@ -135,6 +138,11 @@ class DBHelper {
       whereArgs: conditionArgs,
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+    // if (x <= 0) {
+    //   // ignore: avoid_print
+    //   print(
+    //       "No rows updated in Table: $table with condition: $condition and Condtion args: $conditionArgs");
+    // }
   }
 
   static Future<List<Map<String, dynamic>>> getData(

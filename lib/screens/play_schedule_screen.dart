@@ -180,7 +180,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
     // await scheduleList.scheduleNotification(
     //     schedule, DateTime.now(), invokeCounter);
     if (schedule.scheduleStatus == statusDone) {
-      await scheduleList.resetActivities(schedule);
+      //await scheduleList.resetActivities(schedule);
     } else {
       await scheduleList.scheduleNotification(
           schedule, DateTime.now(), invokeCounter);

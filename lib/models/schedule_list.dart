@@ -79,7 +79,9 @@ class ScheduleList with ChangeNotifier {
           sch.name == notificationHelper.notificationCameForScheduleName);
       notificationCameForSchedule = indexOfScheduleNotified == -1
           ? null
-          : schedules[indexOfScheduleNotified];
+          : schedules[indexOfScheduleNotified]
+              .scheduleHistory
+              .firstWhere((sch) => sch.scheduleStatus == statusExecuting);
       notificaitonCameForUrl = notificationHelper.notificaitonCameForUrl;
     }
 
@@ -153,8 +155,8 @@ class ScheduleList with ChangeNotifier {
         "scheduleName": schedule.name,
         "activityId": scheduleActivity.activity.activityId,
         "activityIndex": scheduleActivity.index,
-        "activityDone": scheduleActivity.activityDone ? 1 : 0,
-        "restDone": scheduleActivity.restDone ? 1 : 0,
+        "activityDone": scheduleActivity.activityDone ? trueInDB : falseInDB,
+        "restDone": scheduleActivity.restDone ? trueInDB : falseInDB,
         "notificationId": scheduleActivity.notificationId.toString(),
         "activityDuration": scheduleActivity.activityDuration.inSeconds,
         "nextActivityAfter ": scheduleActivity.nextActivityAfter.inSeconds,
@@ -271,7 +273,7 @@ class ScheduleList with ChangeNotifier {
       },
     );
 
-    int scheduleActivityIndex = 0;
+    //int scheduleActivityIndex = 0;
 
     for (ScheduleActivity scheduleActivity in scheduleExecution.activities) {
       await DBHelper.insert(
@@ -280,9 +282,9 @@ class ScheduleList with ChangeNotifier {
           "scheduleExecutionId": scheduleExecution.scheduleExecutionId,
           "scheduleName": scheduleExecution.name,
           "activityId": scheduleActivity.activity.activityId,
-          "activityIndex": scheduleActivityIndex,
-          "activityDone": scheduleActivity.activityDone,
-          "restDone": scheduleActivity.restDone,
+          "activityIndex": scheduleActivity.index,
+          "activityDone": scheduleActivity.activityDone ? trueInDB : falseInDB,
+          "restDone": scheduleActivity.restDone ? trueInDB : falseInDB,
           "notificationId": scheduleActivity.notificationId.toString(),
           "activityDuration": scheduleActivity.activityDuration.inSeconds,
           "nextActivityAfter ": scheduleActivity.nextActivityAfter.inSeconds,
@@ -297,7 +299,7 @@ class ScheduleList with ChangeNotifier {
               : scheduleActivity.endedAt!.millisecondsSinceEpoch,
         },
       );
-      scheduleActivityIndex++;
+      //scheduleActivityIndex++;
     }
   }
 
@@ -310,6 +312,7 @@ class ScheduleList with ChangeNotifier {
     scheduleExecution.scheduleStatus = statusDone;
     scheduleExecution.notificationId = schedule.notificationId;
     scheduleExecution.scheduleStatus = statusExecuting;
+    scheduleExecution.index = schedule.index;
 
     for (ScheduleActivity scheduleActivity in schedule.activities) {
       ScheduleActivity scheduleActivityCopy = ScheduleActivity(
@@ -326,7 +329,7 @@ class ScheduleList with ChangeNotifier {
       scheduleActivityCopy.edit = scheduleActivity.edit;
       scheduleActivityCopy.editNextActivity = scheduleActivity.editNextActivity;
       scheduleActivityCopy.notificationId = scheduleActivity.notificationId;
-
+      scheduleActivityCopy.index = scheduleActivity.index;
       scheduleExecution.activities.add(scheduleActivityCopy);
     }
 
@@ -416,8 +419,8 @@ class ScheduleList with ChangeNotifier {
     await DBHelper.update(
       "schedule_activity",
       {
-        "activityDone": scheduleActivity.activityDone,
-        "restDone": scheduleActivity.restDone,
+        "activityDone": scheduleActivity.activityDone ? trueInDB : falseInDB,
+        "restDone": scheduleActivity.restDone ? trueInDB : falseInDB,
         "notificationId": scheduleActivity.notificationId.toString(),
         "activityDuration": scheduleActivity.activityDuration.inSeconds,
         "nextActivityAfter": scheduleActivity.nextActivityAfter.inSeconds,
@@ -467,8 +470,8 @@ class ScheduleList with ChangeNotifier {
     await DBHelper.update(
       "schedule_activity_execution",
       {
-        "activityDone": scheduleActivity.activityDone,
-        "restDone": scheduleActivity.restDone,
+        "activityDone": scheduleActivity.activityDone ? trueInDB : falseInDB,
+        "restDone": scheduleActivity.restDone ? trueInDB : falseInDB,
         "notificationId": scheduleActivity.notificationId.toString(),
         "activityDuration": scheduleActivity.activityDuration.inSeconds,
         "nextActivityAfter": scheduleActivity.nextActivityAfter.inSeconds,
@@ -791,7 +794,7 @@ class ScheduleList with ChangeNotifier {
 
     scheduleActivity.activityDone = !scheduleActivity.activityDone;
 
-    await updateScheduleActivityByActivityId(
+    await updateScheduleActivityExecutionByActivityId(
       schedule,
       scheduleActivity,
     );
@@ -840,7 +843,7 @@ class ScheduleList with ChangeNotifier {
     } else {
       scheduleActivity.endedAt = null;
     }
-    await updateScheduleActivityByActivityId(
+    await updateScheduleActivityExecutionByActivityId(
       schedule,
       scheduleActivity,
     );
@@ -1140,7 +1143,7 @@ class ScheduleList with ChangeNotifier {
             "url": PlaySchedule.routename,
           },
         );
-        await updateScheduleActivityByActivityId(
+        await updateScheduleActivityExecutionByActivityId(
           schedule,
           schedule.activities[i],
         );
@@ -1159,7 +1162,7 @@ class ScheduleList with ChangeNotifier {
           "url": PlaySchedule.routename,
         },
       );
-      await updateScheduleActivityByActivityId(
+      await updateScheduleActivityExecutionByActivityId(
         schedule,
         schedule.activities[i],
       );
