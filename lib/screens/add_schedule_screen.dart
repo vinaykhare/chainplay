@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 //import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:schedule_it/helpers/constants.dart';
@@ -21,8 +22,6 @@ class AddScheduleScreen extends StatefulWidget {
 }
 
 class _AddScheduleScreenState extends State<AddScheduleScreen> {
-  FocusNode addActivityFocus = FocusNode();
-  String pageTitle = "Add Schedule";
   Schedule tempSchedule = Schedule();
   Activity startActivity = Activity(
     activityId: const Uuid().v1(),
@@ -39,23 +38,30 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     type: systemWaitActivityInDB,
   );
   ScheduleActivity? scheduleActivityInEditMode;
-  String activityTitle = "", errorString = "";
+  DateTime? scheduleStartTime;
+
+  String pageTitle = "Add Schedule",
+      activityTitle = "",
+      errorString = "",
+      scheduleNameOnPageLoad = "";
+
   bool addingDurationToActivity = false,
       addingScheduleToSchedule = false,
-      updatingNextActivityAfterDuration = false;
+      updatingNextActivityAfterDuration = false,
+      pageInit = true;
+
   int activityDurationHour = 0,
       activityDurationMinute = 0,
       activityDurationSecond = 0;
 
   final TextEditingController addActivityController = TextEditingController();
+  final TextEditingController addStartTimeController = TextEditingController();
 
-  DateTime formDateTime = DateTime.now();
   //String durHour = "", durMin = "", durSec = "";
   GlobalKey<FormState> scheduleFormKey = GlobalKey<FormState>();
   GlobalKey<FormState> durationFormKey = GlobalKey<FormState>();
-
-  bool pageInit = true;
-  String scheduleNameOnPageLoad = "";
+  GlobalKey<FormState> startDateTimeInputKey = GlobalKey<FormState>();
+  FocusNode addActivityFocus = FocusNode();
 
   @override
   void dispose() {
@@ -105,6 +111,12 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
         errorString = "Add atleast one activity to this Schedule.";
       });
       return false;
+    }
+
+    if (tempSchedule.at != null && tempSchedule.at!.isAfter(DateTime.now())) {
+      scheduleList.scheduleNotification(tempSchedule, tempSchedule.at!);
+    } else {
+      scheduleList.cancelScheduleNotification(tempSchedule);
     }
 
     //tempSchedule.name = pageTitle;
@@ -203,12 +215,15 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
 
     bool validScheduleForm = scheduleFormKey.currentState!.validate();
     bool validDurationForm = durationFormKey.currentState?.validate() ?? true;
-    if (!validScheduleForm || !validDurationForm) {
+    bool validStartDateTimeForm =
+        startDateTimeInputKey.currentState?.validate() ?? true;
+    if (!validScheduleForm || !validDurationForm || !validStartDateTimeForm) {
       return;
     }
 
     scheduleFormKey.currentState?.save();
     durationFormKey.currentState?.save();
+    startDateTimeInputKey.currentState?.save();
     if (tempSchedule.name == "") {
       setState(() {
         errorString =
@@ -245,6 +260,11 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
       // }
 
       updateActivity(scheduleActivityInEditMode!);
+      // if (scheduleActivityInEditMode?.activity.type ==
+      //     systemStartActivityInDB) {
+      //   Provider.of<ScheduleList>(context, listen: false)
+      //       .updateSchedule(tempSchedule);
+      // }
     } else {
       addActivity(
         ScheduleActivity(
@@ -266,11 +286,13 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     }
 
     addActivityController.clear();
+    addStartTimeController.clear();
     setState(() {
       activityDurationHour = 0;
       activityDurationMinute = 0;
       activityDurationSecond = 0;
       addingDurationToActivity = false;
+      addingScheduleToSchedule = false;
     });
   }
 
@@ -327,10 +349,9 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     setState(() {
       scheduleActivityInEditMode = null;
       addingDurationToActivity = false;
+      addingScheduleToSchedule = false;
       activityDurationHour = 0;
       activityDurationMinute = 0;
-      activityDurationSecond = 0;
-      addingDurationToActivity = false;
       updatingNextActivityAfterDuration = false;
     });
     focusScope.unfocus();
@@ -356,33 +377,43 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
       tempSchedule,
       scheduleActivityInEditMode!,
     );
+
     updatingNextActivityAfterDuration = scheduleActivity.activity.type ==
         systemWaitActivityInDB; //forNextActivity;
+
     Duration scheduleActivityDuration = forNextActivity
         ? scheduleActivity.nextActivityAfter
         : scheduleActivity.activityDuration;
-    //if (scheduleActivityDuration.inSeconds != 0 || forNextActivity) {
-    setState(() {
-      addingDurationToActivity = true;
-      activityDurationHour = scheduleActivityDuration.inHours;
-      activityDurationMinute =
-          scheduleActivityDuration.inMinutes - (activityDurationHour * 60);
-      activityDurationSecond = scheduleActivityDuration.inSeconds -
-          (activityDurationHour * 3600) -
-          (activityDurationMinute * 60);
-    });
 
-    //}
+    if (scheduleActivity.activity.type == systemStartActivityInDB) {
+      setState(() {
+        addingScheduleToSchedule = true;
+        addingDurationToActivity = false;
+        scheduleStartTime = tempSchedule.at;
+        addStartTimeController.text = scheduleStartTime != null
+            ? DateFormat.yMEd().add_jms().format(scheduleStartTime!)
+            : "";
+      });
+    } else {
+      //if (scheduleActivityDuration.inSeconds != 0 || forNextActivity) {
+      setState(() {
+        addingScheduleToSchedule = false;
+        addingDurationToActivity = true;
+        activityDurationHour = scheduleActivityDuration.inHours;
+        activityDurationMinute =
+            scheduleActivityDuration.inMinutes - (activityDurationHour * 60);
+        activityDurationSecond = scheduleActivityDuration.inSeconds -
+            (activityDurationHour * 3600) -
+            (activityDurationMinute * 60);
+      });
+
+      //}
+
+    }
     addActivityController.text = scheduleActivity.activity.title;
-    if (!updatingNextActivityAfterDuration) {
+    if (!updatingNextActivityAfterDuration && !addingScheduleToSchedule) {
       focusScope.requestFocus(addActivityFocus);
     }
-  }
-
-  void addScheduleDateToSchedule() {
-    setState(() {
-      addingScheduleToSchedule = true;
-    });
   }
 
   @override
@@ -491,6 +522,70 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
       ),
     );
 
+    final startDateTimeInputForm = Form(
+      key: startDateTimeInputKey,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: TextFormField(
+          key: ValueKey(
+            "${scheduleActivityInEditMode?.activity.title}_${scheduleActivityInEditMode?.index.toString()}",
+          ),
+          controller: addStartTimeController,
+          onTap: () async {
+            DateTime? selectedDate = await showDatePicker(
+              context: context,
+              initialDate: DateTime.now(),
+              firstDate: DateTime.now(),
+              lastDate: DateTime(3000),
+            );
+            if (selectedDate == null) {
+              return;
+            }
+            TimeOfDay initTime = TimeOfDay(
+              hour: TimeOfDay.now().hour,
+              minute: TimeOfDay.now().minute + 5,
+            );
+            TimeOfDay? selectedTime = await showTimePicker(
+                  context: context,
+                  initialTime: initTime,
+                ) ??
+                initTime;
+
+            scheduleStartTime = DateTime(
+              selectedDate.year,
+              selectedDate.month,
+              selectedDate.day,
+              selectedTime.hour,
+              selectedTime.minute,
+            );
+            addStartTimeController.text =
+                DateFormat.yMEd().add_jms().format(scheduleStartTime!);
+          },
+          keyboardType: TextInputType.none,
+          textInputAction: TextInputAction.none,
+          textAlign: TextAlign.center,
+          //initialValue: tempSchedule.at?.toIso8601String() ?? "",
+          decoration: InputDecoration(
+            border: const OutlineInputBorder(),
+            label: const Text("Shedule Start Time"),
+            hintText: activityDurationHour.toString().padLeft(2, '0'),
+            suffixIcon: const Icon(Icons.calendar_month),
+          ),
+          validator: (value) {
+            if (scheduleStartTime != null &&
+                scheduleStartTime!.isAfter(DateTime.now())) {
+              return null;
+            } else {
+              return "Select Date Time in Future";
+            }
+          },
+          onSaved: (newValue) {
+            tempSchedule.at = scheduleStartTime;
+          },
+        ),
+      ),
+    );
+
     final scheduleInputForm = Form(
       key: scheduleFormKey,
       child: Column(
@@ -573,21 +668,22 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                       tempSchedule: tempSchedule,
                       editActivity: editActivity,
                       undoEdit: undoEdit,
-                      addScheduleDateToSchedule: addScheduleDateToSchedule,
-                      showCheckBoxes: true,
                     ),
                   ),
                 ),
                 scheduleInputForm,
                 if (addingDurationToActivity) duraitonInputForm,
+                if (addingScheduleToSchedule) startDateTimeInputForm,
                 AppBar(
                   automaticallyImplyLeading:
                       !updatingNextActivityAfterDuration &&
+                          !addingScheduleToSchedule &&
                           MediaQuery.of(context).viewInsets.bottom == 0,
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      if (!updatingNextActivityAfterDuration)
+                      if (!updatingNextActivityAfterDuration &&
+                          !addingScheduleToSchedule)
                         Expanded(
                           child: TextField(
                             cursorColor: Theme.of(context).shadowColor,
@@ -621,7 +717,8 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                             },
                           ),
                         ),
-                      if (updatingNextActivityAfterDuration)
+                      if (updatingNextActivityAfterDuration ||
+                          addingScheduleToSchedule)
                         IconButton(
                           onPressed: () {
                             undoEdit(scheduleActivityInEditMode!, false);

@@ -17,7 +17,6 @@ class ScheduleActivityFlowView extends StatelessWidget {
     required this.undoEdit,
     required this.lineWidget,
     required this.index,
-    required this.showCheckBox,
   }) : super(key: key);
 
   final List<ScheduleActivity> activities;
@@ -29,7 +28,6 @@ class ScheduleActivityFlowView extends StatelessWidget {
   final Function? undoEdit;
   final Widget lineWidget;
   final int index;
-  final bool showCheckBox;
 
   @override
   Widget build(BuildContext context) {
@@ -56,15 +54,13 @@ class ScheduleActivityFlowView extends StatelessWidget {
                   : scheduleActivity.activityDone
                       ? Theme.of(context).disabledColor
                       : Theme.of(context).cardColor,
-              onTap: editActivity != null && undoEdit != null
-                  ? () async {
-                      if (!scheduleActivity.edit) {
-                        editActivity!(scheduleActivity, false);
-                      } else {
-                        undoEdit!(scheduleActivity, false);
-                      }
-                    }
-                  : null,
+              onTap: () async {
+                if (!scheduleActivity.edit) {
+                  editActivity!(scheduleActivity, false);
+                } else {
+                  undoEdit!(scheduleActivity, false);
+                }
+              },
               title: Text(scheduleActivity.activity.title),
               subtitle: Text(
                 "${scheduleActivity.activityDone ? 'Completed' : 'will Complete'} ${activities[index].restDone ? ' before scheduled duration' : TransformFunctions.durationToString(scheduleActivity.activityDuration)}.",
@@ -85,20 +81,18 @@ class ScheduleActivityFlowView extends StatelessWidget {
                               child: const Icon(Icons.drag_handle),
                             )
                           : null,
-              leading: showCheckBox
-                  ? Checkbox(
-                      key: ValueKey(
-                          'activities_checkbox_${scheduleActivity.activity.title}'),
-                      value: scheduleActivity.activityDone,
-                      onChanged: (value) async {
-                        // setState(() {
-                        //   activity.activityDone = value ?? false;
-                        // });
-                        await scheduleList.flipDoneActivity(
-                            tempSchedule, scheduleActivity);
-                      },
-                    )
-                  : null,
+              leading: Checkbox(
+                key: ValueKey(
+                    'activities_checkbox_${scheduleActivity.activity.title}'),
+                value: scheduleActivity.activityDone,
+                onChanged: (value) async {
+                  // setState(() {
+                  //   activity.activityDone = value ?? false;
+                  // });
+                  await scheduleList.flipDoneActivity(
+                      tempSchedule, scheduleActivity);
+                },
+              ),
             ),
           ),
         ),

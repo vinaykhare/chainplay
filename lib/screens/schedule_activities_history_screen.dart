@@ -39,7 +39,6 @@ class ScheduleActivitiesHistoryScreen extends StatelessWidget {
                       tempSchedule: scheduleExecution,
                       editActivity: null,
                       undoEdit: null,
-                      showCheckBoxes: false,
                     ),
                   ),
                 ),

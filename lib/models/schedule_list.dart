@@ -179,7 +179,7 @@ class ScheduleList with ChangeNotifier {
 
   Future<void> removeSchedule(Schedule schedule) async {
     schedules.removeWhere((sch) => sch.name == schedule.name);
-    await cancelScheduleNotifications(schedule);
+    await cancelScheduleNotification(schedule);
 
     await DBHelper.removeData(
       "schedule_activity",
@@ -307,8 +307,8 @@ class ScheduleList with ChangeNotifier {
     Schedule scheduleExecution = Schedule();
     scheduleExecution.scheduleExecutionId = const Uuid().v1();
     scheduleExecution.name = schedule.name;
-    scheduleExecution.at = DateTime.now();
-    scheduleExecution.endedAt = schedule.endedAt;
+    scheduleExecution.at = schedule.at;
+    scheduleExecution.endedAt = null;
     scheduleExecution.scheduleStatus = statusDone;
     scheduleExecution.notificationId = schedule.notificationId;
     scheduleExecution.scheduleStatus = statusExecuting;
@@ -322,12 +322,12 @@ class ScheduleList with ChangeNotifier {
         nextActivityAfter: scheduleActivity.nextActivityAfter,
       );
 
-      scheduleActivityCopy.at = scheduleActivity.at;
-      scheduleActivityCopy.pausedAt = scheduleActivity.pausedAt;
-      scheduleActivityCopy.endedAt = scheduleActivity.endedAt;
-      scheduleActivityCopy.restDone = scheduleActivity.restDone;
-      scheduleActivityCopy.edit = scheduleActivity.edit;
-      scheduleActivityCopy.editNextActivity = scheduleActivity.editNextActivity;
+      scheduleActivityCopy.at = null;
+      scheduleActivityCopy.pausedAt = null;
+      scheduleActivityCopy.endedAt = null;
+      scheduleActivityCopy.restDone = false;
+      scheduleActivityCopy.edit = false;
+      scheduleActivityCopy.editNextActivity = false;
       scheduleActivityCopy.notificationId = scheduleActivity.notificationId;
       scheduleActivityCopy.index = scheduleActivity.index;
       scheduleExecution.activities.add(scheduleActivityCopy);
@@ -337,7 +337,7 @@ class ScheduleList with ChangeNotifier {
     int scheduleIndex =
         schedules.indexWhere((sch) => sch.name == schedule.name);
 
-    schedules[scheduleIndex].scheduleHistory.add(scheduleExecution);
+    schedules[scheduleIndex].scheduleHistory.insert(0, scheduleExecution);
     schedules[scheduleIndex].at = schedules[scheduleIndex].endedAt = null;
     schedules[scheduleIndex].notificationId = noValueInDB;
     schedules[scheduleIndex].scheduleStatus = statusExecuting;
@@ -347,7 +347,7 @@ class ScheduleList with ChangeNotifier {
   }
 
   Future<Schedule> startScheduleExecution(Schedule schedule) async {
-    await cancelScheduleNotifications(schedule);
+    await cancelScheduleNotification(schedule);
     int executingScheduleIndex = schedule.scheduleHistory
         .indexWhere((sch) => sch.scheduleStatus == statusExecuting);
     if (executingScheduleIndex == -1) {
@@ -497,7 +497,7 @@ class ScheduleList with ChangeNotifier {
   }
 
   Future<void> resetActivities(Schedule schedule) async {
-    await cancelScheduleNotifications(schedule);
+    await cancelScheduleNotification(schedule);
 
     for (ScheduleActivity activity in schedule.activities) {
       activity.edit = false;
@@ -1025,7 +1025,7 @@ class ScheduleList with ChangeNotifier {
   Future<List<Schedule>> loadScheduleHistory(Schedule schedule) async {
     List<Map<String, dynamic>> loadedScheduleHistory = await DBHelper.getData(
         "schedule_execution",
-        "endedAt DESC",
+        "startedAt DESC",
         "scheduleName = ?",
         [schedule.name]);
     List<Schedule> result = [];
@@ -1127,36 +1127,57 @@ class ScheduleList with ChangeNotifier {
   Future<void> scheduleNotification(
     Schedule schedule,
     DateTime fromDateTime,
+  ) async {
+    int nextNotificationId = getNextNotificationId();
+    String activityTitle = schedule.name;
+
+    schedule.notificationId = await notificationHelper.scheduleNotification(
+      fromDateTime,
+      nextNotificationId,
+      schedule.name,
+      "$activityTitle has Started.",
+      {
+        "scheduleName": schedule.name,
+        "url": PlaySchedule.routename,
+      },
+    );
+    await updateSchedule(
+      schedule,
+    );
+
+    notifyListeners();
+  }
+
+  Future<void> scheduleNotificationForExecution(
+    Schedule schedule,
+    DateTime fromDateTime,
     int fromIndex,
   ) async {
     for (int i = fromIndex; i < schedule.activities.length; i++) {
-      int nextNotificationId = getNextNotificationId();
-      if (schedule.activities[i].activityDuration.inSeconds == 0) {
-        schedule.activities[i].notificationId =
-            await notificationHelper.scheduleNotification(
-          DateTime.now().add(const Duration(seconds: 1)),
-          nextNotificationId,
-          schedule.name,
-          "${schedule.activities[i].activity.title} has Started.",
-          {
-            "scheduleName": schedule.name,
-            "url": PlaySchedule.routename,
-          },
-        );
-        await updateScheduleActivityExecutionByActivityId(
-          schedule,
-          schedule.activities[i],
-        );
+      fromDateTime = fromDateTime.add(schedule.activities[i].activityDuration);
+      if (schedule.activities[i].activity.type != systemWaitActivityInDB &&
+          schedule.activities[i].activity.type != systemStartActivityInDB &&
+          schedule.activities[i].activityDuration.inSeconds == 0) {
         break;
       }
+      if (schedule.activities[i].activity.type == systemWaitActivityInDB) {
+        continue;
+      }
+      int nextNotificationId = getNextNotificationId();
+      String activityTitle = schedule.activities[i].activity.title;
 
-      fromDateTime = fromDateTime.add(schedule.activities[i].activityDuration);
+      if (schedule.activities[i].activity.type == systemStartActivityInDB) {
+        schedule.notificationId = nextNotificationId;
+        activityTitle = schedule.name;
+        await updateSchedule(schedule);
+      }
+
       schedule.activities[i].notificationId =
           await notificationHelper.scheduleNotification(
         fromDateTime,
         nextNotificationId,
         schedule.name,
-        "${schedule.activities[i].activity.title} is completed.",
+        "$activityTitle has Started.",
         {
           "scheduleName": schedule.name,
           "url": PlaySchedule.routename,
@@ -1169,20 +1190,16 @@ class ScheduleList with ChangeNotifier {
       // if (schedule.activities[i].nextActivityAfter.inSeconds == 0) {
       //   continue;
       // }
-      fromDateTime = fromDateTime.add(schedule.activities[i].nextActivityAfter);
+
       // schedule.activities[i].notificationId = await notificationHelper
       //     .scheduleNotificationWithActions(fromDateTime);
     }
     notifyListeners();
   }
 
-  Future<void> cancelScheduleNotifications(Schedule schedule) async {
+  Future<void> cancelScheduleNotificationExecution(Schedule schedule) async {
     //Cancel Notifications
-    if (schedule.notificationId != noValueInDB) {
-      await notificationHelper.cancelNotificationById(schedule.notificationId);
-      schedule.notificationId = noValueInDB;
-      await updateSchedule(schedule);
-    }
+    await cancelScheduleNotification(schedule);
     for (ScheduleActivity scheduleActivity in schedule.activities) {
       if (scheduleActivity.notificationId != noValueInDB) {
         await notificationHelper
@@ -1200,6 +1217,16 @@ class ScheduleList with ChangeNotifier {
       "scheduleName = ?",
       [schedule.name],
     );
+    notifyListeners();
+  }
+
+  Future<void> cancelScheduleNotification(Schedule schedule) async {
+    //Cancel Notifications
+    if (schedule.notificationId != noValueInDB) {
+      await notificationHelper.cancelNotificationById(schedule.notificationId);
+      schedule.notificationId = noValueInDB;
+      await updateSchedule(schedule);
+    }
     notifyListeners();
   }
 }

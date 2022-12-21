@@ -15,14 +15,12 @@ import 'package:schedule_it/widgets/schedule_system_activity_flow_view.dart';
 class ScheduleActivities extends StatelessWidget {
   final Schedule tempSchedule;
   final Function? editActivity, undoEdit, addScheduleDateToSchedule;
-  final bool showCheckBoxes;
   const ScheduleActivities({
     super.key,
     required this.tempSchedule,
     required this.editActivity,
     required this.undoEdit,
     this.addScheduleDateToSchedule,
-    required this.showCheckBoxes,
   });
 
   @override
@@ -52,12 +50,17 @@ class ScheduleActivities extends StatelessWidget {
             children: [
               GestureDetector(
                 onLongPressMoveUpdate: (details) {},
-                onTap:
-                    showCheckBoxes ? () => addScheduleDateToSchedule!() : null,
+                onTap: () async {
+                  if (!scheduleActivity.edit) {
+                    editActivity!(scheduleActivity, false);
+                  } else {
+                    undoEdit!(scheduleActivity, false);
+                  }
+                },
                 child: tempSchedule.at != null
                     ? RestTaskWithDuration(
                         taskText:
-                            "${showCheckBoxes ? 'Scheduled to Start at' : 'Started on '} \n${DateFormat.yMd().add_jms().format(tempSchedule.at!)}",
+                            "${tempSchedule.at!.isAfter(DateTime.now()) ? 'Scheduled to Start at' : 'Started on '} \n${DateFormat.yMd().add_jms().format(tempSchedule.at!)}",
                       )
                     : const RestTask(taskText: "Start"),
               ),
@@ -75,7 +78,6 @@ class ScheduleActivities extends StatelessWidget {
             undoEdit: undoEdit,
             lineWidget: lineWidget,
             index: index,
-            showCheckBox: showCheckBoxes,
           );
         case waitActivityInDB:
         default:
@@ -90,7 +92,6 @@ class ScheduleActivities extends StatelessWidget {
             undoEdit: undoEdit,
             lineWidget: lineWidget,
             index: index,
-            showCheckBox: showCheckBoxes,
           );
       }
     }
@@ -104,24 +105,39 @@ class ScheduleActivities extends StatelessWidget {
       );
     }
 
-    return editActivity == null
-        ? ListView.builder(
-            reverse: true,
-            itemCount: activities.length,
-            itemBuilder: (context, index) =>
-                getScheduleActivitySequence(context, index),
-          )
-        : ReorderableListView.builder(
-            reverse: true,
-            buildDefaultDragHandles: true,
-            onReorder: (oldIndex, newIndex) {
-              oldIndex = activities.length - oldIndex - 1;
-              newIndex = activities.length - newIndex - 1;
-              scheduleList.rearrangeActivites(tempSchedule, oldIndex, newIndex);
-            },
-            itemCount: activities.length,
-            itemBuilder: (context, index) =>
-                getScheduleActivitySequence(context, index),
-          );
+    return IgnorePointer(
+      ignoring: undoEdit == null || editActivity == null,
+      child: ReorderableListView.builder(
+        reverse: true,
+        buildDefaultDragHandles: true,
+        onReorder: (oldIndex, newIndex) {
+          oldIndex = activities.length - oldIndex - 1;
+          newIndex = activities.length - newIndex - 1;
+          scheduleList.rearrangeActivites(tempSchedule, oldIndex, newIndex);
+        },
+        itemCount: activities.length,
+        itemBuilder: (context, index) =>
+            getScheduleActivitySequence(context, index),
+      ),
+    );
+    // return editActivity == null
+    //     ? ListView.builder(
+    //         reverse: true,
+    //         itemCount: activities.length,
+    //         itemBuilder: (context, index) =>
+    //             getScheduleActivitySequence(context, index),
+    //       )
+    //     : ReorderableListView.builder(
+    //         reverse: true,
+    //         buildDefaultDragHandles: true,
+    //         onReorder: (oldIndex, newIndex) {
+    //           oldIndex = activities.length - oldIndex - 1;
+    //           newIndex = activities.length - newIndex - 1;
+    //           scheduleList.rearrangeActivites(tempSchedule, oldIndex, newIndex);
+    //         },
+    //         itemCount: activities.length,
+    //         itemBuilder: (context, index) =>
+    //             getScheduleActivitySequence(context, index),
+    //       );
   }
 }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:schedule_it/helpers/transform_functions.dart';
 import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_activity.dart';
 import 'package:schedule_it/models/schedule_list.dart';
 import 'package:schedule_it/widgets/rest_task.dart';
+import 'package:schedule_it/widgets/rest_task_with_duration.dart';
 
 class ScheduleSystemActivityFlowView extends StatelessWidget {
   const ScheduleSystemActivityFlowView({
@@ -17,7 +19,6 @@ class ScheduleSystemActivityFlowView extends StatelessWidget {
     required this.undoEdit,
     required this.lineWidget,
     required this.index,
-    required this.showCheckBox,
   }) : super(key: key);
 
   final List<ScheduleActivity> activities;
@@ -29,7 +30,6 @@ class ScheduleSystemActivityFlowView extends StatelessWidget {
   final Function? undoEdit;
   final Widget lineWidget;
   final int index;
-  final bool showCheckBox;
 
   @override
   Widget build(BuildContext context) {
@@ -42,20 +42,13 @@ class ScheduleSystemActivityFlowView extends StatelessWidget {
           if (index != 0) lineWidget,
           if (index != 0)
             InkWell(
-              onTap: editActivity != null && undoEdit != null
-                  ? () {
-                      if (!scheduleActivity.edit) {
-                        editActivity!(scheduleActivity, false);
-                      } else {
-                        undoEdit!(scheduleActivity, false);
-                      }
-                    }
-                  : showCheckBox
-                      ? () async {
-                          await scheduleList.flipDoneRestAfterActivity(
-                              tempSchedule, scheduleActivity);
-                        }
-                      : null,
+              onTap: () {
+                if (!scheduleActivity.edit) {
+                  editActivity!(scheduleActivity, false);
+                } else {
+                  undoEdit!(scheduleActivity, false);
+                }
+              },
               child: (activities[index].activityDuration.inSeconds != 0)
                   ? Container(
                       padding: const EdgeInsets.all(10),
@@ -80,7 +73,13 @@ class ScheduleSystemActivityFlowView extends StatelessWidget {
                     ),
             ),
           if (index == 0) arrowWidget,
-          if (index == 0) const RestTask(taskText: "End"),
+          if (index == 0)
+            tempSchedule.endedAt == null
+                ? const RestTask(taskText: 'End')
+                : RestTaskWithDuration(
+                    taskText:
+                        'Ended on ${DateFormat.yMd().add_jms().format(tempSchedule.endedAt!)}',
+                  ),
         ],
       ),
     );

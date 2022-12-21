@@ -13,11 +13,14 @@ import 'package:schedule_it/screens/schedule_history_screen.dart';
 class ScheduleView extends StatelessWidget {
   //final BannerAd? adSchedule;
   final Schedule schedule;
+  final bool showHistory, allowFlag;
 
   const ScheduleView({
     super.key,
     //this.adSchedule,
     required this.schedule,
+    required this.showHistory,
+    required this.allowFlag,
   });
 
   @override
@@ -78,7 +81,8 @@ class ScheduleView extends StatelessWidget {
                     : Theme.of(context).cardColor,
                 title: Text(schedule.name),
                 subtitle: Text(
-                    DateFormat.yMEd().add_jms().format(schedule.lastUpdatedAt)),
+                  'Last Updated: ${DateFormat.yMEd().add_jms().format(schedule.lastUpdatedAt)}',
+                ),
                 leading: CircleAvatar(
                   backgroundColor: Theme.of(context).primaryColorLight,
                   child: IconButton(
@@ -100,16 +104,17 @@ class ScheduleView extends StatelessWidget {
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    IconButton(
-                      icon: schedule.pinned
-                          ? const Icon(Icons.favorite)
-                          : const Icon(Icons.favorite_border_outlined),
-                      onPressed: () async {
-                        schedule.pinned = !schedule.pinned;
-                        await scheduleList.updateSchedule(schedule);
-                      },
-                    ),
-                    if (schedule.scheduleHistory.isNotEmpty)
+                    if (allowFlag)
+                      IconButton(
+                        icon: schedule.pinned
+                            ? const Icon(Icons.favorite)
+                            : const Icon(Icons.favorite_border_outlined),
+                        onPressed: () async {
+                          schedule.pinned = !schedule.pinned;
+                          await scheduleList.updateSchedule(schedule);
+                        },
+                      ),
+                    if (schedule.scheduleHistory.isNotEmpty && showHistory)
                       IconButton(
                         onPressed: () async {
                           Navigator.of(context).pushNamed(

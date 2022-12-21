@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 //import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
+import 'package:schedule_it/helpers/constants.dart';
 import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_list.dart';
 //import 'package:schedule_it/widgets/app_drawer.dart';
@@ -38,7 +39,7 @@ class _SearchScheduleScreenState extends State<SearchScheduleScreen> {
               .where(
                 (element) =>
                     (showFavorites && element.pinned == true) ||
-                    (showRunning && element.at != null),
+                    (showRunning && element.scheduleStatus == statusExecuting),
               )
               .toList();
         },
@@ -89,6 +90,8 @@ class _SearchScheduleScreenState extends State<SearchScheduleScreen> {
                   return ScheduleView(
                     //adSchedule: adSchedule,
                     schedule: schedule,
+                    showHistory: true,
+                    allowFlag: true,
                     key: Key(index.toString()),
                   );
                 },

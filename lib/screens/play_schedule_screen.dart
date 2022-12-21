@@ -166,6 +166,8 @@ class _PlayScheduleState extends State<PlaySchedule> {
       setState(() {
         schedule.scheduleStatus = statusDone;
         parentSchedule.scheduleStatus = statusNotStarted;
+        schedule.endedAt = DateTime.now();
+        parentSchedule.endedAt = null;
       });
 
       await scheduleList.updateSchedule(parentSchedule);
@@ -182,7 +184,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
     if (schedule.scheduleStatus == statusDone) {
       //await scheduleList.resetActivities(schedule);
     } else {
-      await scheduleList.scheduleNotification(
+      await scheduleList.scheduleNotificationForExecution(
           schedule, DateTime.now(), invokeCounter);
     }
     return true;
@@ -201,9 +203,12 @@ class _PlayScheduleState extends State<PlaySchedule> {
         schedule = ModalRoute.of(context)?.settings.arguments as Schedule;
       }
       activities = schedule.activities;
-      if (schedule.scheduleStatus == statusExecuting) {
+      if (schedule.scheduleStatus == statusExecuting &&
+          !schedule.at!.isAfter(DateTime.now())) {
         scheduleStartedAt = schedule.at!;
         updateWaitDuration();
+      } else {
+        invokeCounter = activities.length;
       }
       initializing = false;
     }
@@ -228,7 +233,6 @@ class _PlayScheduleState extends State<PlaySchedule> {
                       tempSchedule: schedule,
                       editActivity: null,
                       undoEdit: null,
-                      showCheckBoxes: true,
                     ),
                   ),
                 ),

@@ -52,7 +52,11 @@ class ScheduleListScreen extends StatelessWidget {
                   return ScheduleView(
                     //adSchedule: adSchedule,
                     schedule: schedule,
-                    key: Key(index.toString()),
+                    showHistory: true,
+                    allowFlag: true,
+                    key: Key(
+                      index.toString(),
+                    ),
                   );
                 },
               ),
