@@ -51,7 +51,7 @@ class ScheduleIt extends StatelessWidget {
               dialogBackgroundColor: Colors.lightGreen,
             ),
       home: scheduleList.loaded
-          ? scheduleList.notificationCameForSchedule != null
+          ? scheduleList.notificationCameAs != null
               ? const PlaySchedule()
               : const ScheduleListScreen()
           : FutureBuilder(

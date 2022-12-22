@@ -114,7 +114,9 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     }
 
     if (tempSchedule.at != null && tempSchedule.at!.isAfter(DateTime.now())) {
-      scheduleList.scheduleNotification(tempSchedule, tempSchedule.at!);
+      scheduleList.moveScheduleToHistory(tempSchedule);
+      scheduleList.scheduleNotificationForExecution(
+          tempSchedule, tempSchedule.at!);
     } else {
       scheduleList.cancelScheduleNotification(tempSchedule);
     }

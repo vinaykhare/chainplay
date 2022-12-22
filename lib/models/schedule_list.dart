@@ -46,8 +46,9 @@ class ScheduleList with ChangeNotifier {
   List<Activity> activities = [];
   List<SystemSetting> systemSettings = [];
   NotificationHelper notificationHelper = NotificationHelper();
-  Schedule? notificationCameForSchedule;
-  String? notificaitonCameForUrl;
+  Map<String, dynamic>? notificationCameAs;
+  // Schedule? notificationCameForSchedule;
+  // String? notificaitonCameForUrl;
   List<int> notificationIdsInDB = [];
   //List<int> adIndexInSchedules = [];
   //final AdState adState;
@@ -65,25 +66,40 @@ class ScheduleList with ChangeNotifier {
     await fetchSettings();
     await notificationHelper.initialize(systemSettings);
     for (int scheduleId = 0; scheduleId < schedules.length; scheduleId++) {
+      if (schedules[scheduleId].notificationId == noValueInDB) {
+        continue;
+      }
       notificationIdsInDB.add(schedules[scheduleId].notificationId);
       Schedule sch = schedules[scheduleId];
       for (int activityId = 0;
           activityId < sch.activities.length;
           activityId++) {
+        if (sch.activities[activityId].notificationId == noValueInDB) {
+          continue;
+        }
         notificationIdsInDB.add(sch.activities[activityId].notificationId);
       }
     }
-    if (notificationHelper.notificationCameForScheduleName != "" &&
-        notificationHelper.notificationCameForScheduleName != null) {
-      int indexOfScheduleNotified = schedules.indexWhere((sch) =>
-          sch.name == notificationHelper.notificationCameForScheduleName);
-      notificationCameForSchedule = indexOfScheduleNotified == -1
-          ? null
-          : schedules[indexOfScheduleNotified]
-              .scheduleHistory
-              .firstWhere((sch) => sch.scheduleStatus == statusExecuting);
-      notificaitonCameForUrl = notificationHelper.notificaitonCameForUrl;
-    }
+
+    notificationCameAs = await notificationHelper.localNotificationService
+        .checkForNotification();
+
+    // if (notificationHelper.notificationCameForScheduleName != "" &&
+    //     notificationHelper.notificationCameForScheduleName != null) {
+    //   int indexOfScheduleNotified = schedules.indexWhere((sch) =>
+    //       sch.name == notificationHelper.notificationCameForScheduleName);
+    //   if (indexOfScheduleNotified != -1 &&
+    //       schedules[indexOfScheduleNotified].scheduleHistory.isNotEmpty) {
+    //     notificationCameForSchedule = schedules[indexOfScheduleNotified]
+    //         .scheduleHistory
+    //         .firstWhere((sch) => sch.scheduleStatus == statusExecuting);
+
+    //     notificaitonCameForUrl = notificationHelper.notificaitonCameForUrl;
+    //   } else {
+    //     notificationCameForSchedule = null;
+    //     notificaitonCameForUrl = null;
+    //   }
+    // }
 
     loaded = true;
     notifyListeners();
@@ -307,7 +323,7 @@ class ScheduleList with ChangeNotifier {
     Schedule scheduleExecution = Schedule();
     scheduleExecution.scheduleExecutionId = const Uuid().v1();
     scheduleExecution.name = schedule.name;
-    scheduleExecution.at = schedule.at;
+    scheduleExecution.at = schedule.at ?? DateTime.now();
     scheduleExecution.endedAt = null;
     scheduleExecution.scheduleStatus = statusDone;
     scheduleExecution.notificationId = schedule.notificationId;
@@ -1121,44 +1137,17 @@ class ScheduleList with ChangeNotifier {
     while (notificationIdsInDB.contains(nextNotificationId)) {
       nextNotificationId++;
     }
+    notificationIdsInDB.add(nextNotificationId);
     return nextNotificationId;
-  }
-
-  Future<void> scheduleNotification(
-    Schedule schedule,
-    DateTime fromDateTime,
-  ) async {
-    int nextNotificationId = getNextNotificationId();
-    String activityTitle = schedule.name;
-
-    schedule.notificationId = await notificationHelper.scheduleNotification(
-      fromDateTime,
-      nextNotificationId,
-      schedule.name,
-      "$activityTitle has Started.",
-      {
-        "scheduleName": schedule.name,
-        "url": PlaySchedule.routename,
-      },
-    );
-    await updateSchedule(
-      schedule,
-    );
-
-    notifyListeners();
   }
 
   Future<void> scheduleNotificationForExecution(
     Schedule schedule,
     DateTime fromDateTime,
-    int fromIndex,
   ) async {
-    for (int i = fromIndex; i < schedule.activities.length; i++) {
-      fromDateTime = fromDateTime.add(schedule.activities[i].activityDuration);
-      if (schedule.activities[i].activity.type != systemWaitActivityInDB &&
-          schedule.activities[i].activity.type != systemStartActivityInDB &&
-          schedule.activities[i].activityDuration.inSeconds == 0) {
-        break;
+    for (int i = 0; i < schedule.activities.length; i++) {
+      if (schedule.activities[i].endedAt != null) {
+        continue;
       }
       if (schedule.activities[i].activity.type == systemWaitActivityInDB) {
         continue;
@@ -1179,14 +1168,24 @@ class ScheduleList with ChangeNotifier {
         schedule.name,
         "$activityTitle has Started.",
         {
-          "scheduleName": schedule.name,
-          "url": PlaySchedule.routename,
+          payLoadSchduleName: schedule.name,
+          payLoadWidgetUrl: PlaySchedule.routename,
+          payLoadScheduleActivityIndex: i,
+          payLoadScheduleActivityCount: schedule.activities.length,
         },
       );
       await updateScheduleActivityExecutionByActivityId(
         schedule,
         schedule.activities[i],
       );
+
+      if (schedule.activities[i].activity.type != systemWaitActivityInDB &&
+          schedule.activities[i].activity.type != systemStartActivityInDB &&
+          schedule.activities[i].activityDuration.inSeconds == 0) {
+        break;
+      }
+      fromDateTime = fromDateTime.add(schedule.activities[i].activityDuration);
+
       // if (schedule.activities[i].nextActivityAfter.inSeconds == 0) {
       //   continue;
       // }

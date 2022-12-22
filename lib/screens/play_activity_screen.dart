@@ -7,7 +7,6 @@ import 'package:schedule_it/helpers/transform_functions.dart';
 import 'package:schedule_it/models/schedule_activity.dart';
 import 'package:schedule_it/models/schedule_list.dart';
 import 'package:schedule_it/models/system_setting.dart';
-import 'package:schedule_it/screens/play_schedule_screen.dart';
 
 class PlayActivity extends StatefulWidget {
   static String routename = "run_activity";
@@ -191,14 +190,11 @@ class _PlayActivityState extends State<PlayActivity> {
                   children: [
                     IconButton(
                       onPressed: () {
-                        Navigator.of(context).canPop()
-                            ? Navigator.of(context).pop({
-                                "running": running,
-                                "waitDuration": waitDuration,
-                                "interruptAndCompleted": false,
-                              })
-                            : Navigator.of(context)
-                                .pushReplacementNamed(PlaySchedule.routename);
+                        Navigator.of(context).pop({
+                          "running": running,
+                          "waitDuration": waitDuration,
+                          "interruptAndCompleted": false,
+                        });
                       },
                       icon: const Icon(Icons.arrow_back),
                     ),

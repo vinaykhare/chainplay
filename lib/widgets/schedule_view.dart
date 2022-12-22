@@ -72,7 +72,7 @@ class ScheduleView extends StatelessWidget {
                     //await scheduleList.loadActivities(schedule);
                     await nav.pushNamed(
                       PlaySchedule.routename,
-                      arguments: scheduleExecution,
+                      arguments: scheduleExecution.name,
                     );
                   }
                 },
@@ -93,7 +93,7 @@ class ScheduleView extends StatelessWidget {
 
                       await nav.pushNamed(
                         PlaySchedule.routename,
-                        arguments: scheduleExecution,
+                        arguments: scheduleExecution.name,
                       );
                     },
                     icon: schedule.scheduleStatus == statusExecuting

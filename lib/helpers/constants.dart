@@ -29,3 +29,10 @@ const String notificationTypeSettingValueAlarm = "Alarm";
 const String notificationTypeSettingValueCalendar = "Calendar";
 const String notificationTypeSettingValueNone = "None";
 const String notificationTypeSettingValueAll = "All";
+
+//Notification Payload fields
+
+const String payLoadSchduleName = "scheduleName";
+const String payLoadWidgetUrl = "url";
+const String payLoadScheduleActivityIndex = "scheduleActivityIndex";
+const String payLoadScheduleActivityCount = "scheduleActivityCount";

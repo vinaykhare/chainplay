@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:schedule_it/helpers/notification_tap_background.dart';
 import 'package:schedule_it/helpers/local_notifications/received_notification.dart';
-import 'package:schedule_it/screens/play_schedule_screen.dart';
 import 'package:timezone/data/latest_10y.dart';
 import 'package:timezone/timezone.dart';
 
@@ -50,7 +49,7 @@ class LocalNotificationService with WidgetsBindingObserver {
     // tz.setLocalLocation(tz.getLocation("timeZoneName"));
     //Android settings
     AndroidInitializationSettings androidInitializationSettings =
-        const AndroidInitializationSettings('@mipmap/ic_launcher');
+        const AndroidInitializationSettings('@mipmap/launcher_icon');
 
     // IOS Settings
 
@@ -125,20 +124,20 @@ class LocalNotificationService with WidgetsBindingObserver {
 
     flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      onDidReceiveNotificationResponse:
-          (NotificationResponse notificationResponse) async {
-        // switch (notificationResponse.notificationResponseType) {
-        //   case NotificationResponseType.selectedNotification:
-        //     selectNotificationStream.add(notificationResponse.payload);
-        //     break;
-        //   case NotificationResponseType.selectedNotificationAction:
-        //     if (notificationResponse.actionId ==
-        //         LocalNotificationService.navigationActionId) {
-        //       selectNotificationStream.add(notificationResponse.payload);
-        //     }
-        //     break;
-        // }
-      },
+      onDidReceiveNotificationResponse: notificationTapBackground,
+      //     (NotificationResponse notificationResponse) async {
+      //   switch (notificationResponse.notificationResponseType) {
+      //     case NotificationResponseType.selectedNotification:
+      //       selectNotificationStream.add(notificationResponse.payload);
+      //       break;
+      //     case NotificationResponseType.selectedNotificationAction:
+      //       if (notificationResponse.actionId ==
+      //           LocalNotificationService.navigationActionId) {
+      //         selectNotificationStream.add(notificationResponse.payload);
+      //       }
+      //       break;
+      //   }
+      // },
       onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
     );
   }
@@ -172,8 +171,9 @@ class LocalNotificationService with WidgetsBindingObserver {
     return result;
   }
 
-  Future<NotificationDetails> _getNotification() async {
-    const AndroidNotificationDetails androidNotificationDetails =
+  Future<NotificationDetails> _getNotification(
+      int maxProgressVal, int progressVal) async {
+    AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
       "SCHEDULE_IT_CHANNEL_ID",
       "SCHEDULE_IT_CHANNEL_NAME",
@@ -182,9 +182,23 @@ class LocalNotificationService with WidgetsBindingObserver {
       priority: Priority.high,
       ticker: 'Schedult It',
       playSound: true,
+      sound:
+          const RawResourceAndroidNotificationSound('scheduleit_notification'),
+      // sound: UriAndroidNotificationSound(
+      //     "assets/sound/scheduleit_notification.wav"),
+      fullScreenIntent: true,
+      // styleInformation: BigPictureStyleInformation(
+      //   DrawableResourceAndroidBitmap('@mipmap/launcher_icon'),
+      //   largeIcon: DrawableResourceAndroidBitmap('@mipmap/launcher_icon'),
+      //   contentTitle: 'Schedule It Big Picture Notification Title',
+      //   summaryText: 'Schedule It Big Picture Notification Title',
+      // ),
+      showProgress: true,
+      maxProgress: maxProgressVal,
+      progress: progressVal,
     );
 
-    const NotificationDetails notificationDetails = NotificationDetails(
+    NotificationDetails notificationDetails = NotificationDetails(
       android: androidNotificationDetails,
     );
 
@@ -200,6 +214,9 @@ class LocalNotificationService with WidgetsBindingObserver {
       importance: Importance.max,
       priority: Priority.high,
       ticker: 'Schedult It',
+      sound: RawResourceAndroidNotificationSound(
+          'assets/sound/scheduleit_notification.wav'),
+      fullScreenIntent: true,
       actions: <AndroidNotificationAction>[
         // AndroidNotificationAction(
         //   urlLaunchActionId,
@@ -238,18 +255,26 @@ class LocalNotificationService with WidgetsBindingObserver {
     return notificationDetails;
   }
 
-  Future<void> showNotificationWithActions(int notificationId) async {
+  Future<void> showNotificationWithActions(
+    int notificationId,
+    Map<String, String> payLoad,
+  ) async {
     final details = await _getNotificationWithActions();
     await flutterLocalNotificationsPlugin.show(notificationId,
         'plain title with action', 'plain body with aciton', details,
-        payload: PlaySchedule.routename);
+        payload: jsonEncode(payLoad));
   }
 
-  Future<void> showNotification(int notificationId) async {
-    final details = await _getNotification();
+  Future<void> showNotification(
+    int notificationId,
+    int maxProgVal,
+    int progVal,
+    Map<String, String> payLoad,
+  ) async {
+    final details = await _getNotification(maxProgVal, progVal);
     await flutterLocalNotificationsPlugin.show(
         notificationId, 'plain title', 'plain body', details,
-        payload: PlaySchedule.routename);
+        payload: jsonEncode(payLoad));
   }
 
   Future<bool> scheduleNotificationWithAction(
@@ -283,10 +308,13 @@ class LocalNotificationService with WidgetsBindingObserver {
     int notificationId,
     String title,
     String body,
-    Map<String, String> payLoad,
+    Map<String, dynamic> payLoad,
   ) async {
     try {
-      final details = await _getNotification();
+      final details = await _getNotification(
+        payLoad["scheduleActivityCount"],
+        payLoad["scheduleActivityIndex"],
+      );
       await flutterLocalNotificationsPlugin.zonedSchedule(
         notificationId,
         title,

@@ -110,7 +110,7 @@ class ScheduleHistoryScreen extends StatelessWidget {
                       InkWell(
                         onTap: () => Navigator.of(context).pushReplacementNamed(
                           PlaySchedule.routename,
-                          arguments: scheduleExecution,
+                          arguments: scheduleExecution.name,
                         ),
                         child: Container(
                           decoration: BoxDecoration(

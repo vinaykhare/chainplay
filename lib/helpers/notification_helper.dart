@@ -9,8 +9,8 @@ class NotificationHelper {
   LocalNotificationService localNotificationService =
       LocalNotificationService();
   List<SystemSetting> systemSettings = [];
-  String? notificationCameForScheduleName;
-  String? notificaitonCameForUrl;
+  // String? notificationCameForScheduleName;
+  // String? notificaitonCameForUrl;
 
   set systemSetting(List<SystemSetting> newSystemSettings) {
     systemSettings = newSystemSettings;
@@ -20,19 +20,26 @@ class NotificationHelper {
     systemSettings = systemSettingsFromRoot;
     await localNotificationService.initialize();
 
+    // Map<String, dynamic>? responsePayload =
+    //     await localNotificationService.checkForNotification();
+
+    // if (responsePayload != null) {
+    //   notificaitonCameForUrl = responsePayload["url"];
+    //   notificationCameForScheduleName = responsePayload["scheduleName"];
+    // } else {
+    //   notificationCameForScheduleName = notificaitonCameForUrl = null;
+    // }
+  }
+
+  Future<Map<String, dynamic>?> checkForNotification() async {
     Map<String, dynamic>? responsePayload =
         await localNotificationService.checkForNotification();
 
-    if (responsePayload != null) {
-      notificaitonCameForUrl = responsePayload["url"];
-      notificationCameForScheduleName = responsePayload["scheduleName"];
-    } else {
-      notificationCameForScheduleName = notificaitonCameForUrl = null;
-    }
+    return responsePayload;
   }
 
   Future<int> scheduleNotification(DateTime scheduleAt, int notificationId,
-      String title, String body, Map<String, String> payload) async {
+      String title, String body, Map<String, dynamic> payload) async {
     String notificationFor = notificationSettingIsFor();
     if (notificationFor == notificationTypeSettingValueAppNotify) {
       if (await localNotificationService.scheduleNotification(

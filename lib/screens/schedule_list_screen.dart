@@ -30,8 +30,10 @@ class ScheduleListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Schedule> schedules =
-        Provider.of<ScheduleList>(context, listen: true).schedules;
+    ScheduleList scheduleList =
+        Provider.of<ScheduleList>(context, listen: true);
+    List<Schedule> schedules = scheduleList.schedules;
+
     return Scaffold(
       drawer: const AppDrawer(),
       body: SafeArea(

@@ -185,7 +185,9 @@ class _PlayScheduleState extends State<PlaySchedule> {
       //await scheduleList.resetActivities(schedule);
     } else {
       await scheduleList.scheduleNotificationForExecution(
-          schedule, DateTime.now(), invokeCounter);
+        schedule,
+        DateTime.now(),
+      );
     }
     return true;
   }
@@ -196,12 +198,18 @@ class _PlayScheduleState extends State<PlaySchedule> {
   Widget build(BuildContext context) {
     if (initializing) {
       scheduleList = Provider.of<ScheduleList>(context, listen: false);
-      if (scheduleList.notificationCameForSchedule != null) {
-        schedule = scheduleList.notificationCameForSchedule!;
-        scheduleList.notificationCameForSchedule = null;
-      } else {
-        schedule = ModalRoute.of(context)?.settings.arguments as Schedule;
-      }
+      // if (scheduleList.notificationCameForSchedule != null) {
+      //   schedule = scheduleList.notificationCameForSchedule!;
+      //   scheduleList.notificationCameForSchedule = null;
+      // } else {
+      String scheduleName = scheduleList.notificationCameAs != null
+          ? scheduleList.notificationCameAs![payLoadSchduleName]
+          : ModalRoute.of(context)?.settings.arguments as String;
+      Schedule parentSchedule =
+          scheduleList.schedules.firstWhere((sch) => sch.name == scheduleName);
+      schedule = parentSchedule.scheduleHistory
+          .firstWhere((schEx) => schEx.name == scheduleName);
+      //}
       activities = schedule.activities;
       if (schedule.scheduleStatus == statusExecuting &&
           !schedule.at!.isAfter(DateTime.now())) {
@@ -211,6 +219,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
         invokeCounter = activities.length;
       }
       initializing = false;
+      scheduleList.notificationCameAs = null;
     }
     double appHeight = MediaQuery.of(context).size.height -
         MediaQuery.of(context).viewPadding.top -
@@ -244,8 +253,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
                         bool allWell = await onPopOut();
                         allWell && nav.canPop()
                             ? nav.pop()
-                            : nav.pushReplacementNamed(
-                                ScheduleListScreen.routename);
+                            : nav.pushNamed(ScheduleListScreen.routename);
                       },
                       icon: const Icon(Icons.arrow_back),
                     ),
