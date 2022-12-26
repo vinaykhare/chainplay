@@ -1,67 +1,67 @@
-import 'package:schedule_it/helpers/constants.dart';
-import 'package:schedule_it/models/system_setting.dart';
+import 'package:chain_events/helpers/constants.dart';
+import 'package:chain_events/models/system_setting.dart';
 
 class TransformFunctions {
-  static String durationToString(Duration activityDuration) {
+  static String durationToString(Duration eventDuration) {
     String drStr = "in ";
-    int activityDurationHour = activityDuration.inHours;
-    if (activityDurationHour != 0) {
+    int eventDurationHour = eventDuration.inHours;
+    if (eventDurationHour != 0) {
       if (drStr != "in ") {
         drStr += ", ";
       }
-      drStr += "${activityDurationHour.toString().padLeft(2, '0')} Hours";
+      drStr += "${eventDurationHour.toString().padLeft(2, '0')} Hours";
     }
 
-    int activityDurationMinute =
-        activityDuration.inMinutes - (activityDurationHour * 60);
-    if (activityDurationMinute != 0) {
+    int eventDurationMinute =
+        eventDuration.inMinutes - (eventDurationHour * 60);
+    if (eventDurationMinute != 0) {
       if (drStr != "in ") {
         drStr += ", ";
       }
-      drStr += "${activityDurationMinute.toString().padLeft(2, '0')} Minutes";
+      drStr += "${eventDurationMinute.toString().padLeft(2, '0')} Minutes";
     }
 
-    int activityDurationSecond = activityDuration.inSeconds -
-        (activityDurationMinute * 60) -
-        (activityDurationHour * 3600);
+    int eventDurationSecond = eventDuration.inSeconds -
+        (eventDurationMinute * 60) -
+        (eventDurationHour * 3600);
 
-    if (activityDurationSecond != 0) {
+    if (eventDurationSecond != 0) {
       if (drStr != "in ") {
         drStr += " and ";
       }
-      drStr += "${activityDurationSecond.toString().padLeft(2, '0')} Seconds";
+      drStr += "${eventDurationSecond.toString().padLeft(2, '0')} Seconds";
     }
     return drStr == "in " ? "on Pressing Done." : drStr;
   }
 
-  static String durationToRestString(Duration activityDuration) {
+  static String durationToRestString(Duration eventDuration) {
     String drStr = "";
-    int activityDurationHour = activityDuration.inHours;
-    if (activityDurationHour != 0) {
+    int eventDurationHour = eventDuration.inHours;
+    if (eventDurationHour != 0) {
       if (drStr != "") {
         drStr += ", ";
       }
-      drStr += "${activityDurationHour.toString().padLeft(2, '0')} Hours";
+      drStr += "${eventDurationHour.toString().padLeft(2, '0')} Hours";
     }
 
-    int activityDurationMinute =
-        activityDuration.inMinutes - (activityDurationHour * 60);
-    if (activityDurationMinute != 0) {
+    int eventDurationMinute =
+        eventDuration.inMinutes - (eventDurationHour * 60);
+    if (eventDurationMinute != 0) {
       if (drStr != "") {
         drStr += ", ";
       }
-      drStr += "${activityDurationMinute.toString().padLeft(2, '0')} Minutes";
+      drStr += "${eventDurationMinute.toString().padLeft(2, '0')} Minutes";
     }
 
-    int activityDurationSecond = activityDuration.inSeconds -
-        (activityDurationMinute * 60) -
-        (activityDurationHour * 3600);
+    int eventDurationSecond = eventDuration.inSeconds -
+        (eventDurationMinute * 60) -
+        (eventDurationHour * 3600);
 
-    if (activityDurationSecond != 0) {
+    if (eventDurationSecond != 0) {
       if (drStr != "") {
         drStr += " and ";
       }
-      drStr += "${activityDurationSecond.toString().padLeft(2, '0')} Seconds";
+      drStr += "${eventDurationSecond.toString().padLeft(2, '0')} Seconds";
     }
     return drStr;
   }

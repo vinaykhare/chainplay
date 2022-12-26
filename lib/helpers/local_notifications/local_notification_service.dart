@@ -6,8 +6,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:schedule_it/helpers/notification_tap_background.dart';
-import 'package:schedule_it/helpers/local_notifications/received_notification.dart';
+import 'package:chain_events/helpers/notification_tap_background.dart';
+import 'package:chain_events/helpers/local_notifications/received_notification.dart';
 import 'package:timezone/data/latest_10y.dart';
 import 'package:timezone/timezone.dart';
 
@@ -175,23 +175,22 @@ class LocalNotificationService with WidgetsBindingObserver {
       int maxProgressVal, int progressVal) async {
     AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
-      "SCHEDULE_IT_CHANNEL_ID",
-      "SCHEDULE_IT_CHANNEL_NAME",
-      channelDescription: 'Schedule It Channel',
+      "CHAIN_EVENTS_CHANNEL_ID",
+      "CHAIN_EVENTS_CHANNEL_NAME",
+      channelDescription: 'Chain Events Channel',
       importance: Importance.max,
       priority: Priority.high,
       ticker: 'Schedult It',
       playSound: true,
-      sound:
-          const RawResourceAndroidNotificationSound('scheduleit_notification'),
+      sound: const RawResourceAndroidNotificationSound('chainit_notification'),
       // sound: UriAndroidNotificationSound(
-      //     "assets/sound/scheduleit_notification.wav"),
+      //     "assets/sound/chainit_notification.wav"),
       fullScreenIntent: true,
       // styleInformation: BigPictureStyleInformation(
       //   DrawableResourceAndroidBitmap('@mipmap/launcher_icon'),
       //   largeIcon: DrawableResourceAndroidBitmap('@mipmap/launcher_icon'),
-      //   contentTitle: 'Schedule It Big Picture Notification Title',
-      //   summaryText: 'Schedule It Big Picture Notification Title',
+      //   contentTitle: 'Chain Events Big Picture Notification Title',
+      //   summaryText: 'Chain Events Big Picture Notification Title',
       // ),
       showProgress: true,
       maxProgress: maxProgressVal,
@@ -208,14 +207,14 @@ class LocalNotificationService with WidgetsBindingObserver {
   Future<NotificationDetails> _getNotificationWithActions() async {
     const AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
-      "SCHEDULE_IT_CHANNEL_ID",
-      "SCHEDULE_IT_CHANNEL_NAME",
-      channelDescription: 'Schedule It Channel with Action.',
+      "CHAIN_EVENTS_CHANNEL_ID",
+      "CHAIN_EVENTS_CHANNEL_NAME",
+      channelDescription: 'Chain Events Channel with Action.',
       importance: Importance.max,
       priority: Priority.high,
       ticker: 'Schedult It',
       sound: RawResourceAndroidNotificationSound(
-          'assets/sound/scheduleit_notification.wav'),
+          'assets/sound/chainit_notification.wav'),
       fullScreenIntent: true,
       actions: <AndroidNotificationAction>[
         // AndroidNotificationAction(
@@ -277,8 +276,8 @@ class LocalNotificationService with WidgetsBindingObserver {
         payload: jsonEncode(payLoad));
   }
 
-  Future<bool> scheduleNotificationWithAction(
-    DateTime scheduleAt,
+  Future<bool> chainNotificationWithAction(
+    DateTime chainAt,
     int notificationId,
     String title,
     String body,
@@ -290,7 +289,7 @@ class LocalNotificationService with WidgetsBindingObserver {
         notificationId,
         title,
         body,
-        TZDateTime.from(scheduleAt, local),
+        TZDateTime.from(chainAt, local),
         details,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
@@ -303,8 +302,8 @@ class LocalNotificationService with WidgetsBindingObserver {
     }
   }
 
-  Future<bool> scheduleNotification(
-    DateTime scheduleAt,
+  Future<bool> chainNotification(
+    DateTime chainAt,
     int notificationId,
     String title,
     String body,
@@ -312,14 +311,14 @@ class LocalNotificationService with WidgetsBindingObserver {
   ) async {
     try {
       final details = await _getNotification(
-        payLoad["scheduleActivityCount"],
-        payLoad["scheduleActivityIndex"],
+        payLoad["chainEventCount"],
+        payLoad["chainEventIndex"],
       );
       await flutterLocalNotificationsPlugin.zonedSchedule(
         notificationId,
         title,
         body,
-        TZDateTime.from(scheduleAt, local),
+        TZDateTime.from(chainAt, local),
         details,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
@@ -332,7 +331,7 @@ class LocalNotificationService with WidgetsBindingObserver {
     }
   }
 
-  Future<bool> cancelScheduledNotification(int notificationId) async {
+  Future<bool> cancelChaindNotification(int notificationId) async {
     try {
       await flutterLocalNotificationsPlugin.cancel(notificationId);
       return true;

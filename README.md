@@ -1,6 +1,6 @@
-# schedule_it
+# chain_events
 
-Project Schedule It Developed using Flutter Framework.
+Project Chain Events Developed using Flutter Framework.
 
 ## Getting Started
 

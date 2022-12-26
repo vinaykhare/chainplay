@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:schedule_it/models/schedule_list.dart';
-import 'package:schedule_it/models/system_setting.dart';
-import 'package:schedule_it/widgets/app_drawer.dart';
+import 'package:chain_events/models/chain_list.dart';
+import 'package:chain_events/models/system_setting.dart';
+import 'package:chain_events/widgets/app_drawer.dart';
 
 class SettingsScreen extends StatefulWidget {
   static String routename = "/settings";
@@ -13,14 +13,14 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  late ScheduleList scheduleList;
+  late ChainList chainList;
   List<SystemSetting> settings = [];
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    scheduleList = Provider.of<ScheduleList>(context, listen: true);
-    scheduleList.fetchSettings().then((value) {
+    chainList = Provider.of<ChainList>(context, listen: true);
+    chainList.fetchSettings().then((value) {
       setState(() {
         settings = value;
       });
@@ -29,7 +29,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    settings = scheduleList.systemSettings;
+    settings = chainList.systemSettings;
     return Scaffold(
       drawer: const AppDrawer(),
       body: SafeArea(
@@ -54,7 +54,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         IconButton(
                           onPressed: () {
-                            Provider.of<ScheduleList>(context, listen: false)
+                            Provider.of<ChainList>(context, listen: false)
                                 .clearDataBase();
                             Navigator.of(context).pop();
                           },
@@ -102,7 +102,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           Switch(
                             value: settings[index].value == "TRUE",
                             onChanged: (value) async {
-                              await scheduleList.setSetting(
+                              await chainList.setSetting(
                                 settings[index].key,
                                 value == true ? "TRUE" : "FALSE",
                               );
@@ -121,7 +121,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               for (String value in listOfValues) {
                                 result += '$value,';
                               }
-                              await scheduleList.setSetting(
+                              await chainList.setSetting(
                                 settings[index].key,
                                 result.substring(0, result.length - 1),
                               );

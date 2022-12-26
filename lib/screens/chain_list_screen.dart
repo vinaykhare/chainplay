@@ -1,39 +1,38 @@
 import 'package:flutter/material.dart';
 //import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
-import 'package:schedule_it/helpers/key_helper.dart';
-import 'package:schedule_it/models/schedule.dart';
-import 'package:schedule_it/models/schedule_list.dart';
-import 'package:schedule_it/screens/add_schedule_screen.dart';
-import 'package:schedule_it/screens/search_schedule_screen.dart';
-import 'package:schedule_it/widgets/app_drawer.dart';
-//import 'package:schedule_it/widgets/app_drawer.dart';
-import 'package:schedule_it/widgets/schedule_list_item.dart';
+import 'package:chain_events/helpers/key_helper.dart';
+import 'package:chain_events/models/chain.dart';
+import 'package:chain_events/models/chain_list.dart';
+import 'package:chain_events/screens/add_chain_screen.dart';
+import 'package:chain_events/screens/search_chain_screen.dart';
+import 'package:chain_events/widgets/app_drawer.dart';
+//import 'package:chain_events/widgets/app_drawer.dart';
+import 'package:chain_events/widgets/chain_list_item.dart';
 
-class ScheduleListScreen extends StatelessWidget {
-  static String routename = "/schedules";
+class ChainListScreen extends StatelessWidget {
+  static String routename = "/chains";
 
-  const ScheduleListScreen({super.key});
+  const ChainListScreen({super.key});
 
-  // late ScheduleList scheduleList;
-  // List<Schedule> schedules = [];
+  // late ChainList chainList;
+  // List<Chain> chains = [];
 
   // @override
   // void didChangeDependencies() {
   //   super.didChangeDependencies();
-  //   scheduleList = Provider.of<ScheduleList>(context, listen: true);
-  //   // scheduleList.fetchSchedules().then((value) {
+  //   chainList = Provider.of<ChainList>(context, listen: true);
+  //   // chainList.fetchChains().then((value) {
   //   //   setState(() {
-  //   //     schedules = value;
+  //   //     chains = value;
   //   //   });
   //   // });
   // }
 
   @override
   Widget build(BuildContext context) {
-    ScheduleList scheduleList =
-        Provider.of<ScheduleList>(context, listen: true);
-    List<Schedule> schedules = scheduleList.schedules;
+    ChainList chainList = Provider.of<ChainList>(context, listen: true);
+    List<Chain> chains = chainList.chains;
 
     return Scaffold(
       drawer: const AppDrawer(),
@@ -47,15 +46,15 @@ class ScheduleListScreen extends StatelessWidget {
               child: ReorderableListView.builder(
                 reverse: true,
                 onReorder: (oldIndex, newIndex) =>
-                    Provider.of<ScheduleList>(context, listen: false)
-                        .rearrangeSchedules(oldIndex, newIndex),
-                itemCount: schedules.length,
+                    Provider.of<ChainList>(context, listen: false)
+                        .rearrangeChains(oldIndex, newIndex),
+                itemCount: chains.length,
                 itemBuilder: (context, index) {
-                  Schedule schedule = schedules[index];
-                  //BannerAd? adSchedule = schedule.adBanner;
-                  return ScheduleListItem(
-                    //adSchedule: adSchedule,
-                    schedule: schedule,
+                  Chain chain = chains[index];
+                  //BannerAd? adChain = chain.adBanner;
+                  return ChainListItem(
+                    //adChain: adChain,
+                    chain: chain,
                     showHistory: true,
                     allowFlag: true,
                     key: Key(
@@ -78,10 +77,10 @@ class ScheduleListScreen extends StatelessWidget {
                       cursorColor: Theme.of(context).cardColor,
                       showCursor: false,
                       onTap: () => Navigator.of(context)
-                          .pushNamed(SearchScheduleScreen.routename),
+                          .pushNamed(SearchChainScreen.routename),
                       decoration: InputDecoration(
                         floatingLabelBehavior: FloatingLabelBehavior.never,
-                        label: const Text("Search Schedules"),
+                        label: const Text("Search Chains"),
                         border: const OutlineInputBorder(
                           borderSide: BorderSide.none,
                         ),
@@ -95,8 +94,7 @@ class ScheduleListScreen extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: () {
-                      Navigator.of(context)
-                          .pushNamed(AddScheduleScreen.routename);
+                      Navigator.of(context).pushNamed(AddChainScreen.routename);
                     },
                     icon: const Icon(
                       Icons.watch_later,
@@ -112,7 +110,7 @@ class ScheduleListScreen extends StatelessWidget {
 
       // floatingActionButton: FloatingActionButton(
       //   onPressed: () {
-      //     Navigator.of(context).pushNamed(AddScheduleScreen.routename);
+      //     Navigator.of(context).pushNamed(AddChainScreen.routename);
       //   },
       //   child: const Icon(
       //     Icons.add,

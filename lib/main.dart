@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:schedule_it/schedule_it.dart';
+import 'package:chain_events/chain_events.dart';
 
 // import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 // import 'helpers/ad_state.dart';
-import 'models/schedule_list.dart';
+import 'models/chain_list.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,15 +29,15 @@ void main() {
         //   value: adState,
         // ),
         // Provider(
-        //   //create: (context) => ScheduleList(context, adState),
+        //   //create: (context) => ChainList(context, adState),
         //   create: (context) => LocalNotificationService(),
         // ),
         ChangeNotifierProvider(
-          //create: (context) => ScheduleList(context, adState),
-          create: (context) => ScheduleList(context),
+          //create: (context) => ChainList(context, adState),
+          create: (context) => ChainList(context),
         ),
       ],
-      child: const ScheduleIt(),
+      child: const ChainEvents(),
     ),
   );
 }

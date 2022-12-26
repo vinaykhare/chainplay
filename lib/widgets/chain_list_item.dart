@@ -3,21 +3,21 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
-//import 'package:schedule_it/models/activity.dart';
-import 'package:schedule_it/models/schedule.dart';
-import 'package:schedule_it/models/schedule_list.dart';
-import 'package:schedule_it/widgets/schedule_view.dart';
+//import 'package:chain_events/models/event.dart';
+import 'package:chain_events/models/chain.dart';
+import 'package:chain_events/models/chain_list.dart';
+import 'package:chain_events/widgets/chain_view.dart';
 
-class ScheduleListItem extends StatelessWidget {
-  //final BannerAd? adSchedule;
-  final Schedule schedule;
+class ChainListItem extends StatelessWidget {
+  //final BannerAd? adChain;
+  final Chain chain;
   final bool showHistory, allowFlag;
   final int index;
 
-  const ScheduleListItem({
+  const ChainListItem({
     super.key,
-    //this.adSchedule,
-    required this.schedule,
+    //this.adChain,
+    required this.chain,
     required this.showHistory,
     required this.allowFlag,
     required this.index,
@@ -25,7 +25,7 @@ class ScheduleListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ScheduleList scheduleList = Provider.of<ScheduleList>(context);
+    ChainList chainList = Provider.of<ChainList>(context);
     return Dismissible(
       background: Container(
         margin: const EdgeInsets.fromLTRB(0, 4, 0, 4),
@@ -40,15 +40,15 @@ class ScheduleListItem extends StatelessWidget {
           ],
         ),
       ),
-      key: ValueKey("schedule_list_dismissible_${schedule.name}"),
+      key: ValueKey("chain_list_dismissible_${chain.title}"),
       onDismissed: (direction) async {
-        await scheduleList.removeSchedule(schedule);
+        await chainList.removeChain(chain);
       },
       // Expanded(
-      //   child: ScheduleActivityListView(schedule: schedule),
+      //   child: ChainEventListView(chain: chain),
       // ),
-      child: ScheduleView(
-        schedule: schedule,
+      child: ChainView(
+        chain: chain,
         showHistory: showHistory,
         allowFlag: allowFlag,
         key: key,

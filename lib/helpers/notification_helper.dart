@@ -1,16 +1,14 @@
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 
-import 'package:schedule_it/helpers/constants.dart';
-import 'package:schedule_it/helpers/local_notifications/local_notification_service.dart';
+import 'package:chain_events/helpers/constants.dart';
+import 'package:chain_events/helpers/local_notifications/local_notification_service.dart';
 
-import 'package:schedule_it/models/system_setting.dart';
+import 'package:chain_events/models/system_setting.dart';
 
 class NotificationHelper {
   LocalNotificationService localNotificationService =
       LocalNotificationService();
   List<SystemSetting> systemSettings = [];
-  // String? notificationCameForScheduleName;
-  // String? notificaitonCameForUrl;
 
   set systemSetting(List<SystemSetting> newSystemSettings) {
     systemSettings = newSystemSettings;
@@ -19,16 +17,6 @@ class NotificationHelper {
   Future<void> initialize(List<SystemSetting> systemSettingsFromRoot) async {
     systemSettings = systemSettingsFromRoot;
     await localNotificationService.initialize();
-
-    // Map<String, dynamic>? responsePayload =
-    //     await localNotificationService.checkForNotification();
-
-    // if (responsePayload != null) {
-    //   notificaitonCameForUrl = responsePayload["url"];
-    //   notificationCameForScheduleName = responsePayload["scheduleName"];
-    // } else {
-    //   notificationCameForScheduleName = notificaitonCameForUrl = null;
-    // }
   }
 
   Future<Map<String, dynamic>?> checkForNotification() async {
@@ -38,18 +26,18 @@ class NotificationHelper {
     return responsePayload;
   }
 
-  Future<int> scheduleNotification(DateTime scheduleAt, int notificationId,
+  Future<int> chainNotification(DateTime chainAt, int notificationId,
       String title, String body, Map<String, dynamic> payload) async {
     String notificationFor = notificationSettingIsFor();
     if (notificationFor == notificationTypeSettingValueAppNotify) {
-      if (await localNotificationService.scheduleNotification(
-          scheduleAt, notificationId, title, body, payload)) {
+      if (await localNotificationService.chainNotification(
+          chainAt, notificationId, title, body, payload)) {
         return notificationId;
       }
     }
     // if (notificationFor == notificationTypeSettingValueAlarm) {
     //   if (await AndroidAlarmManager.oneShotAt(
-    //     scheduleAt,
+    //     chainAt,
     //     notificationId,
     //     alarmTapBackground,
     //     alarmClock: true,
@@ -64,7 +52,7 @@ class NotificationHelper {
   Future<void> cancelNotificationById(int id) async {
     String notificationFor = notificationSettingIsFor();
     if (notificationFor == notificationTypeSettingValueAppNotify) {
-      await localNotificationService.cancelScheduledNotification(id);
+      await localNotificationService.cancelChaindNotification(id);
     }
     // if (notificationFor == notificationTypeSettingValueAlarm) {
     //   AndroidAlarmManager.cancel(id);

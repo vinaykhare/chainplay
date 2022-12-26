@@ -2,14 +2,14 @@ const int noValueInDB = -1;
 const int trueInDB = 1;
 const int falseInDB = 0;
 
-//Activity types
-const int systemStartActivityInDB = 0;
-const int systemWaitActivityInDB = 1;
-const int waitActivityInDB = 2;
+//Event types
+const int systemStartEventInDB = 0;
+const int systemWaitEventInDB = 1;
+const int waitEventInDB = 2;
 
-//System Activity Names
-const String systemWaitActivityTitle = "System Wait Activity";
-const String systemStartActivityInTitle = "System Start Activity";
+//System Event Names
+const String systemWaitEventTitle = "System Wait Event";
+const String systemStartEventInTitle = "System Start Event";
 
 //Status
 
@@ -32,8 +32,8 @@ const String notificationTypeSettingValueAll = "All";
 
 //Notification Payload fields
 
-const String payLoadSchduleName = "scheduleName";
-const String payLoadSchduleExecId = "scheduleExecutionId";
+const String payLoadChainName = "chainTitle";
+const String payLoadChainExecId = "chainExecutionId";
 const String payLoadWidgetUrl = "url";
-const String payLoadScheduleActivityIndex = "scheduleActivityIndex";
-const String payLoadScheduleActivityCount = "scheduleActivityCount";
+const String payLoadChainEventIndex = "chainEventIndex";
+const String payLoadChainEventCount = "chainEventCount";

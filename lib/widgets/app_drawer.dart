@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:schedule_it/screens/how_it_works.dart';
-import 'package:schedule_it/screens/schedule_list_screen.dart';
-import 'package:schedule_it/screens/settings_screen.dart';
+import 'package:chain_events/screens/how_it_works.dart';
+import 'package:chain_events/screens/chain_list_screen.dart';
+import 'package:chain_events/screens/settings_screen.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({
@@ -15,7 +15,7 @@ class AppDrawer extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           AppBar(
-            title: const Text('Schedule It'),
+            title: const Text('Chain Events'),
             automaticallyImplyLeading: false,
             actions: [
               IconButton(
@@ -35,7 +35,7 @@ class AppDrawer extends StatelessWidget {
               const Divider(),
               ListTile(
                 leading: const Icon(Icons.help),
-                title: const Text('How "Schedule It" Works'),
+                title: const Text('How "Chain Events" Works'),
                 onTap: () {
                   while (Navigator.of(context).canPop()) {
                     Navigator.of(context).pop();
@@ -48,7 +48,7 @@ class AppDrawer extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.watch_later),
                 title: Text(
-                  'Schedules',
+                  'Chains',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 onTap: () {
@@ -56,7 +56,7 @@ class AppDrawer extends StatelessWidget {
                     Navigator.of(context).pop();
                   }
                   Navigator.of(context)
-                      .pushReplacementNamed(ScheduleListScreen.routename);
+                      .pushReplacementNamed(ChainListScreen.routename);
                 },
               ),
               const Divider(),

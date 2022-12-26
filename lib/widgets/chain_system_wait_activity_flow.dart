@@ -1,32 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:schedule_it/helpers/transform_functions.dart';
-import 'package:schedule_it/models/schedule.dart';
-import 'package:schedule_it/models/schedule_activity.dart';
-import 'package:schedule_it/models/schedule_list.dart';
-import 'package:schedule_it/widgets/rest_task.dart';
-import 'package:schedule_it/widgets/rest_task_with_duration.dart';
+import 'package:chain_events/helpers/transform_functions.dart';
+import 'package:chain_events/models/chain.dart';
+import 'package:chain_events/models/chain_event.dart';
+import 'package:chain_events/models/chain_list.dart';
+import 'package:chain_events/widgets/system_wait_event.dart';
+import 'package:chain_events/widgets/system_wait_event_with_duration.dart';
 
-class ScheduleSystemActivityFlowView extends StatelessWidget {
-  const ScheduleSystemActivityFlowView({
+class ChainSystemWaitEventFlow extends StatelessWidget {
+  const ChainSystemWaitEventFlow({
     Key? key,
     required this.activities,
     required this.arrowWidget,
-    required this.scheduleActivity,
-    required this.scheduleList,
-    required this.tempSchedule,
-    required this.editActivity,
+    required this.chainEvent,
+    required this.chainList,
+    required this.tempChain,
+    required this.editEvent,
     required this.undoEdit,
     required this.lineWidget,
     required this.index,
   }) : super(key: key);
 
-  final List<ScheduleActivity> activities;
+  final List<ChainEvent> activities;
   final Widget arrowWidget;
-  final ScheduleActivity scheduleActivity;
-  final ScheduleList scheduleList;
-  final Schedule tempSchedule;
-  final Function? editActivity;
+  final ChainEvent chainEvent;
+  final ChainList chainList;
+  final Chain tempChain;
+  final Function? editEvent;
   final Function? undoEdit;
   final Widget lineWidget;
   final int index;
@@ -34,7 +34,7 @@ class ScheduleSystemActivityFlowView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IgnorePointer(
-      ignoring: undoEdit == null || editActivity == null,
+      ignoring: undoEdit == null || editEvent == null,
       child: GestureDetector(
         onLongPressMoveUpdate:
             (details) {}, // so it cannot be dragged under reorderable list view.
@@ -45,13 +45,13 @@ class ScheduleSystemActivityFlowView extends StatelessWidget {
             if (index != 0)
               InkWell(
                 onTap: () {
-                  if (!scheduleActivity.edit) {
-                    editActivity!(scheduleActivity);
+                  if (!chainEvent.edit) {
+                    editEvent!(chainEvent);
                   } else {
-                    undoEdit!(scheduleActivity);
+                    undoEdit!(chainEvent);
                   }
                 },
-                child: (activities[index].activityDuration.inSeconds != 0)
+                child: (activities[index].eventDuration.inSeconds != 0)
                     ? Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
@@ -63,7 +63,7 @@ class ScheduleSystemActivityFlowView extends StatelessWidget {
                               : Theme.of(context).primaryColor,
                         ),
                         child: Text(
-                          "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? ' before scheduled duration' : TransformFunctions.durationToString(scheduleActivity.activityDuration)}.",
+                          "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? ' before chaind duration' : TransformFunctions.durationToString(chainEvent.eventDuration)}.",
                         ),
                       )
                     : Icon(
@@ -76,11 +76,11 @@ class ScheduleSystemActivityFlowView extends StatelessWidget {
               ),
             if (index == 0) arrowWidget,
             if (index == 0)
-              tempSchedule.endedAt == null
-                  ? const RestTask(taskText: 'End')
-                  : RestTaskWithDuration(
+              tempChain.endedAt == null
+                  ? const SystemWaitEvent(taskText: 'End')
+                  : SystemWaitEventWithDuration(
                       taskText:
-                          'Ended on ${DateFormat.yMd().add_jms().format(tempSchedule.endedAt!)}',
+                          'Ended on ${DateFormat.yMd().add_jms().format(tempChain.endedAt!)}',
                     ),
           ],
         ),

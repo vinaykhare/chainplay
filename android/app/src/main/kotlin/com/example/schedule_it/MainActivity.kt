@@ -1,4 +1,4 @@
-package com.example.schedule_it
+package com.example.chain_events
 
 import io.flutter.embedding.android.FlutterActivity
 

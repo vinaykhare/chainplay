@@ -1,32 +1,32 @@
 import 'package:flutter/material.dart';
 //import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
-import 'package:schedule_it/helpers/constants.dart';
-import 'package:schedule_it/models/schedule.dart';
-import 'package:schedule_it/models/schedule_list.dart';
-//import 'package:schedule_it/widgets/app_drawer.dart';
-import 'package:schedule_it/widgets/schedule_list_item.dart';
+import 'package:chain_events/helpers/constants.dart';
+import 'package:chain_events/models/chain.dart';
+import 'package:chain_events/models/chain_list.dart';
+//import 'package:chain_events/widgets/app_drawer.dart';
+import 'package:chain_events/widgets/chain_list_item.dart';
 
-class SearchScheduleScreen extends StatefulWidget {
-  static String routename = "/search_schedules";
+class SearchChainScreen extends StatefulWidget {
+  static String routename = "/search_chains";
 
-  const SearchScheduleScreen({super.key});
+  const SearchChainScreen({super.key});
 
   @override
-  State<SearchScheduleScreen> createState() => _SearchScheduleScreenState();
+  State<SearchChainScreen> createState() => _SearchChainScreenState();
 }
 
-class _SearchScheduleScreenState extends State<SearchScheduleScreen> {
-  List<Schedule> displaySchedules = [];
-  late ScheduleList scheduleList;
+class _SearchChainScreenState extends State<SearchChainScreen> {
+  List<Chain> displayChains = [];
+  late ChainList chainList;
 
   bool showFavorites = false, showRunning = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    scheduleList = Provider.of<ScheduleList>(context, listen: true);
-    displaySchedules = scheduleList.schedules;
+    chainList = Provider.of<ChainList>(context, listen: true);
+    displayChains = chainList.chains;
     showFavorites = false;
     showRunning = false;
   }
@@ -35,18 +35,18 @@ class _SearchScheduleScreenState extends State<SearchScheduleScreen> {
     if (showFavorites || showRunning) {
       setState(
         () {
-          displaySchedules = scheduleList.schedules
+          displayChains = chainList.chains
               .where(
                 (element) =>
                     (showFavorites && element.pinned == true) ||
-                    (showRunning && element.scheduleStatus == statusExecuting),
+                    (showRunning && element.chainStatus == statusExecuting),
               )
               .toList();
         },
       );
     } else {
       setState(() {
-        displaySchedules = scheduleList.schedules;
+        displayChains = chainList.chains;
       });
     }
   }
@@ -58,12 +58,12 @@ class _SearchScheduleScreenState extends State<SearchScheduleScreen> {
     });
     if (filter == '') {
       setState(() {
-        displaySchedules = scheduleList.schedules;
+        displayChains = chainList.chains;
       });
     } else {
       setState(() {
-        displaySchedules = scheduleList.schedules
-            .where((element) => element.name
+        displayChains = chainList.chains
+            .where((element) => element.title
                 .toLowerCase()
                 .contains(filter.toString().toLowerCase()))
             .toList();
@@ -83,13 +83,13 @@ class _SearchScheduleScreenState extends State<SearchScheduleScreen> {
             Expanded(
               child: ListView.builder(
                 reverse: true,
-                itemCount: displaySchedules.length,
+                itemCount: displayChains.length,
                 itemBuilder: (context, index) {
-                  Schedule schedule = displaySchedules[index];
-                  //BannerAd? adSchedule = schedule.adBanner;
-                  return ScheduleListItem(
-                    //adSchedule: adSchedule,
-                    schedule: schedule,
+                  Chain chain = displayChains[index];
+                  //BannerAd? adChain = chain.adBanner;
+                  return ChainListItem(
+                    //adChain: adChain,
+                    chain: chain,
                     showHistory: true,
                     allowFlag: true,
                     key: Key(
@@ -173,7 +173,7 @@ class _SearchScheduleScreenState extends State<SearchScheduleScreen> {
                 },
                 decoration: InputDecoration(
                   floatingLabelBehavior: FloatingLabelBehavior.never,
-                  label: const Text("Search Schedules"),
+                  label: const Text("Search Chains"),
                   border: const OutlineInputBorder(
                     borderSide: BorderSide.none,
                   ),

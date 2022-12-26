@@ -3,79 +3,79 @@ import 'package:path/path.dart' as path;
 import 'package:sqflite/sqlite_api.dart';
 
 const initScript = [
-  '''CREATE TABLE activity (
-      activityId TEXT PRIMARY KEY, 
+  '''CREATE TABLE event (
+      eventId TEXT PRIMARY KEY, 
       title TEXT, 
       specifications TEXT, 
       type INTEGER,
       createdAt INTEGER, 
       lastUpdatedAt INTEGER,
-      editActivity INTEGER
+      edit INTEGER
     )
   ''',
-  '''CREATE TABLE schedule (
-      scheduleName TEXT PRIMARY KEY,
-      scheduleIndex INTEGER,
+  '''CREATE TABLE chain (
+      title TEXT PRIMARY KEY,
+      chainIndex INTEGER,
       createdAt INTEGER, 
       lastUpdatedAt INTEGER, 
       pinned INTEGER,
       startedAt INTEGER,
       endedAt INTEGER,
       repeatCriteria TEXT, 
-      scheduleStatus INTEGER,
+      chainStatus INTEGER,
       notificationId TEXT,
-      editSchedule INTEGER
+      editChain INTEGER
     )
   ''',
-  '''CREATE TABLE schedule_execution (
-      scheduleExecutionId TEXT PRIMARY KEY,
-      scheduleName TEXT,
+  '''CREATE TABLE chain_execution (
+      chainExecutionId TEXT PRIMARY KEY,
+      title TEXT,
       startedAt INTEGER,
       endedAt INTEGER,
-      scheduleStatus INTEGER,
+      chainStatus INTEGER,
       notificationId TEXT,
-      FOREIGN KEY (scheduleName)
-        REFERENCES schedule (scheduleName)
+      FOREIGN KEY (title)
+        REFERENCES chain (title)
     )
   ''',
-  '''CREATE TABLE schedule_activity (
-      scheduleName TEXT, 
-      activityId TEXT,
-      activityIndex INTEGER,
-      activityDone INTEGER,
+  '''CREATE TABLE chain_event (
+      title TEXT, 
+      eventId TEXT,
+      eventIndex INTEGER,
+      eventDone INTEGER,
       isInterrupted INTEGER,
       notificationId TEXT,
-      activityDuration INTEGER,
+      eventDuration INTEGER,
       startedAt INTEGER,
-      activityDurationLeft INTEGER,
+      eventDurationLeft INTEGER,
       endedAt INTEGER,
-      editScheduleActivity INTEGER,
-      nextActivityAfter INTEGER,
-      FOREIGN KEY (scheduleName)
-        REFERENCES schedule (scheduleName),
-      FOREIGN KEY (activityId)
-        REFERENCES activity (activityId)
+      editChainEvent INTEGER,
+      nextEventAfter INTEGER,
+      FOREIGN KEY (title)
+        REFERENCES chain (title),
+      FOREIGN KEY (eventId)
+        REFERENCES event (eventId)
     )
   ''',
-  '''CREATE TABLE schedule_activity_execution (
-      scheduleExecutionId TEXT,
-      scheduleName TEXT, 
-      activityId TEXT,
-      activityIndex INTEGER,
-      activityDone INTEGER,
+  '''CREATE TABLE chain_event_execution (
+      chainExecutionId TEXT,
+      title TEXT, 
+      eventId TEXT,
+      eventIndex INTEGER,
+      eventDone INTEGER,
       isInterrupted INTEGER,
       notificationId TEXT,
-      activityDuration INTEGER,
-      nextActivityAfter INTEGER,
+      eventDuration INTEGER,
+      nextEventAfter INTEGER,
       startedAt INTEGER,      
-      activityDurationLeft INTEGER,
+      eventDurationLeft INTEGER,
       endedAt INTEGER,
-      FOREIGN KEY (scheduleName)
-        REFERENCES schedule (scheduleName),
-      FOREIGN KEY (activityId)
-        REFERENCES activity (activityId),
-      FOREIGN KEY (scheduleExecutionId)
-        REFERENCES schedule_execution (scheduleExecutionId)
+      FOREIGN KEY (title)
+        REFERENCES chain (title),
+      FOREIGN KEY (eventId)
+        REFERENCES event (eventId),
+      FOREIGN KEY (chainExecutionId)
+        REFERENCES chain_execution (chainExecutionId)
     )
   ''',
   '''CREATE TABLE settings (
@@ -107,10 +107,10 @@ const initScript = [
 class DBHelper {
   static Future<Database> database() async {
     final dbPath = await sql.getDatabasesPath();
-    if (await sql.databaseExists(path.join(dbPath, 'scheduleit.db'))) {
-      sql.deleteDatabase(path.join(dbPath, 'scheduleit.db'));
+    if (await sql.databaseExists(path.join(dbPath, 'chainit.db'))) {
+      sql.deleteDatabase(path.join(dbPath, 'chainit.db'));
     }
-    return sql.openDatabase(path.join(dbPath, 'testscheduleit.db'),
+    return sql.openDatabase(path.join(dbPath, 'testchainit.db'),
         onCreate: (db, version) async {
       for (var script in initScript) {
         await db.execute(script);

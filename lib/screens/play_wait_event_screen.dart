@@ -2,24 +2,24 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:schedule_it/helpers/notification_helper.dart';
-import 'package:schedule_it/helpers/transform_functions.dart';
-import 'package:schedule_it/models/schedule_activity.dart';
-import 'package:schedule_it/models/schedule_list.dart';
-import 'package:schedule_it/models/system_setting.dart';
+import 'package:chain_events/helpers/notification_helper.dart';
+import 'package:chain_events/helpers/transform_functions.dart';
+import 'package:chain_events/models/chain_event.dart';
+import 'package:chain_events/models/chain_list.dart';
+import 'package:chain_events/models/system_setting.dart';
 
-class PlayActivity extends StatefulWidget {
-  static String routename = "run_activity";
-  const PlayActivity({super.key});
+class PlayWaitEvent extends StatefulWidget {
+  static String routename = "run_event";
+  const PlayWaitEvent({super.key});
   @override
-  State<PlayActivity> createState() => _PlayActivityState();
+  State<PlayWaitEvent> createState() => _PlayWaitEventState();
 }
 
-class _PlayActivityState extends State<PlayActivity> {
+class _PlayWaitEventState extends State<PlayWaitEvent> {
   Timer? countdownTimer;
   List<SystemSetting> systemSettings = [];
   late Duration waitDuration, initialWaitDuration;
-  late ScheduleActivity scheduleActivity;
+  late ChainEvent chainEvent;
   bool initializing = true;
   bool running = true,
       showPlayPause = true,
@@ -40,7 +40,7 @@ class _PlayActivityState extends State<PlayActivity> {
     if (seconds == 0) {
       // FlutterRingtonePlayer.play(
       //     fromAsset: "assets/ringtone.wav", ios: IosSounds.glass);
-      await Provider.of<ScheduleList>(context, listen: false)
+      await Provider.of<ChainList>(context, listen: false)
           .playNotificationSound();
     }
 
@@ -77,9 +77,9 @@ class _PlayActivityState extends State<PlayActivity> {
     setState(() => waitDuration = initialWaitDuration);
   }
 
-  void interruptAndCompleteActivity() async {
+  void interruptAndCompleteEvent() async {
     NavigatorState nav = Navigator.of(context);
-    await Provider.of<ScheduleList>(context, listen: false)
+    await Provider.of<ChainList>(context, listen: false)
         .playNotificationSound();
     stopTimer();
     nav.pop(waitDuration.inSeconds <= 0
@@ -97,18 +97,18 @@ class _PlayActivityState extends State<PlayActivity> {
   Widget build(BuildContext context) {
     if (initializing) {
       // systemSettings =
-      //     Provider.of<ScheduleList>(context, listen: false).systemSettings;
+      //     Provider.of<ChainList>(context, listen: false).systemSettings;
       // SystemSetting appSoundSetting =
       //     systemSettings.firstWhere((set) => set.key == appSoundSettingKey);
       // appSoundEnabled = appSoundSetting.value == trueSettingValue;
-      // schedule = ModalRoute.of(context)?.settings.arguments as Schedule;
-      // activities = schedule.activities.toList();
+      // chain = ModalRoute.of(context)?.settings.arguments as Chain;
+      // activities = chain.activities.toList();
       // updateWaitDuration();
-      // nextActivity();
+      // nextEvent();
       Map<String, dynamic> input =
           ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
       initialWaitDuration = waitDuration = input["waitDuration"];
-      scheduleActivity = input["scheduleActivity"];
+      chainEvent = input["chainEvent"];
       playingRest = input["playRest"];
       running = input["running"];
       if (running && (waitDuration.inSeconds > 0)) {
@@ -155,7 +155,7 @@ class _PlayActivityState extends State<PlayActivity> {
               children: [
                 const SizedBox(),
                 Text(
-                  playingRest ? "Rest" : scheduleActivity.activity.title,
+                  playingRest ? "Rest" : chainEvent.event.title,
                   style: Theme.of(context).textTheme.headline2,
                   textAlign: TextAlign.center,
                 ),
@@ -165,7 +165,7 @@ class _PlayActivityState extends State<PlayActivity> {
                   textAlign: TextAlign.center,
                 ),
                 InkWell(
-                  onTap: interruptAndCompleteActivity,
+                  onTap: interruptAndCompleteEvent,
                   child: CircleAvatar(
                     radius: 150,
                     backgroundColor: playingRest
@@ -222,7 +222,7 @@ class _PlayActivityState extends State<PlayActivity> {
                         child: SizedBox(),
                       ),
                     IconButton(
-                      onPressed: interruptAndCompleteActivity,
+                      onPressed: interruptAndCompleteEvent,
                       icon: const Icon(Icons.arrow_forward),
                     ),
                   ],

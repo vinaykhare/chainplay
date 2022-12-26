@@ -8,12 +8,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:schedule_it/schedule_it.dart';
+import 'package:chain_events/chain_events.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const ScheduleIt());
+    await tester.pumpWidget(const ChainEvents());
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);

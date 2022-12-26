@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:native_pdf_view/native_pdf_view.dart';
-import 'package:schedule_it/widgets/app_drawer.dart';
+import 'package:chain_events/widgets/app_drawer.dart';
 
 class HowItWorks extends StatefulWidget {
   static String routename = "/howitworks";
@@ -37,7 +37,7 @@ class _HowItWorksState extends State<HowItWorks> {
       appBar: AppBar(
         centerTitle: true,
         automaticallyImplyLeading: false,
-        title: const Text("How Schedule It Works??"),
+        title: const Text("How Chain Events Works??"),
       ),
       drawer: const AppDrawer(),
       body: SafeArea(

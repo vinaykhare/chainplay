@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class TimeSummary extends StatelessWidget {
-  //final ScheduleActivity scheduleActivity;
+class StartEndTimeChainWidget extends StatelessWidget {
+  //final ChainEvent chainEvent;
   final String? cardTitle;
   final DateTime? startTime, endTime;
   final String? textInBetween;
-  const TimeSummary({
+  const StartEndTimeChainWidget({
     super.key,
     this.cardTitle,
     this.startTime,

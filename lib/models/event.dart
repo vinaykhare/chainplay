@@ -1,17 +1,17 @@
-import 'package:schedule_it/helpers/constants.dart';
+import 'package:chain_events/helpers/constants.dart';
 
-class Activity {
-  String activityId;
+class Event {
+  String eventId;
   String title;
   int type;
   DateTime createdAt, lastUpdatedAt;
   bool edit = false;
 
-  Activity({
-    required this.activityId,
+  Event({
+    required this.eventId,
     required this.title,
     required this.createdAt,
     required this.lastUpdatedAt,
-    this.type = waitActivityInDB,
+    this.type = waitEventInDB,
   });
 }
