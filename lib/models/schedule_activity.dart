@@ -5,18 +5,18 @@ class ScheduleActivity {
   int notificationId = noValueInDB;
 
   Duration activityDuration; // 0 = No time bound
-  Duration nextActivityAfter;
-  Duration? pausedAt;
-  bool activityDone = false, restDone = false;
+  int nextActivityAfter;
+  Duration? activityDurationLeft;
+  bool activityDone = false, isInterrupted = false;
   DateTime? at, endedAt;
   Activity activity;
-  bool edit = false, editNextActivity = false;
+  bool edit = false;
   int index = -1;
 
   ScheduleActivity({
     required this.activity,
     this.activityDuration = const Duration(seconds: 0),
-    this.nextActivityAfter = const Duration(seconds: 0),
+    this.nextActivityAfter = 0,
     this.activityDone = false,
   });
 }

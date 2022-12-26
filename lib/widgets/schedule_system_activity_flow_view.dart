@@ -33,54 +33,57 @@ class ScheduleSystemActivityFlowView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onLongPressMoveUpdate:
-          (details) {}, // so it cannot be dragged under reorderable list view.
-      child: Column(
-        key: Key(index.toString()),
-        children: [
-          if (index != 0) lineWidget,
-          if (index != 0)
-            InkWell(
-              onTap: () {
-                if (!scheduleActivity.edit) {
-                  editActivity!(scheduleActivity, false);
-                } else {
-                  undoEdit!(scheduleActivity, false);
-                }
-              },
-              child: (activities[index].activityDuration.inSeconds != 0)
-                  ? Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(20),
+    return IgnorePointer(
+      ignoring: undoEdit == null || editActivity == null,
+      child: GestureDetector(
+        onLongPressMoveUpdate:
+            (details) {}, // so it cannot be dragged under reorderable list view.
+        child: Column(
+          key: Key(index.toString()),
+          children: [
+            if (index != 0) lineWidget,
+            if (index != 0)
+              InkWell(
+                onTap: () {
+                  if (!scheduleActivity.edit) {
+                    editActivity!(scheduleActivity);
+                  } else {
+                    undoEdit!(scheduleActivity);
+                  }
+                },
+                child: (activities[index].activityDuration.inSeconds != 0)
+                    ? Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(20),
+                          ),
+                          color: activities[index].edit
+                              ? Theme.of(context).focusColor
+                              : Theme.of(context).primaryColor,
                         ),
+                        child: Text(
+                          "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? ' before scheduled duration' : TransformFunctions.durationToString(scheduleActivity.activityDuration)}.",
+                        ),
+                      )
+                    : Icon(
+                        Icons.circle_outlined,
+                        size: 15,
                         color: activities[index].edit
-                            ? Theme.of(context).focusColor
+                            ? Theme.of(context).errorColor
                             : Theme.of(context).primaryColor,
                       ),
-                      child: Text(
-                        "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].restDone ? ' before scheduled duration' : TransformFunctions.durationToString(scheduleActivity.activityDuration)}.",
-                      ),
-                    )
-                  : Icon(
-                      Icons.circle_outlined,
-                      size: 15,
-                      color: activities[index].edit
-                          ? Theme.of(context).errorColor
-                          : Theme.of(context).primaryColor,
+              ),
+            if (index == 0) arrowWidget,
+            if (index == 0)
+              tempSchedule.endedAt == null
+                  ? const RestTask(taskText: 'End')
+                  : RestTaskWithDuration(
+                      taskText:
+                          'Ended on ${DateFormat.yMd().add_jms().format(tempSchedule.endedAt!)}',
                     ),
-            ),
-          if (index == 0) arrowWidget,
-          if (index == 0)
-            tempSchedule.endedAt == null
-                ? const RestTask(taskText: 'End')
-                : RestTaskWithDuration(
-                    taskText:
-                        'Ended on ${DateFormat.yMd().add_jms().format(tempSchedule.endedAt!)}',
-                  ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -47,7 +47,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
 
   bool addingDurationToActivity = false,
       addingScheduleToSchedule = false,
-      updatingNextActivityAfterDuration = false,
+      updatingSystemWaitActivityInDB = false,
       pageInit = true;
 
   int activityDurationHour = 0,
@@ -114,9 +114,10 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     }
 
     if (tempSchedule.at != null && tempSchedule.at!.isAfter(DateTime.now())) {
-      scheduleList.moveScheduleToHistory(tempSchedule);
+      Schedule scheduleInExecution =
+          await scheduleList.moveScheduleToHistory(tempSchedule);
       scheduleList.scheduleNotificationForExecution(
-          tempSchedule, tempSchedule.at!);
+          scheduleInExecution, scheduleInExecution.at!);
     } else {
       scheduleList.cancelScheduleNotification(tempSchedule);
     }
@@ -206,7 +207,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     await scheduleList.updateActivity(newActivity.activity);
     setState(() {
       scheduleActivityInEditMode = null;
-      updatingNextActivityAfterDuration = false;
+      updatingSystemWaitActivityInDB = false;
     });
   }
 
@@ -240,26 +241,12 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     if (scheduleActivityInEditMode != null) {
       scheduleActivityInEditMode!.activity.title = addActivityController.text;
       scheduleActivityInEditMode!.edit = false;
-      scheduleActivityInEditMode!.editNextActivity = false;
       scheduleActivityInEditMode!.activity.lastUpdatedAt = DateTime.now();
       scheduleActivityInEditMode!.activityDuration = Duration(
         hours: activityDurationHour,
         minutes: activityDurationMinute,
         seconds: activityDurationSecond,
       );
-      // if (updatingNextActivityAfterDuration) {
-      //   scheduleActivityInEditMode!.nextActivityAfter = Duration(
-      //     hours: activityDurationHour,
-      //     minutes: activityDurationMinute,
-      //     seconds: activityDurationSecond,
-      //   );
-      // } else {
-      //   scheduleActivityInEditMode!.activityDuration = Duration(
-      //     hours: activityDurationHour,
-      //     minutes: activityDurationMinute,
-      //     seconds: activityDurationSecond,
-      //   );
-      // }
 
       updateActivity(scheduleActivityInEditMode!);
       // if (scheduleActivityInEditMode?.activity.type ==
@@ -328,23 +315,16 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     }
   }
 
-  void undoEdit(ScheduleActivity scheduleActivity, bool forNextActivity) async {
+  void undoEdit(ScheduleActivity scheduleActivity) async {
     FocusScopeNode focusScope = FocusScope.of(context);
     addActivityController.clear();
     scheduleActivityInEditMode = scheduleActivity;
-
-    if (forNextActivity) {
-      scheduleActivityInEditMode!.editNextActivity = false;
-      scheduleActivityInEditMode!.edit = false;
-    } else {
-      scheduleActivityInEditMode!.editNextActivity = false;
-      scheduleActivityInEditMode!.edit = false;
-    }
+    scheduleActivityInEditMode!.edit = false;
 
     ScheduleList scheduleList =
         Provider.of<ScheduleList>(context, listen: false);
 
-    await scheduleList.resetActivities(tempSchedule);
+    await scheduleList.resetSchedule(tempSchedule);
     await scheduleList.updateScheduleActivityByActivityId(
         tempSchedule, scheduleActivityInEditMode!);
 
@@ -354,38 +334,29 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
       addingScheduleToSchedule = false;
       activityDurationHour = 0;
       activityDurationMinute = 0;
-      updatingNextActivityAfterDuration = false;
+      updatingSystemWaitActivityInDB = false;
     });
     focusScope.unfocus();
   }
 
-  void editActivity(
-      ScheduleActivity scheduleActivity, bool forNextActivity) async {
+  void editActivity(ScheduleActivity scheduleActivity) async {
     FocusScopeNode focusScope = FocusScope.of(context);
     ScheduleList scheduleList =
         Provider.of<ScheduleList>(context, listen: false);
-    await scheduleList.resetActivities(tempSchedule);
+    await scheduleList.resetSchedule(tempSchedule);
     scheduleActivityInEditMode = scheduleActivity;
 
-    if (forNextActivity) {
-      scheduleActivityInEditMode!.editNextActivity = true;
-      scheduleActivityInEditMode!.edit = false;
-    } else {
-      scheduleActivityInEditMode!.edit = true;
-      scheduleActivityInEditMode!.editNextActivity = false;
-    }
+    scheduleActivityInEditMode!.edit = true;
 
     await scheduleList.updateScheduleActivityByActivityId(
       tempSchedule,
       scheduleActivityInEditMode!,
     );
 
-    updatingNextActivityAfterDuration = scheduleActivity.activity.type ==
-        systemWaitActivityInDB; //forNextActivity;
+    updatingSystemWaitActivityInDB =
+        scheduleActivity.activity.type == systemWaitActivityInDB;
 
-    Duration scheduleActivityDuration = forNextActivity
-        ? scheduleActivity.nextActivityAfter
-        : scheduleActivity.activityDuration;
+    Duration scheduleActivityDuration = scheduleActivity.activityDuration;
 
     if (scheduleActivity.activity.type == systemStartActivityInDB) {
       setState(() {
@@ -397,7 +368,6 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
             : "";
       });
     } else {
-      //if (scheduleActivityDuration.inSeconds != 0 || forNextActivity) {
       setState(() {
         addingScheduleToSchedule = false;
         addingDurationToActivity = true;
@@ -408,12 +378,9 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
             (activityDurationHour * 3600) -
             (activityDurationMinute * 60);
       });
-
-      //}
-
     }
     addActivityController.text = scheduleActivity.activity.title;
-    if (!updatingNextActivityAfterDuration && !addingScheduleToSchedule) {
+    if (!updatingSystemWaitActivityInDB && !addingScheduleToSchedule) {
       focusScope.requestFocus(addActivityFocus);
     }
   }
@@ -677,14 +644,13 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                 if (addingDurationToActivity) duraitonInputForm,
                 if (addingScheduleToSchedule) startDateTimeInputForm,
                 AppBar(
-                  automaticallyImplyLeading:
-                      !updatingNextActivityAfterDuration &&
-                          !addingScheduleToSchedule &&
-                          MediaQuery.of(context).viewInsets.bottom == 0,
+                  automaticallyImplyLeading: !updatingSystemWaitActivityInDB &&
+                      !addingScheduleToSchedule &&
+                      MediaQuery.of(context).viewInsets.bottom == 0,
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      if (!updatingNextActivityAfterDuration &&
+                      if (!updatingSystemWaitActivityInDB &&
                           !addingScheduleToSchedule)
                         Expanded(
                           child: TextField(
@@ -719,11 +685,11 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                             },
                           ),
                         ),
-                      if (updatingNextActivityAfterDuration ||
+                      if (updatingSystemWaitActivityInDB ||
                           addingScheduleToSchedule)
                         IconButton(
                           onPressed: () {
-                            undoEdit(scheduleActivityInEditMode!, false);
+                            undoEdit(scheduleActivityInEditMode!);
                           },
                           icon: const Icon(Icons.cancel_outlined),
                         ),
@@ -731,7 +697,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                         onPressed: onSubmitText,
                         icon: scheduleActivityInEditMode != null
                             ? const Icon(Icons.done_outline)
-                            : updatingNextActivityAfterDuration
+                            : updatingSystemWaitActivityInDB
                                 ? const Icon(Icons.done)
                                 : const Icon(Icons.add_task_outlined),
                       ),

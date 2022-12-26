@@ -18,7 +18,6 @@ class PlaySchedule extends StatefulWidget {
 }
 
 class _PlayScheduleState extends State<PlaySchedule> {
-  late DateTime scheduleStartedAt;
   late Schedule schedule;
   late ScheduleList scheduleList;
   List<ScheduleActivity> activities = [];
@@ -30,17 +29,16 @@ class _PlayScheduleState extends State<PlaySchedule> {
     NavigatorState nav = Navigator.of(context);
     await Future.delayed(const Duration(seconds: 1));
 
-    for (DateTime actStartDate = scheduleStartedAt;
+    for (DateTime? actStartDate = schedule.at;
         invokeCounter < schedule.activities.length;
         invokeCounter++) {
       Duration activityExecutedFor = const Duration(seconds: 0);
       Duration calculatedWaitDuration = const Duration(seconds: 0);
-      Duration waitDurationDifferenceForRestScreen = const Duration(seconds: 0);
       activities[invokeCounter].at =
           activities[invokeCounter].at ?? actStartDate;
 
       Duration timeSpentSinceStartOfActivity =
-          DateTime.now().difference(actStartDate);
+          DateTime.now().difference(actStartDate!);
 
       if (activities[invokeCounter].activityDuration.inSeconds > 0) {
         activityExecutedFor += activities[invokeCounter].activityDuration;
@@ -54,7 +52,7 @@ class _PlayScheduleState extends State<PlaySchedule> {
               (activities[invokeCounter].activityDuration.inSeconds <= 0 &&
                   activities[invokeCounter].activity.type !=
                       systemWaitActivityInDB) ||
-              activities[invokeCounter].pausedAt != null)) {
+              activities[invokeCounter].activityDurationLeft != null)) {
         if (activities[invokeCounter].activityDuration.inSeconds > 0) {
           calculatedWaitDuration =
               activityExecutedFor - timeSpentSinceStartOfActivity;
@@ -62,90 +60,34 @@ class _PlayScheduleState extends State<PlaySchedule> {
         popResponse = await nav.pushNamed(
           PlayActivity.routename,
           arguments: {
-            "waitDuration": activities[invokeCounter].pausedAt ??
+            "waitDuration": activities[invokeCounter].activityDurationLeft ??
                 (calculatedWaitDuration.inSeconds > 0
                     ? calculatedWaitDuration
                     : activities[invokeCounter].activityDuration),
             "scheduleActivity": activities[invokeCounter],
             "playRest": activities[invokeCounter].activity.type ==
                 systemWaitActivityInDB,
-            "running": activities[invokeCounter].pausedAt == null,
+            "running": activities[invokeCounter].activityDurationLeft == null,
           },
         );
 
         if (popResponse != null) {
           if (popResponse["interruptAndCompleted"] == false) {
-            activities[invokeCounter].pausedAt = popResponse["running"] == false
-                ? popResponse["waitDuration"]
-                : null;
+            activities[invokeCounter].activityDurationLeft =
+                popResponse["running"] == false
+                    ? popResponse["waitDuration"]
+                    : null;
             break;
           } else {
-            activities[invokeCounter].restDone = true;
+            activities[invokeCounter].isInterrupted = true;
           }
         }
 
         activities[invokeCounter].activityDone = true;
-
-        if (activities[invokeCounter].nextActivityAfter.inSeconds > 0) {
-          popResponse = await nav.pushNamed(
-            PlayActivity.routename,
-            arguments: {
-              "waitDuration": activities[invokeCounter].nextActivityAfter,
-              "scheduleActivity": activities[invokeCounter],
-              "playRest": true,
-              "running": true,
-            },
-          );
-
-          if (popResponse != null) {
-            if (popResponse["interruptAndCompleted"] == false) {
-              activities[invokeCounter].pausedAt =
-                  popResponse["running"] == false
-                      ? popResponse["waitDuration"]
-                      : null;
-              break;
-            } else {
-              activities[invokeCounter].restDone = true;
-            }
-          }
-        }
       } else {
         activities[invokeCounter].activityDone = true;
-
-        activityExecutedFor += activities[invokeCounter].nextActivityAfter;
-
-        if (activities[invokeCounter].endedAt == null &&
-            activities[invokeCounter].nextActivityAfter.inSeconds > 0 &&
-            timeSpentSinceStartOfActivity < activityExecutedFor) {
-          waitDurationDifferenceForRestScreen =
-              activityExecutedFor - timeSpentSinceStartOfActivity;
-
-          popResponse = await nav.pushNamed(
-            PlayActivity.routename,
-            arguments: {
-              "waitDuration": waitDurationDifferenceForRestScreen.inSeconds > 0
-                  ? waitDurationDifferenceForRestScreen
-                  : activities[invokeCounter].nextActivityAfter,
-              "scheduleActivity": activities[invokeCounter],
-              "playRest": true,
-              "running": true,
-            },
-          );
-
-          if (popResponse != null) {
-            if (popResponse["interruptAndCompleted"] == false) {
-              activities[invokeCounter].pausedAt =
-                  popResponse["running"] == false
-                      ? popResponse["waitDuration"]
-                      : null;
-              break;
-            }
-          } else {
-            activities[invokeCounter].restDone = true;
-          }
-        }
       }
-      //activities[invokeCounter].restDone = true;
+      //activities[invokeCounter].isInterrupted = true;
 
       actStartDate = activities[invokeCounter].endedAt =
           activities[invokeCounter].endedAt ?? DateTime.now();
@@ -202,18 +144,17 @@ class _PlayScheduleState extends State<PlaySchedule> {
       //   schedule = scheduleList.notificationCameForSchedule!;
       //   scheduleList.notificationCameForSchedule = null;
       // } else {
-      String scheduleName = scheduleList.notificationCameAs != null
-          ? scheduleList.notificationCameAs![payLoadSchduleName]
-          : ModalRoute.of(context)?.settings.arguments as String;
-      Schedule parentSchedule =
-          scheduleList.schedules.firstWhere((sch) => sch.name == scheduleName);
-      schedule = parentSchedule.scheduleHistory
-          .firstWhere((schEx) => schEx.name == scheduleName);
+      Map<String, dynamic> schArg = scheduleList.notificationCameAs != null
+          ? scheduleList.notificationCameAs!
+          : ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+      Schedule parentSchedule = scheduleList.schedules
+          .firstWhere((sch) => sch.name == schArg[payLoadSchduleName]);
+      schedule = parentSchedule.scheduleHistory.firstWhere(
+          (schEx) => schEx.scheduleExecutionId == schArg[payLoadSchduleExecId]);
       //}
       activities = schedule.activities;
       if (schedule.scheduleStatus == statusExecuting &&
           !schedule.at!.isAfter(DateTime.now())) {
-        scheduleStartedAt = schedule.at!;
         updateWaitDuration();
       } else {
         invokeCounter = activities.length;

@@ -1,8 +1,11 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:schedule_it/helpers/constants.dart';
 //import 'package:google_mobile_ads/google_mobile_ads.dart';
 //import 'package:schedule_it/helpers/ad_state.dart';
 import 'package:schedule_it/helpers/db_helper.dart';
+import 'package:schedule_it/helpers/key_helper.dart';
 import 'package:schedule_it/helpers/notification_helper.dart';
 
 import 'package:schedule_it/models/activity.dart';
@@ -64,6 +67,7 @@ class ScheduleList with ChangeNotifier {
     await fetchSchedules();
     await fetchActivities();
     await fetchSettings();
+    KeyHelper.navigatorKey = GlobalKey<NavigatorState>();
     await notificationHelper.initialize(systemSettings);
     for (int scheduleId = 0; scheduleId < schedules.length; scheduleId++) {
       if (schedules[scheduleId].notificationId == noValueInDB) {
@@ -172,21 +176,20 @@ class ScheduleList with ChangeNotifier {
         "activityId": scheduleActivity.activity.activityId,
         "activityIndex": scheduleActivity.index,
         "activityDone": scheduleActivity.activityDone ? trueInDB : falseInDB,
-        "restDone": scheduleActivity.restDone ? trueInDB : falseInDB,
+        "isInterrupted": scheduleActivity.isInterrupted ? trueInDB : falseInDB,
         "notificationId": scheduleActivity.notificationId.toString(),
         "activityDuration": scheduleActivity.activityDuration.inSeconds,
-        "nextActivityAfter ": scheduleActivity.nextActivityAfter.inSeconds,
+        "nextActivityAfter ": scheduleActivity.nextActivityAfter,
         "startedAt": scheduleActivity.at == null
             ? noValueInDB
             : scheduleActivity.at!.millisecondsSinceEpoch,
-        "pausedAt": scheduleActivity.pausedAt == null
+        "activityDurationLeft": scheduleActivity.activityDurationLeft == null
             ? noValueInDB
-            : scheduleActivity.pausedAt!.inSeconds,
+            : scheduleActivity.activityDurationLeft!.inSeconds,
         "endedAt": scheduleActivity.endedAt == null
             ? noValueInDB
             : scheduleActivity.endedAt!.millisecondsSinceEpoch,
         "editScheduleActivity": scheduleActivity.edit ? 1 : 0,
-        "editNextActivity": scheduleActivity.editNextActivity ? 1 : 0,
       },
     );
     // }
@@ -300,16 +303,17 @@ class ScheduleList with ChangeNotifier {
           "activityId": scheduleActivity.activity.activityId,
           "activityIndex": scheduleActivity.index,
           "activityDone": scheduleActivity.activityDone ? trueInDB : falseInDB,
-          "restDone": scheduleActivity.restDone ? trueInDB : falseInDB,
+          "isInterrupted":
+              scheduleActivity.isInterrupted ? trueInDB : falseInDB,
           "notificationId": scheduleActivity.notificationId.toString(),
           "activityDuration": scheduleActivity.activityDuration.inSeconds,
-          "nextActivityAfter ": scheduleActivity.nextActivityAfter.inSeconds,
+          "nextActivityAfter ": scheduleActivity.nextActivityAfter,
           "startedAt": scheduleActivity.at == null
               ? noValueInDB
               : scheduleActivity.at!.millisecondsSinceEpoch,
-          "pausedAt": scheduleActivity.pausedAt == null
+          "activityDurationLeft": scheduleActivity.activityDurationLeft == null
               ? noValueInDB
-              : scheduleActivity.pausedAt!.inSeconds,
+              : scheduleActivity.activityDurationLeft!.inSeconds,
           "endedAt": scheduleActivity.endedAt == null
               ? noValueInDB
               : scheduleActivity.endedAt!.millisecondsSinceEpoch,
@@ -339,11 +343,10 @@ class ScheduleList with ChangeNotifier {
       );
 
       scheduleActivityCopy.at = null;
-      scheduleActivityCopy.pausedAt = null;
+      scheduleActivityCopy.activityDurationLeft = null;
       scheduleActivityCopy.endedAt = null;
-      scheduleActivityCopy.restDone = false;
+      scheduleActivityCopy.isInterrupted = false;
       scheduleActivityCopy.edit = false;
-      scheduleActivityCopy.editNextActivity = false;
       scheduleActivityCopy.notificationId = scheduleActivity.notificationId;
       scheduleActivityCopy.index = scheduleActivity.index;
       scheduleExecution.activities.add(scheduleActivityCopy);
@@ -363,12 +366,27 @@ class ScheduleList with ChangeNotifier {
   }
 
   Future<Schedule> startScheduleExecution(Schedule schedule) async {
-    await cancelScheduleNotification(schedule);
     int executingScheduleIndex = schedule.scheduleHistory
         .indexWhere((sch) => sch.scheduleStatus == statusExecuting);
     if (executingScheduleIndex == -1) {
       return await moveScheduleToHistory(schedule);
     }
+    await cancelScheduleNotificationExecution(
+        schedule.scheduleHistory[executingScheduleIndex]);
+    return schedule.scheduleHistory[executingScheduleIndex];
+  }
+
+  Future<Schedule> stopScheduleExecution(Schedule schedule) async {
+    int executingScheduleIndex = schedule.scheduleHistory
+        .indexWhere((sch) => sch.scheduleStatus == statusExecuting);
+    if (executingScheduleIndex != -1) {
+      await resetScheduleExecution(
+          schedule.scheduleHistory[executingScheduleIndex]);
+      await resetSchedule(schedule);
+    }
+
+    await cancelScheduleNotificationExecution(
+        schedule.scheduleHistory[executingScheduleIndex]);
     return schedule.scheduleHistory[executingScheduleIndex];
   }
 
@@ -436,21 +454,20 @@ class ScheduleList with ChangeNotifier {
       "schedule_activity",
       {
         "activityDone": scheduleActivity.activityDone ? trueInDB : falseInDB,
-        "restDone": scheduleActivity.restDone ? trueInDB : falseInDB,
+        "isInterrupted": scheduleActivity.isInterrupted ? trueInDB : falseInDB,
         "notificationId": scheduleActivity.notificationId.toString(),
         "activityDuration": scheduleActivity.activityDuration.inSeconds,
-        "nextActivityAfter": scheduleActivity.nextActivityAfter.inSeconds,
+        "nextActivityAfter": scheduleActivity.nextActivityAfter,
         "startedAt": scheduleActivity.at != null
             ? scheduleActivity.at!.millisecondsSinceEpoch
             : noValueInDB,
-        "pausedAt": scheduleActivity.pausedAt != null
-            ? scheduleActivity.pausedAt!.inSeconds
+        "activityDurationLeft": scheduleActivity.activityDurationLeft != null
+            ? scheduleActivity.activityDurationLeft!.inSeconds
             : noValueInDB,
         "endedAt": scheduleActivity.endedAt != null
             ? scheduleActivity.endedAt!.millisecondsSinceEpoch
             : noValueInDB,
         "editScheduleActivity": scheduleActivity.edit ? 1 : 0,
-        "editNextActivity": scheduleActivity.editNextActivity ? 1 : 0,
       },
       "scheduleName = ? and activityId = ? and activityIndex = ?",
       [
@@ -465,15 +482,13 @@ class ScheduleList with ChangeNotifier {
   Future<void> updatScheduleActivityByScheduleName(
     Schedule schedule, [
     bool editScheduleActivity = false,
-    bool editNextActivity = false,
   ]) async {
     await DBHelper.update(
       "schedule_activity",
       {
         // "activityDone": schedule.scheduleStatus,
-        // "restDone": schedule.scheduleStatus,
+        // "isInterrupted": schedule.scheduleStatus,
         "editScheduleActivity": editScheduleActivity,
-        "editNextActivity": editNextActivity,
       },
       "scheduleName = ?",
       [schedule.name],
@@ -487,15 +502,15 @@ class ScheduleList with ChangeNotifier {
       "schedule_activity_execution",
       {
         "activityDone": scheduleActivity.activityDone ? trueInDB : falseInDB,
-        "restDone": scheduleActivity.restDone ? trueInDB : falseInDB,
+        "isInterrupted": scheduleActivity.isInterrupted ? trueInDB : falseInDB,
         "notificationId": scheduleActivity.notificationId.toString(),
         "activityDuration": scheduleActivity.activityDuration.inSeconds,
-        "nextActivityAfter": scheduleActivity.nextActivityAfter.inSeconds,
+        "nextActivityAfter": scheduleActivity.nextActivityAfter,
         "startedAt": scheduleActivity.at != null
             ? scheduleActivity.at!.millisecondsSinceEpoch
             : noValueInDB,
-        "pausedAt": scheduleActivity.pausedAt != null
-            ? scheduleActivity.pausedAt!.inSeconds
+        "activityDurationLeft": scheduleActivity.activityDurationLeft != null
+            ? scheduleActivity.activityDurationLeft!.inSeconds
             : noValueInDB,
         "endedAt": scheduleActivity.endedAt != null
             ? scheduleActivity.endedAt!.millisecondsSinceEpoch
@@ -512,14 +527,13 @@ class ScheduleList with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> resetActivities(Schedule schedule) async {
+  Future<void> resetSchedule(Schedule schedule) async {
     await cancelScheduleNotification(schedule);
 
     for (ScheduleActivity activity in schedule.activities) {
       activity.edit = false;
-      activity.editNextActivity = false;
       activity.activityDone = false;
-      activity.restDone = false;
+      activity.isInterrupted = false;
       activity.at = null;
       activity.endedAt = null;
     }
@@ -528,16 +542,36 @@ class ScheduleList with ChangeNotifier {
       "schedule_activity",
       {
         "activityDone": statusNotStarted,
-        "restDone": statusNotStarted,
+        "isInterrupted": statusNotStarted,
         "startedAt": noValueInDB,
-        "pausedAt": noValueInDB,
+        "activityDurationLeft": noValueInDB,
         "endedAt": noValueInDB,
         "editScheduleActivity": 0,
-        "editNextActivity": 0,
       },
       "scheduleName = ?",
       [schedule.name],
     );
+
+    schedule.at = schedule.endedAt = null;
+    schedule.notificationId = noValueInDB;
+    schedule.scheduleStatus = statusNotStarted;
+
+    await updateSchedule(schedule);
+
+    notifyListeners();
+  }
+
+  Future<void> resetScheduleExecution(Schedule scheduleExecution) async {
+    await cancelScheduleNotificationExecution(scheduleExecution);
+
+    int indexOfSchedule =
+        schedules.indexWhere((sch) => sch.name == scheduleExecution.name);
+
+    schedules[indexOfSchedule].scheduleHistory.removeWhere((schEx) =>
+        schEx.scheduleExecutionId == scheduleExecution.scheduleExecutionId);
+
+    await DBHelper.removeData("schedule_activity_execution",
+        "scheduleExecutionId = ?", [scheduleExecution.scheduleExecutionId]);
 
     notifyListeners();
   }
@@ -769,7 +803,7 @@ class ScheduleList with ChangeNotifier {
     bool allDone = true;
     for (int i = 0; i < schedule.activities.length; i++) {
       if (schedule.activities[i].activityDone == false ||
-          schedule.activities[i].restDone == false) {
+          schedule.activities[i].isInterrupted == false) {
         allDone = false;
         break;
       }
@@ -809,6 +843,12 @@ class ScheduleList with ChangeNotifier {
     //     schedules.indexWhere((sch) => sch.name == schedule.name);
 
     scheduleActivity.activityDone = !scheduleActivity.activityDone;
+    if (scheduleActivity.activityDone) {
+      scheduleActivity.endedAt = DateTime.now();
+      scheduleActivity.activityDurationLeft = null;
+    } else {
+      scheduleActivity.endedAt = null;
+    }
 
     await updateScheduleActivityExecutionByActivityId(
       schedule,
@@ -853,7 +893,7 @@ class ScheduleList with ChangeNotifier {
     // int scheduleIndex =
     //     schedules.indexWhere((sch) => sch.name == schedule.name);
 
-    scheduleActivity.restDone = !scheduleActivity.restDone;
+    scheduleActivity.isInterrupted = !scheduleActivity.isInterrupted;
     if (scheduleActivity.endedAt == null) {
       scheduleActivity.endedAt = DateTime.now();
     } else {
@@ -947,19 +987,18 @@ class ScheduleList with ChangeNotifier {
         activityDone: scheduleActivity['activityDone'] == 1,
         activityDuration:
             Duration(seconds: scheduleActivity['activityDuration']),
-        nextActivityAfter:
-            Duration(seconds: scheduleActivity['nextActivityAfter']),
+        nextActivityAfter: scheduleActivity['nextActivityAfter'],
       );
-      tempActivity.restDone = scheduleActivity['restDone'] == 1;
+      tempActivity.isInterrupted = scheduleActivity['isInterrupted'] == 1;
       tempActivity.at = getDateValueFromDB(scheduleActivity["startedAt"]);
-      tempActivity.pausedAt = scheduleActivity['pausedAt'] == null ||
-              scheduleActivity['pausedAt'] == noValueInDB
-          ? null
-          : Duration(seconds: scheduleActivity['pausedAt']);
+      tempActivity.activityDurationLeft =
+          scheduleActivity['activityDurationLeft'] == null ||
+                  scheduleActivity['activityDurationLeft'] == noValueInDB
+              ? null
+              : Duration(seconds: scheduleActivity['activityDurationLeft']);
       tempActivity.endedAt = getDateValueFromDB(scheduleActivity["endedAt"]);
       tempActivity.activity.edit = scheduleActivity['editActivity'] == 1;
       tempActivity.edit = scheduleActivity['editScheduleActivity'] == 1;
-      tempActivity.editNextActivity = scheduleActivity['editNextActivity'] == 1;
       tempActivity.notificationId =
           int.parse(scheduleActivity['notificationId']);
       tempActivity.index = scheduleActivity['activityIndex'];
@@ -1019,15 +1058,16 @@ class ScheduleList with ChangeNotifier {
         activityDone: scheduleActivity['activityDone'] == statusDone,
         activityDuration:
             Duration(seconds: scheduleActivity['activityDuration']),
-        nextActivityAfter:
-            Duration(seconds: scheduleActivity['nextActivityAfter']),
+        nextActivityAfter: scheduleActivity['nextActivityAfter'],
       );
-      tempActivity.restDone = scheduleActivity['restDone'] == statusDone;
+      tempActivity.isInterrupted =
+          scheduleActivity['isInterrupted'] == statusDone;
       tempActivity.at = getDateValueFromDB(scheduleActivity["startedAt"]);
-      tempActivity.pausedAt = scheduleActivity['pausedAt'] == null ||
-              scheduleActivity['pausedAt'] == noValueInDB
-          ? null
-          : Duration(seconds: scheduleActivity['pausedAt']);
+      tempActivity.activityDurationLeft =
+          scheduleActivity['activityDurationLeft'] == null ||
+                  scheduleActivity['activityDurationLeft'] == noValueInDB
+              ? null
+              : Duration(seconds: scheduleActivity['activityDurationLeft']);
       tempActivity.endedAt = getDateValueFromDB(scheduleActivity["endedAt"]);
 
       tempActivity.notificationId =
@@ -1169,6 +1209,7 @@ class ScheduleList with ChangeNotifier {
         "$activityTitle has Started.",
         {
           payLoadSchduleName: schedule.name,
+          payLoadSchduleExecId: schedule.scheduleExecutionId,
           payLoadWidgetUrl: PlaySchedule.routename,
           payLoadScheduleActivityIndex: i,
           payLoadScheduleActivityCount: schedule.activities.length,
@@ -1185,14 +1226,12 @@ class ScheduleList with ChangeNotifier {
         break;
       }
       fromDateTime = fromDateTime.add(schedule.activities[i].activityDuration);
-
-      // if (schedule.activities[i].nextActivityAfter.inSeconds == 0) {
-      //   continue;
-      // }
-
-      // schedule.activities[i].notificationId = await notificationHelper
-      //     .scheduleNotificationWithActions(fromDateTime);
     }
+    print(
+        "\n\n#################Notification Status after scheduleNotificationForExecution\n");
+    printAllNotifications();
+    print(
+        "\n\n#################Notification Status before scheduleNotificationForExecution\n\n");
     notifyListeners();
   }
 
@@ -1216,6 +1255,11 @@ class ScheduleList with ChangeNotifier {
       "scheduleName = ?",
       [schedule.name],
     );
+    print(
+        "\n\n#################Notification Status after cancelScheduleNotificationExecution\n");
+    printAllNotifications();
+    print(
+        "\n\n#################Notification Status before cancelScheduleNotificationExecution\n\n");
     notifyListeners();
   }
 
@@ -1226,6 +1270,31 @@ class ScheduleList with ChangeNotifier {
       schedule.notificationId = noValueInDB;
       await updateSchedule(schedule);
     }
+    print(
+        "\n\n#################Notification Status after cancelScheduleNotification\n");
+    printAllNotifications();
+    print(
+        "\n\n#################Notification Status before cancelScheduleNotification\n\n");
     notifyListeners();
+  }
+
+  void printAllNotifications() {
+    for (int i = 0; i < schedules.length; i++) {
+      for (int j = 0; j < schedules[i].scheduleHistory.length; j++) {
+        if (schedules[i].scheduleHistory[j].endedAt != null) {
+          continue;
+        }
+        print(
+          "Notification for Schedule ${schedules[i].name} is ${schedules[i].notificationId}",
+        );
+        for (int k = 0;
+            k < schedules[i].scheduleHistory[j].activities.length;
+            k++) {
+          print(
+            "Notification for Activity ${schedules[i].scheduleHistory[j].activities[k].activity.title} is ${schedules[i].scheduleHistory[j].activities[k].notificationId},",
+          );
+        }
+      }
+    }
   }
 }

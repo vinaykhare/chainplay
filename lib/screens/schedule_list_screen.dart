@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 //import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
+import 'package:schedule_it/helpers/key_helper.dart';
 import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_list.dart';
 import 'package:schedule_it/screens/add_schedule_screen.dart';
 import 'package:schedule_it/screens/search_schedule_screen.dart';
 import 'package:schedule_it/widgets/app_drawer.dart';
 //import 'package:schedule_it/widgets/app_drawer.dart';
-import 'package:schedule_it/widgets/schedule_view.dart';
+import 'package:schedule_it/widgets/schedule_list_item.dart';
 
 class ScheduleListScreen extends StatelessWidget {
   static String routename = "/schedules";
@@ -36,6 +37,7 @@ class ScheduleListScreen extends StatelessWidget {
 
     return Scaffold(
       drawer: const AppDrawer(),
+      key: KeyHelper.navigatorKey,
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -51,7 +53,7 @@ class ScheduleListScreen extends StatelessWidget {
                 itemBuilder: (context, index) {
                   Schedule schedule = schedules[index];
                   //BannerAd? adSchedule = schedule.adBanner;
-                  return ScheduleView(
+                  return ScheduleListItem(
                     //adSchedule: adSchedule,
                     schedule: schedule,
                     showHistory: true,
@@ -59,6 +61,7 @@ class ScheduleListScreen extends StatelessWidget {
                     key: Key(
                       index.toString(),
                     ),
+                    index: index,
                   );
                 },
               ),

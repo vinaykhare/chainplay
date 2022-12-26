@@ -50,13 +50,15 @@ class ScheduleActivities extends StatelessWidget {
             children: [
               GestureDetector(
                 onLongPressMoveUpdate: (details) {},
-                onTap: () async {
-                  if (!scheduleActivity.edit) {
-                    editActivity!(scheduleActivity, false);
-                  } else {
-                    undoEdit!(scheduleActivity, false);
-                  }
-                },
+                onTap: undoEdit != null && editActivity != null
+                    ? () async {
+                        if (!scheduleActivity.edit) {
+                          editActivity!(scheduleActivity);
+                        } else {
+                          undoEdit!(scheduleActivity);
+                        }
+                      }
+                    : null,
                 child: tempSchedule.at != null
                     ? RestTaskWithDuration(
                         taskText:
@@ -105,21 +107,22 @@ class ScheduleActivities extends StatelessWidget {
       );
     }
 
-    return IgnorePointer(
-      ignoring: undoEdit == null || editActivity == null,
-      child: ReorderableListView.builder(
-        reverse: true,
-        buildDefaultDragHandles: true,
-        onReorder: (oldIndex, newIndex) {
-          oldIndex = activities.length - oldIndex - 1;
-          newIndex = activities.length - newIndex - 1;
-          scheduleList.rearrangeActivites(tempSchedule, oldIndex, newIndex);
-        },
-        itemCount: activities.length,
-        itemBuilder: (context, index) =>
-            getScheduleActivitySequence(context, index),
-      ),
+    // return IgnorePointer(
+    //   ignoring: undoEdit == null || editActivity == null,
+    //   child:
+    return ReorderableListView.builder(
+      reverse: true,
+      buildDefaultDragHandles: true,
+      onReorder: (oldIndex, newIndex) {
+        oldIndex = activities.length - oldIndex - 1;
+        newIndex = activities.length - newIndex - 1;
+        scheduleList.rearrangeActivites(tempSchedule, oldIndex, newIndex);
+      },
+      itemCount: activities.length,
+      itemBuilder: (context, index) =>
+          getScheduleActivitySequence(context, index),
     );
+    //);
     // return editActivity == null
     //     ? ListView.builder(
     //         reverse: true,

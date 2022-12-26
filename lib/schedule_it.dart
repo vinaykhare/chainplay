@@ -8,7 +8,6 @@ import 'package:schedule_it/screens/how_it_works.dart';
 import 'package:schedule_it/screens/load_screen.dart';
 import 'package:schedule_it/screens/play_schedule_screen.dart';
 import 'package:schedule_it/screens/play_activity_screen.dart';
-import 'package:schedule_it/screens/schedule_activities_history_screen.dart';
 import 'package:schedule_it/screens/schedule_history_screen.dart';
 import 'package:schedule_it/screens/schedule_list_screen.dart';
 import 'package:schedule_it/screens/search_schedule_screen.dart';
@@ -78,8 +77,6 @@ class ScheduleIt extends StatelessWidget {
         HowItWorks.routename: (context) => const HowItWorks(),
         ScheduleHistoryScreen.routename: (context) =>
             const ScheduleHistoryScreen(),
-        ScheduleActivitiesHistoryScreen.routename: (context) =>
-            const ScheduleActivitiesHistoryScreen(),
       },
     );
   }

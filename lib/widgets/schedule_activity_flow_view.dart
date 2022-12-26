@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:schedule_it/helpers/constants.dart';
 import 'package:schedule_it/helpers/transform_functions.dart';
 import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_activity.dart';
 import 'package:schedule_it/models/schedule_list.dart';
+import 'package:schedule_it/widgets/time_summary.dart';
 
 class ScheduleActivityFlowView extends StatelessWidget {
   const ScheduleActivityFlowView({
@@ -48,52 +48,72 @@ class ScheduleActivityFlowView extends StatelessWidget {
               await scheduleList.removeActivityFromSchedule(
                   tempSchedule, scheduleActivity);
             },
-            child: ListTile(
-              tileColor: scheduleActivity.edit
-                  ? Theme.of(context).focusColor
-                  : scheduleActivity.activityDone
-                      ? Theme.of(context).disabledColor
-                      : Theme.of(context).cardColor,
-              onTap: () async {
-                if (!scheduleActivity.edit) {
-                  editActivity!(scheduleActivity, false);
-                } else {
-                  undoEdit!(scheduleActivity, false);
-                }
-              },
-              title: Text(scheduleActivity.activity.title),
-              subtitle: Text(
-                "${scheduleActivity.activityDone ? 'Completed' : 'will Complete'} ${activities[index].restDone ? ' before scheduled duration' : TransformFunctions.durationToString(scheduleActivity.activityDuration)}.",
-              ),
-              trailing: scheduleActivity.activityDone
-                  ? null
-                  : scheduleActivity.notificationId != noValueInDB
-                      ? TextButton.icon(
-                          onPressed: null,
-                          icon: const Icon(Icons.notifications_active),
-                          label: Text(
-                            scheduleActivity.notificationId.toString(),
-                          ),
-                        )
-                      : editActivity != null
-                          ? ReorderableDragStartListener(
-                              index: index,
-                              child: const Icon(Icons.drag_handle),
-                            )
-                          : null,
-              leading: Checkbox(
-                key: ValueKey(
-                    'activities_checkbox_${scheduleActivity.activity.title}'),
-                value: scheduleActivity.activityDone,
-                onChanged: (value) async {
-                  // setState(() {
-                  //   activity.activityDone = value ?? false;
-                  // });
-                  await scheduleList.flipDoneActivity(
-                      tempSchedule, scheduleActivity);
-                },
-              ),
-            ),
+            child: editActivity != null
+                ? ListTile(
+                    tileColor: scheduleActivity.edit
+                        ? Theme.of(context).focusColor
+                        : scheduleActivity.activityDone
+                            ? Theme.of(context).disabledColor
+                            : Theme.of(context).cardColor,
+                    onTap: () async {
+                      if (!scheduleActivity.edit) {
+                        editActivity!(scheduleActivity);
+                      } else {
+                        undoEdit!(scheduleActivity);
+                      }
+                    },
+                    title: Text(scheduleActivity.activity.title),
+                    subtitle: Text(
+                      "${scheduleActivity.activityDone ? 'Completed' : 'will Complete'} ${activities[index].isInterrupted ? ' before scheduled duration' : TransformFunctions.durationToString(scheduleActivity.activityDuration)}.",
+                    ),
+                    trailing:
+                        (scheduleActivity.activityDone || editActivity == null)
+                            ? null
+                            : ReorderableDragStartListener(
+                                index: index,
+                                child: const Icon(Icons.drag_handle),
+                              ),
+                    leading: Checkbox(
+                      key: ValueKey(
+                          'activities_checkbox_${scheduleActivity.activity.title}'),
+                      value: scheduleActivity.activityDone,
+                      onChanged: (value) async {
+                        // setState(() {
+                        //   activity.activityDone = value ?? false;
+                        // });
+                        await scheduleList.flipDoneActivity(
+                            tempSchedule, scheduleActivity);
+                      },
+                    ),
+                  )
+                : ListTile(
+                    tileColor: scheduleActivity.activityDone
+                        ? Theme.of(context).disabledColor
+                        : Theme.of(context).cardColor,
+                    title: scheduleActivity.at != null
+                        ? TimeSummary(
+                            cardTitle: scheduleActivity.activity.title,
+                            startTime: scheduleActivity.at,
+                            endTime: scheduleActivity.endedAt,
+                            textInBetween:
+                                scheduleActivity.activityDurationLeft != null
+                                    ? "Paused"
+                                    : null,
+                          )
+                        : Text(scheduleActivity.activity.title),
+                    subtitle: Text(
+                      "${scheduleActivity.activityDone ? 'Completed' : 'will Complete'} ${activities[index].isInterrupted ? ' before scheduled duration' : TransformFunctions.durationToString(scheduleActivity.activityDuration)}.",
+                    ),
+                    leading: Checkbox(
+                      key: ValueKey(
+                          'activities_checkbox_${scheduleActivity.activity.title}'),
+                      value: scheduleActivity.activityDone,
+                      onChanged: (value) async {
+                        await scheduleList.flipDoneActivity(
+                            tempSchedule, scheduleActivity);
+                      },
+                    ),
+                  ),
           ),
         ),
       ],

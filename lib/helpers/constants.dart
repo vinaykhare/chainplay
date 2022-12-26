@@ -33,6 +33,7 @@ const String notificationTypeSettingValueAll = "All";
 //Notification Payload fields
 
 const String payLoadSchduleName = "scheduleName";
+const String payLoadSchduleExecId = "scheduleExecutionId";
 const String payLoadWidgetUrl = "url";
 const String payLoadScheduleActivityIndex = "scheduleActivityIndex";
 const String payLoadScheduleActivityCount = "scheduleActivityCount";

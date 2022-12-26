@@ -5,7 +5,7 @@ import 'package:schedule_it/helpers/constants.dart';
 import 'package:schedule_it/models/schedule.dart';
 import 'package:schedule_it/models/schedule_list.dart';
 //import 'package:schedule_it/widgets/app_drawer.dart';
-import 'package:schedule_it/widgets/schedule_view.dart';
+import 'package:schedule_it/widgets/schedule_list_item.dart';
 
 class SearchScheduleScreen extends StatefulWidget {
   static String routename = "/search_schedules";
@@ -87,12 +87,15 @@ class _SearchScheduleScreenState extends State<SearchScheduleScreen> {
                 itemBuilder: (context, index) {
                   Schedule schedule = displaySchedules[index];
                   //BannerAd? adSchedule = schedule.adBanner;
-                  return ScheduleView(
+                  return ScheduleListItem(
                     //adSchedule: adSchedule,
                     schedule: schedule,
                     showHistory: true,
                     allowFlag: true,
-                    key: Key(index.toString()),
+                    key: Key(
+                      index.toString(),
+                    ),
+                    index: index,
                   );
                 },
               ),
