@@ -175,7 +175,7 @@ class ChainList with ChangeNotifier {
 
   Future<void> removeChain(Chain chain) async {
     chains.removeWhere((sch) => sch.title == chain.title);
-    await cancelChainNotification(chain);
+    await cancelScheduledNotification(chain);
 
     await DBHelper.removeData(
       "chain_event",
@@ -337,7 +337,7 @@ class ChainList with ChangeNotifier {
     if (executingChainIndex == -1) {
       return await moveChainToHistory(chain);
     }
-    await cancelChainNotificationExecution(
+    await cancelScheduleNotificationExecution(
         chain.chainHistory[executingChainIndex]);
     return chain.chainHistory[executingChainIndex];
   }
@@ -350,7 +350,7 @@ class ChainList with ChangeNotifier {
       await resetChain(chain);
     }
 
-    await cancelChainNotificationExecution(
+    await cancelScheduleNotificationExecution(
         chain.chainHistory[executingChainIndex]);
     return chain.chainHistory[executingChainIndex];
   }
@@ -491,7 +491,7 @@ class ChainList with ChangeNotifier {
   }
 
   Future<void> resetChain(Chain chain) async {
-    await cancelChainNotification(chain);
+    await cancelScheduledNotification(chain);
 
     for (ChainEvent event in chain.activities) {
       event.edit = false;
@@ -525,7 +525,7 @@ class ChainList with ChangeNotifier {
   }
 
   Future<void> resetChainExecution(Chain chainExecution) async {
-    await cancelChainNotificationExecution(chainExecution);
+    await cancelScheduleNotificationExecution(chainExecution);
 
     int indexOfChain =
         chains.indexWhere((sch) => sch.title == chainExecution.title);
@@ -1038,7 +1038,7 @@ class ChainList with ChangeNotifier {
     return nextNotificationId;
   }
 
-  Future<void> chainNotificationForExecution(
+  Future<void> scheduleNotificationForExecution(
     Chain chain,
     DateTime fromDateTime,
   ) async {
@@ -1059,7 +1059,7 @@ class ChainList with ChangeNotifier {
       }
 
       chain.activities[i].notificationId =
-          await notificationHelper.chainNotification(
+          await notificationHelper.scheduleNotification(
         fromDateTime,
         nextNotificationId,
         chain.title,
@@ -1084,17 +1084,12 @@ class ChainList with ChangeNotifier {
       }
       fromDateTime = fromDateTime.add(chain.activities[i].eventDuration);
     }
-    print(
-        "\n\n#################Notification Status after chainNotificationForExecution\n");
-    printAllNotifications();
-    print(
-        "\n\n#################Notification Status before chainNotificationForExecution\n\n");
     notifyListeners();
   }
 
-  Future<void> cancelChainNotificationExecution(Chain chain) async {
+  Future<void> cancelScheduleNotificationExecution(Chain chain) async {
     //Cancel Notifications
-    await cancelChainNotification(chain);
+    await cancelScheduledNotification(chain);
     for (ChainEvent chainEvent in chain.activities) {
       if (chainEvent.notificationId != noValueInDB) {
         await notificationHelper
@@ -1111,26 +1106,16 @@ class ChainList with ChangeNotifier {
       "title = ?",
       [chain.title],
     );
-    print(
-        "\n\n#################Notification Status after cancelChainNotificationExecution\n");
-    printAllNotifications();
-    print(
-        "\n\n#################Notification Status before cancelChainNotificationExecution\n\n");
     notifyListeners();
   }
 
-  Future<void> cancelChainNotification(Chain chain) async {
+  Future<void> cancelScheduledNotification(Chain chain) async {
     //Cancel Notifications
     if (chain.notificationId != noValueInDB) {
       await notificationHelper.cancelNotificationById(chain.notificationId);
       chain.notificationId = noValueInDB;
       await updateChain(chain);
     }
-    print(
-        "\n\n#################Notification Status after cancelChainNotification\n");
-    printAllNotifications();
-    print(
-        "\n\n#################Notification Status before cancelChainNotification\n\n");
     notifyListeners();
   }
 

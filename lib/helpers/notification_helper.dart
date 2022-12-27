@@ -26,11 +26,11 @@ class NotificationHelper {
     return responsePayload;
   }
 
-  Future<int> chainNotification(DateTime chainAt, int notificationId,
+  Future<int> scheduleNotification(DateTime chainAt, int notificationId,
       String title, String body, Map<String, dynamic> payload) async {
     String notificationFor = notificationSettingIsFor();
     if (notificationFor == notificationTypeSettingValueAppNotify) {
-      if (await localNotificationService.chainNotification(
+      if (await localNotificationService.scheduleNotification(
           chainAt, notificationId, title, body, payload)) {
         return notificationId;
       }
@@ -61,7 +61,10 @@ class NotificationHelper {
 
   Future<void> playNotificationSound() async {
     if (isAppSoundEnabled()) {
-      await FlutterRingtonePlayer.playNotification();
+      //await FlutterRingtonePlayer.playNotification();
+      await FlutterRingtonePlayer.play(
+        fromAsset: "assets/sound/chain_event_beep.mp3",
+      );
     }
   }
 

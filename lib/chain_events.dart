@@ -46,6 +46,7 @@ class ChainEvents extends StatelessWidget {
               cardColor: Colors.lightGreen,
               canvasColor: Colors.amber,
               dialogBackgroundColor: Colors.lightGreen,
+              selectedRowColor: Colors.green.shade700,
             ),
       home: chainList.loaded
           ? chainList.notificationCameAs != null

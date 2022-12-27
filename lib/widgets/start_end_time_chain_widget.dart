@@ -36,10 +36,22 @@ class StartEndTimeChainWidget extends StatelessWidget {
                     )
                   : null,
             ),
-            const Expanded(
-                child: Divider(
-              thickness: 5,
-            )),
+            Icon(
+              Icons.circle,
+              size: 5,
+              color: Theme.of(context).disabledColor,
+            ),
+            Expanded(
+              child: Divider(
+                thickness: 2,
+                color: Theme.of(context).disabledColor,
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 20,
+              color: Theme.of(context).disabledColor,
+            ),
             if (textInBetween != null)
               CircleAvatar(
                 radius: 30,
@@ -50,10 +62,23 @@ class StartEndTimeChainWidget extends StatelessWidget {
                 ),
               ),
             if (textInBetween != null)
-              const Expanded(
+              Icon(
+                Icons.circle,
+                size: 5,
+                color: Theme.of(context).disabledColor,
+              ),
+            if (textInBetween != null)
+              Expanded(
                 child: Divider(
-                  thickness: 5,
+                  thickness: 2,
+                  color: Theme.of(context).disabledColor,
                 ),
+              ),
+            if (textInBetween != null)
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 20,
+                color: Theme.of(context).disabledColor,
               ),
             CircleAvatar(
               radius: 50,

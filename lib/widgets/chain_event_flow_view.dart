@@ -36,10 +36,13 @@ class ChainEventFlowView extends StatelessWidget {
         arrowWidget,
         Card(
           elevation: 10,
+          color: chainEvent.eventDone
+              ? Theme.of(context).selectedRowColor
+              : Theme.of(context).cardColor,
           child: Dismissible(
             background: Container(
               decoration: BoxDecoration(
-                color: Theme.of(context).focusColor,
+                color: Theme.of(context).errorColor,
               ),
             ),
             key: ValueKey('activities_dimissible_${chainEvent.event.eventId}'),
@@ -48,11 +51,6 @@ class ChainEventFlowView extends StatelessWidget {
             },
             child: editEvent != null
                 ? ListTile(
-                    tileColor: chainEvent.edit
-                        ? Theme.of(context).focusColor
-                        : chainEvent.eventDone
-                            ? Theme.of(context).disabledColor
-                            : Theme.of(context).cardColor,
                     onTap: () async {
                       if (!chainEvent.edit) {
                         editEvent!(chainEvent);
@@ -82,31 +80,36 @@ class ChainEventFlowView extends StatelessWidget {
                       },
                     ),
                   )
-                : ListTile(
-                    tileColor: chainEvent.eventDone
-                        ? Theme.of(context).disabledColor
-                        : Theme.of(context).cardColor,
-                    title: chainEvent.at != null
-                        ? StartEndTimeChainWidget(
-                            cardTitle: chainEvent.event.title,
+                : Column(
+                    children: [
+                      ListTile(
+                        title: Text(chainEvent.event.title),
+                        subtitle: Text(
+                          "${chainEvent.eventDone ? 'Completed' : 'will Complete'} ${activities[index].isInterrupted ? ' before chaind duration' : TransformFunctions.durationToString(chainEvent.eventDuration)}.",
+                        ),
+                        leading: Checkbox(
+                          key: ValueKey(
+                              'activities_checkbox_${chainEvent.event.title}'),
+                          value: chainEvent.eventDone,
+                          onChanged: (value) async {
+                            await chainList.flipDoneEvent(
+                                tempChain, chainEvent);
+                          },
+                        ),
+                      ),
+                      if (chainEvent.at != null)
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: StartEndTimeChainWidget(
+                            cardTitle: null,
                             startTime: chainEvent.at,
                             endTime: chainEvent.endedAt,
                             textInBetween: chainEvent.eventDurationLeft != null
                                 ? "Paused"
                                 : null,
-                          )
-                        : Text(chainEvent.event.title),
-                    subtitle: Text(
-                      "${chainEvent.eventDone ? 'Completed' : 'will Complete'} ${activities[index].isInterrupted ? ' before chaind duration' : TransformFunctions.durationToString(chainEvent.eventDuration)}.",
-                    ),
-                    leading: Checkbox(
-                      key: ValueKey(
-                          'activities_checkbox_${chainEvent.event.title}'),
-                      value: chainEvent.eventDone,
-                      onChanged: (value) async {
-                        await chainList.flipDoneEvent(tempChain, chainEvent);
-                      },
-                    ),
+                          ),
+                        ),
+                    ],
                   ),
           ),
         ),

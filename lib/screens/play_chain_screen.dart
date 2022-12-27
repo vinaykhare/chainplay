@@ -100,7 +100,7 @@ class _PlayChainState extends State<PlayChain> {
     }
 
     if (popResponse != null && popResponse["interruptAndCompleted"] == false) {
-      // await chainList.chainNotification(
+      // await chainList.scheduleNotification(
       //     chain, DateTime.now(), invokeCounter);
     } else {
       Chain parentChain =
@@ -121,12 +121,12 @@ class _PlayChainState extends State<PlayChain> {
   }
 
   Future<bool> onPopOut() async {
-    // await chainList.chainNotification(
+    // await chainList.scheduleNotification(
     //     chain, DateTime.now(), invokeCounter);
     if (chain.chainStatus == statusDone) {
       //await chainList.resetActivities(chain);
     } else {
-      await chainList.chainNotificationForExecution(
+      await chainList.scheduleNotificationForExecution(
         chain,
         DateTime.now(),
       );
@@ -147,9 +147,9 @@ class _PlayChainState extends State<PlayChain> {
       Map<String, dynamic> schArg = chainList.notificationCameAs != null
           ? chainList.notificationCameAs!
           : ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-      Chain parentChain = chainList.chains
+      Chain parentChainItem = chainList.chains
           .firstWhere((sch) => sch.title == schArg[payLoadChainName]);
-      chain = parentChain.chainHistory.firstWhere(
+      chain = parentChainItem.chainHistory.firstWhere(
           (schEx) => schEx.chainExecutionId == schArg[payLoadChainExecId]);
       //}
       activities = chain.activities;

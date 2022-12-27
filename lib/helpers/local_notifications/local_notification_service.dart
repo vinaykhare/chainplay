@@ -276,7 +276,7 @@ class LocalNotificationService with WidgetsBindingObserver {
         payload: jsonEncode(payLoad));
   }
 
-  Future<bool> chainNotificationWithAction(
+  Future<bool> scheduleNotificationWithAction(
     DateTime chainAt,
     int notificationId,
     String title,
@@ -302,7 +302,7 @@ class LocalNotificationService with WidgetsBindingObserver {
     }
   }
 
-  Future<bool> chainNotification(
+  Future<bool> scheduleNotification(
     DateTime chainAt,
     int notificationId,
     String title,

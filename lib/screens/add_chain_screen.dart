@@ -111,10 +111,10 @@ class _AddChainScreenState extends State<AddChainScreen> {
 
     if (tempChain.at != null && tempChain.at!.isAfter(DateTime.now())) {
       Chain chainInExecution = await chainList.moveChainToHistory(tempChain);
-      chainList.chainNotificationForExecution(
+      chainList.scheduleNotificationForExecution(
           chainInExecution, chainInExecution.at!);
     } else {
-      chainList.cancelChainNotification(tempChain);
+      chainList.cancelScheduledNotification(tempChain);
     }
 
     //tempChain.name = pageTitle;
