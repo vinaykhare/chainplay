@@ -37,3 +37,11 @@ const String payLoadChainExecId = "chainExecutionId";
 const String payLoadWidgetUrl = "url";
 const String payLoadChainEventIndex = "chainEventIndex";
 const String payLoadChainEventCount = "chainEventCount";
+
+//Schedule Repeat Types
+const String repeatTypeDoesNotRepeat = "Never";
+const String repeatTypeHourly = "Hourly";
+const String repeatTypeDaily = "Daily";
+const String repeatTypeWeekly = "Weekly";
+const String repeatTypeMonthly = "Monthly";
+const String repeatTypeYearly = "Yearly";

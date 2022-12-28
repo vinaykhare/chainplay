@@ -2,10 +2,11 @@ import 'package:chain_events/helpers/constants.dart';
 import 'package:chain_events/models/event.dart';
 
 class ChainEvent {
-  int notificationId = noValueInDB;
+  int startEventNotificationId = noValueInDB;
+  int endEventNotificationId = noValueInDB;
 
   Duration eventDuration; // 0 = No time bound
-  int nextEventAfter;
+  String repeatType;
   Duration? eventDurationLeft;
   bool eventDone = false, isInterrupted = false;
   DateTime? at, endedAt;
@@ -16,7 +17,7 @@ class ChainEvent {
   ChainEvent({
     required this.event,
     this.eventDuration = const Duration(seconds: 0),
-    this.nextEventAfter = 0,
+    this.repeatType = repeatTypeDoesNotRepeat,
     this.eventDone = false,
   });
 }

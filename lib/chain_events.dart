@@ -28,6 +28,7 @@ class ChainEvents extends StatelessWidget {
     return MaterialApp(
       title: 'Chain Events',
       darkTheme: darkTheme ? ThemeData.dark() : null,
+      debugShowCheckedModeBanner: false,
       theme: darkTheme
           ? ThemeData(
               scaffoldBackgroundColor: const Color.fromARGB(255, 13, 14, 39),

@@ -131,25 +131,7 @@ class ChainExecutionScreen extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: (chainExecution.endedAt != null)
-                                ? /* Row(
-                                          children: [
-                                            Expanded(
-                                              child: chainDate(
-                                                  chainExecution.endedAt !=
-                                                          null
-                                                      ? "Started At"
-                                                      : "Running",
-                                                  chainExecution.at ??
-                                                      DateTime.now()),
-                                            ),
-                                            const Icon(Icons.arrow_forward),
-                                            Expanded(
-                                              child: chainDate("Ended At",
-                                                  chainExecution.endedAt!),
-                                            ),
-                                          ],
-                                        ) */
-                                StartEndTimeChainWidget(
+                                ? StartEndTimeChainWidget(
                                     cardTitle: null,
                                     startTime: chainExecution.at,
                                     endTime: chainExecution.endedAt,

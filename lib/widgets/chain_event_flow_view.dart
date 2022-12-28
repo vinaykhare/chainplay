@@ -36,7 +36,7 @@ class ChainEventFlowView extends StatelessWidget {
         arrowWidget,
         Card(
           elevation: 10,
-          color: chainEvent.eventDone
+          color: chainEvent.endedAt != null
               ? Theme.of(context).selectedRowColor
               : Theme.of(context).cardColor,
           child: Dismissible(
@@ -60,9 +60,9 @@ class ChainEventFlowView extends StatelessWidget {
                     },
                     title: Text(chainEvent.event.title),
                     subtitle: Text(
-                      "${chainEvent.eventDone ? 'Completed' : 'will Complete'} ${activities[index].isInterrupted ? ' before chaind duration' : TransformFunctions.durationToString(chainEvent.eventDuration)}.",
+                      "${chainEvent.endedAt != null ? 'Completed' : 'will Complete'} ${activities[index].isInterrupted ? ' before scheduled duration' : TransformFunctions.durationToString(chainEvent.eventDuration)}.",
                     ),
-                    trailing: (chainEvent.eventDone || editEvent == null)
+                    trailing: (chainEvent.endedAt != null || editEvent == null)
                         ? null
                         : ReorderableDragStartListener(
                             index: index,
@@ -71,11 +71,8 @@ class ChainEventFlowView extends StatelessWidget {
                     leading: Checkbox(
                       key: ValueKey(
                           'activities_checkbox_${chainEvent.event.title}'),
-                      value: chainEvent.eventDone,
+                      value: chainEvent.endedAt != null,
                       onChanged: (value) async {
-                        // setState(() {
-                        //   event.eventDone = value ?? false;
-                        // });
                         await chainList.flipDoneEvent(tempChain, chainEvent);
                       },
                     ),
@@ -85,12 +82,12 @@ class ChainEventFlowView extends StatelessWidget {
                       ListTile(
                         title: Text(chainEvent.event.title),
                         subtitle: Text(
-                          "${chainEvent.eventDone ? 'Completed' : 'will Complete'} ${activities[index].isInterrupted ? ' before chaind duration' : TransformFunctions.durationToString(chainEvent.eventDuration)}.",
+                          "${chainEvent.endedAt != null ? 'Completed' : 'will Complete'} ${activities[index].isInterrupted ? ' before scheduled duration' : TransformFunctions.durationToString(chainEvent.eventDuration)}.",
                         ),
                         leading: Checkbox(
                           key: ValueKey(
                               'activities_checkbox_${chainEvent.event.title}'),
-                          value: chainEvent.eventDone,
+                          value: chainEvent.endedAt != null,
                           onChanged: (value) async {
                             await chainList.flipDoneEvent(
                                 tempChain, chainEvent);

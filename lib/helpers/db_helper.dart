@@ -24,6 +24,7 @@ const initScript = [
       repeatCriteria TEXT, 
       chainStatus INTEGER,
       notificationId TEXT,
+      repeatType TEXT,
       editChain INTEGER
     )
   ''',
@@ -34,6 +35,7 @@ const initScript = [
       endedAt INTEGER,
       chainStatus INTEGER,
       notificationId TEXT,
+      repeatType TEXT,
       FOREIGN KEY (title)
         REFERENCES chain (title)
     )
@@ -50,7 +52,7 @@ const initScript = [
       eventDurationLeft INTEGER,
       endedAt INTEGER,
       editChainEvent INTEGER,
-      nextEventAfter INTEGER,
+      repeatType TEXT,
       FOREIGN KEY (title)
         REFERENCES chain (title),
       FOREIGN KEY (eventId)
@@ -66,7 +68,7 @@ const initScript = [
       isInterrupted INTEGER,
       notificationId TEXT,
       eventDuration INTEGER,
-      nextEventAfter INTEGER,
+      repeatType TEXT,
       startedAt INTEGER,      
       eventDurationLeft INTEGER,
       endedAt INTEGER,
@@ -107,10 +109,10 @@ const initScript = [
 class DBHelper {
   static Future<Database> database() async {
     final dbPath = await sql.getDatabasesPath();
-    if (await sql.databaseExists(path.join(dbPath, 'chainit.db'))) {
-      sql.deleteDatabase(path.join(dbPath, 'chainit.db'));
+    if (await sql.databaseExists(path.join(dbPath, 'testchainit.db'))) {
+      sql.deleteDatabase(path.join(dbPath, 'testchainit.db'));
     }
-    return sql.openDatabase(path.join(dbPath, 'testchainit.db'),
+    return sql.openDatabase(path.join(dbPath, 'chainit.db'),
         onCreate: (db, version) async {
       for (var script in initScript) {
         await db.execute(script);

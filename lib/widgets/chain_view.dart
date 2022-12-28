@@ -57,9 +57,13 @@ class ChainView extends StatelessWidget {
             ? Theme.of(context).disabledColor
             : Theme.of(context).cardColor,
         title: Text(chain.title),
-        subtitle: Text(
-          'Last Updated: ${DateFormat.yMEd().add_jms().format(chain.lastUpdatedAt)}',
-        ),
+        subtitle: chain.at != null
+            ? Text(
+                "${chain.at!.isAfter(DateTime.now()) ? 'Scheduled at: ' : 'Started at: '} ${DateFormat.yMEd().add_jms().format(chain.at!)}",
+              )
+            : Text(
+                'Last Updated: ${DateFormat.yMEd().add_jms().format(chain.lastUpdatedAt)}',
+              ),
         leading: CircleAvatar(
           backgroundColor: Theme.of(context).primaryColorLight,
           child: IconButton(

@@ -52,7 +52,7 @@ class NotificationHelper {
   Future<void> cancelNotificationById(int id) async {
     String notificationFor = notificationSettingIsFor();
     if (notificationFor == notificationTypeSettingValueAppNotify) {
-      await localNotificationService.cancelChaindNotification(id);
+      await localNotificationService.cancelScheduledNotification(id);
     }
     // if (notificationFor == notificationTypeSettingValueAlarm) {
     //   AndroidAlarmManager.cancel(id);

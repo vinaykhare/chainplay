@@ -1,3 +1,4 @@
+import 'package:chain_events/helpers/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:chain_events/helpers/transform_functions.dart';
@@ -63,7 +64,7 @@ class ChainSystemWaitEventFlow extends StatelessWidget {
                               : Theme.of(context).primaryColor,
                         ),
                         child: Text(
-                          "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? ' before chaind duration' : TransformFunctions.durationToString(chainEvent.eventDuration)}.",
+                          "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? ' before scheduled duration' : TransformFunctions.durationToString(chainEvent.eventDuration)}.",
                         ),
                       )
                     : Icon(
@@ -82,6 +83,11 @@ class ChainSystemWaitEventFlow extends StatelessWidget {
                       taskText:
                           'Ended on ${DateFormat.yMd().add_jms().format(tempChain.endedAt!)}',
                     ),
+            if (index == 0 && tempChain.repeatType != repeatTypeDoesNotRepeat)
+              arrowWidget,
+            if (index == 0 && tempChain.repeatType != repeatTypeDoesNotRepeat)
+              SystemWaitEventWithDuration(
+                  taskText: 'And Repeat ${tempChain.repeatType}')
           ],
         ),
       ),

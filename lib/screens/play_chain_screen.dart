@@ -28,8 +28,11 @@ class _PlayChainState extends State<PlayChain> {
     dynamic popResponse;
     NavigatorState nav = Navigator.of(context);
     await Future.delayed(const Duration(seconds: 1));
-
-    for (DateTime? actStartDate = chain.at;
+    await chainList.cancelScheduleNotificationExecution(
+      chain,
+    );
+    DateTime chainExecutedTill = chain.at!;
+    for (DateTime actStartDate = chain.at!;
         invokeCounter < chain.activities.length;
         invokeCounter++) {
       Duration eventExecutedFor = const Duration(seconds: 0);
@@ -38,21 +41,20 @@ class _PlayChainState extends State<PlayChain> {
           activities[invokeCounter].at ?? actStartDate;
 
       Duration timeSpentSinceStartOfEvent =
-          DateTime.now().difference(actStartDate!);
+          DateTime.now().difference(actStartDate);
 
       if (activities[invokeCounter].eventDuration.inSeconds > 0) {
         eventExecutedFor += activities[invokeCounter].eventDuration;
-      } else {
-        eventExecutedFor = calculatedWaitDuration;
+        chainExecutedTill =
+            chainExecutedTill.add(activities[invokeCounter].eventDuration);
       }
 
-      if (!activities[invokeCounter].eventDone &&
+      if (activities[invokeCounter].endedAt == null &&
           activities[invokeCounter].event.type != systemStartEventInDB &&
-          (timeSpentSinceStartOfEvent < eventExecutedFor ||
+          (chainExecutedTill.isAfter(DateTime.now()) ||
               (activities[invokeCounter].eventDuration.inSeconds <= 0 &&
                   activities[invokeCounter].event.type !=
-                      systemWaitEventInDB) ||
-              activities[invokeCounter].eventDurationLeft != null)) {
+                      systemWaitEventInDB))) {
         if (activities[invokeCounter].eventDuration.inSeconds > 0) {
           calculatedWaitDuration =
               eventExecutedFor - timeSpentSinceStartOfEvent;
@@ -79,16 +81,13 @@ class _PlayChainState extends State<PlayChain> {
                     : null;
             break;
           } else {
+            activities[invokeCounter].eventDurationLeft = null;
             activities[invokeCounter].isInterrupted = true;
           }
         }
-
-        activities[invokeCounter].eventDone = true;
-      } else {
-        activities[invokeCounter].eventDone = true;
       }
-      //activities[invokeCounter].isInterrupted = true;
 
+      activities[invokeCounter].eventDone = true;
       actStartDate = activities[invokeCounter].endedAt =
           activities[invokeCounter].endedAt ?? DateTime.now();
       //actStartDate.add(eventExecutedFor);
@@ -115,7 +114,12 @@ class _PlayChainState extends State<PlayChain> {
       await chainList.updateChain(parentChain);
       await chainList.updateChainExecution(chain);
 
-      //await chainList.moveChainToHistory(chain);
+      if (parentChain.repeatType != repeatTypeDoesNotRepeat) {
+        Chain chainInExecution =
+            await chainList.moveChainToHistory(parentChain);
+        chainList.scheduleNotificationForExecution(
+            chainInExecution, chainInExecution.at!);
+      }
     }
     //nav.pop();
   }
@@ -128,7 +132,7 @@ class _PlayChainState extends State<PlayChain> {
     } else {
       await chainList.scheduleNotificationForExecution(
         chain,
-        DateTime.now(),
+        chain.at!,
       );
     }
     return true;
@@ -140,6 +144,7 @@ class _PlayChainState extends State<PlayChain> {
   Widget build(BuildContext context) {
     if (initializing) {
       chainList = Provider.of<ChainList>(context, listen: false);
+
       // if (chainList.notificationCameForChain != null) {
       //   chain = chainList.notificationCameForChain!;
       //   chainList.notificationCameForChain = null;

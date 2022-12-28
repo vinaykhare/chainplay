@@ -9,6 +9,7 @@ class Chain {
   DateTime createdAt = DateTime.now();
   List<ChainEvent> activities = [];
   List<Chain> chainHistory = [];
+  String repeatType = repeatTypeDoesNotRepeat;
   //BannerAd? adBanner;
   bool pinned = false;
   int chainStatus = statusNotStarted;

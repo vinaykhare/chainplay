@@ -14,13 +14,13 @@ import 'package:chain_events/widgets/chain_event_flow_view.dart';
 
 class ChainEventsWidget extends StatelessWidget {
   final Chain tempChain;
-  final Function? editEvent, undoEdit, addChainDateToChain;
+  final Function? editEvent, undoEdit, addStartDateToChain;
   const ChainEventsWidget({
     super.key,
     required this.tempChain,
     required this.editEvent,
     required this.undoEdit,
-    this.addChainDateToChain,
+    this.addStartDateToChain,
   });
 
   @override
@@ -62,7 +62,7 @@ class ChainEventsWidget extends StatelessWidget {
                 child: tempChain.at != null
                     ? SystemWaitEventWithDuration(
                         taskText:
-                            "${tempChain.at!.isAfter(DateTime.now()) ? 'Chaind to Start at' : 'Started on '} \n${DateFormat.yMd().add_jms().format(tempChain.at!)}",
+                            "${tempChain.at!.isAfter(DateTime.now()) ? 'Scheduled to Start at' : 'Started on '} \n${DateFormat.yMd().add_jms().format(tempChain.at!)}",
                       )
                     : const SystemWaitEvent(taskText: "Start"),
               ),

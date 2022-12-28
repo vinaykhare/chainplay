@@ -38,7 +38,8 @@ class _AddChainScreenState extends State<AddChainScreen> {
     type: systemWaitEventInDB,
   );
   ChainEvent? chainEventInEditMode;
-  DateTime? chainStartTime;
+  DateTime? chainStartTime, chainStartDate;
+  int? chainRepeatCount;
 
   String pageTitle = "Add Chain",
       eventTitle = "",
@@ -46,14 +47,23 @@ class _AddChainScreenState extends State<AddChainScreen> {
       chainNameOnPageLoad = "";
 
   bool addingDurationToEvent = false,
-      addingChainToChain = false,
+      addingScheduleToChain = false,
       updatingSystemWaitEventInDB = false,
       pageInit = true;
 
   int eventDurationHour = 0, eventDurationMinute = 0, eventDurationSecond = 0;
 
   final TextEditingController addEventController = TextEditingController();
+  final TextEditingController addStartDateController = TextEditingController();
   final TextEditingController addStartTimeController = TextEditingController();
+  final List<String> repeatTypes = [
+    repeatTypeDoesNotRepeat,
+    repeatTypeHourly,
+    repeatTypeDaily,
+    repeatTypeWeekly,
+    repeatTypeMonthly,
+    repeatTypeYearly,
+  ];
 
   //String durHour = "", durMin = "", durSec = "";
   GlobalKey<FormState> chainFormKey = GlobalKey<FormState>();
@@ -267,13 +277,14 @@ class _AddChainScreenState extends State<AddChainScreen> {
     }
 
     addEventController.clear();
+    addStartDateController.clear();
     addStartTimeController.clear();
     setState(() {
       eventDurationHour = 0;
       eventDurationMinute = 0;
       eventDurationSecond = 0;
       addingDurationToEvent = false;
-      addingChainToChain = false;
+      addingScheduleToChain = false;
     });
   }
 
@@ -315,13 +326,13 @@ class _AddChainScreenState extends State<AddChainScreen> {
 
     ChainList chainList = Provider.of<ChainList>(context, listen: false);
 
-    await chainList.resetChain(tempChain);
+    //await chainList.resetChain(tempChain);
     await chainList.updateChainEventByEventId(tempChain, chainEventInEditMode!);
 
     setState(() {
       chainEventInEditMode = null;
       addingDurationToEvent = false;
-      addingChainToChain = false;
+      addingScheduleToChain = false;
       eventDurationHour = 0;
       eventDurationMinute = 0;
       updatingSystemWaitEventInDB = false;
@@ -332,7 +343,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
   void editEvent(ChainEvent chainEvent) async {
     FocusScopeNode focusScope = FocusScope.of(context);
     ChainList chainList = Provider.of<ChainList>(context, listen: false);
-    await chainList.resetChain(tempChain);
+    //await chainList.resetChain(tempChain);
     chainEventInEditMode = chainEvent;
 
     chainEventInEditMode!.edit = true;
@@ -348,16 +359,20 @@ class _AddChainScreenState extends State<AddChainScreen> {
 
     if (chainEvent.event.type == systemStartEventInDB) {
       setState(() {
-        addingChainToChain = true;
+        addingScheduleToChain = true;
         addingDurationToEvent = false;
+        chainStartDate = tempChain.at;
         chainStartTime = tempChain.at;
+        addStartDateController.text = chainStartDate != null
+            ? DateFormat.yMEd().format(chainStartDate!)
+            : "";
         addStartTimeController.text = chainStartTime != null
-            ? DateFormat.yMEd().add_jms().format(chainStartTime!)
+            ? DateFormat.jms().format(chainStartTime!)
             : "";
       });
     } else {
       setState(() {
-        addingChainToChain = false;
+        addingScheduleToChain = false;
         addingDurationToEvent = true;
         eventDurationHour = chainEventDuration.inHours;
         eventDurationMinute =
@@ -368,7 +383,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
       });
     }
     addEventController.text = chainEvent.event.title;
-    if (!updatingSystemWaitEventInDB && !addingChainToChain) {
+    if (!updatingSystemWaitEventInDB && !addingScheduleToChain) {
       focusScope.requestFocus(addEventFocus);
     }
   }
@@ -481,67 +496,166 @@ class _AddChainScreenState extends State<AddChainScreen> {
 
     final startDateTimeInputForm = Form(
       key: startDateTimeInputKey,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: TextFormField(
-          key: ValueKey(
-            "${chainEventInEditMode?.event.title}_${chainEventInEditMode?.index.toString()}",
-          ),
-          controller: addStartTimeController,
-          onTap: () async {
-            DateTime? selectedDate = await showDatePicker(
-              context: context,
-              initialDate: DateTime.now(),
-              firstDate: DateTime.now(),
-              lastDate: DateTime(3000),
-            );
-            if (selectedDate == null) {
-              return;
-            }
-            TimeOfDay initTime = TimeOfDay.fromDateTime(
-                DateTime.now().add(const Duration(minutes: 1)));
-            // TimeOfDay initTime = TimeOfDay(
-            //   hour: TimeOfDay.now().hour,
-            //   minute: TimeOfDay.now().minute + 5,
-            // );
-            TimeOfDay? selectedTime = await showTimePicker(
-                  context: context,
-                  initialTime: initTime,
-                ) ??
-                initTime;
-
-            chainStartTime = DateTime(
-              selectedDate.year,
-              selectedDate.month,
-              selectedDate.day,
-              selectedTime.hour,
-              selectedTime.minute,
-            );
-            addStartTimeController.text =
-                DateFormat.yMEd().add_jms().format(chainStartTime!);
-          },
-          keyboardType: TextInputType.none,
-          textInputAction: TextInputAction.none,
-          textAlign: TextAlign.center,
-          //initialValue: tempChain.at?.toIso8601String() ?? "",
-          decoration: InputDecoration(
-            border: const OutlineInputBorder(),
-            label: const Text("Shedule Start Time"),
-            hintText: eventDurationHour.toString().padLeft(2, '0'),
-            suffixIcon: const Icon(Icons.calendar_month),
-          ),
-          validator: (value) {
-            if (chainStartTime != null &&
-                chainStartTime!.isAfter(DateTime.now())) {
-              return null;
-            } else {
-              return "Select Date Time in Future";
-            }
-          },
-          onSaved: (newValue) {
-            tempChain.at = chainStartTime;
-          },
+      child: Column(
+        key: ValueKey(
+          "${chainEventInEditMode?.event.title}_${chainEventInEditMode?.index.toString()}",
         ),
+        children: [
+          TextFormField(
+            controller: addStartDateController,
+            onTap: () async {
+              chainStartDate = await showDatePicker(
+                context: context,
+                initialDate: DateTime.now(),
+                firstDate: DateTime.now(),
+                lastDate: DateTime(3000),
+              );
+              if (chainStartDate == null) {
+                return;
+              }
+              addStartDateController.text =
+                  DateFormat.yMEd().format(chainStartDate!);
+              // TimeOfDay initTime = TimeOfDay.fromDateTime(
+              //     DateTime.now().add(const Duration(minutes: 1)));
+              // // TimeOfDay initTime = TimeOfDay(
+              // //   hour: TimeOfDay.now().hour,
+              // //   minute: TimeOfDay.now().minute + 5,
+              // // );
+              // TimeOfDay? selectedTime = await showTimePicker(
+              //       context: context,
+              //       initialTime: initTime,
+              //     ) ??
+              //     initTime;
+
+              // chainStartTime = DateTime(
+              //   selectedDate.year,
+              //   selectedDate.month,
+              //   selectedDate.day,
+              //   selectedTime.hour,
+              //   selectedTime.minute,
+              // );
+              // addStartTimeController.text =
+              //     DateFormat.yMEd().add_jms().format(chainStartTime!);
+            },
+            keyboardType: TextInputType.none,
+            textInputAction: TextInputAction.none,
+            textAlign: TextAlign.center,
+            //initialValue: tempChain.at?.toIso8601String() ?? "",
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              label: Text("Chain Execution Date"),
+              suffixIcon: Icon(Icons.calendar_month),
+            ),
+            // validator: (value) {
+            //   if (chainStartDate != null &&
+            //       (chainStartDate!.isAfter(
+            //             DateTime.now(),
+            //           ) ||
+            //           chainStartDate!.isAtSameMomentAs(
+            //             DateTime.now(),
+            //           ))) {
+            //     return null;
+            //   } else {
+            //     return "Select Date in Future";
+            //   }
+            // },
+          ),
+          TextFormField(
+            controller: addStartTimeController,
+            onTap: () async {
+              TimeOfDay initTime = TimeOfDay.fromDateTime(
+                  DateTime.now().add(const Duration(minutes: 1)));
+              TimeOfDay? selectedTime = await showTimePicker(
+                    context: context,
+                    initialTime: initTime,
+                  ) ??
+                  initTime;
+
+              chainStartDate ??= DateTime.now();
+              addStartDateController.text =
+                  DateFormat.yMEd().format(chainStartDate!);
+              chainStartTime = DateTime(
+                chainStartDate!.year,
+                chainStartDate!.month,
+                chainStartDate!.day,
+                selectedTime.hour,
+                selectedTime.minute,
+              );
+              addStartTimeController.text =
+                  DateFormat.jms().format(chainStartTime!);
+            },
+            keyboardType: TextInputType.none,
+            textInputAction: TextInputAction.none,
+            textAlign: TextAlign.center,
+            //initialValue: tempChain.at?.toIso8601String() ?? "",
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              label: const Text("Chain Execution Time"),
+              hintText: eventDurationHour.toString().padLeft(2, '0'),
+              suffixIcon: const Icon(Icons.calendar_month),
+            ),
+            validator: (value) {
+              if (chainStartTime != null &&
+                  chainStartTime!.isAfter(DateTime.now())) {
+                return null;
+              } else {
+                return "Select Time in Future";
+              }
+            },
+            onSaved: (newValue) {
+              chainStartTime = DateTime(
+                chainStartDate!.year,
+                chainStartDate!.month,
+                chainStartDate!.day,
+                chainStartTime!.hour,
+                chainStartTime!.minute,
+              );
+              tempChain.at = chainStartTime;
+              tempChain.repeatType = repeatTypes[0];
+            },
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  enabled: false,
+                  textInputAction: TextInputAction.none,
+                  keyboardType: TextInputType.none,
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    floatingLabelAlignment: FloatingLabelAlignment.center,
+                    floatingLabelBehavior: FloatingLabelBehavior.never,
+                    label: Center(
+                      child: Text(
+                        "Repeat",
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: DropdownButton<String>(
+                  isExpanded: true,
+                  value: repeatTypes[0],
+                  onChanged: (String? value) async {
+                    if (value == null || value == "") {
+                      return;
+                    }
+                    repeatTypes.remove(value);
+                    repeatTypes.insert(0, value);
+                  },
+                  items:
+                      repeatTypes.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
 
@@ -632,15 +746,16 @@ class _AddChainScreenState extends State<AddChainScreen> {
                 ),
                 chainInputForm,
                 if (addingDurationToEvent) duraitonInputForm,
-                if (addingChainToChain) startDateTimeInputForm,
+                if (addingScheduleToChain) startDateTimeInputForm,
                 AppBar(
                   automaticallyImplyLeading: !updatingSystemWaitEventInDB &&
-                      !addingChainToChain &&
+                      !addingScheduleToChain &&
                       MediaQuery.of(context).viewInsets.bottom == 0,
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      if (!updatingSystemWaitEventInDB && !addingChainToChain)
+                      if (!updatingSystemWaitEventInDB &&
+                          !addingScheduleToChain)
                         Expanded(
                           child: TextField(
                             cursorColor: Theme.of(context).shadowColor,
@@ -674,7 +789,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
                             },
                           ),
                         ),
-                      if (updatingSystemWaitEventInDB || addingChainToChain)
+                      if (updatingSystemWaitEventInDB || addingScheduleToChain)
                         IconButton(
                           onPressed: () {
                             undoEdit(chainEventInEditMode!);

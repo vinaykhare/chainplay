@@ -46,6 +46,7 @@ dependencies:
   #add_2_calendar: ^2.2.3
 
   native_pdf_view: ^6.0.0+1
+  image_picker: ^0.8.6
 
   # Library for Google Ads
   # google_mobile_ads: ^2.2.0

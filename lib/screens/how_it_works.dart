@@ -91,19 +91,19 @@ class _HowItWorksState extends State<HowItWorks> {
                       );
                     },
                   ),
-                  // IconButton(
-                  //   icon: const Icon(Icons.refresh),
-                  //   onPressed: () {
-                  //     if (isSampleDoc) {
-                  //       _pdfController.loadDocument(PdfDocument.openAsset(
-                  //           'assets/help/howitworks.pdf'));
-                  //     } else {
-                  //       _pdfController.loadDocument(PdfDocument.openAsset(
-                  //           'assets/help/howitworks.pdf'));
-                  //     }
-                  //     isSampleDoc = !isSampleDoc;
-                  //   },
-                  // )
+                  IconButton(
+                    icon: const Icon(Icons.refresh),
+                    onPressed: () {
+                      if (isSampleDoc) {
+                        _pdfController.loadDocument(PdfDocument.openAsset(
+                            'assets/help/howitworks.pdf'));
+                      } else {
+                        _pdfController.loadDocument(PdfDocument.openAsset(
+                            'assets/help/howitworks.pdf'));
+                      }
+                      isSampleDoc = !isSampleDoc;
+                    },
+                  )
                 ],
               ),
             )

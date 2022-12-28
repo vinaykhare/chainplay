@@ -213,8 +213,7 @@ class LocalNotificationService with WidgetsBindingObserver {
       importance: Importance.max,
       priority: Priority.high,
       ticker: 'Schedult It',
-      sound: RawResourceAndroidNotificationSound(
-          'assets/sound/chainit_notification.wav'),
+      sound: RawResourceAndroidNotificationSound('chainit_notification'),
       fullScreenIntent: true,
       actions: <AndroidNotificationAction>[
         // AndroidNotificationAction(
@@ -331,7 +330,7 @@ class LocalNotificationService with WidgetsBindingObserver {
     }
   }
 
-  Future<bool> cancelChaindNotification(int notificationId) async {
+  Future<bool> cancelScheduledNotification(int notificationId) async {
     try {
       await flutterLocalNotificationsPlugin.cancel(notificationId);
       return true;

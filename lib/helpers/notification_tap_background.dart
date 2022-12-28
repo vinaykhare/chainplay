@@ -13,7 +13,7 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
     Map<String, dynamic> responsePayload =
         jsonDecode(notificationResponse.payload!);
     Navigator.of(KeyHelper.navigatorKey!.currentContext!)
-        .pushNamed(PlayChain.routename, arguments: {
+        .pushReplacementNamed(PlayChain.routename, arguments: {
       payLoadChainExecId: responsePayload[payLoadChainExecId],
       payLoadChainName: responsePayload[payLoadChainName],
       payLoadWidgetUrl: responsePayload[payLoadWidgetUrl],
