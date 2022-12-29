@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:chain_events/helpers/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:chain_events/helpers/transform_functions.dart';
 import 'package:chain_events/models/chain.dart';
@@ -40,6 +42,9 @@ class ChainEventFlowView extends StatelessWidget {
               ? Theme.of(context).selectedRowColor
               : Theme.of(context).cardColor,
           child: Dismissible(
+            direction: editEvent != null
+                ? DismissDirection.startToEnd
+                : DismissDirection.none,
             background: Container(
               decoration: BoxDecoration(
                 color: Theme.of(context).errorColor,
@@ -58,7 +63,40 @@ class ChainEventFlowView extends StatelessWidget {
                         undoEdit!(chainEvent);
                       }
                     },
-                    title: Text(chainEvent.event.title),
+                    title: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            chainEvent.event.title,
+                            style: Theme.of(context).textTheme.headline5,
+                          ),
+                        ),
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child: Container(
+                              height: 100,
+                              margin: const EdgeInsets.all(5),
+                              child: chainEvent.event.specification != null &&
+                                      chainEvent.event.specification![
+                                              activitySpecImagePath] !=
+                                          null
+                                  ? Image.file(
+                                      File(
+                                        chainEvent.event.specification![
+                                            activitySpecImagePath],
+                                      ),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Image.asset(
+                                      'assets/logo/logo.png',
+                                      fit: BoxFit.cover,
+                                    ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                     subtitle: Text(
                       "${chainEvent.endedAt != null ? 'Completed' : 'will Complete'} ${activities[index].isInterrupted ? ' before scheduled duration' : TransformFunctions.durationToString(chainEvent.eventDuration)}.",
                     ),
@@ -80,7 +118,41 @@ class ChainEventFlowView extends StatelessWidget {
                 : Column(
                     children: [
                       ListTile(
-                        title: Text(chainEvent.event.title),
+                        title: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                chainEvent.event.title,
+                                style: Theme.of(context).textTheme.headline5,
+                              ),
+                            ),
+                            Expanded(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(50),
+                                child: Container(
+                                  height: 100,
+                                  margin: const EdgeInsets.all(5),
+                                  child:
+                                      chainEvent.event.specification != null &&
+                                              chainEvent.event.specification![
+                                                      activitySpecImagePath] !=
+                                                  null
+                                          ? Image.file(
+                                              File(
+                                                chainEvent.event.specification![
+                                                    activitySpecImagePath],
+                                              ),
+                                              fit: BoxFit.cover,
+                                            )
+                                          : Image.asset(
+                                              'assets/logo/logo.png',
+                                              fit: BoxFit.cover,
+                                            ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                         subtitle: Text(
                           "${chainEvent.endedAt != null ? 'Completed' : 'will Complete'} ${activities[index].isInterrupted ? ' before scheduled duration' : TransformFunctions.durationToString(chainEvent.eventDuration)}.",
                         ),

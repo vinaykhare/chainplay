@@ -27,18 +27,13 @@ class ChainListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     ChainList chainList = Provider.of<ChainList>(context);
     return Dismissible(
+      direction: DismissDirection.startToEnd,
       background: Container(
         margin: const EdgeInsets.fromLTRB(0, 4, 0, 4),
         decoration: BoxDecoration(
           color: Theme.of(context).errorColor,
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: const [
-            Icon(Icons.delete),
-            Icon(Icons.delete),
-          ],
-        ),
+        child: const Icon(Icons.delete),
       ),
       key: ValueKey("chain_list_dismissible_${chain.title}"),
       onDismissed: (direction) async {

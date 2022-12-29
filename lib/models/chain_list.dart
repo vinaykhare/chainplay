@@ -151,6 +151,8 @@ class ChainList with ChangeNotifier {
           "notificationId": chain.notificationId.toString(),
           "editChain": 1,
           "repeatType": chain.repeatType,
+          "repeatTypeGap": chain.repeatTypeGap,
+          "repeatCount": chain.repeatCount,
         },
       );
     }
@@ -168,6 +170,8 @@ class ChainList with ChangeNotifier {
         }),
         "eventDuration": chainEvent.eventDuration.inSeconds,
         "repeatType": chainEvent.repeatType,
+        "repeatTypeGap": chainEvent.repeatTypeGap,
+        "repeatCount": chainEvent.repeatCount,
         "startedAt": chainEvent.at == null
             ? noValueInDB
             : chainEvent.at!.millisecondsSinceEpoch,
@@ -269,6 +273,8 @@ class ChainList with ChangeNotifier {
         "notificationId": chainExecution.notificationId,
         "chainStatus": chainExecution.chainStatus,
         "repeatType": chainExecution.repeatType,
+        "repeatTypeGap": chainExecution.repeatTypeGap,
+        "repeatCount": chainExecution.repeatCount,
       },
     );
 
@@ -290,6 +296,8 @@ class ChainList with ChangeNotifier {
           }),
           "eventDuration": chainEvent.eventDuration.inSeconds,
           "repeatType": chainEvent.repeatType,
+          "repeatTypeGap": chainEvent.repeatTypeGap,
+          "repeatCount": chainEvent.repeatCount,
           "startedAt": chainEvent.at == null
               ? noValueInDB
               : chainEvent.at!.millisecondsSinceEpoch,
@@ -305,6 +313,69 @@ class ChainList with ChangeNotifier {
     }
   }
 
+  DateTime? getNextStartDateTime(DateTime currentStartDate, String repeatType,
+      int repeatTypeGap, int repeatCount) {
+    DateTime newStartDate = currentStartDate;
+    do {
+      switch (repeatType) {
+        case repeatTypeSecond:
+          newStartDate = newStartDate.add(
+            Duration(seconds: repeatTypeGap),
+          );
+          break;
+        case repeatTypeMinute:
+          newStartDate = newStartDate.add(
+            Duration(minutes: repeatTypeGap),
+          );
+          break;
+        case repeatTypeHourly:
+          newStartDate = newStartDate.add(
+            Duration(hours: repeatTypeGap),
+          );
+          break;
+        case repeatTypeDaily:
+          newStartDate = newStartDate.add(
+            Duration(days: repeatTypeGap),
+          );
+          break;
+        case repeatTypeWeekly:
+          newStartDate = DateTime(
+            newStartDate.year,
+            newStartDate.month,
+            newStartDate.day + (7 * repeatTypeGap),
+            newStartDate.hour,
+            newStartDate.minute,
+            newStartDate.second,
+          );
+          break;
+        case repeatTypeMonthly:
+          newStartDate = DateTime(
+            newStartDate.year,
+            newStartDate.month + repeatTypeGap,
+            newStartDate.day,
+            newStartDate.hour,
+            newStartDate.minute,
+            newStartDate.second,
+          );
+          break;
+        case repeatTypeYearly:
+          newStartDate = DateTime(
+            newStartDate.year + repeatTypeGap,
+            newStartDate.month,
+            newStartDate.day,
+            newStartDate.hour,
+            newStartDate.minute,
+            newStartDate.second,
+          );
+          break;
+        case repeatTypeDoesNotRepeat:
+        default:
+          return null;
+      }
+    } while (!newStartDate.isAfter(DateTime.now()));
+    return newStartDate;
+  }
+
   Future<Chain> moveChainToHistory(Chain chain) async {
     Chain chainExecution = Chain();
     chainExecution.chainExecutionId = const Uuid().v1();
@@ -316,6 +387,8 @@ class ChainList with ChangeNotifier {
     chainExecution.chainStatus = statusExecuting;
     chainExecution.index = chain.index;
     chainExecution.repeatType = chain.repeatType;
+    chainExecution.repeatTypeGap = chain.repeatTypeGap;
+    chainExecution.repeatCount = chain.repeatCount;
 
     for (ChainEvent chainEvent in chain.activities) {
       ChainEvent chainEventCopy = ChainEvent(
@@ -325,6 +398,8 @@ class ChainList with ChangeNotifier {
       );
       if (chainEventCopy.event.type == systemStartEventInDB) {
         chainEventCopy.repeatType = chainExecution.repeatType;
+        chainEventCopy.repeatTypeGap = chainExecution.repeatTypeGap;
+        chainEventCopy.repeatCount = chainExecution.repeatCount;
         //chainEventCopy.at = chainExecution.at;
       }
       chainEventCopy.at = null;
@@ -344,57 +419,25 @@ class ChainList with ChangeNotifier {
 
     chains[chainIndex].chainHistory.insert(0, chainExecution);
     chains[chainIndex].endedAt = null;
-    if (chains[chainIndex].at != null) {
-      switch (chains[chainIndex].repeatType) {
-        case repeatTypeHourly:
-          chains[chainIndex].at = chains[chainIndex].at!.add(
-                const Duration(hours: 1),
-              );
-          break;
-        case repeatTypeDaily:
-          chains[chainIndex].at = chains[chainIndex].at!.add(
-                const Duration(days: 1),
-              );
-          break;
-        case repeatTypeWeekly:
-          chains[chainIndex].at = DateTime(
-            chains[chainIndex].at!.year,
-            chains[chainIndex].at!.month,
-            chains[chainIndex].at!.day + 7,
-            chains[chainIndex].at!.hour,
-            chains[chainIndex].at!.minute,
-            chains[chainIndex].at!.second,
-          );
-          break;
-        case repeatTypeMonthly:
-          chains[chainIndex].at = DateTime(
-            chains[chainIndex].at!.year,
-            chains[chainIndex].at!.month + 1,
-            chains[chainIndex].at!.day,
-            chains[chainIndex].at!.hour,
-            chains[chainIndex].at!.minute,
-            chains[chainIndex].at!.second,
-          );
-          break;
-        case repeatTypeYearly:
-          chains[chainIndex].at = DateTime(
-            chains[chainIndex].at!.year + 1,
-            chains[chainIndex].at!.month,
-            chains[chainIndex].at!.day,
-            chains[chainIndex].at!.hour,
-            chains[chainIndex].at!.minute,
-            chains[chainIndex].at!.second,
-          );
-          break;
-        case repeatTypeDoesNotRepeat:
-        default:
-          chains[chainIndex].at = null;
-          break;
-      }
+    if (chains[chainIndex].repeatType != repeatTypeDoesNotRepeat) {
+      chains[chainIndex].at = getNextStartDateTime(
+        chains[chainIndex].at!,
+        chains[chainIndex].repeatType,
+        chains[chainIndex].repeatTypeGap,
+        chains[chainIndex].repeatCount,
+      );
     }
+    if (chains[chainIndex].repeatCount != -1) {
+      chains[chainIndex].repeatCount--;
+    }
+    if (chains[chainIndex].repeatCount == 0) {
+      chains[chainIndex].repeatType = repeatTypeDoesNotRepeat;
+      chains[chainIndex].at = null;
+    }
+
     chains[chainIndex].notificationId = noValueInDB;
     chains[chainIndex].chainStatus = statusExecuting;
-    await updateChain(chain);
+    await updateChain(chains[chainIndex]);
     notifyListeners();
     return chainExecution;
   }
@@ -426,12 +469,6 @@ class ChainList with ChangeNotifier {
       return;
     }
     chains[chainIndex] = chain;
-    // if (chain.chainStatus != statusDone) {
-    //   chains[chainIndex] = chain;
-    // } else {
-    //   chains[chainIndex] =
-    //       await moveChainToHistory(chains[chainIndex]);
-    // }
 
     await DBHelper.update(
       "chain",
@@ -447,6 +484,8 @@ class ChainList with ChangeNotifier {
         "notificationId": chain.notificationId.toString(),
         "editChain": chain.edit ? 1 : 0,
         "repeatType": chain.repeatType,
+        "repeatTypeGap": chain.repeatTypeGap,
+        "repeatCount": chain.repeatCount,
       },
       "title = ?",
       [chain.title],
@@ -469,6 +508,8 @@ class ChainList with ChangeNotifier {
         "chainStatus": chainExecution.chainStatus,
         "notificationId": chainExecution.notificationId.toString(),
         "repeatType": chainExecution.repeatType,
+        "repeatTypeGap": chainExecution.repeatTypeGap,
+        "repeatCount": chainExecution.repeatCount,
       },
       "chainExecutionId = ?",
       [chainExecution.chainExecutionId],
@@ -490,6 +531,8 @@ class ChainList with ChangeNotifier {
         }),
         "eventDuration": chainEvent.eventDuration.inSeconds,
         "repeatType": chainEvent.repeatType,
+        "repeatTypeGap": chainEvent.repeatTypeGap,
+        "repeatCount": chainEvent.repeatCount,
         "startedAt": chainEvent.at != null
             ? chainEvent.at!.millisecondsSinceEpoch
             : noValueInDB,
@@ -541,6 +584,8 @@ class ChainList with ChangeNotifier {
         }),
         "eventDuration": chainEvent.eventDuration.inSeconds,
         "repeatType": chainEvent.repeatType,
+        "repeatTypeGap": chainEvent.repeatTypeGap,
+        "repeatCount": chainEvent.repeatCount,
         "startedAt": chainEvent.at != null
             ? chainEvent.at!.millisecondsSinceEpoch
             : noValueInDB,
@@ -591,6 +636,8 @@ class ChainList with ChangeNotifier {
     chain.notificationId = noValueInDB;
     chain.chainStatus = statusNotStarted;
     chain.repeatType = repeatTypeDoesNotRepeat;
+    chain.repeatTypeGap = repeatTypeDefaultGap;
+    chain.repeatCount = repeatTypeDefaultCount;
     await updateChain(chain);
 
     notifyListeners();
@@ -866,11 +913,6 @@ class ChainList with ChangeNotifier {
       chain,
       chainEvent,
     );
-    // if (allActivitiesDone(chain)) {
-    //   //chain.chainStatus = statusDone;
-    //   chains[chainIndex] = await moveChainToHistory(chain);
-    //   await updateChain(chain);
-    // }
 
     notifyListeners();
   }
@@ -949,6 +991,8 @@ class ChainList with ChangeNotifier {
         eventDone: chainEvent['eventDone'] == 1,
         eventDuration: Duration(seconds: chainEvent['eventDuration']),
         repeatType: chainEvent['repeatType'] ?? repeatTypeDoesNotRepeat,
+        repeatTypeGap: chainEvent['repeatTypeGap'] ?? repeatTypeDefaultGap,
+        repeatCount: chainEvent['repeatCount'] ?? repeatTypeDefaultCount,
       );
       tempEvent.isInterrupted = chainEvent['isInterrupted'] == 1;
       tempEvent.at = getDateValueFromDB(chainEvent["startedAt"]);
@@ -1012,6 +1056,8 @@ class ChainList with ChangeNotifier {
         eventDone: chainEvent['eventDone'] == statusDone,
         eventDuration: Duration(seconds: chainEvent['eventDuration']),
         repeatType: chainEvent['repeatType'] ?? repeatTypeDoesNotRepeat,
+        repeatTypeGap: chainEvent['repeatTypeGap'] ?? repeatTypeDefaultGap,
+        repeatCount: chainEvent['repeatCount'] ?? repeatTypeDefaultCount,
       );
       tempEvent.isInterrupted = chainEvent['isInterrupted'] == statusDone;
       tempEvent.at = getDateValueFromDB(chainEvent["startedAt"]);
@@ -1051,6 +1097,10 @@ class ChainList with ChangeNotifier {
       chainExecution.activities = await loadChainEventHistory(chainExecution);
       chainExecution.repeatType =
           chainHistory['repeatType'] ?? repeatTypeDoesNotRepeat;
+      chainExecution.repeatTypeGap =
+          chainHistory['repeatTypeGap'] ?? repeatTypeDefaultGap;
+      chainExecution.repeatCount =
+          chainHistory['repeatCount'] ?? repeatTypeDefaultCount;
       result.add(chainExecution);
     }
     return result;
@@ -1075,6 +1125,8 @@ class ChainList with ChangeNotifier {
       tempChain.notificationId = int.parse(chain["notificationId"]);
       tempChain.index = chain["chainIndex"];
       tempChain.repeatType = chain["repeatType"] ?? repeatTypeDoesNotRepeat;
+      tempChain.repeatTypeGap = chain['repeatTypeGap'] ?? repeatTypeDefaultGap;
+      tempChain.repeatCount = chain['repeatCount'] ?? repeatTypeDefaultCount;
       chains.add(tempChain);
     }
 
@@ -1143,6 +1195,7 @@ class ChainList with ChangeNotifier {
       }
       if (chain.activities[i].event.type == systemWaitEventInDB) {
         fromDateTime = fromDateTime.add(chain.activities[i].eventDuration);
+        fromDateTime = fromDateTime.add(const Duration(microseconds: 1));
         continue;
       }
       int nextNotificationId = getNextNotificationId();
@@ -1153,9 +1206,10 @@ class ChainList with ChangeNotifier {
         eventTitle = "Chain of Events '${chain.title}'";
         //await updateChainExecution(chain);
       }
-
-      fromDateTime = fromDateTime.add(const Duration(microseconds: 1));
-
+      if (chain.activities[i].startEventNotificationId == noValueInDB) {
+        notificationHelper.cancelNotificationById(
+            chain.activities[i].startEventNotificationId);
+      }
       chain.activities[i].startEventNotificationId =
           await notificationHelper.scheduleNotification(
         fromDateTime,
@@ -1170,6 +1224,7 @@ class ChainList with ChangeNotifier {
           payLoadChainEventCount: chain.activities.length,
         },
       );
+
       await updateChainEventExecutionByEventId(
         chain,
         chain.activities[i],
@@ -1185,7 +1240,7 @@ class ChainList with ChangeNotifier {
       DateTime dateTimeAfterDurationAddition =
           fromDateTime.add(chain.activities[i].eventDuration);
       if (fromDateTime == dateTimeAfterDurationAddition) {
-        //fromDateTime = fromDateTime.add(const Duration(microseconds: 1));
+        fromDateTime = fromDateTime.add(const Duration(microseconds: 1));
         continue;
       }
       fromDateTime = dateTimeAfterDurationAddition;
@@ -1195,8 +1250,10 @@ class ChainList with ChangeNotifier {
       if (i == (countOfActivities - 2)) {
         eventTitle = "Chain of Events '${chain.title}'";
       }
-
-      fromDateTime = fromDateTime.add(const Duration(microseconds: 1));
+      if (chain.activities[i].endEventNotificationId != noValueInDB) {
+        notificationHelper
+            .cancelNotificationById(chain.activities[i].endEventNotificationId);
+      }
       chain.activities[i].endEventNotificationId =
           await notificationHelper.scheduleNotification(
         fromDateTime,
@@ -1211,10 +1268,12 @@ class ChainList with ChangeNotifier {
           payLoadChainEventCount: chain.activities.length,
         },
       );
+
       await updateChainEventExecutionByEventId(
         chain,
         chain.activities[i],
       );
+      fromDateTime = fromDateTime.add(const Duration(microseconds: 1));
     }
     notifyListeners();
   }

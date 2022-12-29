@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +26,7 @@ class _PlayWaitEventState extends State<PlayWaitEvent> {
       showPlayPause = true,
       appSoundEnabled = true,
       playingRest = false;
+  String? screenImage;
   NotificationHelper notificationHelper = NotificationHelper();
 
   @override
@@ -111,6 +113,7 @@ class _PlayWaitEventState extends State<PlayWaitEvent> {
       chainEvent = input["chainEvent"];
       playingRest = input["playRest"];
       running = input["running"];
+      screenImage = input["screenImage"];
       if (running && (waitDuration.inSeconds > 0)) {
         startTimer();
       }
@@ -153,10 +156,25 @@ class _PlayWaitEventState extends State<PlayWaitEvent> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const SizedBox(),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(50),
+                  child: Container(
+                    margin: const EdgeInsets.all(5),
+                    child: screenImage == null
+                        ? Image.asset(
+                            'assets/logo/logo.png',
+                            fit: BoxFit.cover,
+                          )
+                        : Image.file(
+                            File(screenImage!),
+                            height: 250,
+                            fit: BoxFit.cover,
+                          ),
+                  ),
+                ),
                 Text(
                   playingRest ? "Rest" : chainEvent.event.title,
-                  style: Theme.of(context).textTheme.headline2,
+                  style: Theme.of(context).textTheme.headline4,
                   textAlign: TextAlign.center,
                 ),
                 Text(
@@ -167,14 +185,14 @@ class _PlayWaitEventState extends State<PlayWaitEvent> {
                 InkWell(
                   onTap: interruptAndCompleteEvent,
                   child: CircleAvatar(
-                    radius: 150,
+                    radius: 50,
                     backgroundColor: playingRest
                         ? Theme.of(context).focusColor
                         : Theme.of(context).canvasColor,
                     child: FittedBox(
                       child: Text(
                         displaySeconds,
-                        style: Theme.of(context).textTheme.headline1,
+                        style: Theme.of(context).textTheme.headline4,
                         textAlign: TextAlign.center,
                       ),
                     ),

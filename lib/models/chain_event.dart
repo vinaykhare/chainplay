@@ -7,6 +7,8 @@ class ChainEvent {
 
   Duration eventDuration; // 0 = No time bound
   String repeatType;
+  int repeatTypeGap;
+  int repeatCount;
   Duration? eventDurationLeft;
   bool eventDone = false, isInterrupted = false;
   DateTime? at, endedAt;
@@ -18,6 +20,8 @@ class ChainEvent {
     required this.event,
     this.eventDuration = const Duration(seconds: 0),
     this.repeatType = repeatTypeDoesNotRepeat,
+    this.repeatTypeGap = repeatTypeDefaultGap,
+    this.repeatCount = repeatTypeDefaultCount,
     this.eventDone = false,
   });
 }

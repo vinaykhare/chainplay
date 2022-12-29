@@ -6,6 +6,7 @@ class Event {
   int type;
   DateTime createdAt, lastUpdatedAt;
   bool edit = false;
+  Map<String, dynamic>? specification = {};
 
   Event({
     required this.eventId,
@@ -13,5 +14,6 @@ class Event {
     required this.createdAt,
     required this.lastUpdatedAt,
     this.type = waitEventInDB,
+    this.specification,
   });
 }

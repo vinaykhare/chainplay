@@ -10,6 +10,8 @@ class Chain {
   List<ChainEvent> activities = [];
   List<Chain> chainHistory = [];
   String repeatType = repeatTypeDoesNotRepeat;
+  int repeatTypeGap = repeatTypeDefaultGap;
+  int repeatCount = repeatTypeDefaultCount;
   //BannerAd? adBanner;
   bool pinned = false;
   int chainStatus = statusNotStarted;

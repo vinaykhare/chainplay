@@ -2,6 +2,9 @@ const int noValueInDB = -1;
 const int trueInDB = 1;
 const int falseInDB = 0;
 
+// Activity Specifications
+const String activitySpecImagePath = "imagePath";
+
 //Event types
 const int systemStartEventInDB = 0;
 const int systemWaitEventInDB = 1;
@@ -39,9 +42,15 @@ const String payLoadChainEventIndex = "chainEventIndex";
 const String payLoadChainEventCount = "chainEventCount";
 
 //Schedule Repeat Types
+const int repeatTypeDefaultGap = 1;
+const int repeatTypeDefaultCount = -1;
 const String repeatTypeDoesNotRepeat = "Never";
-const String repeatTypeHourly = "Hourly";
-const String repeatTypeDaily = "Daily";
-const String repeatTypeWeekly = "Weekly";
-const String repeatTypeMonthly = "Monthly";
-const String repeatTypeYearly = "Yearly";
+const String repeatTypeSecond = "Second";
+const String repeatTypeMinute = "Minute";
+const String repeatTypeHourly = "Hour";
+const String repeatTypeDaily = "Day";
+const String repeatTypeWeekly = "Week";
+const String repeatTypeMonthly = "Month";
+const String repeatTypeYearly = "Year";
+const String repeatOccurAfter = "After";
+const String repeatOccurNever = "Never";

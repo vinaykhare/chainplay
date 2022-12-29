@@ -21,10 +21,11 @@ const initScript = [
       pinned INTEGER,
       startedAt INTEGER,
       endedAt INTEGER,
-      repeatCriteria TEXT, 
       chainStatus INTEGER,
       notificationId TEXT,
       repeatType TEXT,
+      repeatTypeGap INTEGER,
+      repeatCount INTEGER,
       editChain INTEGER
     )
   ''',
@@ -36,6 +37,8 @@ const initScript = [
       chainStatus INTEGER,
       notificationId TEXT,
       repeatType TEXT,
+      repeatTypeGap INTEGER,
+      repeatCount INTEGER,
       FOREIGN KEY (title)
         REFERENCES chain (title)
     )
@@ -53,6 +56,8 @@ const initScript = [
       endedAt INTEGER,
       editChainEvent INTEGER,
       repeatType TEXT,
+      repeatTypeGap INTEGER,
+      repeatCount INTEGER,
       FOREIGN KEY (title)
         REFERENCES chain (title),
       FOREIGN KEY (eventId)
@@ -69,6 +74,8 @@ const initScript = [
       notificationId TEXT,
       eventDuration INTEGER,
       repeatType TEXT,
+      repeatTypeGap INTEGER,
+      repeatCount INTEGER,
       startedAt INTEGER,      
       eventDurationLeft INTEGER,
       endedAt INTEGER,

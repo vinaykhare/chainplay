@@ -43,18 +43,26 @@ class _PlayChainState extends State<PlayChain> {
       Duration timeSpentSinceStartOfEvent =
           DateTime.now().difference(actStartDate);
 
-      if (activities[invokeCounter].eventDuration.inSeconds > 0) {
+      if (activities[invokeCounter].eventDuration.inSeconds > 0 &&
+          activities[invokeCounter].eventDurationLeft == null) {
         eventExecutedFor += activities[invokeCounter].eventDuration;
         chainExecutedTill =
             chainExecutedTill.add(activities[invokeCounter].eventDuration);
+      } else {
+        chainExecutedTill = DateTime.now().add(const Duration(seconds: 10));
       }
 
-      if (activities[invokeCounter].endedAt == null &&
+      bool conditionToRunActivity = activities[invokeCounter].endedAt == null &&
           activities[invokeCounter].event.type != systemStartEventInDB &&
-          (chainExecutedTill.isAfter(DateTime.now()) ||
-              (activities[invokeCounter].eventDuration.inSeconds <= 0 &&
-                  activities[invokeCounter].event.type !=
-                      systemWaitEventInDB))) {
+          !chainExecutedTill.isBefore(
+            DateTime.now(),
+          ) &&
+          (activities[invokeCounter].eventDuration.inSeconds > 0 ||
+              activities[invokeCounter].event.type == waitEventInDB);
+
+      if (conditionToRunActivity) {
+        //Don't run system wait activity when its duration is 0 seconds.
+
         if (activities[invokeCounter].eventDuration.inSeconds > 0) {
           calculatedWaitDuration =
               eventExecutedFor - timeSpentSinceStartOfEvent;
@@ -70,6 +78,9 @@ class _PlayChainState extends State<PlayChain> {
             "playRest":
                 activities[invokeCounter].event.type == systemWaitEventInDB,
             "running": activities[invokeCounter].eventDurationLeft == null,
+            "screenImage": activities[invokeCounter]
+                .event
+                .specification?[activitySpecImagePath]
           },
         );
 
@@ -116,7 +127,7 @@ class _PlayChainState extends State<PlayChain> {
 
       if (parentChain.repeatType != repeatTypeDoesNotRepeat) {
         Chain chainInExecution =
-            await chainList.moveChainToHistory(parentChain);
+            await chainList.startChainExecution(parentChain);
         chainList.scheduleNotificationForExecution(
             chainInExecution, chainInExecution.at!);
       }
