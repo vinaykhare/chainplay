@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class SystemWaitEvent extends StatelessWidget {
+class SystemWaitActivity extends StatelessWidget {
   final String taskText;
 
-  const SystemWaitEvent({
+  const SystemWaitActivity({
     super.key,
     required this.taskText,
   });

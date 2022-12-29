@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:chain_events/models/chain.dart';
-import 'package:chain_events/models/chain_list.dart';
+import 'package:chain_activities/models/chain.dart';
+import 'package:chain_activities/models/chain_list.dart';
 
-import 'package:chain_events/screens/add_chain_screen.dart';
-import 'package:chain_events/screens/play_chain_screen.dart';
-import 'package:chain_events/screens/chain_execution_screen.dart';
-import 'package:chain_events/helpers/constants.dart';
+import 'package:chain_activities/screens/add_chain_screen.dart';
+import 'package:chain_activities/screens/play_chain_screen.dart';
+import 'package:chain_activities/screens/chain_execution_screen.dart';
+import 'package:chain_activities/helpers/constants.dart';
 import 'package:intl/intl.dart';
 
 class ChainView extends StatelessWidget {
@@ -47,8 +47,8 @@ class ChainView extends StatelessWidget {
               arguments: {
                 payLoadChainExecId: chainExecution.chainExecutionId,
                 payLoadChainName: chainExecution.title,
-                payLoadChainEventIndex: index, //0
-                payLoadChainEventCount: chain.chainHistory.length,
+                payLoadChainActivityIndex: index, //0
+                payLoadChainActivityCount: chain.chainHistory.length,
               },
             );
           }
@@ -79,8 +79,8 @@ class ChainView extends StatelessWidget {
                   arguments: {
                     payLoadChainExecId: chainExecution.chainExecutionId,
                     payLoadChainName: chainExecution.title,
-                    payLoadChainEventIndex: index, //0
-                    payLoadChainEventCount: chain.chainHistory.length,
+                    payLoadChainActivityIndex: index, //0
+                    payLoadChainActivityCount: chain.chainHistory.length,
                   },
                 );
               }

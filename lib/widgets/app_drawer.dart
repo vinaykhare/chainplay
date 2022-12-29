@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:chain_events/screens/how_it_works.dart';
-import 'package:chain_events/screens/chain_list_screen.dart';
-import 'package:chain_events/screens/settings_screen.dart';
+import 'package:chain_activities/screens/how_it_works.dart';
+import 'package:chain_activities/screens/chain_list_screen.dart';
+import 'package:chain_activities/screens/settings_screen.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({
@@ -15,7 +15,7 @@ class AppDrawer extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           AppBar(
-            title: const Text('Chain Events'),
+            title: const Text('Chain Activities'),
             automaticallyImplyLeading: false,
             actions: [
               IconButton(
@@ -35,7 +35,7 @@ class AppDrawer extends StatelessWidget {
               const Divider(),
               ListTile(
                 leading: const Icon(Icons.help),
-                title: const Text('How "Chain Events" Works'),
+                title: const Text('How "Chain Activities" Works'),
                 onTap: () {
                   while (Navigator.of(context).canPop()) {
                     Navigator.of(context).pop();

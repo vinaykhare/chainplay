@@ -3,8 +3,8 @@ import 'package:path/path.dart' as path;
 import 'package:sqflite/sqlite_api.dart';
 
 const initScript = [
-  '''CREATE TABLE event (
-      eventId TEXT PRIMARY KEY, 
+  '''CREATE TABLE activity (
+      activityId TEXT PRIMARY KEY, 
       title TEXT, 
       specifications TEXT, 
       type INTEGER,
@@ -43,46 +43,46 @@ const initScript = [
         REFERENCES chain (title)
     )
   ''',
-  '''CREATE TABLE chain_event (
+  '''CREATE TABLE chain_activity (
       title TEXT, 
-      eventId TEXT,
-      eventIndex INTEGER,
-      eventDone INTEGER,
+      activityId TEXT,
+      activityIndex INTEGER,
+      activityDone INTEGER,
       isInterrupted INTEGER,
       notificationId TEXT,
-      eventDuration INTEGER,
+      activityDuration INTEGER,
       startedAt INTEGER,
-      eventDurationLeft INTEGER,
+      activityDurationLeft INTEGER,
       endedAt INTEGER,
-      editChainEvent INTEGER,
+      editChainActivity INTEGER,
       repeatType TEXT,
       repeatTypeGap INTEGER,
       repeatCount INTEGER,
       FOREIGN KEY (title)
         REFERENCES chain (title),
-      FOREIGN KEY (eventId)
-        REFERENCES event (eventId)
+      FOREIGN KEY (activityId)
+        REFERENCES activity (activityId)
     )
   ''',
-  '''CREATE TABLE chain_event_execution (
+  '''CREATE TABLE chain_activity_execution (
       chainExecutionId TEXT,
       title TEXT, 
-      eventId TEXT,
-      eventIndex INTEGER,
-      eventDone INTEGER,
+      activityId TEXT,
+      activityIndex INTEGER,
+      activityDone INTEGER,
       isInterrupted INTEGER,
       notificationId TEXT,
-      eventDuration INTEGER,
+      activityDuration INTEGER,
       repeatType TEXT,
       repeatTypeGap INTEGER,
       repeatCount INTEGER,
       startedAt INTEGER,      
-      eventDurationLeft INTEGER,
+      activityDurationLeft INTEGER,
       endedAt INTEGER,
       FOREIGN KEY (title)
         REFERENCES chain (title),
-      FOREIGN KEY (eventId)
-        REFERENCES event (eventId),
+      FOREIGN KEY (activityId)
+        REFERENCES activity (activityId),
       FOREIGN KEY (chainExecutionId)
         REFERENCES chain_execution (chainExecutionId)
     )

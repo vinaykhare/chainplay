@@ -1,20 +1,19 @@
-import 'package:chain_events/helpers/key_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:chain_events/models/chain_list.dart';
-import 'package:chain_events/screens/add_chain_screen.dart';
-import 'package:chain_events/screens/how_it_works.dart';
-import 'package:chain_events/screens/load_screen.dart';
-import 'package:chain_events/screens/play_chain_screen.dart';
-import 'package:chain_events/screens/play_wait_event_screen.dart';
-import 'package:chain_events/screens/chain_execution_screen.dart';
-import 'package:chain_events/screens/chain_list_screen.dart';
-import 'package:chain_events/screens/search_chain_screen.dart';
-import 'package:chain_events/screens/settings_screen.dart';
+import 'package:chain_activities/models/chain_list.dart';
+import 'package:chain_activities/screens/add_chain_screen.dart';
+import 'package:chain_activities/screens/how_it_works.dart';
+import 'package:chain_activities/screens/load_screen.dart';
+import 'package:chain_activities/screens/play_chain_screen.dart';
+import 'package:chain_activities/screens/play_wait_activity_screen.dart';
+import 'package:chain_activities/screens/chain_execution_screen.dart';
+import 'package:chain_activities/screens/chain_list_screen.dart';
+import 'package:chain_activities/screens/search_chain_screen.dart';
+import 'package:chain_activities/screens/settings_screen.dart';
 
-class ChainEvents extends StatelessWidget {
-  const ChainEvents({super.key});
+class ChainActivities extends StatelessWidget {
+  const ChainActivities({super.key});
 
   // This widget is the root of your application.
   @override
@@ -27,8 +26,7 @@ class ChainEvents extends StatelessWidget {
         ? false
         : chainList.systemSettings[themeIndex].value == "TRUE";
     return MaterialApp(
-      key: KeyHelper.navigatorKey,
-      title: 'Chain Events',
+      title: 'Chain Activities',
       darkTheme: darkTheme ? ThemeData.dark() : null,
       debugShowCheckedModeBanner: false,
       theme: darkTheme
@@ -72,7 +70,7 @@ class ChainEvents extends StatelessWidget {
         PlayChain.routename: (context) => const PlayChain(),
         SearchChainScreen.routename: (context) => const SearchChainScreen(),
         SettingsScreen.routename: (context) => const SettingsScreen(),
-        PlayWaitEvent.routename: (context) => const PlayWaitEvent(),
+        PlayWaitActivity.routename: (context) => const PlayWaitActivity(),
         LoadScreen.routename: (context) => const LoadScreen(),
         HowItWorks.routename: (context) => const HowItWorks(),
         ChainExecutionScreen.routename: (context) =>

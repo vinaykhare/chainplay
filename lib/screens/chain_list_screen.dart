@@ -1,13 +1,14 @@
+import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:flutter/material.dart';
 //import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
-import 'package:chain_events/models/chain.dart';
-import 'package:chain_events/models/chain_list.dart';
-import 'package:chain_events/screens/add_chain_screen.dart';
-import 'package:chain_events/screens/search_chain_screen.dart';
-import 'package:chain_events/widgets/app_drawer.dart';
-//import 'package:chain_events/widgets/app_drawer.dart';
-import 'package:chain_events/widgets/chain_list_item.dart';
+import 'package:chain_activities/models/chain.dart';
+import 'package:chain_activities/models/chain_list.dart';
+import 'package:chain_activities/screens/add_chain_screen.dart';
+import 'package:chain_activities/screens/search_chain_screen.dart';
+import 'package:chain_activities/widgets/app_drawer.dart';
+//import 'package:chain_activities/widgets/app_drawer.dart';
+import 'package:chain_activities/widgets/chain_list_item.dart';
 
 class ChainListScreen extends StatelessWidget {
   static String routename = "/chains";
@@ -37,6 +38,7 @@ class ChainListScreen extends StatelessWidget {
       drawer: const AppDrawer(),
       body: SafeArea(
         child: Column(
+          key: KeyHelper.navigatorKey,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           //mainAxisSize: MainAxisSize.min,
           children: [

@@ -5,14 +5,14 @@ const int falseInDB = 0;
 // Activity Specifications
 const String activitySpecImagePath = "imagePath";
 
-//Event types
-const int systemStartEventInDB = 0;
-const int systemWaitEventInDB = 1;
-const int waitEventInDB = 2;
+//Activity types
+const int systemStartActivityInDB = 0;
+const int systemWaitActivityInDB = 1;
+const int waitActivityInDB = 2;
 
-//System Event Names
-const String systemWaitEventTitle = "System Wait Event";
-const String systemStartEventInTitle = "System Start Event";
+//System Activity Names
+const String systemWaitActivityTitle = "System Wait Activity";
+const String systemStartActivityInTitle = "System Start Activity";
 
 //Status
 
@@ -38,8 +38,8 @@ const String notificationTypeSettingValueAll = "All";
 const String payLoadChainName = "chainTitle";
 const String payLoadChainExecId = "chainExecutionId";
 const String payLoadWidgetUrl = "url";
-const String payLoadChainEventIndex = "chainEventIndex";
-const String payLoadChainEventCount = "chainEventCount";
+const String payLoadChainActivityIndex = "chainActivityIndex";
+const String payLoadChainActivityCount = "chainActivityCount";
 
 //Schedule Repeat Types
 const int repeatTypeDefaultGap = 1;

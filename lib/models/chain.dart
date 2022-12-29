@@ -1,13 +1,13 @@
 //import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:chain_events/helpers/constants.dart';
-import 'package:chain_events/models/chain_event.dart';
+import 'package:chain_activities/helpers/constants.dart';
+import 'package:chain_activities/models/chain_activity.dart';
 
 class Chain {
   String title = "";
   DateTime? at, endedAt;
   DateTime lastUpdatedAt = DateTime.now();
   DateTime createdAt = DateTime.now();
-  List<ChainEvent> activities = [];
+  List<ChainActivity> activities = [];
   List<Chain> chainHistory = [];
   String repeatType = repeatTypeDoesNotRepeat;
   int repeatTypeGap = repeatTypeDefaultGap;

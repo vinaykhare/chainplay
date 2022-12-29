@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:chain_events/chain_events.dart';
+import 'package:chain_activities/chain_activities.dart';
 
 // import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -37,7 +37,7 @@ void main() {
           create: (context) => ChainList(context),
         ),
       ],
-      child: const ChainEvents(),
+      child: const ChainActivities(),
     ),
   );
 }

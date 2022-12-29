@@ -6,8 +6,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:chain_events/helpers/notification_tap_background.dart';
-import 'package:chain_events/helpers/local_notifications/received_notification.dart';
+import 'package:chain_activities/helpers/notification_tap_background.dart';
+import 'package:chain_activities/helpers/local_notifications/received_notification.dart';
 import 'package:timezone/data/latest_10y.dart';
 import 'package:timezone/timezone.dart';
 
@@ -177,20 +177,20 @@ class LocalNotificationService with WidgetsBindingObserver {
         AndroidNotificationDetails(
       "CHAIN_EVENTS_CHANNEL_ID",
       "CHAIN_EVENTS_CHANNEL_NAME",
-      channelDescription: 'Chain Events Channel',
+      channelDescription: 'Chain Activities Channel',
       importance: Importance.max,
       priority: Priority.high,
       ticker: 'Schedult It',
       playSound: true,
-      sound: const RawResourceAndroidNotificationSound('chainit_notification'),
+      sound: const RawResourceAndroidNotificationSound('chain_activity_alarm'),
       // sound: UriAndroidNotificationSound(
-      //     "assets/sound/chainit_notification.wav"),
+      //     "assets/sound/chain_activity_alarm.wav"),
       fullScreenIntent: true,
       // styleInformation: BigPictureStyleInformation(
       //   DrawableResourceAndroidBitmap('@mipmap/launcher_icon'),
       //   largeIcon: DrawableResourceAndroidBitmap('@mipmap/launcher_icon'),
-      //   contentTitle: 'Chain Events Big Picture Notification Title',
-      //   summaryText: 'Chain Events Big Picture Notification Title',
+      //   contentTitle: 'Chain Activities Big Picture Notification Title',
+      //   summaryText: 'Chain Activities Big Picture Notification Title',
       // ),
       showProgress: true,
       maxProgress: maxProgressVal,
@@ -209,11 +209,11 @@ class LocalNotificationService with WidgetsBindingObserver {
         AndroidNotificationDetails(
       "CHAIN_EVENTS_CHANNEL_ID",
       "CHAIN_EVENTS_CHANNEL_NAME",
-      channelDescription: 'Chain Events Channel with Action.',
+      channelDescription: 'Chain Activities Channel with Action.',
       importance: Importance.max,
       priority: Priority.high,
       ticker: 'Schedult It',
-      sound: RawResourceAndroidNotificationSound('chainit_notification'),
+      sound: RawResourceAndroidNotificationSound('chain_activity_alarm'),
       fullScreenIntent: true,
       actions: <AndroidNotificationAction>[
         // AndroidNotificationAction(
@@ -310,8 +310,8 @@ class LocalNotificationService with WidgetsBindingObserver {
   ) async {
     try {
       final details = await _getNotification(
-        payLoad["chainEventCount"],
-        payLoad["chainEventIndex"],
+        payLoad["chainActivityCount"],
+        payLoad["chainActivityIndex"],
       );
       await flutterLocalNotificationsPlugin.zonedSchedule(
         notificationId,

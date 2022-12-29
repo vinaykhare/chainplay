@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:chain_events/models/chain_list.dart';
-import 'package:chain_events/models/system_setting.dart';
-import 'package:chain_events/widgets/app_drawer.dart';
+import 'package:chain_activities/models/chain_list.dart';
+import 'package:chain_activities/models/system_setting.dart';
+import 'package:chain_activities/widgets/app_drawer.dart';
 
 class SettingsScreen extends StatefulWidget {
   static String routename = "/settings";

@@ -21,7 +21,7 @@ class AdState {
   //   onAdFailedToLoad: (ad, error) =>
   //       print('Ad with ${ad.adUnitId} has failed to Load due to Error: $error'),
   //   onAdClicked: (ad) => print('Ad wit Ad Unit Id: ${ad.adUnitId} is Clicked.'),
-  //   onPaidEvent: (ad, db, prec, st) =>
+  //   onPaidActivity: (ad, db, prec, st) =>
   //       print('Ad wit Ad Unit Id: ${ad.adUnitId} is Opened.'),
   //   onAdWillDismissScreen: (ad) =>
   //       print('Ad wit Ad Unit Id: ${ad.adUnitId} is Dismissed.'), */
@@ -34,7 +34,7 @@ class AdState {
   //     ad.dispose();
   //   },
   //   onAdClicked: (ad) {},
-  //   onPaidEvent: (ad, db, prec, st) {},
+  //   onPaidActivity: (ad, db, prec, st) {},
   //   onAdWillDismissScreen: (ad) {
   //     ad.dispose();
   //   },

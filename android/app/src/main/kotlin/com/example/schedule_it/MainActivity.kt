@@ -1,4 +1,4 @@
-package com.example.chain_events
+package com.example.chain_activities
 
 import io.flutter.embedding.android.FlutterActivity
 

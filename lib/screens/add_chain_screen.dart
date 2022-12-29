@@ -3,14 +3,14 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 //import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:chain_events/helpers/constants.dart';
-import 'package:chain_events/models/event.dart';
-import 'package:chain_events/models/chain.dart';
-import 'package:chain_events/models/chain_event.dart';
-import 'package:chain_events/models/chain_list.dart';
-//import 'package:chain_events/screens/add_event_screen.dart';
-//import 'package:chain_events/widgets/activities_timeline.dart';
-import 'package:chain_events/widgets/chain_events_widget.dart';
+import 'package:chain_activities/helpers/constants.dart';
+import 'package:chain_activities/models/activity.dart';
+import 'package:chain_activities/models/chain.dart';
+import 'package:chain_activities/models/chain_activity.dart';
+import 'package:chain_activities/models/chain_list.dart';
+//import 'package:chain_activities/screens/add_activity_screen.dart';
+//import 'package:chain_activities/widgets/activities_timeline.dart';
+import 'package:chain_activities/widgets/chain_activities_widget.dart';
 import 'package:uuid/uuid.dart';
 
 class AddChainScreen extends StatefulWidget {
@@ -24,37 +24,39 @@ class AddChainScreen extends StatefulWidget {
 
 class _AddChainScreenState extends State<AddChainScreen> {
   Chain tempChain = Chain();
-  Event startEvent = Event(
-    eventId: const Uuid().v1(),
-    title: systemStartEventInTitle,
+  Activity startActivity = Activity(
+    activityId: const Uuid().v1(),
+    title: systemStartActivityInTitle,
     createdAt: DateTime.now(),
     lastUpdatedAt: DateTime.now(),
-    type: systemStartEventInDB,
+    type: systemStartActivityInDB,
   );
-  Event restEvent = Event(
-    eventId: const Uuid().v1(),
-    title: systemWaitEventTitle,
+  Activity restActivity = Activity(
+    activityId: const Uuid().v1(),
+    title: systemWaitActivityTitle,
     createdAt: DateTime.now(),
     lastUpdatedAt: DateTime.now(),
-    type: systemWaitEventInDB,
+    type: systemWaitActivityInDB,
   );
-  ChainEvent? chainEventInEditMode;
+  ChainActivity? chainActivityInEditMode;
   DateTime? chainStartTime, chainStartDate;
   int? chainRepeatCount;
 
   String pageTitle = "Add Chain",
-      eventTitle = "",
+      activityTitle = "",
       errorString = "",
       chainNameOnPageLoad = "";
 
-  bool addingDurationToEvent = false,
+  bool addingDurationToActivity = false,
       addingScheduleToChain = false,
-      updatingSystemWaitEventInDB = false,
+      updatingSystemWaitActivityInDB = false,
       pageInit = true;
 
-  int eventDurationHour = 0, eventDurationMinute = 0, eventDurationSecond = 0;
+  int activityDurationHour = 0,
+      activityDurationMinute = 0,
+      activityDurationSecond = 0;
 
-  final TextEditingController addEventController = TextEditingController();
+  final TextEditingController addActivityController = TextEditingController();
   final TextEditingController addStartDateController = TextEditingController();
   final TextEditingController addStartTimeController = TextEditingController();
   final TextEditingController activityImageController = TextEditingController();
@@ -78,13 +80,13 @@ class _AddChainScreenState extends State<AddChainScreen> {
   GlobalKey<FormState> chainFormKey = GlobalKey<FormState>();
   GlobalKey<FormState> durationFormKey = GlobalKey<FormState>();
   GlobalKey<FormState> startDateTimeInputKey = GlobalKey<FormState>();
-  FocusNode addEventFocus = FocusNode();
+  FocusNode addActivityFocus = FocusNode();
 
   @override
   void dispose() {
     super.dispose();
-    addEventFocus.dispose();
-    addEventController.dispose();
+    addActivityFocus.dispose();
+    addActivityController.dispose();
   }
 
   Future<bool> isNameValid() async {
@@ -123,7 +125,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
 
     if (tempChain.activities.isEmpty && tempChain.title != "") {
       setState(() {
-        errorString = "Add atleast one event to this Chain.";
+        errorString = "Add atleast one activity to this Chain.";
       });
       return false;
     }
@@ -158,15 +160,15 @@ class _AddChainScreenState extends State<AddChainScreen> {
         chainNameOnPageLoad == "")) {
       tempChain.edit = false;
       await chainList.updateChain(tempChain);
-      await chainList.updatChainEventByChainName(tempChain);
+      await chainList.updatChainActivityByChainName(tempChain);
     }
     return true;
   }
 
-  Future<void> addEvent(ChainEvent newEvent) async {
+  Future<void> addActivity(ChainActivity newActivity) async {
     ChainList chainList = Provider.of<ChainList>(context, listen: false);
-    ChainEvent restChainEvent = ChainEvent(
-      event: restEvent,
+    ChainActivity restChainActivity = ChainActivity(
+      activity: restActivity,
     );
     bool validName = await isNameValid();
 
@@ -175,36 +177,36 @@ class _AddChainScreenState extends State<AddChainScreen> {
     }
 
     if (tempChain.activities.isEmpty) {
-      ChainEvent startChainEvent = ChainEvent(
-        event: startEvent,
+      ChainActivity startChainActivity = ChainActivity(
+        activity: startActivity,
       );
       tempChain.activities.add(
-        startChainEvent,
+        startChainActivity,
       );
       await chainList.addChain(
         tempChain,
-        startChainEvent,
+        startChainActivity,
       );
     }
     tempChain.activities.add(
-      newEvent,
+      newActivity,
     );
 
-    await chainList.addChain(tempChain, newEvent);
+    await chainList.addChain(tempChain, newActivity);
 
     tempChain.activities.add(
-      restChainEvent,
+      restChainActivity,
     );
     await chainList.addChain(
       tempChain,
-      restChainEvent,
+      restChainActivity,
     );
     //Navigator.of(context).pop();
     setState(() {});
   }
 
-  //chainEventInEditMode should not be null before calling this function.
-  Future<void> updateEvent(ChainEvent newEvent) async {
+  //chainActivityInEditMode should not be null before calling this function.
+  Future<void> updateActivity(ChainActivity newActivity) async {
     ChainList chainList = Provider.of<ChainList>(context, listen: false);
     bool validName = await isNameValid();
 
@@ -212,14 +214,14 @@ class _AddChainScreenState extends State<AddChainScreen> {
       return;
     }
 
-    await chainList.updateChainEventByEventId(
+    await chainList.updateChainActivityByActivityId(
       tempChain,
-      newEvent,
+      newActivity,
     );
-    await chainList.updateEvent(newEvent.event);
+    await chainList.updateActivity(newActivity.activity);
     setState(() {
-      chainEventInEditMode = null;
-      updatingSystemWaitEventInDB = false;
+      chainActivityInEditMode = null;
+      updatingSystemWaitActivityInDB = false;
     });
   }
 
@@ -241,69 +243,70 @@ class _AddChainScreenState extends State<AddChainScreen> {
     startDateTimeInputKey.currentState?.save();
     if (tempChain.title == "") {
       setState(() {
-        errorString = "Please insert the Chain name before adding event to it.";
+        errorString =
+            "Please insert the Chain name before adding activity to it.";
       });
       return;
     }
-    if (addEventController.text.isEmpty) {
+    if (addActivityController.text.isEmpty) {
       return;
     }
 
-    if (chainEventInEditMode != null) {
-      chainEventInEditMode!.event.title = addEventController.text;
-      chainEventInEditMode!.edit = false;
-      chainEventInEditMode!.event.lastUpdatedAt = DateTime.now();
-      chainEventInEditMode!.eventDuration = Duration(
-        hours: eventDurationHour,
-        minutes: eventDurationMinute,
-        seconds: eventDurationSecond,
+    if (chainActivityInEditMode != null) {
+      chainActivityInEditMode!.activity.title = addActivityController.text;
+      chainActivityInEditMode!.edit = false;
+      chainActivityInEditMode!.activity.lastUpdatedAt = DateTime.now();
+      chainActivityInEditMode!.activityDuration = Duration(
+        hours: activityDurationHour,
+        minutes: activityDurationMinute,
+        seconds: activityDurationSecond,
       );
       if (activityImageController.text.isNotEmpty) {
-        chainEventInEditMode!.event.specification = {
+        chainActivityInEditMode!.activity.specification = {
           activitySpecImagePath: activityImageController.text,
         };
       }
 
-      updateEvent(chainEventInEditMode!);
-      // if (chainEventInEditMode?.event.type ==
-      //     systemStartEventInDB) {
+      updateActivity(chainActivityInEditMode!);
+      // if (chainActivityInEditMode?.activity.type ==
+      //     systemStartActivityInDB) {
       //   Provider.of<ChainList>(context, listen: false)
       //       .updateChain(tempChain);
       // }
     } else {
-      addEvent(
-        ChainEvent(
-          event: Event(
-            title: addEventController.text,
+      addActivity(
+        ChainActivity(
+          activity: Activity(
+            title: addActivityController.text,
             createdAt: DateTime.now(),
             lastUpdatedAt: DateTime.now(),
-            eventId: const Uuid().v1(),
+            activityId: const Uuid().v1(),
             specification: activityImageController.text.isNotEmpty
                 ? {
                     activitySpecImagePath: activityImageController.text,
                   }
                 : {},
           ),
-          eventDuration: Duration(
-            hours: eventDurationHour,
-            minutes: eventDurationMinute,
-            seconds: eventDurationSecond,
+          activityDuration: Duration(
+            hours: activityDurationHour,
+            minutes: activityDurationMinute,
+            seconds: activityDurationSecond,
           ),
         ),
       );
 
-      FocusScope.of(context).requestFocus(addEventFocus);
+      FocusScope.of(context).requestFocus(addActivityFocus);
     }
 
-    addEventController.clear();
+    addActivityController.clear();
     addStartDateController.clear();
     addStartTimeController.clear();
     activityImageController.clear();
     setState(() {
-      eventDurationHour = 0;
-      eventDurationMinute = 0;
-      eventDurationSecond = 0;
-      addingDurationToEvent = false;
+      activityDurationHour = 0;
+      activityDurationMinute = 0;
+      activityDurationSecond = 0;
+      addingDurationToActivity = false;
       addingScheduleToChain = false;
     });
   }
@@ -338,53 +341,54 @@ class _AddChainScreenState extends State<AddChainScreen> {
     }
   }
 
-  void undoEdit(ChainEvent chainEvent) async {
+  void undoEdit(ChainActivity chainActivity) async {
     FocusScopeNode focusScope = FocusScope.of(context);
-    addEventController.clear();
+    addActivityController.clear();
     activityImageController.clear();
     addStartDateController.clear();
     addStartTimeController.clear();
-    chainEventInEditMode = chainEvent;
-    chainEventInEditMode!.edit = false;
+    chainActivityInEditMode = chainActivity;
+    chainActivityInEditMode!.edit = false;
 
     ChainList chainList = Provider.of<ChainList>(context, listen: false);
 
     //await chainList.resetChain(tempChain);
-    await chainList.updateChainEventByEventId(tempChain, chainEventInEditMode!);
+    await chainList.updateChainActivityByActivityId(
+        tempChain, chainActivityInEditMode!);
 
     setState(() {
-      chainEventInEditMode = null;
-      addingDurationToEvent = false;
+      chainActivityInEditMode = null;
+      addingDurationToActivity = false;
       addingScheduleToChain = false;
-      eventDurationHour = 0;
-      eventDurationMinute = 0;
-      updatingSystemWaitEventInDB = false;
+      activityDurationHour = 0;
+      activityDurationMinute = 0;
+      updatingSystemWaitActivityInDB = false;
     });
     focusScope.unfocus();
   }
 
-  void editEvent(ChainEvent chainEvent) async {
+  void editActivity(ChainActivity chainActivity) async {
     FocusScopeNode focusScope = FocusScope.of(context);
     ChainList chainList = Provider.of<ChainList>(context, listen: false);
     //await chainList.resetChain(tempChain);
-    chainEventInEditMode = chainEvent;
+    chainActivityInEditMode = chainActivity;
 
-    chainEventInEditMode!.edit = true;
+    chainActivityInEditMode!.edit = true;
 
-    await chainList.updateChainEventByEventId(
+    await chainList.updateChainActivityByActivityId(
       tempChain,
-      chainEventInEditMode!,
+      chainActivityInEditMode!,
     );
 
-    updatingSystemWaitEventInDB =
-        chainEventInEditMode!.event.type == systemWaitEventInDB;
+    updatingSystemWaitActivityInDB =
+        chainActivityInEditMode!.activity.type == systemWaitActivityInDB;
 
-    Duration chainEventDuration = chainEventInEditMode!.eventDuration;
+    Duration chainActivityDuration = chainActivityInEditMode!.activityDuration;
 
-    if (chainEvent.event.type == systemStartEventInDB) {
+    if (chainActivity.activity.type == systemStartActivityInDB) {
       setState(() {
         addingScheduleToChain = true;
-        addingDurationToEvent = false;
+        addingDurationToActivity = false;
         chainStartDate = tempChain.at;
         chainStartTime = tempChain.at;
         addStartDateController.text = chainStartDate != null
@@ -397,21 +401,21 @@ class _AddChainScreenState extends State<AddChainScreen> {
     } else {
       setState(() {
         addingScheduleToChain = false;
-        addingDurationToEvent = true;
-        eventDurationHour = chainEventDuration.inHours;
-        eventDurationMinute =
-            chainEventDuration.inMinutes - (eventDurationHour * 60);
-        eventDurationSecond = chainEventDuration.inSeconds -
-            (eventDurationHour * 3600) -
-            (eventDurationMinute * 60);
-        activityImageController.text =
-            chainEventInEditMode!.event.specification?[activitySpecImagePath] ??
-                "";
+        addingDurationToActivity = true;
+        activityDurationHour = chainActivityDuration.inHours;
+        activityDurationMinute =
+            chainActivityDuration.inMinutes - (activityDurationHour * 60);
+        activityDurationSecond = chainActivityDuration.inSeconds -
+            (activityDurationHour * 3600) -
+            (activityDurationMinute * 60);
+        activityImageController.text = chainActivityInEditMode!
+                .activity.specification?[activitySpecImagePath] ??
+            "";
       });
     }
-    addEventController.text = chainEvent.event.title;
-    if (!updatingSystemWaitEventInDB && !addingScheduleToChain) {
-      focusScope.requestFocus(addEventFocus);
+    addActivityController.text = chainActivity.activity.title;
+    if (!updatingSystemWaitActivityInDB && !addingScheduleToChain) {
+      focusScope.requestFocus(addActivityFocus);
     }
   }
 
@@ -425,7 +429,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
         //tempChain.loadActivities();
       }
       pageInit = false;
-      //FocusScope.of(context).requestFocus(addEventFocus);
+      //FocusScope.of(context).requestFocus(addActivityFocus);
     }
 
     // Autocomplete<String>(
@@ -433,7 +437,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
     //     if (textEditingValue.text == '') {
     //       return const Iterable<String>.empty();
     //     } else {
-    //       List<Event> matches = <Event>[];
+    //       List<Activity> matches = <Activity>[];
     //       final suggestions =
     //           await Provider.of<ChainList>(context, listen: false)
     //               .fetchActivities();
@@ -458,20 +462,20 @@ class _AddChainScreenState extends State<AddChainScreen> {
               Expanded(
                 child: TextFormField(
                   key: ValueKey(
-                    "${chainEventInEditMode?.event.title}_${chainEventInEditMode?.index.toString()}_hours",
+                    "${chainActivityInEditMode?.activity.title}_${chainActivityInEditMode?.index.toString()}_hours",
                   ),
                   keyboardType: TextInputType.number,
                   textInputAction: TextInputAction.none,
                   textAlign: TextAlign.center,
-                  initialValue: eventDurationHour == 0
+                  initialValue: activityDurationHour == 0
                       ? null
-                      : eventDurationHour.toString().padLeft(2, '0'),
+                      : activityDurationHour.toString().padLeft(2, '0'),
                   decoration: InputDecoration(
                     border: const OutlineInputBorder(),
                     label: const Text("Hour"),
-                    hintText: eventDurationHour.toString().padLeft(2, '0'),
+                    hintText: activityDurationHour.toString().padLeft(2, '0'),
                   ),
-                  onSaved: (newValue) => eventDurationHour =
+                  onSaved: (newValue) => activityDurationHour =
                       newValue != "" && newValue != null
                           ? int.parse(newValue)
                           : 0,
@@ -481,14 +485,14 @@ class _AddChainScreenState extends State<AddChainScreen> {
               Expanded(
                 child: TextFormField(
                   key: ValueKey(
-                    "${chainEventInEditMode?.event.title.toString()}_${chainEventInEditMode?.index.toString()}_minutes",
+                    "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_minutes",
                   ),
                   keyboardType: TextInputType.number,
                   textAlign: TextAlign.center,
-                  initialValue: eventDurationMinute == 0
+                  initialValue: activityDurationMinute == 0
                       ? null
-                      : eventDurationMinute.toString().padLeft(2, '0'),
-                  onSaved: (newValue) => eventDurationMinute =
+                      : activityDurationMinute.toString().padLeft(2, '0'),
+                  onSaved: (newValue) => activityDurationMinute =
                       newValue != "" && newValue != null
                           ? int.parse(newValue)
                           : 0,
@@ -497,7 +501,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
                     label: const Text(
                       "Minute",
                     ),
-                    hintText: eventDurationMinute.toString().padLeft(2, '0'),
+                    hintText: activityDurationMinute.toString().padLeft(2, '0'),
                   ),
                   validator: (value) => validateMinuteOrSecond(value),
                 ),
@@ -505,21 +509,21 @@ class _AddChainScreenState extends State<AddChainScreen> {
               Expanded(
                 child: TextFormField(
                   key: ValueKey(
-                    "${chainEventInEditMode?.event.title.toString()}_${chainEventInEditMode?.index.toString()}_seconds",
+                    "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_seconds",
                   ),
                   keyboardType: TextInputType.number,
                   textAlign: TextAlign.center,
-                  initialValue: eventDurationSecond == 0
+                  initialValue: activityDurationSecond == 0
                       ? null
-                      : eventDurationSecond.toString().padLeft(2, '0'),
-                  onSaved: (newValue) => eventDurationSecond =
+                      : activityDurationSecond.toString().padLeft(2, '0'),
+                  onSaved: (newValue) => activityDurationSecond =
                       newValue != "" && newValue != null
                           ? int.parse(newValue)
                           : 0,
                   decoration: InputDecoration(
                     border: const OutlineInputBorder(),
                     label: const Text("Second"),
-                    hintText: eventDurationSecond.toString().padLeft(2, '0'),
+                    hintText: activityDurationSecond.toString().padLeft(2, '0'),
                     alignLabelWithHint: true,
                   ),
                   validator: (value) => validateMinuteOrSecond(value),
@@ -532,18 +536,18 @@ class _AddChainScreenState extends State<AddChainScreen> {
               Expanded(
                 child: TextFormField(
                   key: ValueKey(
-                    "${chainEventInEditMode?.event.title.toString()}_${chainEventInEditMode?.index.toString()}_image",
+                    "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_image",
                   ),
                   keyboardType: TextInputType.number,
                   textAlign: TextAlign.center,
                   controller: activityImageController,
-                  // onSaved: (_) => chainEventInEditMode!
-                  //         .event.specification![activitySpecImagePath] =
+                  // onSaved: (_) => chainActivityInEditMode!
+                  //         .activity.specification![activitySpecImagePath] =
                   //     activityImageController.text,
                   decoration: InputDecoration(
                     border: const OutlineInputBorder(),
                     label: const Text("Image Path"),
-                    hintText: eventDurationSecond.toString().padLeft(2, '0'),
+                    hintText: activityDurationSecond.toString().padLeft(2, '0'),
                     alignLabelWithHint: true,
                   ),
                 ),
@@ -568,7 +572,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
       key: startDateTimeInputKey,
       child: Column(
         key: ValueKey(
-          "${chainEventInEditMode?.event.title}_${chainEventInEditMode?.index.toString()}",
+          "${chainActivityInEditMode?.activity.title}_${chainActivityInEditMode?.index.toString()}",
         ),
         children: [
           Row(
@@ -666,7 +670,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
                   decoration: InputDecoration(
                     border: const OutlineInputBorder(),
                     label: const Text("Chain Execution Time"),
-                    hintText: eventDurationHour.toString().padLeft(2, '0'),
+                    hintText: activityDurationHour.toString().padLeft(2, '0'),
                     suffixIcon: const Icon(Icons.calendar_month),
                   ),
                   validator: (value) {
@@ -915,7 +919,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
               tempChain.title = value ?? "";
             },
             onFieldSubmitted: (value) =>
-                FocusScope.of(context).requestFocus(addEventFocus),
+                FocusScope.of(context).requestFocus(addActivityFocus),
           ),
         ],
       ),
@@ -958,34 +962,34 @@ class _AddChainScreenState extends State<AddChainScreen> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: ChainEventsWidget(
+                    child: ChainActivitiesWidget(
                       tempChain: tempChain,
-                      editEvent: editEvent,
+                      editActivity: editActivity,
                       undoEdit: undoEdit,
                     ),
                   ),
                 ),
                 chainInputForm,
-                if (addingDurationToEvent) duraitonInputForm,
+                if (addingDurationToActivity) duraitonInputForm,
                 if (addingScheduleToChain) startDateTimeInputForm,
                 AppBar(
-                  automaticallyImplyLeading: !updatingSystemWaitEventInDB &&
+                  automaticallyImplyLeading: !updatingSystemWaitActivityInDB &&
                       !addingScheduleToChain &&
                       MediaQuery.of(context).viewInsets.bottom == 0,
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      if (!updatingSystemWaitEventInDB &&
+                      if (!updatingSystemWaitActivityInDB &&
                           !addingScheduleToChain)
                         Expanded(
                           child: TextField(
                             cursorColor: Theme.of(context).shadowColor,
-                            focusNode: addEventFocus,
+                            focusNode: addActivityFocus,
                             decoration: InputDecoration(
                               floatingLabelBehavior:
                                   FloatingLabelBehavior.never,
                               label: const Text(
-                                'Add Task or Event',
+                                'Add Task or Activity',
                               ),
                               border: const OutlineInputBorder(
                                 borderSide: BorderSide.none,
@@ -994,8 +998,8 @@ class _AddChainScreenState extends State<AddChainScreen> {
                               prefixIcon: IconButton(
                                 onPressed: () {
                                   setState(() {
-                                    addingDurationToEvent =
-                                        !addingDurationToEvent;
+                                    addingDurationToActivity =
+                                        !addingDurationToActivity;
                                   });
                                 },
                                 icon: Icon(
@@ -1004,24 +1008,25 @@ class _AddChainScreenState extends State<AddChainScreen> {
                                 ),
                               ),
                             ),
-                            controller: addEventController,
+                            controller: addActivityController,
                             onSubmitted: (_) {
                               onSubmitText();
                             },
                           ),
                         ),
-                      if (updatingSystemWaitEventInDB || addingScheduleToChain)
+                      if (updatingSystemWaitActivityInDB ||
+                          addingScheduleToChain)
                         IconButton(
                           onPressed: () {
-                            undoEdit(chainEventInEditMode!);
+                            undoEdit(chainActivityInEditMode!);
                           },
                           icon: const Icon(Icons.cancel_outlined),
                         ),
                       IconButton(
                         onPressed: onSubmitText,
-                        icon: chainEventInEditMode != null
+                        icon: chainActivityInEditMode != null
                             ? const Icon(Icons.done_outline)
-                            : updatingSystemWaitEventInDB
+                            : updatingSystemWaitActivityInDB
                                 ? const Icon(Icons.done)
                                 : const Icon(Icons.add_task_outlined),
                       ),

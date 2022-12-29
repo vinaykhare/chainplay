@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:chain_events/helpers/constants.dart';
-import 'package:chain_events/models/chain.dart';
-import 'package:chain_events/models/chain_event.dart';
-import 'package:chain_events/models/chain_list.dart';
-import 'package:chain_events/screens/play_wait_event_screen.dart';
-import 'package:chain_events/screens/chain_list_screen.dart';
-import 'package:chain_events/widgets/chain_events_widget.dart';
+import 'package:chain_activities/helpers/constants.dart';
+import 'package:chain_activities/models/chain.dart';
+import 'package:chain_activities/models/chain_activity.dart';
+import 'package:chain_activities/models/chain_list.dart';
+import 'package:chain_activities/screens/play_wait_activity_screen.dart';
+import 'package:chain_activities/screens/chain_list_screen.dart';
+import 'package:chain_activities/widgets/chain_activities_widget.dart';
 
 class PlayChain extends StatefulWidget {
   static String routename = "play_chain";
@@ -20,7 +20,7 @@ class PlayChain extends StatefulWidget {
 class _PlayChainState extends State<PlayChain> {
   late Chain chain;
   late ChainList chainList;
-  List<ChainEvent> activities = [];
+  List<ChainActivity> activities = [];
   int invokeCounter = 0;
   bool initializing = true;
 
@@ -35,75 +35,72 @@ class _PlayChainState extends State<PlayChain> {
     for (DateTime actStartDate = chain.at!;
         invokeCounter < chain.activities.length;
         invokeCounter++) {
-      Duration eventExecutedFor = const Duration(seconds: 0);
+      Duration activityExecutedFor = const Duration(seconds: 0);
       Duration calculatedWaitDuration = const Duration(seconds: 0);
       activities[invokeCounter].at =
           activities[invokeCounter].at ?? actStartDate;
 
-      Duration timeSpentSinceStartOfEvent =
-          DateTime.now().difference(actStartDate);
+      activityExecutedFor = activities[invokeCounter].activityDurationLeft ??
+          activities[invokeCounter].activityDuration;
+      chainExecutedTill = activities[invokeCounter].endedAt ??
+          activities[invokeCounter].at!.add(activityExecutedFor);
 
-      if (activities[invokeCounter].eventDuration.inSeconds > 0 &&
-          activities[invokeCounter].eventDurationLeft == null) {
-        eventExecutedFor += activities[invokeCounter].eventDuration;
-        chainExecutedTill =
-            chainExecutedTill.add(activities[invokeCounter].eventDuration);
-      } else {
-        chainExecutedTill = DateTime.now().add(const Duration(seconds: 10));
-      }
+      Duration timeSpentSinceStartOfActivity =
+          DateTime.now().difference(chainExecutedTill);
 
       bool conditionToRunActivity = activities[invokeCounter].endedAt == null &&
-          activities[invokeCounter].event.type != systemStartEventInDB &&
-          !chainExecutedTill.isBefore(
-            DateTime.now(),
-          ) &&
-          (activities[invokeCounter].eventDuration.inSeconds > 0 ||
-              activities[invokeCounter].event.type == waitEventInDB);
+          activities[invokeCounter].activity.type != systemStartActivityInDB &&
+          (!chainExecutedTill.isBefore(
+                DateTime.now(),
+              ) ||
+              (activities[invokeCounter].activityDuration.inSeconds == 0 &&
+                  activities[invokeCounter].activity.type !=
+                      systemWaitActivityInDB));
 
       if (conditionToRunActivity) {
         //Don't run system wait activity when its duration is 0 seconds.
 
-        if (activities[invokeCounter].eventDuration.inSeconds > 0) {
+        if (activities[invokeCounter].activityDuration.inSeconds > 0) {
           calculatedWaitDuration =
-              eventExecutedFor - timeSpentSinceStartOfEvent;
+              activityExecutedFor - timeSpentSinceStartOfActivity;
         }
         popResponse = await nav.pushNamed(
-          PlayWaitEvent.routename,
+          PlayWaitActivity.routename,
           arguments: {
-            "waitDuration": activities[invokeCounter].eventDurationLeft ??
+            "waitDuration": activities[invokeCounter].activityDurationLeft ??
                 (calculatedWaitDuration.inSeconds > 0
                     ? calculatedWaitDuration
-                    : activities[invokeCounter].eventDuration),
-            "chainEvent": activities[invokeCounter],
-            "playRest":
-                activities[invokeCounter].event.type == systemWaitEventInDB,
-            "running": activities[invokeCounter].eventDurationLeft == null,
+                    : activities[invokeCounter].activityDuration),
+            "chainActivity": activities[invokeCounter],
+            "playRest": activities[invokeCounter].activity.type ==
+                systemWaitActivityInDB,
+            "running": activities[invokeCounter].activityDurationLeft == null,
             "screenImage": activities[invokeCounter]
-                .event
+                .activity
                 .specification?[activitySpecImagePath]
           },
         );
 
         if (popResponse != null) {
           if (popResponse["interruptAndCompleted"] == false) {
-            activities[invokeCounter].eventDurationLeft =
+            activities[invokeCounter].activityDurationLeft =
                 popResponse["running"] == false
                     ? popResponse["waitDuration"]
                     : null;
             break;
           } else {
-            activities[invokeCounter].eventDurationLeft = null;
+            activities[invokeCounter].activityDurationLeft = null;
             activities[invokeCounter].isInterrupted = true;
           }
         }
       }
 
-      activities[invokeCounter].eventDone = true;
+      activities[invokeCounter].activityDone = true;
       actStartDate = activities[invokeCounter].endedAt =
           activities[invokeCounter].endedAt ?? DateTime.now();
-      //actStartDate.add(eventExecutedFor);
+      //actStartDate.add(activityExecutedFor);
 
-      await chainList.updateChainEventExecutionByEventId(
+      await chainList.updateChainActivityExecutionByActivityId(
         chain,
         activities[invokeCounter],
       );
@@ -195,9 +192,9 @@ class _PlayChainState extends State<PlayChain> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: ChainEventsWidget(
+                    child: ChainActivitiesWidget(
                       tempChain: chain,
-                      editEvent: null,
+                      editActivity: null,
                       undoEdit: null,
                     ),
                   ),

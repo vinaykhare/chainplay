@@ -1,8 +1,8 @@
-# chain_events
+# chain_activities
 
-Project Chain Events Developed using Flutter Framework.
+Project Chain Activities Developed using Flutter Framework.
 
 ## Getting Started
 
-This project is targetted to create Chain of Events on the fly, manage them and execute them.
+This project is targetted to create Chain of Activities on the fly, manage them and execute them.
 

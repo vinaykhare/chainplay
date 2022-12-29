@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:chain_events/helpers/constants.dart';
+import 'package:chain_activities/helpers/constants.dart';
 
-import 'package:chain_events/models/chain.dart';
-import 'package:chain_events/models/chain_list.dart';
-import 'package:chain_events/screens/play_chain_screen.dart';
-import 'package:chain_events/widgets/chain_view.dart';
-import 'package:chain_events/widgets/start_end_time_chain_widget.dart';
+import 'package:chain_activities/models/chain.dart';
+import 'package:chain_activities/models/chain_list.dart';
+import 'package:chain_activities/screens/play_chain_screen.dart';
+import 'package:chain_activities/widgets/chain_view.dart';
+import 'package:chain_activities/widgets/start_end_time_chain_widget.dart';
 
-//import 'package:chain_events/widgets/app_drawer.dart';
+//import 'package:chain_activities/widgets/app_drawer.dart';
 
 class ChainExecutionScreen extends StatelessWidget {
   static String routename = "/chain_history";
@@ -104,7 +104,7 @@ class ChainExecutionScreen extends StatelessWidget {
                 itemBuilder: (context, index) {
                   Chain chainExecution = chain.chainHistory[index];
                   int numberOfUserActivites = chainExecution.activities
-                      .where((schEx) => schEx.event.type == waitEventInDB)
+                      .where((schEx) => schEx.activity.type == waitActivityInDB)
                       .length;
                   return Column(
                     children: [
@@ -116,8 +116,9 @@ class ChainExecutionScreen extends StatelessWidget {
                           arguments: {
                             payLoadChainExecId: chainExecution.chainExecutionId,
                             payLoadChainName: chainExecution.title,
-                            payLoadChainEventIndex: index,
-                            payLoadChainEventCount: chain.chainHistory.length,
+                            payLoadChainActivityIndex: index,
+                            payLoadChainActivityCount:
+                                chain.chainHistory.length,
                           },
                         ),
                         child: Container(
@@ -186,8 +187,9 @@ class ChainExecutionScreen extends StatelessWidget {
                           await nav.pushNamed(PlayChain.routename, arguments: {
                             payLoadChainExecId: chainExecution.chainExecutionId,
                             payLoadChainName: chainExecution.title,
-                            payLoadChainEventIndex: chainHistory.length - 1, //0
-                            payLoadChainEventCount: chainHistory.length,
+                            payLoadChainActivityIndex:
+                                chainHistory.length - 1, //0
+                            payLoadChainActivityCount: chainHistory.length,
                           });
                         },
                         icon: chain.chainStatus == statusExecuting

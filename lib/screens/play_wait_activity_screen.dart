@@ -3,24 +3,24 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:chain_events/helpers/notification_helper.dart';
-import 'package:chain_events/helpers/transform_functions.dart';
-import 'package:chain_events/models/chain_event.dart';
-import 'package:chain_events/models/chain_list.dart';
-import 'package:chain_events/models/system_setting.dart';
+import 'package:chain_activities/helpers/notification_helper.dart';
+import 'package:chain_activities/helpers/transform_functions.dart';
+import 'package:chain_activities/models/chain_activity.dart';
+import 'package:chain_activities/models/chain_list.dart';
+import 'package:chain_activities/models/system_setting.dart';
 
-class PlayWaitEvent extends StatefulWidget {
-  static String routename = "run_event";
-  const PlayWaitEvent({super.key});
+class PlayWaitActivity extends StatefulWidget {
+  static String routename = "run_activity";
+  const PlayWaitActivity({super.key});
   @override
-  State<PlayWaitEvent> createState() => _PlayWaitEventState();
+  State<PlayWaitActivity> createState() => _PlayWaitActivityState();
 }
 
-class _PlayWaitEventState extends State<PlayWaitEvent> {
+class _PlayWaitActivityState extends State<PlayWaitActivity> {
   Timer? countdownTimer;
   List<SystemSetting> systemSettings = [];
   late Duration waitDuration, initialWaitDuration;
-  late ChainEvent chainEvent;
+  late ChainActivity chainActivity;
   bool initializing = true;
   bool running = true,
       showPlayPause = true,
@@ -79,7 +79,7 @@ class _PlayWaitEventState extends State<PlayWaitEvent> {
     setState(() => waitDuration = initialWaitDuration);
   }
 
-  void interruptAndCompleteEvent() async {
+  void interruptAndCompleteActivity() async {
     NavigatorState nav = Navigator.of(context);
     await Provider.of<ChainList>(context, listen: false)
         .playNotificationSound();
@@ -106,11 +106,11 @@ class _PlayWaitEventState extends State<PlayWaitEvent> {
       // chain = ModalRoute.of(context)?.settings.arguments as Chain;
       // activities = chain.activities.toList();
       // updateWaitDuration();
-      // nextEvent();
+      // nextActivity();
       Map<String, dynamic> input =
           ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
       initialWaitDuration = waitDuration = input["waitDuration"];
-      chainEvent = input["chainEvent"];
+      chainActivity = input["chainActivity"];
       playingRest = input["playRest"];
       running = input["running"];
       screenImage = input["screenImage"];
@@ -173,7 +173,7 @@ class _PlayWaitEventState extends State<PlayWaitEvent> {
                   ),
                 ),
                 Text(
-                  playingRest ? "Rest" : chainEvent.event.title,
+                  playingRest ? "Rest" : chainActivity.activity.title,
                   style: Theme.of(context).textTheme.headline4,
                   textAlign: TextAlign.center,
                 ),
@@ -183,7 +183,7 @@ class _PlayWaitEventState extends State<PlayWaitEvent> {
                   textAlign: TextAlign.center,
                 ),
                 InkWell(
-                  onTap: interruptAndCompleteEvent,
+                  onTap: interruptAndCompleteActivity,
                   child: CircleAvatar(
                     radius: 50,
                     backgroundColor: playingRest
@@ -240,7 +240,7 @@ class _PlayWaitEventState extends State<PlayWaitEvent> {
                         child: SizedBox(),
                       ),
                     IconButton(
-                      onPressed: interruptAndCompleteEvent,
+                      onPressed: interruptAndCompleteActivity,
                       icon: const Icon(Icons.arrow_forward),
                     ),
                   ],

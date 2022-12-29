@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
-//import 'package:chain_events/models/event.dart';
-import 'package:chain_events/models/chain.dart';
-import 'package:chain_events/models/chain_list.dart';
-import 'package:chain_events/widgets/chain_view.dart';
+//import 'package:chain_activities/models/activity.dart';
+import 'package:chain_activities/models/chain.dart';
+import 'package:chain_activities/models/chain_list.dart';
+import 'package:chain_activities/widgets/chain_view.dart';
 
 class ChainListItem extends StatelessWidget {
   //final BannerAd? adChain;
@@ -40,7 +40,7 @@ class ChainListItem extends StatelessWidget {
         await chainList.removeChain(chain);
       },
       // Expanded(
-      //   child: ChainEventListView(chain: chain),
+      //   child: ChainActivityListView(chain: chain),
       // ),
       child: ChainView(
         chain: chain,

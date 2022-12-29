@@ -1,5 +1,5 @@
-name: chain_events
-description: Flutter project to Chain the Events (Timer Only for now).
+name: chain_activities
+description: Flutter project to Chain the Activities (Timer Only for now).
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -98,8 +98,8 @@ flutter:
   assets:
     - assets/logo/logo.png
     - assets/help/howitworks.pdf
-    - assets/sound/chain_event_alarm.wav
-    - assets/sound/chain_event_beep.mp3
+    - assets/sound/chain_activity_alarm.wav
+    - assets/sound/chain_activity_beep.mp3
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

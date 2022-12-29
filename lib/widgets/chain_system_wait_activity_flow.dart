@@ -1,33 +1,33 @@
-import 'package:chain_events/helpers/constants.dart';
+import 'package:chain_activities/helpers/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:chain_events/helpers/transform_functions.dart';
-import 'package:chain_events/models/chain.dart';
-import 'package:chain_events/models/chain_event.dart';
-import 'package:chain_events/models/chain_list.dart';
-import 'package:chain_events/widgets/system_wait_event.dart';
-import 'package:chain_events/widgets/system_wait_event_with_duration.dart';
+import 'package:chain_activities/helpers/transform_functions.dart';
+import 'package:chain_activities/models/chain.dart';
+import 'package:chain_activities/models/chain_activity.dart';
+import 'package:chain_activities/models/chain_list.dart';
+import 'package:chain_activities/widgets/system_wait_activity.dart';
+import 'package:chain_activities/widgets/system_wait_activity_with_duration.dart';
 
-class ChainSystemWaitEventFlow extends StatelessWidget {
-  const ChainSystemWaitEventFlow({
+class ChainSystemWaitActivityFlow extends StatelessWidget {
+  const ChainSystemWaitActivityFlow({
     Key? key,
     required this.activities,
     required this.arrowWidget,
-    required this.chainEvent,
+    required this.chainActivity,
     required this.chainList,
     required this.tempChain,
-    required this.editEvent,
+    required this.editActivity,
     required this.undoEdit,
     required this.lineWidget,
     required this.index,
   }) : super(key: key);
 
-  final List<ChainEvent> activities;
+  final List<ChainActivity> activities;
   final Widget arrowWidget;
-  final ChainEvent chainEvent;
+  final ChainActivity chainActivity;
   final ChainList chainList;
   final Chain tempChain;
-  final Function? editEvent;
+  final Function? editActivity;
   final Function? undoEdit;
   final Widget lineWidget;
   final int index;
@@ -35,7 +35,7 @@ class ChainSystemWaitEventFlow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IgnorePointer(
-      ignoring: undoEdit == null || editEvent == null,
+      ignoring: undoEdit == null || editActivity == null,
       child: GestureDetector(
         onLongPressMoveUpdate:
             (details) {}, // so it cannot be dragged under reorderable list view.
@@ -46,13 +46,13 @@ class ChainSystemWaitEventFlow extends StatelessWidget {
             if (index != 0)
               InkWell(
                 onTap: () {
-                  if (!chainEvent.edit) {
-                    editEvent!(chainEvent);
+                  if (!chainActivity.edit) {
+                    editActivity!(chainActivity);
                   } else {
-                    undoEdit!(chainEvent);
+                    undoEdit!(chainActivity);
                   }
                 },
-                child: (activities[index].eventDuration.inSeconds != 0)
+                child: (activities[index].activityDuration.inSeconds != 0)
                     ? Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
@@ -64,7 +64,7 @@ class ChainSystemWaitEventFlow extends StatelessWidget {
                               : Theme.of(context).primaryColor,
                         ),
                         child: Text(
-                          "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? ' before scheduled duration' : TransformFunctions.durationToString(chainEvent.eventDuration)}.",
+                          "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? ' before scheduled duration' : TransformFunctions.durationToString(chainActivity.activityDuration)}.",
                         ),
                       )
                     : Icon(
@@ -78,15 +78,15 @@ class ChainSystemWaitEventFlow extends StatelessWidget {
             if (index == 0) arrowWidget,
             if (index == 0)
               tempChain.endedAt == null
-                  ? const SystemWaitEvent(taskText: 'End')
-                  : SystemWaitEventWithDuration(
+                  ? const SystemWaitActivity(taskText: 'End')
+                  : SystemWaitActivityWithDuration(
                       taskText:
                           'Ended on ${DateFormat.yMd().add_jms().format(tempChain.endedAt!)}',
                     ),
             if (index == 0 && tempChain.repeatType != repeatTypeDoesNotRepeat)
               arrowWidget,
             if (index == 0 && tempChain.repeatType != repeatTypeDoesNotRepeat)
-              SystemWaitEventWithDuration(
+              SystemWaitActivityWithDuration(
                   taskText:
                       "And Repeats every ${tempChain.repeatTypeGap} ${tempChain.repeatType}.\n${(tempChain.repeatCount - 1) != -1 ? 'Chain will repeat ${tempChain.repeatCount - 1} more time/times.' : 'Repeat ends Never.'}")
           ],

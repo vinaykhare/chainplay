@@ -1,19 +1,19 @@
-import 'package:chain_events/helpers/constants.dart';
+import 'package:chain_activities/helpers/constants.dart';
 
-class Event {
-  String eventId;
+class Activity {
+  String activityId;
   String title;
   int type;
   DateTime createdAt, lastUpdatedAt;
   bool edit = false;
   Map<String, dynamic>? specification = {};
 
-  Event({
-    required this.eventId,
+  Activity({
+    required this.activityId,
     required this.title,
     required this.createdAt,
     required this.lastUpdatedAt,
-    this.type = waitEventInDB,
+    this.type = waitActivityInDB,
     this.specification,
   });
 }
