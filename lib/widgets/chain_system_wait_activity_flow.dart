@@ -88,7 +88,7 @@ class ChainSystemWaitEventFlow extends StatelessWidget {
             if (index == 0 && tempChain.repeatType != repeatTypeDoesNotRepeat)
               SystemWaitEventWithDuration(
                   taskText:
-                      "And Repeats every ${tempChain.repeatTypeGap} ${tempChain.repeatType}.\n${tempChain.repeatCount != -1 ? 'Chain will repeat ${tempChain.repeatCount} more time/times.' : 'Repeat ends Never.'}")
+                      "And Repeats every ${tempChain.repeatTypeGap} ${tempChain.repeatType}.\n${(tempChain.repeatCount - 1) != -1 ? 'Chain will repeat ${tempChain.repeatCount - 1} more time/times.' : 'Repeat ends Never.'}")
           ],
         ),
       ),

@@ -537,9 +537,9 @@ class _AddChainScreenState extends State<AddChainScreen> {
                   keyboardType: TextInputType.number,
                   textAlign: TextAlign.center,
                   controller: activityImageController,
-                  onSaved: (_) => chainEventInEditMode!
-                          .event.specification![activitySpecImagePath] =
-                      activityImageController.text,
+                  // onSaved: (_) => chainEventInEditMode!
+                  //         .event.specification![activitySpecImagePath] =
+                  //     activityImageController.text,
                   decoration: InputDecoration(
                     border: const OutlineInputBorder(),
                     label: const Text("Image Path"),

@@ -8,7 +8,6 @@ import 'package:chain_events/screens/play_chain_screen.dart';
 
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse notificationResponse) {
-  //GlobalKey<NavigatorState>? navigatorKey = GlobalKey<NavigatorState>();
   if (notificationResponse.payload != null) {
     Map<String, dynamic> responsePayload =
         jsonDecode(notificationResponse.payload!);

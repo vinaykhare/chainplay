@@ -8,7 +8,6 @@ import 'package:chain_events/helpers/constants.dart';
 //import 'package:google_mobile_ads/google_mobile_ads.dart';
 //import 'package:chain_events/helpers/ad_state.dart';
 import 'package:chain_events/helpers/db_helper.dart';
-import 'package:chain_events/helpers/key_helper.dart';
 import 'package:chain_events/helpers/notification_helper.dart';
 
 import 'package:chain_events/models/event.dart';
@@ -69,7 +68,7 @@ class ChainList with ChangeNotifier {
     await fetchChains();
     await fetchActivities();
     await fetchSettings();
-    KeyHelper.navigatorKey = GlobalKey<NavigatorState>();
+
     await notificationHelper.initialize(systemSettings);
     for (int chainId = 0; chainId < chains.length; chainId++) {
       if (chains[chainId].notificationId == noValueInDB) {
@@ -130,6 +129,7 @@ class ChainList with ChangeNotifier {
           "lastUpdatedAt":
               chainEvent.event.lastUpdatedAt.millisecondsSinceEpoch,
           "edit": chainEvent.event.edit ? 1 : 0,
+          "specifications": jsonEncode(chainEvent.event.specification),
         },
       );
     }
@@ -726,6 +726,7 @@ class ChainList with ChangeNotifier {
         "type": event.type,
         "lastUpdatedAt": event.lastUpdatedAt.millisecondsSinceEpoch,
         "edit": event.edit ? 1 : 0,
+        "specifications": jsonEncode(event.specification),
       },
       "eventId = ?",
       [event.eventId],
@@ -987,6 +988,9 @@ class ChainList with ChangeNotifier {
           lastUpdatedAt:
               DateTime.fromMillisecondsSinceEpoch(chainEvent["lastUpdatedAt"]),
           type: chainEvent['type'],
+          specification: chainEvent["specifications"] != null
+              ? jsonDecode(chainEvent["specifications"]) as Map<String, dynamic>
+              : {},
         ),
         eventDone: chainEvent['eventDone'] == 1,
         eventDuration: Duration(seconds: chainEvent['eventDuration']),
@@ -1032,6 +1036,9 @@ class ChainList with ChangeNotifier {
       lastUpdatedAt:
           DateTime.fromMillisecondsSinceEpoch(eventFromDB[0]["lastUpdatedAt"]),
       type: eventFromDB[0]['type'],
+      specification: eventFromDB[0]["specifications"] != null
+          ? jsonDecode(eventFromDB[0]["specifications"]) as Map<String, dynamic>
+          : {},
     );
   }
 
@@ -1161,6 +1168,9 @@ class ChainList with ChangeNotifier {
         lastUpdatedAt:
             DateTime.fromMillisecondsSinceEpoch(event["lastUpdatedAt"]),
         type: event["type"],
+        specification: event["specifications"] != null
+            ? jsonDecode(event["specifications"]) as Map<String, dynamic>
+            : {},
       );
       // tempEvent.eventDuration =
       //     Duration(seconds: event["eventDuration"] ?? 0);

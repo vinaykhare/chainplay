@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 //import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
-import 'package:chain_events/helpers/key_helper.dart';
 import 'package:chain_events/models/chain.dart';
 import 'package:chain_events/models/chain_list.dart';
 import 'package:chain_events/screens/add_chain_screen.dart';
@@ -36,7 +35,6 @@ class ChainListScreen extends StatelessWidget {
 
     return Scaffold(
       drawer: const AppDrawer(),
-      key: KeyHelper.navigatorKey,
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

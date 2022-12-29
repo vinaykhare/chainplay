@@ -1,3 +1,4 @@
+import 'package:chain_events/helpers/key_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -26,6 +27,7 @@ class ChainEvents extends StatelessWidget {
         ? false
         : chainList.systemSettings[themeIndex].value == "TRUE";
     return MaterialApp(
+      key: KeyHelper.navigatorKey,
       title: 'Chain Events',
       darkTheme: darkTheme ? ThemeData.dark() : null,
       debugShowCheckedModeBanner: false,
