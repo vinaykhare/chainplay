@@ -50,12 +50,9 @@ class _PlayChainState extends State<PlayChain> {
 
       bool conditionToRunActivity = activities[invokeCounter].endedAt == null &&
           activities[invokeCounter].activity.type != systemStartActivityInDB &&
-          (!pivotStartDateTime.isBefore(
-                DateTime.now(),
-              ) ||
-              (activities[invokeCounter].activityDuration.inSeconds <= 0 &&
-                  activities[invokeCounter].activity.type !=
-                      systemWaitActivityInDB));
+          (!pivotStartDateTime.isBefore(DateTime.now()) ||
+              (activities[invokeCounter].activityDuration.inSeconds == 0 &&
+                  activities[invokeCounter].activity.type == waitActivityInDB));
 
       if (conditionToRunActivity ||
           activities[invokeCounter].activityDurationLeft != null) {
@@ -103,8 +100,7 @@ class _PlayChainState extends State<PlayChain> {
       if (activities[invokeCounter].activityDuration.inSeconds <= 0 &&
           activities[invokeCounter].activity.type != systemStartActivityInDB &&
           activities[invokeCounter].activity.type != systemWaitActivityInDB) {
-        actStartDate = activities[invokeCounter].endedAt =
-            activities[invokeCounter].endedAt ?? DateTime.now();
+        actStartDate = activities[invokeCounter].endedAt = DateTime.now();
         pivotStartDateTime = activities[invokeCounter].endedAt!;
       }
       await chainList.updateChainActivityExecutionByActivityId(

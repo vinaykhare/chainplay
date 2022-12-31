@@ -449,7 +449,7 @@ class ChainList with ChangeNotifier {
     if (chains[chainIndex].repeatCount != -1) {
       chains[chainIndex].repeatCount--;
     }
-    if (chains[chainIndex].repeatCount == 0) {
+    if (chains[chainIndex].repeatCount <= 0) {
       chains[chainIndex].repeatType = repeatTypeDoesNotRepeat;
       chains[chainIndex].at = null;
     }
