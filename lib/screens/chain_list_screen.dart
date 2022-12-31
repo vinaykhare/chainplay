@@ -35,10 +35,10 @@ class ChainListScreen extends StatelessWidget {
     List<Chain> chains = chainList.chains;
 
     return Scaffold(
+      key: KeyHelper.navigatorKey,
       drawer: const AppDrawer(),
       body: SafeArea(
         child: Column(
-          key: KeyHelper.navigatorKey,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           //mainAxisSize: MainAxisSize.min,
           children: [

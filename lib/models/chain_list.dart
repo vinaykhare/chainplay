@@ -427,6 +427,12 @@ class ChainList with ChangeNotifier {
       chainExecution.activities.add(chainActivityCopy);
     }
 
+    //Start: Workaround to avoid addition of unwanted chains under execution.
+    if (chainExecution.activities.isEmpty) {
+      return chainExecution;
+    }
+    //End: Workaround to avoid addition of unwanted chains under execution.
+
     await addChainToHistory(chainExecution);
     int chainIndex = chains.indexWhere((sch) => sch.title == chain.title);
 

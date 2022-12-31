@@ -116,10 +116,10 @@ const initScript = [
 class DBHelper {
   static Future<Database> database() async {
     final dbPath = await sql.getDatabasesPath();
-    if (await sql.databaseExists(path.join(dbPath, 'testchainit.db'))) {
-      sql.deleteDatabase(path.join(dbPath, 'testchainit.db'));
-    }
-    return sql.openDatabase(path.join(dbPath, 'chainit.db'),
+    // if (await sql.databaseExists(path.join(dbPath, 'chainactivities.db'))) {
+    //   sql.deleteDatabase(path.join(dbPath, 'chainactivities.db'));
+    // }
+    return sql.openDatabase(path.join(dbPath, 'chainactivities.db'),
         onCreate: (db, version) async {
       for (var script in initScript) {
         await db.execute(script);

@@ -31,33 +31,34 @@ class _PlayChainState extends State<PlayChain> {
     await chainList.cancelScheduleNotificationExecution(
       chain,
     );
-    DateTime chainExecutedTill = chain.at!;
+    DateTime pivotStartDateTime = chain.at!;
     for (DateTime actStartDate = chain.at!;
         invokeCounter < chain.activities.length;
         invokeCounter++) {
       Duration activityExecutedFor = const Duration(seconds: 0);
       Duration calculatedWaitDuration = const Duration(seconds: 0);
+      Duration timeSpentSinceStartOfActivity = const Duration(seconds: 0);
       activities[invokeCounter].at =
           activities[invokeCounter].at ?? actStartDate;
 
       activityExecutedFor = activities[invokeCounter].activityDurationLeft ??
           activities[invokeCounter].activityDuration;
-      chainExecutedTill = activities[invokeCounter].endedAt ??
+      pivotStartDateTime = activities[invokeCounter].endedAt ??
           activities[invokeCounter].at!.add(activityExecutedFor);
 
-      Duration timeSpentSinceStartOfActivity =
-          DateTime.now().difference(chainExecutedTill);
+      timeSpentSinceStartOfActivity = DateTime.now().difference(actStartDate);
 
       bool conditionToRunActivity = activities[invokeCounter].endedAt == null &&
           activities[invokeCounter].activity.type != systemStartActivityInDB &&
-          (!chainExecutedTill.isBefore(
+          (!pivotStartDateTime.isBefore(
                 DateTime.now(),
               ) ||
-              (activities[invokeCounter].activityDuration.inSeconds == 0 &&
+              (activities[invokeCounter].activityDuration.inSeconds <= 0 &&
                   activities[invokeCounter].activity.type !=
                       systemWaitActivityInDB));
 
-      if (conditionToRunActivity) {
+      if (conditionToRunActivity ||
+          activities[invokeCounter].activityDurationLeft != null) {
         //Don't run system wait activity when its duration is 0 seconds.
 
         if (activities[invokeCounter].activityDuration.inSeconds > 0) {
@@ -97,9 +98,15 @@ class _PlayChainState extends State<PlayChain> {
 
       activities[invokeCounter].activityDone = true;
       actStartDate = activities[invokeCounter].endedAt =
-          activities[invokeCounter].endedAt ?? DateTime.now();
-      //actStartDate.add(activityExecutedFor);
-
+          activities[invokeCounter].at!.add(Duration(
+              seconds: activities[invokeCounter].activityDuration.inSeconds));
+      if (activities[invokeCounter].activityDuration.inSeconds <= 0 &&
+          activities[invokeCounter].activity.type != systemStartActivityInDB &&
+          activities[invokeCounter].activity.type != systemWaitActivityInDB) {
+        actStartDate = activities[invokeCounter].endedAt =
+            activities[invokeCounter].endedAt ?? DateTime.now();
+        pivotStartDateTime = activities[invokeCounter].endedAt!;
+      }
       await chainList.updateChainActivityExecutionByActivityId(
         chain,
         activities[invokeCounter],
