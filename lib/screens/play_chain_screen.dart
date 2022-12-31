@@ -31,7 +31,7 @@ class _PlayChainState extends State<PlayChain> {
     await chainList.cancelScheduleNotificationExecution(
       chain,
     );
-    DateTime pivotStartDateTime = chain.at!;
+    //DateTime pivotStartDateTime = chain.pivotDate!;
     for (DateTime actStartDate = chain.at!;
         invokeCounter < chain.activities.length;
         invokeCounter++) {
@@ -43,19 +43,25 @@ class _PlayChainState extends State<PlayChain> {
 
       activityExecutedFor = activities[invokeCounter].activityDurationLeft ??
           activities[invokeCounter].activityDuration;
-      pivotStartDateTime = activities[invokeCounter].endedAt ??
+      chain.pivotDate = activities[invokeCounter].endedAt ??
           activities[invokeCounter].at!.add(activityExecutedFor);
 
       timeSpentSinceStartOfActivity = DateTime.now().difference(actStartDate);
 
+      bool validSystemWaitActivity =
+          activities[invokeCounter].activity.type == systemWaitActivityInDB &&
+              activities[invokeCounter].activityDuration.inSeconds > 0 &&
+              !chain.pivotDate!.isBefore(DateTime.now());
+      bool validUserWaitActivity =
+          activities[invokeCounter].activity.type == waitActivityInDB &&
+              !chain.pivotDate!.isBefore(DateTime.now());
       bool conditionToRunActivity = activities[invokeCounter].endedAt == null &&
           activities[invokeCounter].activity.type != systemStartActivityInDB &&
-          (!pivotStartDateTime.isBefore(DateTime.now()) ||
-              (activities[invokeCounter].activityDuration.inSeconds == 0 &&
-                  activities[invokeCounter].activity.type == waitActivityInDB));
+          (validSystemWaitActivity ||
+              validUserWaitActivity ||
+              activities[invokeCounter].activityDurationLeft != null);
 
-      if (conditionToRunActivity ||
-          activities[invokeCounter].activityDurationLeft != null) {
+      if (conditionToRunActivity) {
         //Don't run system wait activity when its duration is 0 seconds.
 
         if (activities[invokeCounter].activityDuration.inSeconds > 0) {
@@ -85,6 +91,9 @@ class _PlayChainState extends State<PlayChain> {
                 popResponse["running"] == false
                     ? popResponse["waitDuration"]
                     : null;
+            if (popResponse["resumedAt"] != null) {
+              chain.pivotDate = popResponse["resumedAt"];
+            }
             break;
           } else {
             activities[invokeCounter].activityDurationLeft = null;
@@ -101,8 +110,9 @@ class _PlayChainState extends State<PlayChain> {
           activities[invokeCounter].activity.type != systemStartActivityInDB &&
           activities[invokeCounter].activity.type != systemWaitActivityInDB) {
         actStartDate = activities[invokeCounter].endedAt = DateTime.now();
-        pivotStartDateTime = activities[invokeCounter].endedAt!;
+        chain.pivotDate = activities[invokeCounter].endedAt!;
       }
+      await chainList.updateChainExecution(chain);
       await chainList.updateChainActivityExecutionByActivityId(
         chain,
         activities[invokeCounter],
@@ -112,6 +122,10 @@ class _PlayChainState extends State<PlayChain> {
     if (popResponse != null && popResponse["interruptAndCompleted"] == false) {
       // await chainList.scheduleNotification(
       //     chain, DateTime.now(), invokeCounter);
+      if (popResponse["running"] == false &&
+          popResponse["waitDuration"] != null) {
+        chain.pivotDate = chain.pivotDate!.add(popResponse["waitDuration"]);
+      }
     } else {
       Chain parentChain =
           chainList.chains.firstWhere((sch) => sch.title == chain.title);

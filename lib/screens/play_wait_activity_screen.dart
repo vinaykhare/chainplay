@@ -20,6 +20,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
   Timer? countdownTimer;
   List<SystemSetting> systemSettings = [];
   late Duration waitDuration, initialWaitDuration;
+  DateTime? resumedAt;
   late ChainActivity chainActivity;
   bool initializing = true;
   bool running = true,
@@ -90,6 +91,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
             "running": running,
             "waitDuration": waitDuration,
             "interruptAndCompleted": true,
+            "resumedAt": resumedAt,
           });
   }
 
@@ -212,6 +214,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                           "running": running,
                           "waitDuration": waitDuration,
                           "interruptAndCompleted": false,
+                          "resumedAt": resumedAt,
                         });
                       },
                       icon: const Icon(Icons.arrow_back),
@@ -224,6 +227,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                               stopTimer();
                             } else {
                               startTimer();
+                              resumedAt = DateTime.now();
                             }
 
                             setState(() {

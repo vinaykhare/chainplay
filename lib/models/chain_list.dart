@@ -154,6 +154,9 @@ class ChainList with ChangeNotifier {
           "chainStatus": chain.chainStatus,
           "startedAt":
               chain.at == null ? noValueInDB : chain.at!.millisecondsSinceEpoch,
+          "pivotDate": chain.pivotDate == null
+              ? noValueInDB
+              : chain.pivotDate!.millisecondsSinceEpoch,
           "endedAt": chain.endedAt == null
               ? noValueInDB
               : chain.endedAt!.millisecondsSinceEpoch,
@@ -278,6 +281,8 @@ class ChainList with ChangeNotifier {
         "chainExecutionId": chainExecution.chainExecutionId,
         "title": chainExecution.title,
         "startedAt": chainExecution.at?.millisecondsSinceEpoch ?? noValueInDB,
+        "pivotDate":
+            chainExecution.pivotDate?.millisecondsSinceEpoch ?? noValueInDB,
         "endedAt":
             chainExecution.endedAt?.millisecondsSinceEpoch ?? noValueInDB,
         "notificationId": chainExecution.notificationId,
@@ -393,6 +398,7 @@ class ChainList with ChangeNotifier {
     chainExecution.chainExecutionId = const Uuid().v1();
     chainExecution.title = chain.title;
     chainExecution.at = chain.at ?? DateTime.now();
+    chainExecution.pivotDate = chain.at ?? DateTime.now();
     chainExecution.endedAt = null;
     chainExecution.chainStatus = statusDone;
     chainExecution.notificationId = chain.notificationId;
@@ -496,6 +502,9 @@ class ChainList with ChangeNotifier {
         "pinned": chain.pinned,
         "startedAt":
             chain.at != null ? chain.at!.millisecondsSinceEpoch : noValueInDB,
+        "pivotDate": chain.pivotDate != null
+            ? chain.pivotDate!.millisecondsSinceEpoch
+            : noValueInDB,
         "endedAt": chain.endedAt != null
             ? chain.endedAt!.millisecondsSinceEpoch
             : noValueInDB,
@@ -520,6 +529,9 @@ class ChainList with ChangeNotifier {
         "title": chainExecution.title,
         "startedAt": chainExecution.at != null
             ? chainExecution.at!.millisecondsSinceEpoch
+            : noValueInDB,
+        "pivotDate": chainExecution.pivotDate != null
+            ? chainExecution.pivotDate!.millisecondsSinceEpoch
             : noValueInDB,
         "endedAt": chainExecution.endedAt != null
             ? chainExecution.endedAt!.millisecondsSinceEpoch
@@ -653,7 +665,7 @@ class ChainList with ChangeNotifier {
       [chain.title],
     );
 
-    chain.at = chain.endedAt = null;
+    chain.at = chain.endedAt = chain.pivotDate = null;
     chain.notificationId = noValueInDB;
     chain.chainStatus = statusNotStarted;
     chain.repeatType = repeatTypeDoesNotRepeat;
@@ -1133,6 +1145,7 @@ class ChainList with ChangeNotifier {
       chainExecution.chainExecutionId = chainHistory['chainExecutionId'];
       chainExecution.title = chainHistory['title'];
       chainExecution.at = getDateValueFromDB(chainHistory["startedAt"]);
+      chainExecution.pivotDate = getDateValueFromDB(chainHistory["pivotDate"]);
       chainExecution.endedAt = getDateValueFromDB(chainHistory["endedAt"]);
       chainExecution.chainStatus = chainHistory['chainStatus'];
       chainExecution.notificationId = int.parse(chainHistory["notificationId"]);
@@ -1157,6 +1170,7 @@ class ChainList with ChangeNotifier {
       Chain tempChain = Chain();
       tempChain.title = chain["title"];
       tempChain.at = getDateValueFromDB(chain["startedAt"]);
+      tempChain.pivotDate = getDateValueFromDB(chain["pivotDate"]);
       tempChain.endedAt = getDateValueFromDB(chain["endedAt"]);
       tempChain.createdAt = getDateValueFromDB(chain["createdAt"])!;
       tempChain.lastUpdatedAt = getDateValueFromDB(chain["lastUpdatedAt"])!;

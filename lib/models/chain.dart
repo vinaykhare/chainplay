@@ -4,7 +4,7 @@ import 'package:chain_activities/models/chain_activity.dart';
 
 class Chain {
   String title = "";
-  DateTime? at, endedAt;
+  DateTime? at, endedAt, pivotDate;
   DateTime lastUpdatedAt = DateTime.now();
   DateTime createdAt = DateTime.now();
   List<ChainActivity> activities = [];
