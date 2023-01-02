@@ -54,7 +54,8 @@ class _PlayChainState extends State<PlayChain> {
               !chain.pivotDate!.isBefore(DateTime.now());
       bool validUserWaitActivity =
           activities[invokeCounter].activity.type == waitActivityInDB &&
-              !chain.pivotDate!.isBefore(DateTime.now());
+              (!chain.pivotDate!.isBefore(DateTime.now()) ||
+                  activities[invokeCounter].activityDuration.inSeconds <= 0);
       bool conditionToRunActivity = activities[invokeCounter].endedAt == null &&
           activities[invokeCounter].activity.type != systemStartActivityInDB &&
           (validSystemWaitActivity ||

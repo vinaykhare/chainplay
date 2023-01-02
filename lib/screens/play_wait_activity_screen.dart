@@ -162,7 +162,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                   borderRadius: BorderRadius.circular(50),
                   child: Container(
                     margin: const EdgeInsets.all(5),
-                    child: screenImage == null
+                    child: screenImage == null || screenImage == ""
                         ? Image.asset(
                             'assets/logo/logo.png',
                             fit: BoxFit.cover,

@@ -687,7 +687,8 @@ class ChainList with ChangeNotifier {
 
     await DBHelper.removeData("chain_activity_execution",
         "chainExecutionId = ?", [chainExecution.chainExecutionId]);
-
+    await DBHelper.removeData("chain_execution",
+        "chainExecutionId = ?", [chainExecution.chainExecutionId]);
     notifyListeners();
   }
 
