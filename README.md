@@ -6,3 +6,6 @@ Project Chain Activities Developed using Flutter Framework.
 
 This project is targetted to create Chain of Activities on the fly, manage them and execute them.
 
+## Developed by
+
+Your favorite developer, Khare.
