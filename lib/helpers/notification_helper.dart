@@ -1,9 +1,11 @@
-import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
+//import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/helpers/local_notifications/local_notification_service.dart';
 
 import 'package:chain_activities/models/system_setting.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:just_audio/just_audio.dart';
 
 class NotificationHelper {
   LocalNotificationService localNotificationService =
@@ -62,9 +64,21 @@ class NotificationHelper {
   Future<void> playNotificationSound() async {
     if (isAppSoundEnabled()) {
       //await FlutterRingtonePlayer.playNotification();
-      await FlutterRingtonePlayer.play(
-        fromAsset: "assets/sound/chain_activity_beep.mp3",
-      );
+      // await FlutterRingtonePlayer.play(
+      //   fromAsset: "assets/sound/chain_activity_beep.mp3",
+      // );
+      final player = AudioPlayer();
+      player.setAsset("assets/sound/chain_activity_beep.mp3");
+
+      player.play();
+    }
+  }
+
+  Future<void> speakText(String text) async {
+    if (isAppSoundEnabled()) {
+      FlutterTts flutterTts = FlutterTts();
+      await flutterTts.awaitSpeakCompletion(true);
+      flutterTts.speak(text);
     }
   }
 

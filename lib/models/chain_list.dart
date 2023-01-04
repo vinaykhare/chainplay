@@ -452,10 +452,10 @@ class ChainList with ChangeNotifier {
         chains[chainIndex].repeatCount,
       );
     }
-    if (chains[chainIndex].repeatCount != -1) {
+    if (chains[chainIndex].repeatCount > 0) {
       chains[chainIndex].repeatCount--;
     }
-    if (chains[chainIndex].repeatCount <= 0) {
+    if (chains[chainIndex].repeatCount == 0) {
       chains[chainIndex].repeatType = repeatTypeDoesNotRepeat;
       chains[chainIndex].at = null;
     }
@@ -687,8 +687,8 @@ class ChainList with ChangeNotifier {
 
     await DBHelper.removeData("chain_activity_execution",
         "chainExecutionId = ?", [chainExecution.chainExecutionId]);
-    await DBHelper.removeData("chain_execution",
-        "chainExecutionId = ?", [chainExecution.chainExecutionId]);
+    await DBHelper.removeData("chain_execution", "chainExecutionId = ?",
+        [chainExecution.chainExecutionId]);
     notifyListeners();
   }
 
@@ -960,6 +960,10 @@ class ChainList with ChangeNotifier {
 
   Future<void> playNotificationSound() async {
     await notificationHelper.playNotificationSound();
+  }
+
+  Future<void> speakText(String text) async {
+    await notificationHelper.speakText(text);
   }
 
   // disposeAds() {

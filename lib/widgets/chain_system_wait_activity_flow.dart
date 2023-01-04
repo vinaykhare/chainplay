@@ -88,7 +88,7 @@ class ChainSystemWaitActivityFlow extends StatelessWidget {
             if (index == 0 && tempChain.repeatType != repeatTypeDoesNotRepeat)
               SystemWaitActivityWithDuration(
                   taskText:
-                      "And Repeats every ${tempChain.repeatTypeGap} ${tempChain.repeatType}.\n${(tempChain.repeatCount - 1) != -1 ? 'Chain will repeat ${tempChain.repeatCount - 1} more time/times.' : 'Repeat ends Never.'}")
+                      "And Repeats every ${tempChain.repeatTypeGap} ${tempChain.repeatType}.\n${(tempChain.repeatCount - 1) > -1 ? 'Chain will repeat ${tempChain.repeatCount - 1} more time/times.' : 'Repeat ends Never.'}")
           ],
         ),
       ),

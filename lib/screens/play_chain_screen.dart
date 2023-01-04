@@ -69,6 +69,8 @@ class _PlayChainState extends State<PlayChain> {
           calculatedWaitDuration =
               activityExecutedFor - timeSpentSinceStartOfActivity;
         }
+        await chainList.speakText(
+            "Activity ${activities[invokeCounter].activity.title} has started.");
         popResponse = await nav.pushNamed(
           PlayWaitActivity.routename,
           arguments: {
@@ -85,6 +87,8 @@ class _PlayChainState extends State<PlayChain> {
                 .specification?[activitySpecImagePath]
           },
         );
+        // await chainList.speakText(
+        //     "Activity ${activities[invokeCounter].activity.title} has ended.");
 
         if (popResponse != null) {
           if (popResponse["interruptAndCompleted"] == false) {
