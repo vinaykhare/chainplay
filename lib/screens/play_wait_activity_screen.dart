@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:chain_activities/helpers/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/helpers/notification_helper.dart';
@@ -40,14 +41,14 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
     final seconds = waitDuration.inSeconds - 1;
     NavigatorState nav = Navigator.of(context);
 
-    if (seconds == 0) {
+    if (seconds == 1) {
       // FlutterRingtonePlayer.play(
-      //     fromAsset: "assets/ringtone.wav", ios: IosSounds.glass);
+      //     fromAsset: assetMap['beepAudio']!, ios: IosSounds.glass);
       await Provider.of<ChainList>(context, listen: false)
           .playNotificationSound();
     }
 
-    if (seconds < 0) {
+    if (seconds < 1) {
       stopTimer();
       nav.pop();
     } else {
@@ -131,7 +132,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
     final int hours = waitDuration.inHours.remainder(60);
     final int minutes = waitDuration.inMinutes.remainder(60);
     final int seconds = waitDuration.inSeconds.remainder(60);
-    final String displaySeconds = waitDuration.inSeconds == 0
+    final String displaySeconds = waitDuration.inSeconds == 1
         ? "Done"
         : strDigits(waitDuration.inSeconds.remainder(60));
     // timeLeft = "$hours:$minutes:$displaySeconds";
@@ -164,14 +165,20 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                     margin: const EdgeInsets.all(5),
                     child: screenImage == null || screenImage == ""
                         ? Image.asset(
-                            'assets/logo/logo.png',
+                            assetMap['logoImage']!,
                             fit: BoxFit.cover,
                           )
-                        : Image.file(
-                            File(screenImage!),
-                            height: 250,
-                            fit: BoxFit.cover,
-                          ),
+                        : screenImage!.startsWith("http")
+                            ? Image.network(
+                                screenImage!,
+                                height: 250,
+                                fit: BoxFit.cover,
+                              )
+                            : Image.file(
+                                File(screenImage!),
+                                height: 250,
+                                fit: BoxFit.cover,
+                              ),
                   ),
                 ),
                 Text(

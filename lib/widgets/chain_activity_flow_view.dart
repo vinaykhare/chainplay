@@ -82,16 +82,29 @@ class ChainActivityFlowView extends StatelessWidget {
                                           null &&
                                       chainActivity.activity.specification![
                                               activitySpecImagePath] !=
-                                          null
-                                  ? Image.file(
-                                      File(
-                                        chainActivity.activity.specification![
-                                            activitySpecImagePath],
-                                      ),
-                                      fit: BoxFit.cover,
-                                    )
+                                          null &&
+                                      chainActivity.activity.specification![
+                                              activitySpecImagePath] !=
+                                          ""
+                                  ? chainActivity.activity
+                                          .specification![activitySpecImagePath]
+                                          .toString()
+                                          .startsWith("http")
+                                      ? Image.network(
+                                          chainActivity.activity.specification![
+                                              activitySpecImagePath],
+                                          fit: BoxFit.cover,
+                                        )
+                                      : Image.file(
+                                          File(
+                                            chainActivity
+                                                    .activity.specification![
+                                                activitySpecImagePath],
+                                          ),
+                                          fit: BoxFit.cover,
+                                        )
                                   : Image.asset(
-                                      'assets/logo/logo.png',
+                                      assetMap['logoImage']!,
                                       fit: BoxFit.cover,
                                     ),
                             ),
@@ -136,21 +149,37 @@ class ChainActivityFlowView extends StatelessWidget {
                                 child: Container(
                                   height: 100,
                                   margin: const EdgeInsets.all(5),
-                                  child: chainActivity.activity.specification !=
+                                  child: chainActivity
+                                                  .activity.specification !=
                                               null &&
                                           chainActivity.activity.specification![
                                                   activitySpecImagePath] !=
-                                              null
-                                      ? Image.file(
-                                          File(
-                                            chainActivity
-                                                    .activity.specification![
-                                                activitySpecImagePath],
-                                          ),
-                                          fit: BoxFit.cover,
-                                        )
+                                              null &&
+                                          chainActivity.activity.specification![
+                                                  activitySpecImagePath] !=
+                                              ""
+                                      ? chainActivity
+                                              .activity
+                                              .specification![
+                                                  activitySpecImagePath]
+                                              .toString()
+                                              .startsWith("http")
+                                          ? Image.network(
+                                              chainActivity
+                                                      .activity.specification![
+                                                  activitySpecImagePath],
+                                              fit: BoxFit.cover,
+                                            )
+                                          : Image.file(
+                                              File(
+                                                chainActivity.activity
+                                                        .specification![
+                                                    activitySpecImagePath],
+                                              ),
+                                              fit: BoxFit.cover,
+                                            )
                                       : Image.asset(
-                                          'assets/logo/logo.png',
+                                          assetMap['logoImage']!,
                                           fit: BoxFit.cover,
                                         ),
                                 ),

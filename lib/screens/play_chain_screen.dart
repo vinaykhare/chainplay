@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:chain_activities/helpers/transform_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/helpers/constants.dart';
@@ -24,13 +25,21 @@ class _PlayChainState extends State<PlayChain> {
   int invokeCounter = 0;
   bool initializing = true;
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      chainList.cancelScheduleNotificationExecution(
+        chain,
+      );
+    });
+  }
+
   void updateWaitDuration() async {
     dynamic popResponse;
     NavigatorState nav = Navigator.of(context);
-    await Future.delayed(const Duration(seconds: 1));
-    await chainList.cancelScheduleNotificationExecution(
-      chain,
-    );
+    //await Future.delayed(const Duration(seconds: 1));
+
     //DateTime pivotStartDateTime = chain.pivotDate!;
     for (DateTime actStartDate = chain.at!;
         invokeCounter < chain.activities.length;
@@ -69,15 +78,20 @@ class _PlayChainState extends State<PlayChain> {
           calculatedWaitDuration =
               activityExecutedFor - timeSpentSinceStartOfActivity;
         }
-        await chainList.speakText(
-            "Activity ${activities[invokeCounter].activity.title} has started.");
+        Duration durationForWaitActivity =
+            activities[invokeCounter].activityDurationLeft ??
+                (calculatedWaitDuration.inSeconds > 0
+                    ? calculatedWaitDuration
+                    : activities[invokeCounter].activityDuration);
+        String textToSpeak = activities[invokeCounter].activity.type ==
+                systemWaitActivityInDB
+            ? "Take Rest. Next Activity will start ${TransformFunctions.durationToString(durationForWaitActivity)} from now."
+            : "Activity ${activities[invokeCounter].activity.title} has started. It will complete ${TransformFunctions.durationToString(durationForWaitActivity)}.";
+        await chainList.speakText(textToSpeak);
         popResponse = await nav.pushNamed(
           PlayWaitActivity.routename,
           arguments: {
-            "waitDuration": activities[invokeCounter].activityDurationLeft ??
-                (calculatedWaitDuration.inSeconds > 0
-                    ? calculatedWaitDuration
-                    : activities[invokeCounter].activityDuration),
+            "waitDuration": durationForWaitActivity,
             "chainActivity": activities[invokeCounter],
             "playRest": activities[invokeCounter].activity.type ==
                 systemWaitActivityInDB,
@@ -87,8 +101,6 @@ class _PlayChainState extends State<PlayChain> {
                 .specification?[activitySpecImagePath]
           },
         );
-        // await chainList.speakText(
-        //     "Activity ${activities[invokeCounter].activity.title} has ended.");
 
         if (popResponse != null) {
           if (popResponse["interruptAndCompleted"] == false) {

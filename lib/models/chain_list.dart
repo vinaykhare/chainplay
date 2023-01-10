@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:chain_activities/helpers/system_configuration.dart';
 import 'package:chain_activities/models/chain_activity.dart';
 import 'package:flutter/material.dart';
 import 'package:chain_activities/helpers/constants.dart';
@@ -94,8 +95,18 @@ class ChainList with ChangeNotifier {
       }
     }
 
-    notificationCameAs = await notificationHelper.localNotificationService
-        .checkForNotification();
+    Map<String, dynamic>? checkForNotificationResponse =
+        await notificationHelper.localNotificationService
+            .checkForNotification();
+
+    if (checkForNotificationResponse != null &&
+        chains.indexWhere((sch) =>
+                sch.title == checkForNotificationResponse[payLoadChainName]) !=
+            -1) {
+      notificationCameAs = checkForNotificationResponse;
+    } else {
+      notificationCameAs = null;
+    }
 
     loaded = true;
     notifyListeners();
@@ -455,7 +466,7 @@ class ChainList with ChangeNotifier {
     if (chains[chainIndex].repeatCount > 0) {
       chains[chainIndex].repeatCount--;
     }
-    if (chains[chainIndex].repeatCount == 0) {
+    if (chains[chainIndex].repeatCount <= 0) {
       chains[chainIndex].repeatType = repeatTypeDoesNotRepeat;
       chains[chainIndex].at = null;
     }
@@ -800,6 +811,7 @@ class ChainList with ChangeNotifier {
     // });
     chains = [];
     activities = [];
+    loadSampleChains();
     notifyListeners();
   }
 
@@ -1008,6 +1020,15 @@ class ChainList with ChangeNotifier {
     }
 
     return systemSettings;
+  }
+
+  Future<void> loadSampleChains() async {
+    for (Chain chain in sampleChains) {
+      for (ChainActivity chainActivity in chain.activities) {
+        await addChain(chain, chainActivity);
+      }
+      //chains.add(chain);
+    }
   }
 
   Future<List<ChainActivity>> loadActivities(Chain chain) async {

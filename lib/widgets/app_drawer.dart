@@ -1,3 +1,4 @@
+import 'package:chain_activities/screens/add_chain_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:chain_activities/screens/how_it_works.dart';
 import 'package:chain_activities/screens/chain_list_screen.dart';
@@ -34,8 +35,26 @@ class AppDrawer extends StatelessWidget {
             children: [
               const Divider(),
               ListTile(
+                leading: const Icon(Icons.settings),
+                title: Text(
+                  'Settings',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                onTap: () {
+                  while (Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
+                  }
+                  Navigator.of(context)
+                      .pushReplacementNamed(SettingsScreen.routename);
+                },
+              ),
+              const Divider(),
+              ListTile(
                 leading: const Icon(Icons.help),
-                title: const Text('How "Chain Activities" Works'),
+                title: Text(
+                  'How "Chain Activities" Works',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
                 onTap: () {
                   while (Navigator.of(context).canPop()) {
                     Navigator.of(context).pop();
@@ -44,17 +63,36 @@ class AppDrawer extends StatelessWidget {
                       .pushReplacementNamed(HowItWorks.routename);
                 },
               ),
-              const Divider(),
+              const Divider(
+                height: 30,
+              ),
               ListTile(
-                leading: const Icon(Icons.watch_later),
+                leading: const Icon(
+                  Icons.post_add,
+                  size: 30,
+                ),
                 title: Text(
-                  'Chains',
+                  'Create Your Chain of Activities',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 onTap: () {
                   while (Navigator.of(context).canPop()) {
                     Navigator.of(context).pop();
                   }
+                  Navigator.of(context)
+                      .pushReplacementNamed(AddChainScreen.routename);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.watch_later),
+                title: Text(
+                  'Chains',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                onTap: () {
+                  // while (Navigator.of(context).canPop()) {
+                  //   Navigator.of(context).pop();
+                  // }
                   Navigator.of(context)
                       .pushReplacementNamed(ChainListScreen.routename);
                 },

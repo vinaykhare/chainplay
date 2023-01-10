@@ -1,3 +1,4 @@
+import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -47,7 +48,8 @@ class _AddChainScreenState extends State<AddChainScreen> {
       errorString = "",
       chainNameOnPageLoad = "";
 
-  bool addingDurationToActivity = false,
+  bool showSaveAndExit = false,
+      addingDurationToActivity = false,
       addingScheduleToChain = false,
       updatingSystemWaitActivityInDB = false,
       pageInit = true;
@@ -99,6 +101,12 @@ class _AddChainScreenState extends State<AddChainScreen> {
       return false;
     }
     return true;
+  }
+
+  Future<void> saveAndExit() async {
+    NavigatorState navigatorState = Navigator.of(context);
+    await validateForm();
+    navigatorState.pushReplacementNamed(ChainListScreen.routename);
   }
 
   Future<bool> validateForm() async {
@@ -427,6 +435,8 @@ class _AddChainScreenState extends State<AddChainScreen> {
         pageTitle = tempChain.title;
         chainNameOnPageLoad = tempChain.title;
         //tempChain.loadActivities();
+      } else {
+        showSaveAndExit = true;
       }
       pageInit = false;
       //FocusScope.of(context).requestFocus(addActivityFocus);
@@ -979,6 +989,12 @@ class _AddChainScreenState extends State<AddChainScreen> {
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
+                      if (showSaveAndExit &&
+                          MediaQuery.of(context).viewInsets.bottom == 0)
+                        IconButton(
+                          onPressed: saveAndExit,
+                          icon: const Icon(Icons.arrow_back),
+                        ),
                       if (!updatingSystemWaitActivityInDB &&
                           !addingScheduleToChain)
                         Expanded(

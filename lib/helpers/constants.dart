@@ -54,3 +54,20 @@ const String repeatTypeMonthly = "Month";
 const String repeatTypeYearly = "Year";
 const String repeatOccurAfter = "After";
 const String repeatOccurNever = "Never";
+
+//assets
+const Map<String, String> assetMap = {
+  'logoImage': 'assets/logo/logo.png',
+  'howItWorksPDF': 'assets/help_documents/howitworks.pdf',
+  'alarmAudio': 'assets/sound/chain_activity_alarm.wav',
+  'beepAudio': 'assets/sound/chain_activity_beep.mp3',
+  'helpImageAppDrawer': 'assets/help_images/app_drawer_menu.png',
+  'helpImageCheckExecution': 'assets/help_images/check_executions.png',
+  'helpImageHome': 'assets/help_images/home.png',
+  'helpImageHowItWorks': 'assets/help_images/howitworks.png',
+  'helpImageMarkFavorite': 'assets/help_images/mark_favorite.png',
+  'helpImagePlayChain': 'assets/help_images/play_chain.png',
+  'helpImageSearchChain': 'assets/help_images/search_chains.png',
+  'helpImageSettings': 'assets/help_images/settings.png',
+  'helpImageStartChain': 'assets/help_images/start_chain.png',
+};

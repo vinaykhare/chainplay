@@ -1,119 +1,7 @@
+import 'package:chain_activities/helpers/system_configuration.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 import 'package:path/path.dart' as path;
 import 'package:sqflite/sqlite_api.dart';
-
-const initScript = [
-  '''CREATE TABLE activity (
-      activityId TEXT PRIMARY KEY, 
-      title TEXT, 
-      specifications TEXT, 
-      type INTEGER,
-      createdAt INTEGER, 
-      lastUpdatedAt INTEGER,
-      edit INTEGER
-    )
-  ''',
-  '''CREATE TABLE chain (
-      title TEXT PRIMARY KEY,
-      chainIndex INTEGER,
-      createdAt INTEGER, 
-      lastUpdatedAt INTEGER, 
-      pinned INTEGER,
-      startedAt INTEGER,
-      pivotDate INTEGER,
-      endedAt INTEGER,
-      chainStatus INTEGER,
-      notificationId TEXT,
-      repeatType TEXT,
-      repeatTypeGap INTEGER,
-      repeatCount INTEGER,
-      editChain INTEGER
-    )
-  ''',
-  '''CREATE TABLE chain_execution (
-      chainExecutionId TEXT PRIMARY KEY,
-      title TEXT,
-      startedAt INTEGER,
-      pivotDate INTEGER,
-      endedAt INTEGER,
-      chainStatus INTEGER,
-      notificationId TEXT,
-      repeatType TEXT,
-      repeatTypeGap INTEGER,
-      repeatCount INTEGER,
-      FOREIGN KEY (title)
-        REFERENCES chain (title)
-    )
-  ''',
-  '''CREATE TABLE chain_activity (
-      title TEXT, 
-      activityId TEXT,
-      activityIndex INTEGER,
-      activityDone INTEGER,
-      isInterrupted INTEGER,
-      notificationId TEXT,
-      activityDuration INTEGER,
-      startedAt INTEGER,
-      activityDurationLeft INTEGER,
-      endedAt INTEGER,
-      editChainActivity INTEGER,
-      repeatType TEXT,
-      repeatTypeGap INTEGER,
-      repeatCount INTEGER,
-      FOREIGN KEY (title)
-        REFERENCES chain (title),
-      FOREIGN KEY (activityId)
-        REFERENCES activity (activityId)
-    )
-  ''',
-  '''CREATE TABLE chain_activity_execution (
-      chainExecutionId TEXT,
-      title TEXT, 
-      activityId TEXT,
-      activityIndex INTEGER,
-      activityDone INTEGER,
-      isInterrupted INTEGER,
-      notificationId TEXT,
-      activityDuration INTEGER,
-      repeatType TEXT,
-      repeatTypeGap INTEGER,
-      repeatCount INTEGER,
-      startedAt INTEGER,      
-      activityDurationLeft INTEGER,
-      endedAt INTEGER,
-      FOREIGN KEY (title)
-        REFERENCES chain (title),
-      FOREIGN KEY (activityId)
-        REFERENCES activity (activityId),
-      FOREIGN KEY (chainExecutionId)
-        REFERENCES chain_execution (chainExecutionId)
-    )
-  ''',
-  '''CREATE TABLE settings (
-      key TEXT PRIMARY KEY, 
-      value TEXT,
-      type TEXT
-    )
-  ''',
-  '''INSERT INTO settings(key, value, type) VALUES (
-      'DARK THEME', 
-      'FALSE',
-      'BOOL'
-    )
-  ''',
-  '''INSERT INTO settings(key, value, type) VALUES (
-      'Notification Type',
-      'App Notification,None',
-      'LIST'
-    )
-  ''',
-  '''INSERT INTO settings(key, value, type) VALUES (
-      'App Sound', 
-      'TRUE',
-      'BOOL'
-    )
-  ''',
-];
 
 class DBHelper {
   static Future<Database> database() async {
@@ -123,10 +11,10 @@ class DBHelper {
     // }
     return sql.openDatabase(path.join(dbPath, 'chainactivities.db'),
         onCreate: (db, version) async {
-      for (var script in initScript) {
+      for (var script in sqlInitScript) {
         await db.execute(script);
       }
-    }, version: 1);
+    }, version: sqfLiteDBVersion);
   }
 
   static Future<void> insert(String table, Map<String, Object> data) async {

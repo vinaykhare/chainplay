@@ -184,7 +184,7 @@ class LocalNotificationService with WidgetsBindingObserver {
       playSound: true,
       sound: const RawResourceAndroidNotificationSound('chain_activity_alarm'),
       // sound: UriAndroidNotificationSound(
-      //     "assets/sound/chain_activity_alarm.wav"),
+      //     assetMap['alarmAudio']!,
       fullScreenIntent: true,
       // styleInformation: BigPictureStyleInformation(
       //   DrawableResourceAndroidBitmap('@mipmap/launcher_icon'),

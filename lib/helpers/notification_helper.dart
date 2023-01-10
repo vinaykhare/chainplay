@@ -65,10 +65,10 @@ class NotificationHelper {
     if (isAppSoundEnabled()) {
       //await FlutterRingtonePlayer.playNotification();
       // await FlutterRingtonePlayer.play(
-      //   fromAsset: "assets/sound/chain_activity_beep.mp3",
+      //   fromAsset: assetMap['beepAudio']!,
       // );
       final player = AudioPlayer();
-      player.setAsset("assets/sound/chain_activity_beep.mp3");
+      player.setAsset(assetMap['beepAudio']!);
 
       player.play();
     }

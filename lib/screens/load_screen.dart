@@ -1,3 +1,4 @@
+import 'package:chain_activities/helpers/constants.dart';
 import 'package:flutter/material.dart';
 
 class LoadScreen extends StatelessWidget {
@@ -20,7 +21,7 @@ class LoadScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Image(
-                  image: const AssetImage("assets/logo/logo.png"),
+                  image: AssetImage(assetMap['logoImage']!),
                   fit: BoxFit.fill,
                   height: appHeight * 0.5,
                 ),

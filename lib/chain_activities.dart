@@ -1,3 +1,4 @@
+import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -31,13 +32,14 @@ class ChainActivities extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: darkTheme
           ? ThemeData(
-              scaffoldBackgroundColor: const Color.fromARGB(255, 13, 14, 39),
-              backgroundColor: const Color.fromARGB(255, 13, 14, 39),
+              scaffoldBackgroundColor: const Color.fromARGB(255, 56, 57, 57),
+              backgroundColor: const Color.fromARGB(255, 91, 91, 94),
               colorScheme: const ColorScheme.dark(),
-              canvasColor: const Color.fromARGB(255, 19, 20, 57),
-              cardColor: const Color.fromARGB(255, 19, 20, 57),
+              canvasColor: const Color.fromARGB(255, 11, 11, 12),
+              cardColor: const Color.fromARGB(255, 52, 52, 67),
+              selectedRowColor: const Color.fromARGB(255, 46, 46, 47),
               appBarTheme: const AppBarTheme(
-                backgroundColor: Color.fromARGB(255, 13, 14, 39),
+                backgroundColor: Color.fromARGB(255, 53, 53, 55),
               ),
             )
           : ThemeData(
@@ -64,6 +66,7 @@ class ChainActivities extends StatelessWidget {
               },
             ),
       //initialRoute: LoadScreen.routename,
+      navigatorKey: KeyHelper.navigatorKey,
       routes: {
         ChainListScreen.routename: (context) => const ChainListScreen(),
         AddChainScreen.routename: (context) => const AddChainScreen(),

@@ -1,3 +1,4 @@
+import 'package:chain_activities/helpers/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:native_pdf_view/native_pdf_view.dart';
 import 'package:chain_activities/widgets/app_drawer.dart';
@@ -20,7 +21,7 @@ class _HowItWorksState extends State<HowItWorks> {
   void initState() {
     super.initState();
     _pdfController = PdfControllerPinch(
-      document: PdfDocument.openAsset('assets/help/howitworks.pdf'),
+      document: PdfDocument.openAsset(assetMap['howItWorksPDF']!),
       initialPage: _initialPage,
     );
   }
@@ -95,11 +96,11 @@ class _HowItWorksState extends State<HowItWorks> {
                     icon: const Icon(Icons.refresh),
                     onPressed: () {
                       if (isSampleDoc) {
-                        _pdfController.loadDocument(PdfDocument.openAsset(
-                            'assets/help/howitworks.pdf'));
+                        _pdfController.loadDocument(
+                            PdfDocument.openAsset(assetMap['howItWorksPDF']!));
                       } else {
-                        _pdfController.loadDocument(PdfDocument.openAsset(
-                            'assets/help/howitworks.pdf'));
+                        _pdfController.loadDocument(
+                            PdfDocument.openAsset(assetMap['howItWorksPDF']!));
                       }
                       isSampleDoc = !isSampleDoc;
                     },
