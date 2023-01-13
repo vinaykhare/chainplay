@@ -111,7 +111,7 @@ class ChainExecutionScreen extends StatelessWidget {
                       if (index == chain.chainHistory.length - 1)
                         const Text("Executed Chain"),
                       InkWell(
-                        onTap: () => Navigator.of(context).pushReplacementNamed(
+                        onTap: () => Navigator.of(context).pushNamed(
                           PlayChain.routename,
                           arguments: {
                             payLoadChainExecId: chainExecution.chainExecutionId,
