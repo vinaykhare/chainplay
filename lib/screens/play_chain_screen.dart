@@ -160,7 +160,9 @@ class _PlayChainState extends State<PlayChain> {
         Chain chainInExecution =
             await chainList.startChainExecution(parentChain);
         chainList.scheduleNotificationForExecution(
-            chainInExecution, chainInExecution.at!);
+          chainInExecution,
+          chainInExecution.at!,
+        );
       }
     }
     //nav.pop();

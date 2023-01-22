@@ -73,8 +73,8 @@ class _AddChainScreenState extends State<AddChainScreen> {
     repeatTypeYearly,
   ];
   final List<String> repeatOccur = [
-    repeatOccurNever,
     repeatOccurAfter,
+    repeatOccurNever,
   ];
   int repeatTypeGap = repeatTypeDefaultGap;
   int repeatCount = repeatTypeDefaultCount;
@@ -708,168 +708,178 @@ class _AddChainScreenState extends State<AddChainScreen> {
               ),
             ],
           ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: TextFormField(
-                  enabled: false,
-                  textInputAction: TextInputAction.none,
-                  keyboardType: TextInputType.none,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    floatingLabelAlignment: FloatingLabelAlignment.center,
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
-                    label: Center(
-                      child: Text(
-                        repeatTypes[0] != repeatTypeDoesNotRepeat
-                            ? 'Repeat every'
-                            : 'Repeat',
-                        textAlign: TextAlign.end,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              if (repeatTypes[0] != repeatTypeDoesNotRepeat)
+          if (addStartTimeController.text.isNotEmpty)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
                 Expanded(
                   child: TextFormField(
-                    keyboardType: TextInputType.number,
-                    initialValue: tempChain.repeatTypeGap.toString(),
-                    textAlign: TextAlign.center,
-                    decoration: const InputDecoration(
+                    enabled: false,
+                    textInputAction: TextInputAction.none,
+                    keyboardType: TextInputType.none,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
                       floatingLabelAlignment: FloatingLabelAlignment.center,
                       floatingLabelBehavior: FloatingLabelBehavior.never,
+                      label: Center(
+                        child: Text(
+                          repeatTypes[0] != repeatTypeDoesNotRepeat
+                              ? 'Repeat every'
+                              : 'Repeat',
+                          textAlign: TextAlign.end,
+                        ),
+                      ),
                     ),
-                    validator: (value) {
-                      try {
-                        if (value != null &&
-                            int.parse(value) ==
-                                int.parse(value).roundToDouble()) {
-                          if (int.parse(value) > 0) {
-                            return null;
+                  ),
+                ),
+                if (repeatTypes[0] != repeatTypeDoesNotRepeat)
+                  Expanded(
+                    child: TextFormField(
+                      keyboardType: TextInputType.number,
+                      initialValue: tempChain.repeatTypeGap.toString(),
+                      textAlign: TextAlign.center,
+                      decoration: const InputDecoration(
+                        floatingLabelAlignment: FloatingLabelAlignment.center,
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
+                      ),
+                      validator: (value) {
+                        try {
+                          if (value != null &&
+                              int.parse(value) ==
+                                  int.parse(value).roundToDouble()) {
+                            if (int.parse(value) > 0) {
+                              return null;
+                            } else {
+                              return "1 or Greater";
+                            }
                           } else {
-                            return "1 or Greater";
+                            return "Give valid integer value.";
                           }
-                        } else {
-                          return "Give valid integer value.";
+                        } catch (e) {
+                          return "Insert valid integer value";
                         }
-                      } catch (e) {
-                        return "Insert valid integer value";
+                      },
+                      onSaved: (newValue) => tempChain.repeatTypeGap =
+                          newValue == null
+                              ? repeatTypeDefaultGap
+                              : int.parse(newValue),
+                    ),
+                  ),
+                Expanded(
+                  child: DropdownButton<String>(
+                    isExpanded: true,
+                    value: repeatTypes[0],
+                    onChanged: (String? value) async {
+                      if (value == null || value == "") {
+                        return;
+                      }
+                      repeatTypes.remove(value);
+                      repeatTypes.insert(0, value);
+                      if (repeatTypes[0] == repeatTypeDoesNotRepeat) {
+                        tempChain.repeatCount = repeatTypeDefaultCount;
+                      } else {
+                        tempChain.repeatCount = 2;
                       }
                     },
-                    onSaved: (newValue) => tempChain.repeatTypeGap =
-                        newValue == null
-                            ? repeatTypeDefaultGap
-                            : int.parse(newValue),
+                    items: repeatTypes
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        alignment: Alignment.center,
+                        child: Text(value),
+                      );
+                    }).toList(),
                   ),
                 ),
-              Expanded(
-                child: DropdownButton<String>(
-                  isExpanded: true,
-                  value: repeatTypes[0],
-                  onChanged: (String? value) async {
-                    if (value == null || value == "") {
-                      return;
-                    }
-                    repeatTypes.remove(value);
-                    repeatTypes.insert(0, value);
-                  },
-                  items:
-                      repeatTypes.map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      alignment: Alignment.center,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                ),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Expanded(
-                child: TextFormField(
-                  enabled: false,
-                  textInputAction: TextInputAction.none,
-                  keyboardType: TextInputType.none,
-                  textAlign: TextAlign.end,
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    floatingLabelAlignment: FloatingLabelAlignment.center,
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
-                    label: Center(
-                      child: Text(
-                        "Repeat ends",
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: DropdownButton<String>(
-                  isExpanded: true,
-                  value: repeatOccur[0],
-                  onChanged: (String? value) async {
-                    if (value == null || value == "") {
-                      return;
-                    }
-                    repeatOccur.remove(value);
-                    repeatOccur.insert(0, value);
-                    if (value == repeatOccurNever) {
-                      tempChain.repeatCount = repeatTypeDefaultCount;
-                    }
-                  },
-                  items:
-                      repeatOccur.map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      alignment: Alignment.center,
-                      child: Text(
-                        value,
-                        textAlign: TextAlign.center,
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
-              if (repeatOccur[0] == repeatOccurAfter)
+              ],
+            ),
+          if (repeatTypes[0] != repeatTypeDoesNotRepeat &&
+              addStartTimeController.text.isNotEmpty)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
                 Expanded(
                   child: TextFormField(
-                    keyboardType: TextInputType.number,
-                    initialValue: tempChain.repeatCount.toString(),
-                    textAlign: TextAlign.center,
+                    enabled: false,
+                    textInputAction: TextInputAction.none,
+                    keyboardType: TextInputType.none,
+                    textAlign: TextAlign.end,
                     decoration: const InputDecoration(
+                      border: InputBorder.none,
                       floatingLabelAlignment: FloatingLabelAlignment.center,
                       floatingLabelBehavior: FloatingLabelBehavior.never,
+                      label: Center(
+                        child: Text(
+                          "Repeat ends after",
+                        ),
+                      ),
                     ),
-                    validator: (value) {
-                      try {
-                        if (value != null &&
-                            int.parse(value) ==
-                                int.parse(value).roundToDouble()) {
-                          if (int.parse(value) > 0) {
-                            return null;
-                          } else {
-                            return "1 or Greater";
-                          }
-                        } else {
-                          return "Give valid integer value";
-                        }
-                      } catch (e) {
-                        return "Insert valid integer value";
-                      }
-                    },
-                    onSaved: (newValue) => tempChain.repeatCount =
-                        newValue == null
-                            ? repeatTypeDefaultCount
-                            : int.parse(newValue),
                   ),
                 ),
-              if (repeatOccur[0] == repeatOccurAfter)
+                // Expanded(
+                //   child: DropdownButton<String>(
+                //     isExpanded: true,
+                //     value: repeatOccur[0],
+                //     onChanged: (String? value) async {
+                //       if (value == null || value == "") {
+                //         return;
+                //       }
+                //       repeatOccur.remove(value);
+                //       repeatOccur.insert(0, value);
+                //       if (value == repeatOccurNever) {
+                //         tempChain.repeatCount = repeatTypeDefaultCount;
+                //       } else {
+                //         tempChain.repeatCount = 2;
+                //       }
+                //     },
+                //     items: repeatOccur
+                //         .map<DropdownMenuItem<String>>((String value) {
+                //       return DropdownMenuItem<String>(
+                //         value: value,
+                //         alignment: Alignment.center,
+                //         child: Text(
+                //           value,
+                //           textAlign: TextAlign.center,
+                //         ),
+                //       );
+                //     }).toList(),
+                //   ),
+                // ),
+                if (repeatOccur[0] == repeatOccurAfter)
+                  Expanded(
+                    child: TextFormField(
+                      keyboardType: TextInputType.number,
+                      initialValue: tempChain.repeatCount.toString(),
+                      textAlign: TextAlign.center,
+                      decoration: const InputDecoration(
+                        floatingLabelAlignment: FloatingLabelAlignment.center,
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
+                      ),
+                      validator: (value) {
+                        try {
+                          if (value != null &&
+                              int.parse(value) ==
+                                  int.parse(value).roundToDouble()) {
+                            if (int.parse(value) > 0) {
+                              return null;
+                            } else {
+                              return "1 or Greater";
+                            }
+                          } else {
+                            return "Give valid integer value";
+                          }
+                        } catch (e) {
+                          return "Insert valid integer value";
+                        }
+                      },
+                      onSaved: (newValue) => tempChain.repeatCount =
+                          newValue == null
+                              ? repeatTypeDefaultCount
+                              : int.parse(newValue),
+                    ),
+                  ),
+                //if (repeatOccur[0] == repeatOccurAfter)
                 Expanded(
                   child: TextFormField(
                     enabled: false,
@@ -888,8 +898,8 @@ class _AddChainScreenState extends State<AddChainScreen> {
                     ),
                   ),
                 ),
-            ],
-          ),
+              ],
+            ),
         ],
       ),
     );

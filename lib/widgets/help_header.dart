@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/helpers/system_configuration.dart';
+import 'package:chain_activities/models/chain_list.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HelpHeader extends StatefulWidget {
   const HelpHeader({super.key});
@@ -16,15 +18,18 @@ class _HelpHeaderState extends State<HelpHeader> {
   Timer? countdownTimer;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
     countdownTimer = Timer.periodic(
       const Duration(
         seconds: 15,
       ),
-      (_) => setState(() {
-        incrementPage();
-      }),
+      (_) async {
+        setState(() {
+          incrementPage();
+        });
+        Provider.of<ChainList>(context, listen: false).checkAndUpdateConfig();
+      },
     );
   }
 

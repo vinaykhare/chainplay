@@ -46,7 +46,7 @@ Util:
 */
 
 class ChainList with ChangeNotifier {
-  bool loaded = false;
+  bool loaded = false, configUpdated = false, configUpdateStarted = false;
   List<Chain> chains = [];
   List<Activity> activities = [];
   List<SystemSetting> systemSettings = [];
@@ -66,50 +66,163 @@ class ChainList with ChangeNotifier {
   );
 
   Future<void> initialize() async {
-    await fetchChains();
-    await fetchActivities();
-    await fetchSettings();
-
-    await notificationHelper.initialize(systemSettings);
-    for (int chainId = 0; chainId < chains.length; chainId++) {
-      if (chains[chainId].notificationId == noValueInDB) {
-        continue;
-      }
-      notificationIdsInDB.add(chains[chainId].notificationId);
-      Chain sch = chains[chainId];
-      for (int activityId = 0;
-          activityId < sch.activities.length;
-          activityId++) {
-        if (sch.activities[activityId].startActivityNotificationId ==
-            noValueInDB) {
-          continue;
-        }
-        notificationIdsInDB
-            .add(sch.activities[activityId].startActivityNotificationId);
-        if (sch.activities[activityId].endActivityNotificationId ==
-            noValueInDB) {
-          continue;
-        }
-        notificationIdsInDB
-            .add(sch.activities[activityId].endActivityNotificationId);
-      }
+    if (loaded) {
+      return;
     }
+    await fetchSettings();
+    await fetchActivities();
+    await fetchChains();
+
+    loaded = true;
+    notifyListeners();
+  }
+
+  Future<void> checkAndUpdateConfig() async {
+    if (configUpdateStarted) {
+      return;
+    }
+    configUpdateStarted = true;
+    await notificationHelper.initialize(systemSettings);
+    notificationCameAs = null;
 
     Map<String, dynamic>? checkForNotificationResponse =
         await notificationHelper.localNotificationService
             .checkForNotification();
 
-    if (checkForNotificationResponse != null &&
-        chains.indexWhere((sch) =>
-                sch.title == checkForNotificationResponse[payLoadChainName]) !=
-            -1) {
-      notificationCameAs = checkForNotificationResponse;
-    } else {
-      notificationCameAs = null;
+    for (int chainId = 0; chainId < chains.length; chainId++) {
+      Chain chain = chains[chainId];
+      collectNotificationIds(chain);
+      if (checkForNotificationResponse != null &&
+          chain.title == checkForNotificationResponse[payLoadChainName]) {
+        notificationCameAs = checkForNotificationResponse;
+      }
+      await evaluateChainExecutions(chain);
+    }
+    configUpdated = true;
+    configUpdateStarted = false;
+    notifyListeners();
+  }
+
+  void collectNotificationIds(Chain chain) {
+    if (chain.notificationId == noValueInDB) {
+      return;
+    }
+    notificationIdsInDB.add(chain.notificationId);
+    Chain sch = chain;
+    for (int activityId = 0; activityId < sch.activities.length; activityId++) {
+      if (sch.activities[activityId].startActivityNotificationId ==
+          noValueInDB) {
+        continue;
+      }
+      notificationIdsInDB
+          .add(sch.activities[activityId].startActivityNotificationId);
+      if (sch.activities[activityId].endActivityNotificationId == noValueInDB) {
+        continue;
+      }
+      notificationIdsInDB
+          .add(sch.activities[activityId].endActivityNotificationId);
+    }
+  }
+
+  Future<Chain?> evaluateChainExecutions(Chain chain) async {
+    // if (chain.at == null
+    //     // ||
+    //     //     chain.at!.isAfter(
+    //     //       DateTime.now(),
+    //     //     )
+    //     ) {
+    //   return null;
+    // }
+    Chain? executingChain;
+    Chain? lastCompletedChain;
+
+    for (executingChain in chain.chainHistory) {
+      if (executingChain.chainStatus == statusDone) {
+        lastCompletedChain = executingChain;
+        continue;
+      }
+      lastCompletedChain =
+          await calculateAndGetLastCompletedChain(executingChain);
+      if (lastCompletedChain != null) {
+        chain.endedAt = lastCompletedChain.endedAt;
+        await completeTheChain(chain);
+      }
+
+      break; // only one execution is allowed.
     }
 
-    loaded = true;
-    notifyListeners();
+    while (lastCompletedChain != null &&
+        chain.repeatType != repeatTypeDoesNotRepeat &&
+        (chain.repeatCount > 0 || chain.repeatCount == -1)) {
+      executingChain = await startChainExecution(chain);
+      lastCompletedChain =
+          await calculateAndGetLastCompletedChain(executingChain);
+
+      if (lastCompletedChain != null) {
+        chain.endedAt = lastCompletedChain.endedAt;
+        await completeTheChain(chain);
+      }
+    }
+    if (executingChain != null && lastCompletedChain != null) {
+      scheduleNotificationForExecution(executingChain, executingChain.at!);
+    }
+
+    return executingChain;
+  }
+
+  Future<Chain?> calculateAndGetLastCompletedChain(Chain executingChain) async {
+    Chain chainAfterFurtherExecution =
+        await executeChainFurtherPossible(executingChain);
+    if (chainAfterFurtherExecution.endedAt == null) {
+      return null;
+    }
+
+    if (chainAfterFurtherExecution.endedAt!.isAfter(
+      DateTime.now(),
+    )) {
+      return null;
+    }
+    await cancelScheduleNotificationExecution(chainAfterFurtherExecution);
+    return chainAfterFurtherExecution;
+  }
+
+  Future<Chain> executeChainFurtherPossible(Chain executingChain) async {
+    List<ChainActivity> chainActivities = executingChain.activities;
+    DateTime lastActivityEndedAt = executingChain.at!;
+    for (ChainActivity chainActivity in chainActivities) {
+      if (chainActivity.endedAt != null) {
+        lastActivityEndedAt = chainActivity.endedAt!;
+        continue;
+      }
+
+      if (chainActivity.activityDurationLeft != null) {
+        return executingChain;
+      }
+
+      if (chainActivity.activityDuration.inSeconds == 0 &&
+          chainActivity.activity.type == waitActivityInDB) {
+        return executingChain;
+      }
+
+      chainActivity.at = chainActivity.at ?? lastActivityEndedAt;
+      DateTime activityEndDateTime =
+          chainActivity.at!.add(chainActivity.activityDuration);
+      if (activityEndDateTime.isAfter(
+        DateTime.now(),
+      )) {
+        return executingChain;
+      }
+
+      lastActivityEndedAt = chainActivity.endedAt = activityEndDateTime;
+      await updateChainActivityExecutionByActivityId(
+          executingChain, chainActivity);
+    }
+
+    executingChain.endedAt = lastActivityEndedAt;
+    executingChain.chainStatus = statusDone;
+    await updateChainExecution(executingChain);
+
+    return executingChain;
   }
 
   Future<void> addChain(Chain chain, ChainActivity chainActivity) async {
@@ -341,66 +454,66 @@ class ChainList with ChangeNotifier {
     }
   }
 
-  DateTime? getNextStartDateTime(DateTime currentStartDate, String repeatType,
+  DateTime? getNextStartDateTime(DateTime lastChainEndedAt, String repeatType,
       int repeatTypeGap, int repeatCount) {
-    DateTime newStartDate = currentStartDate;
-    do {
-      switch (repeatType) {
-        case repeatTypeSecond:
-          newStartDate = newStartDate.add(
-            Duration(seconds: repeatTypeGap),
-          );
-          break;
-        case repeatTypeMinute:
-          newStartDate = newStartDate.add(
-            Duration(minutes: repeatTypeGap),
-          );
-          break;
-        case repeatTypeHourly:
-          newStartDate = newStartDate.add(
-            Duration(hours: repeatTypeGap),
-          );
-          break;
-        case repeatTypeDaily:
-          newStartDate = newStartDate.add(
-            Duration(days: repeatTypeGap),
-          );
-          break;
-        case repeatTypeWeekly:
-          newStartDate = DateTime(
-            newStartDate.year,
-            newStartDate.month,
-            newStartDate.day + (7 * repeatTypeGap),
-            newStartDate.hour,
-            newStartDate.minute,
-            newStartDate.second,
-          );
-          break;
-        case repeatTypeMonthly:
-          newStartDate = DateTime(
-            newStartDate.year,
-            newStartDate.month + repeatTypeGap,
-            newStartDate.day,
-            newStartDate.hour,
-            newStartDate.minute,
-            newStartDate.second,
-          );
-          break;
-        case repeatTypeYearly:
-          newStartDate = DateTime(
-            newStartDate.year + repeatTypeGap,
-            newStartDate.month,
-            newStartDate.day,
-            newStartDate.hour,
-            newStartDate.minute,
-            newStartDate.second,
-          );
-          break;
-        case repeatTypeDoesNotRepeat:
-        default:
-          return null;
-      }
-    } while (!newStartDate.isAfter(DateTime.now()));
+    DateTime newStartDate = lastChainEndedAt;
+    //do {
+    switch (repeatType) {
+      case repeatTypeSecond:
+        newStartDate = lastChainEndedAt.add(
+          Duration(seconds: repeatTypeGap),
+        );
+        break;
+      case repeatTypeMinute:
+        newStartDate = lastChainEndedAt.add(
+          Duration(minutes: repeatTypeGap),
+        );
+        break;
+      case repeatTypeHourly:
+        newStartDate = lastChainEndedAt.add(
+          Duration(hours: repeatTypeGap),
+        );
+        break;
+      case repeatTypeDaily:
+        newStartDate = lastChainEndedAt.add(
+          Duration(days: repeatTypeGap),
+        );
+        break;
+      case repeatTypeWeekly:
+        newStartDate = DateTime(
+          lastChainEndedAt.year,
+          lastChainEndedAt.month,
+          lastChainEndedAt.day + (7 * repeatTypeGap),
+          lastChainEndedAt.hour,
+          lastChainEndedAt.minute,
+          lastChainEndedAt.second,
+        );
+        break;
+      case repeatTypeMonthly:
+        newStartDate = DateTime(
+          lastChainEndedAt.year,
+          lastChainEndedAt.month + repeatTypeGap,
+          lastChainEndedAt.day,
+          lastChainEndedAt.hour,
+          lastChainEndedAt.minute,
+          lastChainEndedAt.second,
+        );
+        break;
+      case repeatTypeYearly:
+        newStartDate = DateTime(
+          lastChainEndedAt.year + repeatTypeGap,
+          lastChainEndedAt.month,
+          lastChainEndedAt.day,
+          lastChainEndedAt.hour,
+          lastChainEndedAt.minute,
+          lastChainEndedAt.second,
+        );
+        break;
+      case repeatTypeDoesNotRepeat:
+      default:
+        return null;
+    }
+    //} while (!newStartDate.isAfter(DateTime.now()));
     return newStartDate;
   }
 
@@ -454,22 +567,22 @@ class ChainList with ChangeNotifier {
     int chainIndex = chains.indexWhere((sch) => sch.title == chain.title);
 
     chains[chainIndex].chainHistory.insert(0, chainExecution);
-    chains[chainIndex].endedAt = null;
-    if (chains[chainIndex].repeatType != repeatTypeDoesNotRepeat) {
-      chains[chainIndex].at = getNextStartDateTime(
-        chains[chainIndex].at!,
-        chains[chainIndex].repeatType,
-        chains[chainIndex].repeatTypeGap,
-        chains[chainIndex].repeatCount,
-      );
-    }
-    if (chains[chainIndex].repeatCount > 0) {
-      chains[chainIndex].repeatCount--;
-    }
-    if (chains[chainIndex].repeatCount <= 0) {
-      chains[chainIndex].repeatType = repeatTypeDoesNotRepeat;
-      chains[chainIndex].at = null;
-    }
+    // chains[chainIndex].endedAt = null;
+    // if (chains[chainIndex].repeatType != repeatTypeDoesNotRepeat) {
+    //   chains[chainIndex].at = getNextStartDateTime(
+    //     chains[chainIndex].at!,
+    //     chains[chainIndex].repeatType,
+    //     chains[chainIndex].repeatTypeGap,
+    //     chains[chainIndex].repeatCount,
+    //   );
+    // }
+    // if (chains[chainIndex].repeatCount > 0) {
+    //   chains[chainIndex].repeatCount--;
+    // }
+    // if (chains[chainIndex].repeatCount <= 0) {
+    //   chains[chainIndex].repeatType = repeatTypeDoesNotRepeat;
+    //   chains[chainIndex].at = null;
+    // }
 
     chains[chainIndex].notificationId = noValueInDB;
     chains[chainIndex].chainStatus = statusExecuting;
@@ -487,6 +600,37 @@ class ChainList with ChangeNotifier {
     return chain.chainHistory[executingChainIndex];
   }
 
+  Future<void> completeTheChain(Chain chain) async {
+    int chainIndex = chains.indexWhere((sch) => sch.title == chain.title);
+    //chains[chainIndex].endedAt = null;
+    if (chains[chainIndex].repeatType != repeatTypeDoesNotRepeat) {
+      chains[chainIndex].at = getNextStartDateTime(
+        chains[chainIndex].endedAt!,
+        chains[chainIndex].repeatType,
+        chains[chainIndex].repeatTypeGap,
+        chains[chainIndex].repeatCount,
+      );
+    }
+    if (chains[chainIndex].repeatCount > 0) {
+      chains[chainIndex].repeatCount--;
+      //chains[chainIndex].chainStatus = statusExecuting;
+    }
+    if (chains[chainIndex].repeatCount == 0) {
+      chains[chainIndex].repeatType = repeatTypeDoesNotRepeat;
+      chains[chainIndex].at = null;
+      chains[chainIndex].endedAt = null;
+      chains[chainIndex].chainStatus = statusNotStarted;
+    }
+
+    if (chains[chainIndex].repeatCount <= -1) {
+      // repeat forever
+    }
+
+    chains[chainIndex].notificationId = noValueInDB;
+    await updateChain(chains[chainIndex]);
+    notifyListeners();
+  }
+
   Future<void> stopChainExecution(Chain chain) async {
     int executingChainIndex = chain.chainHistory
         .indexWhere((sch) => sch.chainStatus == statusExecuting);
@@ -494,8 +638,8 @@ class ChainList with ChangeNotifier {
       await cancelScheduleNotificationExecution(
           chain.chainHistory[executingChainIndex]);
       await resetChainExecution(chain.chainHistory[executingChainIndex]);
-      await resetChain(chain);
     }
+    await resetChain(chain);
   }
 
   Future<void> updateChain(Chain chain) async {

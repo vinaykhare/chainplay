@@ -1,4 +1,5 @@
 import 'package:chain_activities/helpers/key_helper.dart';
+import 'package:chain_activities/widgets/redirect.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -51,20 +52,16 @@ class ChainActivities extends StatelessWidget {
               dialogBackgroundColor: Colors.lightGreen,
               selectedRowColor: Colors.green.shade700,
             ),
-      home: chainList.loaded
-          ? chainList.notificationCameAs != null
-              ? const PlayChain()
-              : const ChainListScreen()
-          : FutureBuilder(
-              future: chainList.initialize(),
-              builder: (ctx, snap) {
-                if (snap.connectionState == ConnectionState.waiting) {
-                  return const LoadScreen();
-                } else {
-                  return const ChainListScreen();
-                }
-              },
-            ),
+      home: FutureBuilder(
+        future: Provider.of<ChainList>(context, listen: false).initialize(),
+        builder: (ctx, snap) {
+          if (!chainList.loaded) {
+            return const LoadScreen();
+          } else {
+            return const Redirect();
+          }
+        },
+      ),
       //initialRoute: LoadScreen.routename,
       navigatorKey: KeyHelper.navigatorKey,
       routes: {

@@ -177,23 +177,29 @@ class ChainExecutionScreen extends StatelessWidget {
                       backgroundColor: Theme.of(context).primaryColorLight,
                       child: IconButton(
                         onPressed: () async {
-                          NavigatorState nav = Navigator.of(context);
-                          Chain chainExecution = await Provider.of<ChainList>(
-                                  context,
-                                  listen: false)
-                              .startChainExecution(chain);
-                          //await chainList.loadActivities(chain);
+                          if (chain.chainStatus == statusExecuting) {
+                            await chainList.stopChainExecution(chain);
+                          } else {
+                            NavigatorState nav = Navigator.of(context);
+                            Chain chainExecution = await Provider.of<ChainList>(
+                                    context,
+                                    listen: false)
+                                .startChainExecution(chain);
+                            //await chainList.loadActivities(chain);
 
-                          await nav.pushNamed(PlayChain.routename, arguments: {
-                            payLoadChainExecId: chainExecution.chainExecutionId,
-                            payLoadChainName: chainExecution.title,
-                            payLoadChainActivityIndex:
-                                chainHistory.length - 1, //0
-                            payLoadChainActivityCount: chainHistory.length,
-                          });
+                            await nav
+                                .pushNamed(PlayChain.routename, arguments: {
+                              payLoadChainExecId:
+                                  chainExecution.chainExecutionId,
+                              payLoadChainName: chainExecution.title,
+                              payLoadChainActivityIndex:
+                                  chainHistory.length - 1, //0
+                              payLoadChainActivityCount: chainHistory.length,
+                            });
+                          }
                         },
                         icon: chain.chainStatus == statusExecuting
-                            ? const Icon(Icons.directions_walk)
+                            ? const Icon(Icons.pause)
                             : const Icon(Icons.play_arrow),
                       ),
                     ),

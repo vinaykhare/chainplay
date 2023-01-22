@@ -40,8 +40,12 @@ class ChainView extends StatelessWidget {
               arguments: chain,
             );
           } else {
-            Chain chainExecution = await chainList.startChainExecution(chain);
+            Chain? chainExecution =
+                await chainList.evaluateChainExecutions(chain);
             //await chainList.loadActivities(chain);
+            if (chainExecution == null) {
+              return; //No Chains to execute.
+            }
             await nav.pushNamed(
               PlayChain.routename,
               arguments: {
@@ -106,7 +110,9 @@ class ChainView extends StatelessWidget {
             if (showHistory)
               IconButton(
                 onPressed: () async {
-                  Navigator.of(context).pushNamed(
+                  NavigatorState navState = Navigator.of(context);
+                  await chainList.evaluateChainExecutions(chain);
+                  navState.pushNamed(
                     ChainExecutionScreen.routename,
                     arguments: chain,
                   );
