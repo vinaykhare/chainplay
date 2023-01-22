@@ -132,7 +132,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
     final int hours = waitDuration.inHours.remainder(60);
     final int minutes = waitDuration.inMinutes.remainder(60);
     final int seconds = waitDuration.inSeconds.remainder(60);
-    final String displaySeconds = waitDuration.inSeconds == 1
+    final String displaySeconds = waitDuration.inSeconds <= 1
         ? "Done"
         : strDigits(waitDuration.inSeconds.remainder(60));
     // timeLeft = "$hours:$minutes:$displaySeconds";

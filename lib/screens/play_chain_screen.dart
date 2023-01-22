@@ -146,15 +146,11 @@ class _PlayChainState extends State<PlayChain> {
     } else {
       Chain parentChain =
           chainList.chains.firstWhere((sch) => sch.title == chain.title);
-      setState(() {
-        chain.chainStatus = statusDone;
-        parentChain.chainStatus = statusNotStarted;
-        chain.endedAt = DateTime.now();
-        parentChain.endedAt = null;
-      });
 
-      await chainList.updateChain(parentChain);
-      await chainList.updateChainExecution(chain);
+      chain.chainStatus = statusDone;
+      parentChain.chainStatus = statusNotStarted;
+      chain.endedAt = DateTime.now();
+      parentChain.endedAt = null;
 
       if (parentChain.repeatType != repeatTypeDoesNotRepeat) {
         Chain chainInExecution =
@@ -163,7 +159,12 @@ class _PlayChainState extends State<PlayChain> {
           chainInExecution,
           chainInExecution.at!,
         );
+      } else {
+        parentChain.at = null;
       }
+
+      await chainList.updateChain(parentChain);
+      await chainList.updateChainExecution(chain);
     }
     //nav.pop();
   }
