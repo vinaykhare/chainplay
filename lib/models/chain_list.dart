@@ -138,6 +138,7 @@ class ChainList with ChangeNotifier {
 
     for (executingChain in chain.chainHistory) {
       if (executingChain.chainStatus == statusDone) {
+        await cancelScheduledNotification(executingChain);
         lastCompletedChain = executingChain;
         continue;
       }
@@ -146,6 +147,8 @@ class ChainList with ChangeNotifier {
       if (lastCompletedChain != null) {
         chain.endedAt = lastCompletedChain.endedAt;
         await completeTheChain(chain);
+      } else {
+        scheduleNotificationForExecution(executingChain, executingChain.at!);
       }
 
       break; // only one execution is allowed.
@@ -161,18 +164,20 @@ class ChainList with ChangeNotifier {
       if (lastCompletedChain != null) {
         chain.endedAt = lastCompletedChain.endedAt;
         await completeTheChain(chain);
+      } else {
+        scheduleNotificationForExecution(executingChain, executingChain.at!);
+        break;
       }
-    }
-    if (executingChain != null && lastCompletedChain != null) {
-      scheduleNotificationForExecution(executingChain, executingChain.at!);
     }
 
     return executingChain;
   }
 
   Future<Chain?> calculateAndGetLastCompletedChain(Chain executingChain) async {
-    Chain chainAfterFurtherExecution =
+    Map<String, dynamic> furterExecutionResponse =
         await executeChainFurtherPossible(executingChain);
+    Chain chainAfterFurtherExecution =
+        furterExecutionResponse["executingChain"];
     if (chainAfterFurtherExecution.endedAt == null) {
       return null;
     }
@@ -182,35 +187,84 @@ class ChainList with ChangeNotifier {
     )) {
       return null;
     }
-    await cancelScheduleNotificationExecution(chainAfterFurtherExecution);
+    await cancelScheduledNotificationExecution(chainAfterFurtherExecution);
     return chainAfterFurtherExecution;
   }
 
-  Future<Chain> executeChainFurtherPossible(Chain executingChain) async {
+  Future<Map<String, dynamic>> executeChainFurtherPossible(Chain executingChain,
+      [int from = 0]) async {
     List<ChainActivity> chainActivities = executingChain.activities;
     DateTime lastActivityEndedAt = executingChain.at!;
-    for (ChainActivity chainActivity in chainActivities) {
+
+    //for (ChainActivity chainActivity in chainActivities) {
+    for (int chainActivityIndex = from;
+        chainActivityIndex < chainActivities.length;
+        chainActivityIndex++) {
+      ChainActivity chainActivity = chainActivities[chainActivityIndex];
       if (chainActivity.endedAt != null) {
         lastActivityEndedAt = chainActivity.endedAt!;
         continue;
       }
 
+      chainActivity.at = chainActivity.at ?? lastActivityEndedAt;
+
       if (chainActivity.activityDurationLeft != null) {
-        return executingChain;
+        return {
+          "executingChain": executingChain,
+          "invokeCounter": chainActivityIndex,
+          "waitDuration": chainActivity.activityDurationLeft,
+          "chainActivity": chainActivity,
+          "playScreenType": chainActivity.activity.type,
+          "running": chainActivity.activityDurationLeft == null,
+          "screenImage":
+              chainActivity.activity.specification?[activitySpecImagePath]
+        };
       }
 
       if (chainActivity.activityDuration.inSeconds == 0 &&
           chainActivity.activity.type == waitActivityInDB) {
-        return executingChain;
+        return {
+          "executingChain": executingChain,
+          "invokeCounter": chainActivityIndex,
+          "waitDuration": chainActivity.activityDuration,
+          "chainActivity": chainActivity,
+          "playScreenType": chainActivity.activity.type,
+          "running": chainActivity.activityDurationLeft == null,
+          "screenImage":
+              chainActivity.activity.specification?[activitySpecImagePath]
+        };
       }
 
-      chainActivity.at = chainActivity.at ?? lastActivityEndedAt;
+      if (chainActivity.activityDuration.inSeconds == 0 &&
+          chainActivity.activity.type == systemWaitActivityInDB &&
+          chainActivityIndex == (chainActivities.length - 1)) {
+        return {
+          "executingChain": executingChain,
+          "invokeCounter": chainActivityIndex,
+          "waitDuration": chainActivity.activityDuration,
+          "chainActivity": chainActivity,
+          "playScreenType": systemEndActivityInDB,
+          "running": chainActivity.activityDurationLeft == null,
+          "screenImage":
+              chainActivity.activity.specification?[activitySpecImagePath]
+        };
+      }
+
       DateTime activityEndDateTime =
           chainActivity.at!.add(chainActivity.activityDuration);
       if (activityEndDateTime.isAfter(
         DateTime.now(),
       )) {
-        return executingChain;
+        return {
+          "executingChain": executingChain,
+          "invokeCounter": chainActivityIndex,
+          "waitDuration": activityEndDateTime.difference(DateTime.now()),
+          "chainActivity": chainActivity,
+          "playScreenType": chainActivity.activity.type,
+          "running": chainActivity.activityDurationLeft == null,
+          "screenImage":
+              chainActivity.activity.specification?[activitySpecImagePath]
+        };
       }
 
       lastActivityEndedAt = chainActivity.endedAt = activityEndDateTime;
@@ -222,7 +276,15 @@ class ChainList with ChangeNotifier {
     executingChain.chainStatus = statusDone;
     await updateChainExecution(executingChain);
 
-    return executingChain;
+    return {
+      "executingChain": executingChain,
+      "invokeCounter": chainActivities.length,
+      "waitDuration": null,
+      "chainActivity": null,
+      "playScreenType": null,
+      "running": null,
+      "screenImage": null,
+    };
   }
 
   Future<void> addChain(Chain chain, ChainActivity chainActivity) async {
@@ -239,15 +301,10 @@ class ChainList with ChangeNotifier {
     int activityIndex = activities
         .indexWhere((act) => act.title == chainActivity.activity.title);
 
-    if (activityIndex == -1) {
-      activities.add(chainActivity.activity);
-    } else {
-      chainActivity.activity = activities[activityIndex];
-    }
-
     chainActivity.index = chain.activities.length;
 
     if (activityIndex == -1) {
+      activities.add(chainActivity.activity);
       await DBHelper.insert(
         "activity",
         {
@@ -265,7 +322,10 @@ class ChainList with ChangeNotifier {
                 }),
         },
       );
+    } else {
+      chainActivity.activity = activities[activityIndex];
     }
+
     if (chainIndex == -1) {
       await DBHelper.insert(
         "chain",
@@ -635,7 +695,7 @@ class ChainList with ChangeNotifier {
     int executingChainIndex = chain.chainHistory
         .indexWhere((sch) => sch.chainStatus == statusExecuting);
     if (executingChainIndex != -1) {
-      await cancelScheduleNotificationExecution(
+      await cancelScheduledNotificationExecution(
           chain.chainHistory[executingChainIndex]);
       await resetChainExecution(chain.chainHistory[executingChainIndex]);
     }
@@ -832,7 +892,7 @@ class ChainList with ChangeNotifier {
   }
 
   Future<void> resetChainExecution(Chain chainExecution) async {
-    await cancelScheduleNotificationExecution(chainExecution);
+    await cancelScheduledNotificationExecution(chainExecution);
 
     int indexOfChain =
         chains.indexWhere((sch) => sch.title == chainExecution.title);
@@ -1414,11 +1474,12 @@ class ChainList with ChangeNotifier {
     return nextNotificationId;
   }
 
-  Future<void> scheduleNotificationForExecution(
+  Future<DateTime?> scheduleNotificationForExecution(
     Chain chain,
     DateTime fromDateTime,
   ) async {
     int countOfActivities = chain.activities.length;
+    bool noBreakChain = true;
     for (int i = 0; i < countOfActivities; i++) {
       if (chain.activities[i].endedAt != null) {
         fromDateTime = chain.activities[i].endedAt!;
@@ -1466,6 +1527,7 @@ class ChainList with ChangeNotifier {
           (chain.activities[i].activityDuration.inSeconds == 0 ||
               (chain.activities[i].activityDurationLeft != null &&
                   chain.activities[i].activityDurationLeft!.inSeconds > 0))) {
+        noBreakChain = false;
         break;
       }
       DateTime dateTimeAfterDurationAddition =
@@ -1507,9 +1569,10 @@ class ChainList with ChangeNotifier {
       fromDateTime = fromDateTime.add(const Duration(microseconds: 1));
     }
     notifyListeners();
+    return noBreakChain ? fromDateTime : null;
   }
 
-  Future<void> cancelScheduleNotificationExecution(Chain chain) async {
+  Future<void> cancelScheduledNotificationExecution(Chain chain) async {
     //Cancel Notifications
     await cancelScheduledNotification(chain);
     for (ChainActivity chainActivity in chain.activities) {

@@ -139,12 +139,15 @@ class _AddChainScreenState extends State<AddChainScreen> {
     }
 
     if (tempChain.at != null && tempChain.at!.isAfter(DateTime.now())) {
-      Chain chainInExecution = await chainList.startChainExecution(tempChain);
-      chainList.scheduleNotificationForExecution(
-          chainInExecution, chainInExecution.at!);
-    } else {
-      chainList.cancelScheduledNotification(tempChain);
+      /* Chain chainInExecution = */ await chainList
+          .startChainExecution(tempChain);
+      // chainList.scheduleNotificationForExecution(
+      //     chainInExecution, chainInExecution.at!);
+      await chainList.evaluateChainExecutions(tempChain);
     }
+    // else {
+    //   chainList.cancelScheduledNotification(tempChain);
+    // }
 
     //tempChain.name = pageTitle;
 
@@ -188,6 +191,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
       ChainActivity startChainActivity = ChainActivity(
         activity: startActivity,
       );
+      startChainActivity.index = 0;
       tempChain.activities.add(
         startChainActivity,
       );

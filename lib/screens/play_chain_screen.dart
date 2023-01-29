@@ -21,7 +21,6 @@ class PlayChain extends StatefulWidget {
 class _PlayChainState extends State<PlayChain> {
   late Chain chain;
   late ChainList chainList;
-  List<ChainActivity> activities = [];
   int invokeCounter = 0;
   bool initializing = true;
 
@@ -29,111 +28,77 @@ class _PlayChainState extends State<PlayChain> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      chainList.cancelScheduleNotificationExecution(
+      chainList.cancelScheduledNotificationExecution(
         chain,
       );
     });
   }
 
-  void updateWaitDuration() async {
+  Future<void> playTheChain() async {
     dynamic popResponse;
     NavigatorState nav = Navigator.of(context);
-    //await Future.delayed(const Duration(seconds: 1));
 
-    //DateTime pivotStartDateTime = chain.pivotDate!;
-    for (DateTime actStartDate = chain.at!;
-        invokeCounter < chain.activities.length;
-        invokeCounter++) {
-      Duration activityExecutedFor = const Duration(seconds: 0);
-      Duration calculatedWaitDuration = const Duration(seconds: 0);
-      Duration timeSpentSinceStartOfActivity = const Duration(seconds: 0);
-      activities[invokeCounter].at =
-          activities[invokeCounter].at ?? actStartDate;
+    while (invokeCounter < chain.activities.length) {
+      Map<String, dynamic> dryRunResult =
+          await chainList.executeChainFurtherPossible(chain, invokeCounter);
+      chain = dryRunResult["executingChain"];
+      invokeCounter = dryRunResult["invokeCounter"];
+      Duration waitDuration = dryRunResult["waitDuration"];
+      ChainActivity chainActivity = dryRunResult["chainActivity"];
+      int playScreenType = dryRunResult["playScreenType"];
+      bool running = dryRunResult["running"];
+      String screenImage = dryRunResult["screenImage"] ?? "";
 
-      activityExecutedFor = activities[invokeCounter].activityDurationLeft ??
-          activities[invokeCounter].activityDuration;
-      chain.pivotDate = activities[invokeCounter].endedAt ??
-          activities[invokeCounter].at!.add(activityExecutedFor);
+      if (invokeCounter >= chain.activities.length) {
+        break;
+      }
 
-      timeSpentSinceStartOfActivity = DateTime.now().difference(actStartDate);
+      String textToSpeak = chainActivity.activity.type == systemWaitActivityInDB
+          ? "Take Rest. Next Activity will start ${TransformFunctions.durationToString(waitDuration)} from now."
+          : "Activity ${chainActivity.activity.title} has started. It will complete ${TransformFunctions.durationToString(waitDuration)}.";
+      await chainList.speakText(textToSpeak);
+      popResponse = await nav.pushNamed(
+        PlayWaitActivity.routename,
+        arguments: {
+          "waitDuration": waitDuration,
+          "chainActivity": chainActivity,
+          "playScreenType": playScreenType,
+          "running": running,
+          "screenImage": screenImage,
+        },
+      );
 
-      bool validSystemWaitActivity =
-          activities[invokeCounter].activity.type == systemWaitActivityInDB &&
-              activities[invokeCounter].activityDuration.inSeconds > 0 &&
-              !chain.pivotDate!.isBefore(DateTime.now());
-      bool validUserWaitActivity =
-          activities[invokeCounter].activity.type == waitActivityInDB &&
-              (!chain.pivotDate!.isBefore(DateTime.now()) ||
-                  activities[invokeCounter].activityDuration.inSeconds <= 0);
-      bool conditionToRunActivity = activities[invokeCounter].endedAt == null &&
-          activities[invokeCounter].activity.type != systemStartActivityInDB &&
-          (validSystemWaitActivity ||
-              validUserWaitActivity ||
-              activities[invokeCounter].activityDurationLeft != null);
-
-      if (conditionToRunActivity) {
-        //Don't run system wait activity when its duration is 0 seconds.
-
-        if (activities[invokeCounter].activityDuration.inSeconds > 0) {
-          calculatedWaitDuration =
-              activityExecutedFor - timeSpentSinceStartOfActivity;
-        }
-        Duration durationForWaitActivity =
-            activities[invokeCounter].activityDurationLeft ??
-                (calculatedWaitDuration.inSeconds > 0
-                    ? calculatedWaitDuration
-                    : activities[invokeCounter].activityDuration);
-        String textToSpeak = activities[invokeCounter].activity.type ==
-                systemWaitActivityInDB
-            ? "Take Rest. Next Activity will start ${TransformFunctions.durationToString(durationForWaitActivity)} from now."
-            : "Activity ${activities[invokeCounter].activity.title} has started. It will complete ${TransformFunctions.durationToString(durationForWaitActivity)}.";
-        await chainList.speakText(textToSpeak);
-        popResponse = await nav.pushNamed(
-          PlayWaitActivity.routename,
-          arguments: {
-            "waitDuration": durationForWaitActivity,
-            "chainActivity": activities[invokeCounter],
-            "playRest": activities[invokeCounter].activity.type ==
-                systemWaitActivityInDB,
-            "running": activities[invokeCounter].activityDurationLeft == null,
-            "screenImage": activities[invokeCounter]
-                .activity
-                .specification?[activitySpecImagePath]
-          },
-        );
-
-        if (popResponse != null) {
-          if (popResponse["interruptAndCompleted"] == false) {
-            activities[invokeCounter].activityDurationLeft =
-                popResponse["running"] == false
-                    ? popResponse["waitDuration"]
-                    : null;
-            if (popResponse["resumedAt"] != null) {
-              chain.pivotDate = popResponse["resumedAt"];
-            }
-            break;
-          } else {
-            activities[invokeCounter].activityDurationLeft = null;
-            activities[invokeCounter].isInterrupted = true;
+      if (popResponse != null) {
+        if (popResponse["interruptAndCompleted"] == false) {
+          chainActivity.activityDurationLeft = popResponse["running"] == false
+              ? popResponse["waitDuration"]
+              : null;
+          if (popResponse["resumedAt"] != null) {
+            chain.pivotDate = popResponse["resumedAt"];
           }
+          break;
+        } else {
+          chainActivity.activityDurationLeft = null;
+          chainActivity.isInterrupted = true;
         }
       }
 
-      activities[invokeCounter].activityDone = true;
-      actStartDate = activities[invokeCounter].endedAt =
-          activities[invokeCounter].at!.add(Duration(
-              seconds: activities[invokeCounter].activityDuration.inSeconds));
-      if (activities[invokeCounter].activityDuration.inSeconds <= 0 &&
-          activities[invokeCounter].activity.type != systemStartActivityInDB &&
-          activities[invokeCounter].activity.type != systemWaitActivityInDB) {
-        actStartDate = activities[invokeCounter].endedAt = DateTime.now();
-        chain.pivotDate = activities[invokeCounter].endedAt!;
+      chainActivity.activityDone = true;
+      chainActivity.endedAt = chainActivity.at!
+          .add(Duration(seconds: chainActivity.activityDuration.inSeconds));
+      if (chainActivity.activityDuration.inSeconds <= 0 &&
+          chainActivity.activity.type != systemStartActivityInDB &&
+          chainActivity.activity.type != systemWaitActivityInDB) {
+        chainActivity.endedAt = DateTime.now();
+        chain.pivotDate = chainActivity.endedAt!;
       }
       await chainList.updateChainExecution(chain);
       await chainList.updateChainActivityExecutionByActivityId(
         chain,
-        activities[invokeCounter],
+        chainActivity,
       );
+
+      invokeCounter++;
     }
 
     if (popResponse != null && popResponse["interruptAndCompleted"] == false) {
@@ -152,17 +117,6 @@ class _PlayChainState extends State<PlayChain> {
       chain.endedAt = DateTime.now();
       parentChain.endedAt = null;
 
-      if (parentChain.repeatType != repeatTypeDoesNotRepeat) {
-        Chain chainInExecution =
-            await chainList.startChainExecution(parentChain);
-        chainList.scheduleNotificationForExecution(
-          chainInExecution,
-          chainInExecution.at!,
-        );
-      } else {
-        parentChain.at = null;
-      }
-
       await chainList.updateChain(parentChain);
       await chainList.updateChainExecution(chain);
     }
@@ -175,10 +129,13 @@ class _PlayChainState extends State<PlayChain> {
     if (chain.chainStatus == statusDone) {
       //await chainList.resetActivities(chain);
     } else {
-      await chainList.scheduleNotificationForExecution(
-        chain,
-        chain.at!,
-      );
+      Chain parentChain =
+          chainList.chains.firstWhere((sch) => sch.title == chain.title);
+      await chainList.evaluateChainExecutions(parentChain);
+      // await chainList.scheduleNotificationForExecution(
+      //   chain,
+      //   chain.at!,
+      // );
     }
     return true;
   }
@@ -202,12 +159,13 @@ class _PlayChainState extends State<PlayChain> {
       chain = parentChainItem.chainHistory.firstWhere(
           (schEx) => schEx.chainExecutionId == schArg[payLoadChainExecId]);
       //}
-      activities = chain.activities;
-      if (chain.chainStatus == statusExecuting &&
-          !chain.at!.isAfter(DateTime.now())) {
-        updateWaitDuration();
+
+      if (chain.chainStatus == statusExecuting) {
+        /** &&
+          !chain.at!.isAfter(DateTime.now()) */
+        playTheChain();
       } else {
-        invokeCounter = activities.length;
+        invokeCounter = chain.activities.length;
       }
       initializing = false;
       chainList.notificationCameAs = null;
@@ -262,11 +220,11 @@ class _PlayChainState extends State<PlayChain> {
                       ),
                     ),
                     IconButton(
-                      onPressed: invokeCounter >= activities.length
+                      onPressed: invokeCounter >= chain.activities.length
                           ? null
                           : () {
                               invokeCounter = 0;
-                              updateWaitDuration();
+                              playTheChain();
                             },
                       icon: const Icon(Icons.arrow_forward),
                     ),

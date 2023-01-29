@@ -24,13 +24,10 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
   DateTime? resumedAt;
   late ChainActivity chainActivity;
   bool initializing = true;
-  bool running = true,
-      showPlayPause = true,
-      appSoundEnabled = true,
-      playingRest = false;
-  String? screenImage;
+  bool running = true, showPlayPause = true, appSoundEnabled = true;
+  String? screenImage, title;
   NotificationHelper notificationHelper = NotificationHelper();
-
+  int playScreenType = waitActivityInDB;
   @override
   void dispose() {
     super.dispose();
@@ -114,9 +111,20 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
           ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
       initialWaitDuration = waitDuration = input["waitDuration"];
       chainActivity = input["chainActivity"];
-      playingRest = input["playRest"];
+      playScreenType = input["playScreenType"];
       running = input["running"];
       screenImage = input["screenImage"];
+
+      switch (playScreenType) {
+        case systemWaitActivityInDB:
+          title = "Rest";
+          break;
+        case systemEndActivityInDB:
+          title = "Complete this Chain";
+          break;
+        default:
+          title = chainActivity.activity.title;
+      }
       if (running && (waitDuration.inSeconds > 0)) {
         startTimer();
       }
@@ -182,20 +190,27 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                   ),
                 ),
                 Text(
-                  playingRest ? "Rest" : chainActivity.activity.title,
+                  title ?? "Generic Activity",
                   style: Theme.of(context).textTheme.headline4,
                   textAlign: TextAlign.center,
                 ),
-                Text(
-                  "will compelte\n$timeLeft\n${(hours != 0 || minutes != 0) && seconds != 0 ? 'and' : ''}",
-                  style: Theme.of(context).textTheme.headline5,
-                  textAlign: TextAlign.center,
-                ),
+                if (playScreenType != systemEndActivityInDB)
+                  Text(
+                    "will compelte\n$timeLeft\n${(hours != 0 || minutes != 0) && seconds != 0 ? 'and' : ''}",
+                    style: Theme.of(context).textTheme.headline5,
+                    textAlign: TextAlign.center,
+                  )
+                else
+                  Text(
+                    "by pressing done.",
+                    style: Theme.of(context).textTheme.headline5,
+                    textAlign: TextAlign.center,
+                  ),
                 InkWell(
                   onTap: interruptAndCompleteActivity,
                   child: CircleAvatar(
                     radius: 50,
-                    backgroundColor: playingRest
+                    backgroundColor: playScreenType == systemWaitActivityInDB
                         ? Theme.of(context).focusColor
                         : Theme.of(context).canvasColor,
                     child: FittedBox(

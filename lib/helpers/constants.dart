@@ -9,6 +9,7 @@ const String activitySpecImagePath = "imagePath";
 const int systemStartActivityInDB = 0;
 const int systemWaitActivityInDB = 1;
 const int waitActivityInDB = 2;
+const int systemEndActivityInDB = 3;
 
 //System Activity Names
 const String systemWaitActivityTitle = "System Wait Activity";
