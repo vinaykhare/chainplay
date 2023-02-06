@@ -143,7 +143,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
           .startChainExecution(tempChain);
       // chainList.scheduleNotificationForExecution(
       //     chainInExecution, chainInExecution.at!);
-      await chainList.evaluateChainExecutions(tempChain);
+      await chainList.evaluateChainExecutions(tempChain, false);
     }
     // else {
     //   chainList.cancelScheduledNotification(tempChain);

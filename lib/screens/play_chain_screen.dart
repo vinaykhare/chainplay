@@ -112,13 +112,14 @@ class _PlayChainState extends State<PlayChain> {
       Chain parentChain =
           chainList.chains.firstWhere((sch) => sch.title == chain.title);
 
-      chain.chainStatus = statusDone;
+      //chain.chainStatus = statusDone;
       parentChain.chainStatus = statusNotStarted;
-      chain.endedAt = DateTime.now();
+      //chain.endedAt = DateTime.now();
       parentChain.endedAt = null;
 
       await chainList.updateChain(parentChain);
-      await chainList.updateChainExecution(chain);
+      //await chainList.updateChainExecution(chain);
+      await chainList.completeTheChain(chain);
     }
     //nav.pop();
   }
@@ -131,7 +132,7 @@ class _PlayChainState extends State<PlayChain> {
     } else {
       Chain parentChain =
           chainList.chains.firstWhere((sch) => sch.title == chain.title);
-      await chainList.evaluateChainExecutions(parentChain);
+      await chainList.evaluateChainExecutions(parentChain, false);
       // await chainList.scheduleNotificationForExecution(
       //   chain,
       //   chain.at!,

@@ -124,7 +124,8 @@ class ChainList with ChangeNotifier {
     }
   }
 
-  Future<Chain?> evaluateChainExecutions(Chain chain) async {
+  Future<Chain?> evaluateChainExecutions(Chain chain,
+      [bool cancelNotification = true]) async {
     // if (chain.at == null
     //     // ||
     //     //     chain.at!.isAfter(
@@ -142,18 +143,19 @@ class ChainList with ChangeNotifier {
         lastCompletedChain = executingChain;
         continue;
       }
-      lastCompletedChain =
-          await calculateAndGetLastCompletedChain(executingChain);
-      if (lastCompletedChain != null) {
-        chain.endedAt = lastCompletedChain.endedAt;
-        await completeTheChain(chain);
-      } else {
-        scheduleNotificationForExecution(executingChain, executingChain.at!);
+      if (cancelNotification) {
+        await cancelScheduledNotificationExecution(executingChain);
       }
-
+      Map<String, dynamic> executionResponse =
+          await executeChainFurtherPossible(executingChain);
+      lastCompletedChain = executionResponse["executingChain"];
+      await scheduleNotificationForExecution(
+          lastCompletedChain!, executingChain.at!);
       break; // only one execution is allowed.
     }
 
+    /*
+    *
     while (lastCompletedChain != null &&
         chain.repeatType != repeatTypeDoesNotRepeat &&
         (chain.repeatCount > 0 || chain.repeatCount == -1)) {
@@ -169,26 +171,10 @@ class ChainList with ChangeNotifier {
         break;
       }
     }
+    *
+    */
 
     return executingChain;
-  }
-
-  Future<Chain?> calculateAndGetLastCompletedChain(Chain executingChain) async {
-    Map<String, dynamic> furterExecutionResponse =
-        await executeChainFurtherPossible(executingChain);
-    Chain chainAfterFurtherExecution =
-        furterExecutionResponse["executingChain"];
-    if (chainAfterFurtherExecution.endedAt == null) {
-      return null;
-    }
-
-    if (chainAfterFurtherExecution.endedAt!.isAfter(
-      DateTime.now(),
-    )) {
-      return null;
-    }
-    await cancelScheduledNotificationExecution(chainAfterFurtherExecution);
-    return chainAfterFurtherExecution;
   }
 
   Future<Map<String, dynamic>> executeChainFurtherPossible(Chain executingChain,
