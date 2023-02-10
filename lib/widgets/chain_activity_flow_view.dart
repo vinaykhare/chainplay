@@ -39,7 +39,7 @@ class ChainActivityFlowView extends StatelessWidget {
         Card(
           elevation: 10,
           color: chainActivity.endedAt != null
-              ? Theme.of(context).selectedRowColor
+              ? Theme.of(context).textSelectionTheme.selectionColor
               : Theme.of(context).cardColor,
           child: Dismissible(
             direction: editActivity != null
@@ -47,7 +47,7 @@ class ChainActivityFlowView extends StatelessWidget {
                 : DismissDirection.none,
             background: Container(
               decoration: BoxDecoration(
-                color: Theme.of(context).errorColor,
+                color: Theme.of(context).colorScheme.error,
               ),
             ),
             key: ValueKey(
@@ -69,7 +69,7 @@ class ChainActivityFlowView extends StatelessWidget {
                         Expanded(
                           child: Text(
                             chainActivity.activity.title,
-                            style: Theme.of(context).textTheme.headline5,
+                            style: Theme.of(context).textTheme.headlineSmall,
                           ),
                         ),
                         Expanded(
@@ -140,7 +140,8 @@ class ChainActivityFlowView extends StatelessWidget {
                             Expanded(
                               child: Text(
                                 chainActivity.activity.title,
-                                style: Theme.of(context).textTheme.headline5,
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall,
                               ),
                             ),
                             Expanded(

@@ -1,0 +1,247 @@
+import 'dart:async';
+
+import 'package:chain_activities/helpers/transform_functions.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:chain_activities/helpers/constants.dart';
+import 'package:chain_activities/models/chain.dart';
+import 'package:chain_activities/models/chain_activity.dart';
+import 'package:chain_activities/models/chain_list.dart';
+import 'package:chain_activities/screens/play_wait_activity_screen.dart';
+import 'package:chain_activities/screens/chain_list_screen.dart';
+import 'package:chain_activities/widgets/chain_activities_widget.dart';
+
+class ShowChainFromNotification extends StatefulWidget {
+  static String routename = "show_chain_from_notification";
+  const ShowChainFromNotification({super.key});
+  @override
+  State<ShowChainFromNotification> createState() => _PlayChainState();
+}
+
+class _PlayChainState extends State<ShowChainFromNotification> {
+  late Chain chain;
+  late Chain parentChainItem;
+  late ChainList chainList;
+  int invokeCounter = 0;
+  bool initializing = true;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+  //     chainList.cancelScheduledNotificationExecution(
+  //       chain,
+  //     );
+  //   });
+  // }
+
+  Future<void> playTheChain() async {
+    dynamic popResponse;
+    NavigatorState nav = Navigator.of(context);
+
+    while (invokeCounter < chain.activities.length) {
+      Map<String, dynamic> dryRunResult =
+          await chainList.executeChainFurtherPossible(chain, invokeCounter);
+      chain = dryRunResult["executingChain"];
+      invokeCounter = dryRunResult["invokeCounter"];
+      Duration waitDuration = dryRunResult["waitDuration"];
+      ChainActivity chainActivity = dryRunResult["chainActivity"];
+      int playScreenType = dryRunResult["playScreenType"];
+      bool running = dryRunResult["running"];
+      String screenImage = dryRunResult["screenImage"] ?? "";
+
+      if (invokeCounter >= chain.activities.length) {
+        break;
+      }
+
+      if (parentChainItem.notificationId == trueInDB &&
+          waitDuration.inSeconds > 0) {
+        break;
+      }
+
+      String textToSpeak = chainActivity.activity.type == systemWaitActivityInDB
+          ? "Take Rest. Next Activity will start ${TransformFunctions.durationToString(waitDuration)} from now."
+          : "Activity ${chainActivity.activity.title} has started. It will complete ${TransformFunctions.durationToString(waitDuration)}.";
+      await chainList.speakText(textToSpeak);
+      popResponse = await nav.pushNamed(
+        PlayWaitActivity.routename,
+        arguments: {
+          "waitDuration": waitDuration,
+          "chainActivity": chainActivity,
+          "playScreenType": playScreenType,
+          "running": running,
+          "screenImage": screenImage,
+        },
+      );
+
+      if (popResponse != null) {
+        if (popResponse["interruptAndCompleted"] == false) {
+          chainActivity.activityDurationLeft = popResponse["running"] == false
+              ? popResponse["waitDuration"]
+              : null;
+          if (popResponse["resumedAt"] != null) {
+            chain.pivotDate = popResponse["resumedAt"];
+          }
+          break;
+        } else {
+          chainActivity.activityDurationLeft = null;
+          chainActivity.isInterrupted = true;
+        }
+      }
+
+      chainActivity.activityDone = true;
+      chainActivity.endedAt = chainActivity.at!
+          .add(Duration(seconds: chainActivity.activityDuration.inSeconds));
+      if (chainActivity.activityDuration.inSeconds <= 0 &&
+          chainActivity.activity.type != systemStartActivityInDB &&
+          chainActivity.activity.type != systemWaitActivityInDB) {
+        chainActivity.endedAt = DateTime.now();
+        chain.pivotDate = chainActivity.endedAt!;
+      }
+      await chainList.updateChainExecution(chain);
+      await chainList.updateChainActivityExecutionByActivityId(
+        chain,
+        chainActivity,
+      );
+
+      invokeCounter++;
+    }
+
+    if (popResponse != null && popResponse["interruptAndCompleted"] == false) {
+      // await chainList.scheduleNotification(
+      //     chain, DateTime.now(), invokeCounter);
+      if (popResponse["running"] == false &&
+          popResponse["waitDuration"] != null) {
+        chain.pivotDate = chain.pivotDate!.add(popResponse["waitDuration"]);
+      }
+    } else {
+      Chain parentChain =
+          chainList.chains.firstWhere((sch) => sch.title == chain.title);
+
+      //chain.chainStatus = statusDone;
+      parentChain.chainStatus = statusNotStarted;
+      //chain.endedAt = DateTime.now();
+      parentChain.endedAt = null;
+
+      await chainList.updateChain(parentChain);
+      //await chainList.updateChainExecution(chain);
+      await chainList.completeTheChain(chain);
+    }
+    //nav.pop();
+  }
+
+  Future<bool> onPopOut() async {
+    // await chainList.scheduleNotification(
+    //     chain, DateTime.now(), invokeCounter);
+    if (chain.chainStatus == statusDone) {
+      //await chainList.resetActivities(chain);
+    } else {
+      Chain parentChain =
+          chainList.chains.firstWhere((sch) => sch.title == chain.title);
+      await chainList.evaluateChainExecutions(parentChain, false);
+      // await chainList.scheduleNotificationForExecution(
+      //   chain,
+      //   chain.at!,
+      // );
+    }
+    return true;
+  }
+
+  //Build Function
+
+  @override
+  Widget build(BuildContext context) {
+    if (initializing) {
+      chainList = Provider.of<ChainList>(context, listen: false);
+
+      // if (chainList.notificationCameForChain != null) {
+      //   chain = chainList.notificationCameForChain!;
+      //   chainList.notificationCameForChain = null;
+      // } else {
+      Map<String, dynamic> chArg = chainList.notificationCameAs != null
+          ? chainList.notificationCameAs!
+          : ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+      parentChainItem = chainList.chains
+          .firstWhere((ch) => ch.title == chArg[payLoadChainName]);
+      chain = parentChainItem.chainHistory.firstWhere(
+          (schEx) => schEx.chainExecutionId == chArg[payLoadChainExecId]);
+      //}
+
+      if (chain.chainStatus == statusExecuting) {
+        /* &&
+          !chain.at!.isAfter(DateTime.now()) */
+        playTheChain();
+      } else {
+        invokeCounter = chain.activities.length;
+      }
+      initializing = false;
+      chainList.notificationCameAs = null;
+    }
+    double appHeight = MediaQuery.of(context).size.height -
+        MediaQuery.of(context).viewPadding.top -
+        MediaQuery.of(context).viewPadding.bottom;
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: SizedBox(
+            // margin: const EdgeInsets.only(top: 50),
+            // padding: const EdgeInsets.all(10),
+            height: appHeight,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ChainActivitiesWidget(
+                      tempChain: chain,
+                      editActivity: null,
+                      undoEdit: null,
+                    ),
+                  ),
+                ),
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () async {
+                        NavigatorState nav = Navigator.of(context);
+                        bool allWell = await onPopOut();
+                        allWell && nav.canPop()
+                            ? nav.pop()
+                            : nav.pushNamed(ChainListScreen.routename);
+                      },
+                      icon: const Icon(Icons.arrow_back),
+                    ),
+                    Expanded(
+                      child: TextFormField(
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.titleLarge,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          floatingLabelAlignment: FloatingLabelAlignment.center,
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                        ),
+                        initialValue: chain.title,
+                        enabled: false,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: invokeCounter >= chain.activities.length
+                          ? null
+                          : () {
+                              invokeCounter = 0;
+                              playTheChain();
+                            },
+                      icon: const Icon(Icons.arrow_forward),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

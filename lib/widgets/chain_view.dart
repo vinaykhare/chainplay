@@ -1,3 +1,4 @@
+import 'package:chain_activities/screens/show_chain_from_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/models/chain.dart';
@@ -14,49 +15,86 @@ class ChainView extends StatelessWidget {
   final bool showHistory, allowFlag;
   final int index;
 
-  const ChainView(
-      {required super.key,
-      required this.chain,
-      required this.showHistory,
-      required this.allowFlag,
-      required this.index});
+  const ChainView({
+    required super.key,
+    required this.chain,
+    required this.showHistory,
+    required this.allowFlag,
+    required this.index,
+  });
+
+  Future<void> playTheChain(BuildContext context) async {
+    NavigatorState nav = Navigator.of(context);
+    if (chain.chainStatus == statusExecuting) {
+      await Provider.of<ChainList>(context, listen: false)
+          .stopChainExecution(chain);
+    } else {
+      //await Provider.of<ChainList>(context, listen: false).loadActivities(chain);
+      Chain chainExecution =
+          await Provider.of<ChainList>(context, listen: false)
+              .startChainExecution(chain);
+      await nav.pushNamed(
+        PlayChain.routename,
+        arguments: {
+          payLoadChainExecId: chainExecution.chainExecutionId,
+          payLoadChainName: chainExecution.title,
+          payLoadChainActivityIndex: index, //0
+          payLoadChainActivityCount: chain.chainHistory.length,
+        },
+      );
+    }
+  }
+
+  Future<void> navigateToAddChainOrPlayChain(BuildContext context) async {
+    NavigatorState nav = Navigator.of(context);
+    if (chain.chainStatus == statusNotStarted) {
+      //await Provider.of<ChainList>(context, listen: false).loadActivities(chain);
+      chain.edit = true;
+      await Provider.of<ChainList>(context, listen: false).updateChain(chain);
+      await nav.pushNamed(
+        AddChainScreen.routename,
+        arguments: chain,
+      );
+    } else {
+      Chain? chainExecution =
+          await Provider.of<ChainList>(context, listen: false)
+              .evaluateChainExecutions(chain);
+      //await Provider.of<ChainList>(context, listen: false).loadActivities(chain);
+      if (chainExecution == null) {
+        return; //No Chains to execute.
+      }
+
+      await nav.pushNamed(
+        chain.notificationId == trueInDB
+            ? ShowChainFromNotification.routename
+            : PlayChain.routename,
+        arguments: {
+          payLoadChainExecId: chainExecution.chainExecutionId,
+          payLoadChainName: chainExecution.title,
+          payLoadChainActivityIndex: index, //0
+          payLoadChainActivityCount: chain.chainHistory.length,
+        },
+      );
+    }
+  }
+
+  Widget getIconForChain(Chain chain) {
+    if (chain.notificationId == trueInDB) {
+      return const Icon(Icons.schedule);
+    }
+    if (chain.chainStatus == statusExecuting) {
+      return const Icon(Icons.pause);
+    }
+    return const Icon(Icons.play_arrow);
+  }
 
   @override
   Widget build(BuildContext context) {
-    ChainList chainList = Provider.of<ChainList>(context);
-    NavigatorState nav = Navigator.of(context);
     return Card(
       key: key,
       elevation: 10,
       child: ListTile(
-        onTap: () async {
-          NavigatorState nav = Navigator.of(context);
-          if (chain.chainStatus == statusNotStarted) {
-            //await chainList.loadActivities(chain);
-            chain.edit = true;
-            await chainList.updateChain(chain);
-            await nav.pushNamed(
-              AddChainScreen.routename,
-              arguments: chain,
-            );
-          } else {
-            Chain? chainExecution =
-                await chainList.evaluateChainExecutions(chain);
-            //await chainList.loadActivities(chain);
-            if (chainExecution == null) {
-              return; //No Chains to execute.
-            }
-            await nav.pushNamed(
-              PlayChain.routename,
-              arguments: {
-                payLoadChainExecId: chainExecution.chainExecutionId,
-                payLoadChainName: chainExecution.title,
-                payLoadChainActivityIndex: index, //0
-                payLoadChainActivityCount: chain.chainHistory.length,
-              },
-            );
-          }
-        },
+        onTap: () => navigateToAddChainOrPlayChain(context),
         tileColor: chain.chainStatus == statusDone
             ? Theme.of(context).disabledColor
             : Theme.of(context).cardColor,
@@ -71,27 +109,8 @@ class ChainView extends StatelessWidget {
         leading: CircleAvatar(
           backgroundColor: Theme.of(context).primaryColorLight,
           child: IconButton(
-            onPressed: () async {
-              if (chain.chainStatus == statusExecuting) {
-                await chainList.stopChainExecution(chain);
-              } else {
-                //await chainList.loadActivities(chain);
-                Chain chainExecution =
-                    await chainList.startChainExecution(chain);
-                await nav.pushNamed(
-                  PlayChain.routename,
-                  arguments: {
-                    payLoadChainExecId: chainExecution.chainExecutionId,
-                    payLoadChainName: chainExecution.title,
-                    payLoadChainActivityIndex: index, //0
-                    payLoadChainActivityCount: chain.chainHistory.length,
-                  },
-                );
-              }
-            },
-            icon: chain.chainStatus == statusExecuting
-                ? const Icon(Icons.pause)
-                : const Icon(Icons.play_arrow),
+            onPressed: () => playTheChain(context),
+            icon: getIconForChain(chain),
           ),
         ),
         trailing: Row(
@@ -104,14 +123,16 @@ class ChainView extends StatelessWidget {
                     : const Icon(Icons.favorite_border_outlined),
                 onPressed: () async {
                   chain.pinned = !chain.pinned;
-                  await chainList.updateChain(chain);
+                  await Provider.of<ChainList>(context, listen: false)
+                      .updateChain(chain);
                 },
               ),
             if (showHistory)
               IconButton(
                 onPressed: () async {
                   NavigatorState navState = Navigator.of(context);
-                  await chainList.evaluateChainExecutions(chain);
+                  await Provider.of<ChainList>(context, listen: false)
+                      .evaluateChainExecutions(chain);
                   navState.pushNamed(
                     ChainExecutionScreen.routename,
                     arguments: chain,

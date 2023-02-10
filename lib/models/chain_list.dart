@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:chain_activities/helpers/system_configuration.dart';
 import 'package:chain_activities/models/chain_activity.dart';
+import 'package:chain_activities/screens/show_chain_from_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:chain_activities/helpers/constants.dart';
 //import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -14,7 +15,6 @@ import 'package:chain_activities/helpers/notification_helper.dart';
 import 'package:chain_activities/models/activity.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/system_setting.dart';
-import 'package:chain_activities/screens/play_chain_screen.dart';
 import 'package:uuid/uuid.dart';
 //import 'package:chain_activities/screens/play_chain_screen.dart';
 
@@ -135,22 +135,23 @@ class ChainList with ChangeNotifier {
     //   return null;
     // }
     Chain? executingChain;
-    Chain? lastCompletedChain;
+    //Chain? lastCompletedChain;
 
     for (executingChain in chain.chainHistory) {
       if (executingChain.chainStatus == statusDone) {
-        await cancelScheduledNotification(executingChain);
-        lastCompletedChain = executingChain;
+        //await cancelScheduledNotification(executingChain);
+        //lastCompletedChain = executingChain;
         continue;
       }
-      if (cancelNotification) {
-        await cancelScheduledNotificationExecution(executingChain);
-      }
-      Map<String, dynamic> executionResponse =
-          await executeChainFurtherPossible(executingChain);
-      lastCompletedChain = executionResponse["executingChain"];
-      await scheduleNotificationForExecution(
-          lastCompletedChain!, executingChain.at!);
+      // if (cancelNotification) {
+      //   await cancelScheduledNotificationExecution(executingChain);
+      // }
+      // Map<String, dynamic> executionResponse =
+      //     await executeChainFurtherPossible(executingChain);
+      await executeChainFurtherPossible(executingChain);
+      //lastCompletedChain = executionResponse["executingChain"];
+      // await scheduleNotificationForExecution(
+      //     lastCompletedChain!, executingChain.at!);
       break; // only one execution is allowed.
     }
 
@@ -1465,6 +1466,8 @@ class ChainList with ChangeNotifier {
     DateTime fromDateTime,
   ) async {
     int countOfActivities = chain.activities.length;
+    chain.notificationId = trueInDB;
+    await updateChainExecution(chain);
     bool noBreakChain = true;
     for (int i = 0; i < countOfActivities; i++) {
       if (chain.activities[i].endedAt != null) {
@@ -1497,7 +1500,7 @@ class ChainList with ChangeNotifier {
         {
           payLoadChainName: chain.title,
           payLoadChainExecId: chain.chainExecutionId,
-          payLoadWidgetUrl: PlayChain.routename,
+          payLoadWidgetUrl: ShowChainFromNotification.routename,
           payLoadChainActivityIndex: i + 1,
           payLoadChainActivityCount: chain.activities.length,
         },
@@ -1542,7 +1545,7 @@ class ChainList with ChangeNotifier {
         {
           payLoadChainName: chain.title,
           payLoadChainExecId: chain.chainExecutionId,
-          payLoadWidgetUrl: PlayChain.routename,
+          payLoadWidgetUrl: ShowChainFromNotification.routename,
           payLoadChainActivityIndex: i + 2,
           payLoadChainActivityCount: chain.activities.length,
         },
@@ -1589,7 +1592,7 @@ class ChainList with ChangeNotifier {
   Future<void> cancelScheduledNotification(Chain chain) async {
     //Cancel Notifications
     if (chain.notificationId != noValueInDB) {
-      await notificationHelper.cancelNotificationById(chain.notificationId);
+      //await notificationHelper.cancelNotificationById(chain.notificationId);
       chain.notificationId = noValueInDB;
       await updateChainExecution(chain);
     }

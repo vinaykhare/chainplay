@@ -125,7 +125,7 @@ class ChainExecutionScreen extends StatelessWidget {
                           decoration: BoxDecoration(
                               gradient: RadialGradient(
                             colors: [
-                              Theme.of(context).backgroundColor,
+                              Theme.of(context).colorScheme.background,
                               Theme.of(context).scaffoldBackgroundColor,
                             ],
                           )),

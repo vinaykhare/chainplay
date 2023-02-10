@@ -16,7 +16,7 @@ class SystemWaitActivity extends StatelessWidget {
       child: Text(
         taskText,
         style: TextStyle(
-          color: Theme.of(context).textTheme.headline6?.color,
+          color: Theme.of(context).textTheme.titleLarge?.color,
         ),
       ),
     );

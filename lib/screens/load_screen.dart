@@ -27,7 +27,7 @@ class LoadScreen extends StatelessWidget {
                 ),
                 Text(
                   "Loading...",
-                  style: Theme.of(context).textTheme.headline4?.copyWith(
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                 ),

@@ -191,19 +191,19 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                 ),
                 Text(
                   title ?? "Generic Activity",
-                  style: Theme.of(context).textTheme.headline4,
+                  style: Theme.of(context).textTheme.headlineMedium,
                   textAlign: TextAlign.center,
                 ),
                 if (playScreenType != systemEndActivityInDB)
                   Text(
                     "will compelte\n$timeLeft\n${(hours != 0 || minutes != 0) && seconds != 0 ? 'and' : ''}",
-                    style: Theme.of(context).textTheme.headline5,
+                    style: Theme.of(context).textTheme.headlineSmall,
                     textAlign: TextAlign.center,
                   )
                 else
                   Text(
                     "by pressing done.",
-                    style: Theme.of(context).textTheme.headline5,
+                    style: Theme.of(context).textTheme.headlineSmall,
                     textAlign: TextAlign.center,
                   ),
                 InkWell(
@@ -216,7 +216,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                     child: FittedBox(
                       child: Text(
                         displaySeconds,
-                        style: Theme.of(context).textTheme.headline4,
+                        style: Theme.of(context).textTheme.headlineMedium,
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -225,7 +225,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                 if (waitDuration.inSeconds != 0)
                   Text(
                     "Seconds.",
-                    style: Theme.of(context).textTheme.headline5,
+                    style: Theme.of(context).textTheme.headlineSmall,
                     textAlign: TextAlign.center,
                   ),
                 Row(

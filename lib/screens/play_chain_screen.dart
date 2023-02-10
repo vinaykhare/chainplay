@@ -20,38 +20,49 @@ class PlayChain extends StatefulWidget {
 
 class _PlayChainState extends State<PlayChain> {
   late Chain chain;
+  late Chain parentChainItem;
   late ChainList chainList;
   int invokeCounter = 0;
   bool initializing = true;
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      chainList.cancelScheduledNotificationExecution(
-        chain,
-      );
-    });
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+  //     chainList.cancelScheduledNotificationExecution(
+  //       chain,
+  //     );
+  //   });
+  // }
 
   Future<void> playTheChain() async {
     dynamic popResponse;
     NavigatorState nav = Navigator.of(context);
 
     while (invokeCounter < chain.activities.length) {
-      Map<String, dynamic> dryRunResult =
-          await chainList.executeChainFurtherPossible(chain, invokeCounter);
-      chain = dryRunResult["executingChain"];
-      invokeCounter = dryRunResult["invokeCounter"];
-      Duration waitDuration = dryRunResult["waitDuration"];
-      ChainActivity chainActivity = dryRunResult["chainActivity"];
-      int playScreenType = dryRunResult["playScreenType"];
-      bool running = dryRunResult["running"];
-      String screenImage = dryRunResult["screenImage"] ?? "";
-
-      if (invokeCounter >= chain.activities.length) {
-        break;
+      // Map<String, dynamic> dryRunResult =
+      //     await chainList.executeChainFurtherPossible(chain, invokeCounter);
+      ChainActivity chainActivity = chain.activities[invokeCounter];
+      if (chainActivity.endedAt != null) {
+        continue;
       }
+
+      Duration waitDuration = chainActivity.activityDurationLeft != null
+          ? chainActivity.activityDuration
+          : chainActivity.activityDuration;
+      int playScreenType = chainActivity.activity.type;
+      bool running = chainActivity.activityDurationLeft == null;
+      String screenImage =
+          chainActivity.activity.specification?[activitySpecImagePath] ?? "";
+
+      // if (invokeCounter >= chain.activities.length) {
+      //   break;
+      // }
+
+      // if (parentChainItem.notificationId == trueInDB &&
+      //     waitDuration.inSeconds > 0) {
+      //   break;
+      // }
 
       String textToSpeak = chainActivity.activity.type == systemWaitActivityInDB
           ? "Take Rest. Next Activity will start ${TransformFunctions.durationToString(waitDuration)} from now."
@@ -152,17 +163,17 @@ class _PlayChainState extends State<PlayChain> {
       //   chain = chainList.notificationCameForChain!;
       //   chainList.notificationCameForChain = null;
       // } else {
-      Map<String, dynamic> schArg = chainList.notificationCameAs != null
+      Map<String, dynamic> chArg = chainList.notificationCameAs != null
           ? chainList.notificationCameAs!
           : ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-      Chain parentChainItem = chainList.chains
-          .firstWhere((sch) => sch.title == schArg[payLoadChainName]);
+      parentChainItem = chainList.chains
+          .firstWhere((ch) => ch.title == chArg[payLoadChainName]);
       chain = parentChainItem.chainHistory.firstWhere(
-          (schEx) => schEx.chainExecutionId == schArg[payLoadChainExecId]);
+          (schEx) => schEx.chainExecutionId == chArg[payLoadChainExecId]);
       //}
 
       if (chain.chainStatus == statusExecuting) {
-        /** &&
+        /* &&
           !chain.at!.isAfter(DateTime.now()) */
         playTheChain();
       } else {
@@ -210,7 +221,7 @@ class _PlayChainState extends State<PlayChain> {
                     Expanded(
                       child: TextFormField(
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.headline6,
+                        style: Theme.of(context).textTheme.titleLarge,
                         decoration: const InputDecoration(
                           border: InputBorder.none,
                           floatingLabelAlignment: FloatingLabelAlignment.center,

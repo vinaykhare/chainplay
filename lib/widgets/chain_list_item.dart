@@ -31,7 +31,7 @@ class ChainListItem extends StatelessWidget {
       background: Container(
         margin: const EdgeInsets.fromLTRB(0, 4, 0, 4),
         decoration: BoxDecoration(
-          color: Theme.of(context).errorColor,
+          color: Theme.of(context).colorScheme.error,
         ),
         child: const Icon(Icons.delete),
       ),

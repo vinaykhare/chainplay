@@ -71,7 +71,7 @@ class ChainSystemWaitActivityFlow extends StatelessWidget {
                         Icons.circle_outlined,
                         size: 15,
                         color: activities[index].edit
-                            ? Theme.of(context).errorColor
+                            ? Theme.of(context).colorScheme.error
                             : Theme.of(context).primaryColor,
                       ),
               ),

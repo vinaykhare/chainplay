@@ -22,7 +22,7 @@ class StartEndTimeChainWidget extends StatelessWidget {
         if (cardTitle != null)
           Text(
             cardTitle!,
-            style: Theme.of(context).textTheme.headline5,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

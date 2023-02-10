@@ -139,11 +139,13 @@ class _AddChainScreenState extends State<AddChainScreen> {
     }
 
     if (tempChain.at != null && tempChain.at!.isAfter(DateTime.now())) {
-      /* Chain chainInExecution = */ await chainList
-          .startChainExecution(tempChain);
-      // chainList.scheduleNotificationForExecution(
-      //     chainInExecution, chainInExecution.at!);
-      await chainList.evaluateChainExecutions(tempChain, false);
+      Chain chainInExecution = await chainList.startChainExecution(tempChain);
+      await chainList.scheduleNotificationForExecution(
+          chainInExecution, chainInExecution.at!);
+
+      tempChain.notificationId = trueInDB;
+
+      //await chainList.evaluateChainExecutions(tempChain, false);
     }
     // else {
     //   chainList.cancelScheduledNotification(tempChain);
@@ -920,7 +922,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
             //   fontSize: 22,
             //   fontWeight: FontWeight.bold,
             // ),
-            style: Theme.of(context).textTheme.headline6,
+            style: Theme.of(context).textTheme.titleLarge,
             decoration: const InputDecoration(
               border: InputBorder.none,
               floatingLabelAlignment: FloatingLabelAlignment.center,
@@ -974,7 +976,8 @@ class _AddChainScreenState extends State<AddChainScreen> {
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       errorString,
-                      style: TextStyle(color: Theme.of(context).errorColor),
+                      style:
+                          TextStyle(color: Theme.of(context).colorScheme.error),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -1049,6 +1052,9 @@ class _AddChainScreenState extends State<AddChainScreen> {
                         IconButton(
                           onPressed: () {
                             undoEdit(chainActivityInEditMode!);
+                            tempChain.at = null;
+                            tempChain.repeatType = repeatTypeDoesNotRepeat;
+                            tempChain.repeatCount = repeatTypeDefaultCount;
                           },
                           icon: const Icon(Icons.cancel_outlined),
                         ),

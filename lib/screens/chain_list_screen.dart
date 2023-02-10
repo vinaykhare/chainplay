@@ -77,7 +77,7 @@ class ChainListScreen extends StatelessWidget {
                       child: Text(
                         "No Chains Configured!!\n\nPress here\n to add a sample chain to Start.",
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.headline5,
+                        style: Theme.of(context).textTheme.headlineSmall,
                       ),
                     )),
               ),

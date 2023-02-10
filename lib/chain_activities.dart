@@ -1,4 +1,5 @@
 import 'package:chain_activities/helpers/key_helper.dart';
+import 'package:chain_activities/screens/show_chain_from_notification.dart';
 import 'package:chain_activities/widgets/redirect.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -33,24 +34,124 @@ class ChainActivities extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: darkTheme
           ? ThemeData(
+              primarySwatch: Colors.grey,
               scaffoldBackgroundColor: const Color.fromARGB(255, 56, 57, 57),
-              backgroundColor: const Color.fromARGB(255, 91, 91, 94),
-              colorScheme: const ColorScheme.dark(),
               canvasColor: const Color.fromARGB(255, 11, 11, 12),
               cardColor: const Color.fromARGB(255, 52, 52, 67),
-              selectedRowColor: const Color.fromARGB(255, 46, 46, 47),
               appBarTheme: const AppBarTheme(
                 backgroundColor: Color.fromARGB(255, 53, 53, 55),
+              ),
+              textTheme: const TextTheme(
+                titleMedium: TextStyle(
+                  color: Colors.white,
+                ),
+                titleLarge: TextStyle(
+                  color: Colors.white,
+                ),
+                titleSmall: TextStyle(
+                  color: Colors.white,
+                ),
+                bodyMedium: TextStyle(
+                  color: Colors.white,
+                ),
+                bodyLarge: TextStyle(
+                  color: Colors.white,
+                ),
+                bodySmall: TextStyle(
+                  color: Colors.white,
+                ),
+                headlineMedium: TextStyle(
+                  color: Colors.white,
+                ),
+                headlineLarge: TextStyle(
+                  color: Colors.white,
+                ),
+                headlineSmall: TextStyle(
+                  color: Colors.white,
+                ),
+                displayMedium: TextStyle(
+                  color: Colors.white,
+                ),
+                displayLarge: TextStyle(
+                  color: Colors.white,
+                ),
+                displaySmall: TextStyle(
+                  color: Colors.white,
+                ),
+                labelMedium: TextStyle(
+                  color: Colors.white,
+                ),
+                labelLarge: TextStyle(
+                  color: Colors.white,
+                ),
+                labelSmall: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              colorScheme: const ColorScheme.dark(
+                background: Color.fromARGB(255, 91, 91, 94),
+                primary: Colors.grey,
+                onPrimary: Colors.white,
               ),
             )
           : ThemeData(
               primarySwatch: Colors.amber,
               scaffoldBackgroundColor: Colors.amber.shade200,
-              backgroundColor: Colors.lightGreen,
               cardColor: Colors.lightGreen,
               canvasColor: Colors.amber,
+              colorScheme: const ColorScheme.light(
+                background: Colors.lightGreen,
+                primary: Colors.amber,
+                onPrimary: Colors.black,
+              ),
               dialogBackgroundColor: Colors.lightGreen,
-              selectedRowColor: Colors.green.shade700,
+              textTheme: const TextTheme(
+                titleMedium: TextStyle(
+                  color: Colors.black,
+                ),
+                titleLarge: TextStyle(
+                  color: Colors.black,
+                ),
+                titleSmall: TextStyle(
+                  color: Colors.black,
+                ),
+                bodyMedium: TextStyle(
+                  color: Colors.black,
+                ),
+                bodyLarge: TextStyle(
+                  color: Colors.black,
+                ),
+                bodySmall: TextStyle(
+                  color: Colors.black,
+                ),
+                headlineMedium: TextStyle(
+                  color: Colors.black,
+                ),
+                headlineLarge: TextStyle(
+                  color: Colors.black,
+                ),
+                headlineSmall: TextStyle(
+                  color: Colors.black,
+                ),
+                displayMedium: TextStyle(
+                  color: Colors.black,
+                ),
+                displayLarge: TextStyle(
+                  color: Colors.black,
+                ),
+                displaySmall: TextStyle(
+                  color: Colors.black,
+                ),
+                labelMedium: TextStyle(
+                  color: Colors.black,
+                ),
+                labelLarge: TextStyle(
+                  color: Colors.black,
+                ),
+                labelSmall: TextStyle(
+                  color: Colors.black,
+                ),
+              ),
             ),
       home: FutureBuilder(
         future: Provider.of<ChainList>(context, listen: false).initialize(),
@@ -68,6 +169,8 @@ class ChainActivities extends StatelessWidget {
         ChainListScreen.routename: (context) => const ChainListScreen(),
         AddChainScreen.routename: (context) => const AddChainScreen(),
         PlayChain.routename: (context) => const PlayChain(),
+        ShowChainFromNotification.routename: (context) =>
+            const ShowChainFromNotification(),
         SearchChainScreen.routename: (context) => const SearchChainScreen(),
         SettingsScreen.routename: (context) => const SettingsScreen(),
         PlayWaitActivity.routename: (context) => const PlayWaitActivity(),

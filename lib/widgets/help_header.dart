@@ -57,7 +57,7 @@ class _HelpHeaderState extends State<HelpHeader> {
           gradient: RadialGradient(
             colors: [
               Theme.of(context).primaryColor,
-              Theme.of(context).backgroundColor,
+              Theme.of(context).colorScheme.background,
             ],
           ),
           image: DecorationImage(
@@ -86,7 +86,7 @@ class _HelpHeaderState extends State<HelpHeader> {
             padding: const EdgeInsets.all(7),
             child: Text(
               "How 'Chain Activities' can help?",
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
               textAlign: TextAlign.center,
             ),
           ),
