@@ -39,11 +39,15 @@ class _PlayChainState extends State<PlayChain> {
     dynamic popResponse;
     NavigatorState nav = Navigator.of(context);
 
-    while (invokeCounter < chain.activities.length) {
+    for (invokeCounter = 0;
+        invokeCounter < chain.activities.length;
+        invokeCounter++) {
       // Map<String, dynamic> dryRunResult =
       //     await chainList.executeChainFurtherPossible(chain, invokeCounter);
       ChainActivity chainActivity = chain.activities[invokeCounter];
-      if (chainActivity.endedAt != null) {
+      if (chainActivity.endedAt != null ||
+          chainActivity.activity.type == systemStartActivityInDB) {
+        chainActivity.endedAt = chainActivity.endedAt ?? DateTime.now();
         continue;
       }
 
@@ -108,8 +112,6 @@ class _PlayChainState extends State<PlayChain> {
         chain,
         chainActivity,
       );
-
-      invokeCounter++;
     }
 
     if (popResponse != null && popResponse["interruptAndCompleted"] == false) {

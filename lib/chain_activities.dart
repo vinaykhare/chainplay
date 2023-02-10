@@ -30,7 +30,7 @@ class ChainActivities extends StatelessWidget {
         : chainList.systemSettings[themeIndex].value == "TRUE";
     return MaterialApp(
       title: 'Chain Activities',
-      darkTheme: darkTheme ? ThemeData.dark() : null,
+      //darkTheme: darkTheme ? ThemeData.dark() : null,
       debugShowCheckedModeBanner: false,
       theme: darkTheme
           ? ThemeData(
@@ -40,6 +40,18 @@ class ChainActivities extends StatelessWidget {
               cardColor: const Color.fromARGB(255, 52, 52, 67),
               appBarTheme: const AppBarTheme(
                 backgroundColor: Color.fromARGB(255, 53, 53, 55),
+              ),
+              switchTheme: SwitchThemeData(
+                thumbColor: MaterialStateProperty.resolveWith<Color>(
+                  (states) => Colors.grey,
+                ),
+                trackColor: MaterialStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(MaterialState.selected)) {
+                    return Colors.black;
+                  } else {
+                    return Colors.grey;
+                  }
+                }),
               ),
               textTheme: const TextTheme(
                 titleMedium: TextStyle(
@@ -105,6 +117,18 @@ class ChainActivities extends StatelessWidget {
                 onPrimary: Colors.black,
               ),
               dialogBackgroundColor: Colors.lightGreen,
+              switchTheme: SwitchThemeData(
+                thumbColor: MaterialStateProperty.resolveWith<Color>(
+                  (states) => Colors.amber,
+                ),
+                trackColor: MaterialStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(MaterialState.selected)) {
+                    return Colors.lightGreen;
+                  } else {
+                    return Colors.amber;
+                  }
+                }),
+              ),
               textTheme: const TextTheme(
                 titleMedium: TextStyle(
                   color: Colors.black,
