@@ -56,9 +56,11 @@ class ChainView extends StatelessWidget {
         arguments: chain,
       );
     } else {
-      Chain? chainExecution =
-          await Provider.of<ChainList>(context, listen: false)
-              .evaluateChainExecutions(chain);
+      Chain? chainExecution = (chain.notificationId == trueInDB)
+          ? await Provider.of<ChainList>(context, listen: false)
+              .evaluateChainExecutions(chain)
+          : await Provider.of<ChainList>(context, listen: false)
+              .startChainExecution(chain);
       //await Provider.of<ChainList>(context, listen: false).loadActivities(chain);
       if (chainExecution == null) {
         return; //No Chains to execute.
@@ -131,8 +133,10 @@ class ChainView extends StatelessWidget {
               IconButton(
                 onPressed: () async {
                   NavigatorState navState = Navigator.of(context);
-                  await Provider.of<ChainList>(context, listen: false)
-                      .evaluateChainExecutions(chain);
+                  if (chain.notificationId == trueInDB) {
+                    await Provider.of<ChainList>(context, listen: false)
+                        .evaluateChainExecutions(chain);
+                  }
                   navState.pushNamed(
                     ChainExecutionScreen.routename,
                     arguments: chain,

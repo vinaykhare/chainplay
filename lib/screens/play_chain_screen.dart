@@ -51,10 +51,14 @@ class _PlayChainState extends State<PlayChain> {
         continue;
       }
 
+      chainActivity.at = chainActivity.at ?? DateTime.now();
+
       Duration waitDuration = chainActivity.activityDurationLeft != null
-          ? chainActivity.activityDuration
+          ? chainActivity.activityDurationLeft!
           : chainActivity.activityDuration;
-      int playScreenType = chainActivity.activity.type;
+      int playScreenType = invokeCounter >= chain.activities.length - 1
+          ? systemEndActivityInDB
+          : chainActivity.activity.type;
       bool running = chainActivity.activityDurationLeft == null;
       String screenImage =
           chainActivity.activity.specification?[activitySpecImagePath] ?? "";
@@ -91,6 +95,10 @@ class _PlayChainState extends State<PlayChain> {
           if (popResponse["resumedAt"] != null) {
             chain.pivotDate = popResponse["resumedAt"];
           }
+          await chainList.updateChainActivityExecutionByActivityId(
+            chain,
+            chainActivity,
+          );
           break;
         } else {
           chainActivity.activityDurationLeft = null;
@@ -99,14 +107,15 @@ class _PlayChainState extends State<PlayChain> {
       }
 
       chainActivity.activityDone = true;
-      chainActivity.endedAt = chainActivity.at!
-          .add(Duration(seconds: chainActivity.activityDuration.inSeconds));
-      if (chainActivity.activityDuration.inSeconds <= 0 &&
-          chainActivity.activity.type != systemStartActivityInDB &&
-          chainActivity.activity.type != systemWaitActivityInDB) {
-        chainActivity.endedAt = DateTime.now();
-        chain.pivotDate = chainActivity.endedAt!;
-      }
+      // chainActivity.endedAt = chainActivity.at!
+      //     .add(Duration(seconds: chainActivity.activityDuration.inSeconds));
+      chainActivity.endedAt = DateTime.now();
+      // if (chainActivity.activityDuration.inSeconds <= 0 &&
+      //     chainActivity.activity.type != systemStartActivityInDB &&
+      //     chainActivity.activity.type != systemWaitActivityInDB) {
+      //   chainActivity.endedAt = DateTime.now();
+      //   chain.pivotDate = chainActivity.endedAt!;
+      // }
       await chainList.updateChainExecution(chain);
       await chainList.updateChainActivityExecutionByActivityId(
         chain,
@@ -120,18 +129,19 @@ class _PlayChainState extends State<PlayChain> {
       if (popResponse["running"] == false &&
           popResponse["waitDuration"] != null) {
         chain.pivotDate = chain.pivotDate!.add(popResponse["waitDuration"]);
+        await chainList.updateChainExecution(chain);
       }
     } else {
       Chain parentChain =
           chainList.chains.firstWhere((sch) => sch.title == chain.title);
 
-      //chain.chainStatus = statusDone;
+      chain.chainStatus = statusDone;
       parentChain.chainStatus = statusNotStarted;
-      //chain.endedAt = DateTime.now();
+      chain.endedAt = DateTime.now();
       parentChain.endedAt = null;
 
       await chainList.updateChain(parentChain);
-      //await chainList.updateChainExecution(chain);
+      await chainList.updateChainExecution(chain);
       await chainList.completeTheChain(chain);
     }
     //nav.pop();
@@ -145,7 +155,7 @@ class _PlayChainState extends State<PlayChain> {
     } else {
       Chain parentChain =
           chainList.chains.firstWhere((sch) => sch.title == chain.title);
-      await chainList.evaluateChainExecutions(parentChain, false);
+      // await chainList.evaluateChainExecutions(parentChain, false);
       // await chainList.scheduleNotificationForExecution(
       //   chain,
       //   chain.at!,

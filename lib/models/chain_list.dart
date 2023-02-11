@@ -96,7 +96,7 @@ class ChainList with ChangeNotifier {
           chain.title == checkForNotificationResponse[payLoadChainName]) {
         notificationCameAs = checkForNotificationResponse;
       }
-      await evaluateChainExecutions(chain);
+      // await evaluateChainExecutions(chain);
     }
     configUpdated = true;
     configUpdateStarted = false;

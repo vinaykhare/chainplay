@@ -233,7 +233,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                     IconButton(
                       onPressed: () {
                         Navigator.of(context).pop({
-                          "running": running,
+                          "running": false, //running,
                           "waitDuration": waitDuration,
                           "interruptAndCompleted": false,
                           "resumedAt": resumedAt,
