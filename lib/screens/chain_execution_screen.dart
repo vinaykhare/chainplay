@@ -1,3 +1,4 @@
+import 'package:chain_activities/screens/show_chain_from_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -112,7 +113,9 @@ class ChainExecutionScreen extends StatelessWidget {
                         const Text("Executed Chain"),
                       InkWell(
                         onTap: () => Navigator.of(context).pushNamed(
-                          PlayChain.routename,
+                          chainExecution.notificationId == noValueInDB
+                              ? PlayChain.routename
+                              : ShowChainFromNotification.routename,
                           arguments: {
                             payLoadChainExecId: chainExecution.chainExecutionId,
                             payLoadChainName: chainExecution.title,
@@ -131,7 +134,7 @@ class ChainExecutionScreen extends StatelessWidget {
                           )),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: (chainExecution.endedAt != null)
+                            child: (chainExecution.chainStatus == statusDone)
                                 ? StartEndTimeChainWidget(
                                     cardTitle: null,
                                     startTime: chainExecution.at,

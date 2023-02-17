@@ -23,7 +23,7 @@ class _PlayChainState extends State<ShowChainFromNotification> {
   late Chain parentChainItem;
   late ChainList chainList;
   int invokeCounter = 0;
-  bool initializing = true;
+  bool initializing = true, showRefreshButton = true;
 
   // @override
   // void initState() {
@@ -39,14 +39,18 @@ class _PlayChainState extends State<ShowChainFromNotification> {
     dynamic popResponse;
     NavigatorState nav = Navigator.of(context);
 
-    while (invokeCounter < chain.activities.length) {
+    for (invokeCounter = 0;
+        invokeCounter < chain.activities.length;
+        invokeCounter++) {
       Map<String, dynamic> dryRunResult =
           await chainList.executeChainFurtherPossible(chain, invokeCounter);
       chain = dryRunResult["executingChain"];
       invokeCounter = dryRunResult["invokeCounter"];
       Duration waitDuration = dryRunResult["waitDuration"];
       ChainActivity chainActivity = dryRunResult["chainActivity"];
-      int playScreenType = dryRunResult["playScreenType"];
+      int playScreenType = invokeCounter >= chain.activities.length - 1
+          ? systemEndActivityInDB
+          : dryRunResult["playScreenType"];
       bool running = dryRunResult["running"];
       String screenImage = dryRunResult["screenImage"] ?? "";
 
@@ -60,7 +64,9 @@ class _PlayChainState extends State<ShowChainFromNotification> {
       }
 
       String textToSpeak = chainActivity.activity.type == systemWaitActivityInDB
-          ? "Take Rest. Next Activity will start ${TransformFunctions.durationToString(waitDuration)} from now."
+          ? invokeCounter < chain.activities.length - 1
+              ? "Take Rest. Next Activity will start ${TransformFunctions.durationToString(waitDuration)}."
+              : "Complete the chain by pressing done or go forward."
           : "Activity ${chainActivity.activity.title} has started. It will complete ${TransformFunctions.durationToString(waitDuration)}.";
       await chainList.speakText(textToSpeak);
       popResponse = await nav.pushNamed(
@@ -79,9 +85,9 @@ class _PlayChainState extends State<ShowChainFromNotification> {
           chainActivity.activityDurationLeft = popResponse["running"] == false
               ? popResponse["waitDuration"]
               : null;
-          if (popResponse["resumedAt"] != null) {
-            chain.pivotDate = popResponse["resumedAt"];
-          }
+          // if (popResponse["resumedAt"] != null) {
+          //   chain.pivotDate = popResponse["resumedAt"];
+          // }
           break;
         } else {
           chainActivity.activityDurationLeft = null;
@@ -90,21 +96,20 @@ class _PlayChainState extends State<ShowChainFromNotification> {
       }
 
       chainActivity.activityDone = true;
-      chainActivity.endedAt = chainActivity.at!
-          .add(Duration(seconds: chainActivity.activityDuration.inSeconds));
+      // chainActivity.endedAt = chainActivity.at!
+      //     .add(Duration(seconds: chainActivity.activityDuration.inSeconds));
+      chainActivity.endedAt = DateTime.now();
       if (chainActivity.activityDuration.inSeconds <= 0 &&
           chainActivity.activity.type != systemStartActivityInDB &&
           chainActivity.activity.type != systemWaitActivityInDB) {
         chainActivity.endedAt = DateTime.now();
         chain.pivotDate = chainActivity.endedAt!;
       }
-      await chainList.updateChainExecution(chain);
+      //await chainList.updateChainExecution(chain);
       await chainList.updateChainActivityExecutionByActivityId(
         chain,
         chainActivity,
       );
-
-      invokeCounter++;
     }
 
     if (popResponse != null && popResponse["interruptAndCompleted"] == false) {
@@ -113,18 +118,19 @@ class _PlayChainState extends State<ShowChainFromNotification> {
       if (popResponse["running"] == false &&
           popResponse["waitDuration"] != null) {
         chain.pivotDate = chain.pivotDate!.add(popResponse["waitDuration"]);
+        await chainList.updateChainExecution(chain);
       }
     } else {
-      Chain parentChain =
-          chainList.chains.firstWhere((sch) => sch.title == chain.title);
+      // Chain parentChain =
+      //     chainList.chains.firstWhere((sch) => sch.title == chain.title);
 
-      //chain.chainStatus = statusDone;
-      parentChain.chainStatus = statusNotStarted;
-      //chain.endedAt = DateTime.now();
-      parentChain.endedAt = null;
+      chain.chainStatus = statusDone;
+      //parentChain.chainStatus = statusNotStarted;
+      chain.endedAt = DateTime.now();
+      //parentChain.endedAt = null;
 
-      await chainList.updateChain(parentChain);
-      //await chainList.updateChainExecution(chain);
+      //await chainList.updateChain(parentChain);
+      await chainList.updateChainExecution(chain);
       await chainList.completeTheChain(chain);
     }
     //nav.pop();
@@ -133,17 +139,17 @@ class _PlayChainState extends State<ShowChainFromNotification> {
   Future<bool> onPopOut() async {
     // await chainList.scheduleNotification(
     //     chain, DateTime.now(), invokeCounter);
-    if (chain.chainStatus == statusDone) {
-      //await chainList.resetActivities(chain);
-    } else {
-      Chain parentChain =
-          chainList.chains.firstWhere((sch) => sch.title == chain.title);
-      await chainList.evaluateChainExecutions(parentChain, false);
-      // await chainList.scheduleNotificationForExecution(
-      //   chain,
-      //   chain.at!,
-      // );
-    }
+    // if (chain.chainStatus == statusDone) {
+    //   //await chainList.resetActivities(chain);
+    // } else {
+    //   // Chain parentChain =
+    //   //     chainList.chains.firstWhere((sch) => sch.title == chain.title);
+
+    //   await chainList.scheduleNotificationForExecution(
+    //     chain,
+    //     chain.at!,
+    //   );
+    // }
     return true;
   }
 
@@ -227,12 +233,10 @@ class _PlayChainState extends State<ShowChainFromNotification> {
                       ),
                     ),
                     IconButton(
-                      onPressed: invokeCounter >= chain.activities.length
-                          ? null
-                          : () {
-                              invokeCounter = 0;
-                              playTheChain();
-                            },
+                      onPressed: () {
+                        invokeCounter = 0;
+                        playTheChain();
+                      },
                       icon: const Icon(Icons.arrow_forward),
                     ),
                   ],

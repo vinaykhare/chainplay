@@ -46,7 +46,10 @@ class _PlayChainState extends State<PlayChain> {
       //     await chainList.executeChainFurtherPossible(chain, invokeCounter);
       ChainActivity chainActivity = chain.activities[invokeCounter];
       if (chainActivity.endedAt != null ||
-          chainActivity.activity.type == systemStartActivityInDB) {
+          chainActivity.activity.type == systemStartActivityInDB ||
+          (chainActivity.activity.type == systemWaitActivityInDB &&
+              chainActivity.activityDuration.inSeconds <= 0 &&
+              invokeCounter < chain.activities.length - 1)) {
         chainActivity.endedAt = chainActivity.endedAt ?? DateTime.now();
         continue;
       }
@@ -73,8 +76,13 @@ class _PlayChainState extends State<PlayChain> {
       // }
 
       String textToSpeak = chainActivity.activity.type == systemWaitActivityInDB
-          ? "Take Rest. Next Activity will start ${TransformFunctions.durationToString(waitDuration)} from now."
+          ? invokeCounter < chain.activities.length - 1
+              ? "Take Rest. Next Activity will start ${TransformFunctions.durationToString(waitDuration)}."
+              : "Complete the chain by pressing done or go forward."
           : "Activity ${chainActivity.activity.title} has started. It will complete ${TransformFunctions.durationToString(waitDuration)}.";
+      if (chainActivity.activityDurationLeft != null) {
+        textToSpeak += " after resuming.";
+      }
       await chainList.speakText(textToSpeak);
       popResponse = await nav.pushNamed(
         PlayWaitActivity.routename,
@@ -92,9 +100,9 @@ class _PlayChainState extends State<PlayChain> {
           chainActivity.activityDurationLeft = popResponse["running"] == false
               ? popResponse["waitDuration"]
               : null;
-          if (popResponse["resumedAt"] != null) {
-            chain.pivotDate = popResponse["resumedAt"];
-          }
+          // if (popResponse["resumedAt"] != null) {
+          //   chain.pivotDate = popResponse["resumedAt"];
+          // }
           await chainList.updateChainActivityExecutionByActivityId(
             chain,
             chainActivity,
@@ -116,7 +124,7 @@ class _PlayChainState extends State<PlayChain> {
       //   chainActivity.endedAt = DateTime.now();
       //   chain.pivotDate = chainActivity.endedAt!;
       // }
-      await chainList.updateChainExecution(chain);
+      // await chainList.updateChainExecution(chain);
       await chainList.updateChainActivityExecutionByActivityId(
         chain,
         chainActivity,
@@ -132,15 +140,15 @@ class _PlayChainState extends State<PlayChain> {
         await chainList.updateChainExecution(chain);
       }
     } else {
-      Chain parentChain =
-          chainList.chains.firstWhere((sch) => sch.title == chain.title);
+      // Chain parentChain =
+      //     chainList.chains.firstWhere((sch) => sch.title == chain.title);
 
       chain.chainStatus = statusDone;
-      parentChain.chainStatus = statusNotStarted;
+      //parentChain.chainStatus = statusNotStarted;
       chain.endedAt = DateTime.now();
-      parentChain.endedAt = null;
+      //parentChain.endedAt = null;
 
-      await chainList.updateChain(parentChain);
+      //await chainList.updateChain(parentChain);
       await chainList.updateChainExecution(chain);
       await chainList.completeTheChain(chain);
     }
@@ -148,19 +156,6 @@ class _PlayChainState extends State<PlayChain> {
   }
 
   Future<bool> onPopOut() async {
-    // await chainList.scheduleNotification(
-    //     chain, DateTime.now(), invokeCounter);
-    if (chain.chainStatus == statusDone) {
-      //await chainList.resetActivities(chain);
-    } else {
-      Chain parentChain =
-          chainList.chains.firstWhere((sch) => sch.title == chain.title);
-      // await chainList.evaluateChainExecutions(parentChain, false);
-      // await chainList.scheduleNotificationForExecution(
-      //   chain,
-      //   chain.at!,
-      // );
-    }
     return true;
   }
 

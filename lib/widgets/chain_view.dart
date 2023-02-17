@@ -47,7 +47,10 @@ class ChainView extends StatelessWidget {
 
   Future<void> navigateToAddChainOrPlayChain(BuildContext context) async {
     NavigatorState nav = Navigator.of(context);
-    if (chain.chainStatus == statusNotStarted) {
+    Chain? chainExecution =
+        Provider.of<ChainList>(context, listen: false).getRunningChain(chain);
+
+    if (chainExecution == null) {
       //await Provider.of<ChainList>(context, listen: false).loadActivities(chain);
       chain.edit = true;
       await Provider.of<ChainList>(context, listen: false).updateChain(chain);
@@ -56,16 +59,8 @@ class ChainView extends StatelessWidget {
         arguments: chain,
       );
     } else {
-      Chain? chainExecution = (chain.notificationId == trueInDB)
-          ? await Provider.of<ChainList>(context, listen: false)
-              .evaluateChainExecutions(chain)
-          : await Provider.of<ChainList>(context, listen: false)
-              .startChainExecution(chain);
-      //await Provider.of<ChainList>(context, listen: false).loadActivities(chain);
-      if (chainExecution == null) {
-        return; //No Chains to execute.
-      }
-
+      await Provider.of<ChainList>(context, listen: false)
+          .executeChainFurtherPossible(chainExecution);
       await nav.pushNamed(
         chain.notificationId == trueInDB
             ? ShowChainFromNotification.routename
@@ -133,10 +128,7 @@ class ChainView extends StatelessWidget {
               IconButton(
                 onPressed: () async {
                   NavigatorState navState = Navigator.of(context);
-                  if (chain.notificationId == trueInDB) {
-                    await Provider.of<ChainList>(context, listen: false)
-                        .evaluateChainExecutions(chain);
-                  }
+
                   navState.pushNamed(
                     ChainExecutionScreen.routename,
                     arguments: chain,
