@@ -666,7 +666,7 @@ class ChainList with ChangeNotifier {
       chains[chainIndex].repeatCount--;
       //chains[chainIndex].chainStatus = statusExecuting;
     }
-    if (chains[chainIndex].repeatCount == 0) {
+    if (chains[chainIndex].repeatCount <= 0) {
       chains[chainIndex].repeatType = repeatTypeDoesNotRepeat;
       chains[chainIndex].at = null;
       chains[chainIndex].endedAt = null;

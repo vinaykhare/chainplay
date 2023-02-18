@@ -88,6 +88,12 @@ class ChainExecutionScreen extends StatelessWidget {
       //tempChain.loadActivities();
     }
 
+    List<Chain> executedChains = chain.chainHistory
+        .where((chain) => chain.chainStatus == statusDone)
+        .toList();
+    List<Chain> executingChains = chain.chainHistory
+        .where((chain) => chain.chainStatus != statusDone)
+        .toList();
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -101,15 +107,15 @@ class ChainExecutionScreen extends StatelessWidget {
                 // onReorder: (oldIndex, newIndex) =>
                 //     Provider.of<ChainList>(context, listen: false)
                 //         .rearrangeChains(oldIndex, newIndex),
-                itemCount: chain.chainHistory.length,
+                itemCount: executedChains.length,
                 itemBuilder: (context, index) {
-                  Chain chainExecution = chain.chainHistory[index];
+                  Chain chainExecution = executedChains[index];
                   int numberOfUserActivites = chainExecution.activities
                       .where((schEx) => schEx.activity.type == waitActivityInDB)
                       .length;
                   return Column(
                     children: [
-                      if (index == chain.chainHistory.length - 1)
+                      if (index == executedChains.length - 1)
                         const Text("Executed Chain"),
                       InkWell(
                         onTap: () => Navigator.of(context).pushNamed(
@@ -134,27 +140,12 @@ class ChainExecutionScreen extends StatelessWidget {
                           )),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: (chainExecution.chainStatus == statusDone)
-                                ? StartEndTimeChainWidget(
-                                    cardTitle: null,
-                                    startTime: chainExecution.at,
-                                    endTime: chainExecution.endedAt,
-                                    textInBetween: "$numberOfUserActivites",
-                                  )
-                                : Column(
-                                    children: [
-                                      const Text("Running Chain"),
-                                      ChainView(
-                                        chain: chain,
-                                        showHistory: false,
-                                        allowFlag: false,
-                                        key: Key(
-                                          index.toString(),
-                                        ),
-                                        index: index,
-                                      ),
-                                    ],
-                                  ),
+                            child: StartEndTimeChainWidget(
+                              cardTitle: null,
+                              startTime: chainExecution.at,
+                              endTime: chainExecution.endedAt,
+                              textInBetween: "$numberOfUserActivites",
+                            ),
                           ),
                         ),
                       ),
@@ -163,17 +154,15 @@ class ChainExecutionScreen extends StatelessWidget {
                 },
               ),
             ),
-            if (chain.chainHistory.isEmpty ||
-                chain.chainHistory.indexWhere(
-                        (ch) => ch.chainStatus == statusExecuting) ==
-                    -1)
-              Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (executingChains.isEmpty)
                   const Text(
                     "Play Now",
                     textAlign: TextAlign.center,
                   ),
+                if (executingChains.isEmpty)
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: CircleAvatar(
@@ -207,8 +196,19 @@ class ChainExecutionScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                ],
-              ),
+                if (executingChains.isNotEmpty) const Text("Running Chain"),
+                if (executingChains.isNotEmpty)
+                  ChainView(
+                    chain: executingChains.first,
+                    showHistory: false,
+                    allowFlag: false,
+                    key: Key(
+                      executingChains.first.index.toString(),
+                    ),
+                    index: executingChains.first.index,
+                  ),
+              ],
+            ),
             AppBar(
               centerTitle: true,
               title: Text(chain.title),
