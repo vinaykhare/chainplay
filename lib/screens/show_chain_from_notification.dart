@@ -15,10 +15,11 @@ class ShowChainFromNotification extends StatefulWidget {
   static String routename = "show_chain_from_notification";
   const ShowChainFromNotification({super.key});
   @override
-  State<ShowChainFromNotification> createState() => _PlayChainState();
+  State<ShowChainFromNotification> createState() =>
+      _ShowChainFromNotificationState();
 }
 
-class _PlayChainState extends State<ShowChainFromNotification> {
+class _ShowChainFromNotificationState extends State<ShowChainFromNotification> {
   late Chain chain;
   late Chain parentChainItem;
   late ChainList chainList;

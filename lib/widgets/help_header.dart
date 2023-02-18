@@ -110,24 +110,25 @@ class _HelpHeaderState extends State<HelpHeader> {
             child: Row(
               children: [
                 SizedBox(
-                  width: appWidth * 0.3,
+                  // width: appWidth * 0.3,
+                  width: appWidth,
                   height: 125,
                   child: Image.asset(
                     headerSlideContent[page]["imageAsset"]!,
                     fit: BoxFit.contain,
                   ),
                 ),
-                SizedBox(
-                  width: appWidth * 0.7,
-                  height: 100,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                    child: Text(
-                      headerSlideContent[page]["content"]!,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                  ),
-                ),
+                // SizedBox(
+                //   width: appWidth * 0.7,
+                //   height: 100,
+                //   child: Padding(
+                //     padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                //     child: Text(
+                //       headerSlideContent[page]["content"]!,
+                //       style: Theme.of(context).textTheme.titleLarge,
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),
