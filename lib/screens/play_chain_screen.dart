@@ -155,6 +155,81 @@ class _PlayChainState extends State<PlayChain> {
     //nav.pop();
   }
 
+  Future<void> playTheScheduledChain() async {
+    dynamic popResponse;
+    NavigatorState nav = Navigator.of(context);
+    bool completeTheChain = true;
+    for (invokeCounter = 0;
+        invokeCounter < chain.activities.length;
+        invokeCounter++) {
+      Map<String, dynamic> dryRunResult =
+          await chainList.executeChainFurtherPossible(chain);
+      chain = dryRunResult["executingChain"];
+      invokeCounter = dryRunResult["invokeCounter"];
+      Duration waitDuration = dryRunResult["waitDuration"];
+      ChainActivity chainActivity = dryRunResult["chainActivity"];
+      int playScreenType = invokeCounter >= chain.activities.length - 1
+          ? systemEndActivityInDB
+          : dryRunResult["playScreenType"];
+      bool running = dryRunResult["running"];
+      String screenImage = dryRunResult["screenImage"] ?? "";
+      bool showTimer = dryRunResult["showTimer"];
+      if (!showTimer) {
+        completeTheChain = false;
+        break;
+      }
+
+      String textToSpeak = chainActivity.activity.type == systemWaitActivityInDB
+          ? invokeCounter < chain.activities.length - 1
+              ? "Take Rest. Next Activity will start ${TransformFunctions.durationToString(waitDuration)}."
+              : "Complete the chain by pressing done or go forward."
+          : "Activity ${chainActivity.activity.title} has started. It will complete ${TransformFunctions.durationToString(waitDuration)}.";
+      if (chainActivity.activityDurationLeft != null) {
+        textToSpeak += " after resuming.";
+      }
+      await chainList.speakText(textToSpeak);
+      popResponse = await nav.pushNamed(
+        PlayWaitActivity.routename,
+        arguments: {
+          "waitDuration": waitDuration,
+          "chainActivity": chainActivity,
+          "playScreenType": playScreenType,
+          "running": running,
+          "screenImage": screenImage,
+        },
+      );
+
+      if (popResponse == null) {
+        chainActivity.activityDurationLeft = null;
+        chainActivity.isInterrupted = true;
+      } else {
+        completeTheChain = false;
+        break;
+      }
+      chainActivity.activityDone = true;
+      chainActivity.endedAt = DateTime.now();
+      await chainList.updateChainActivityExecutionByActivityId(
+        chain,
+        chainActivity,
+      );
+    }
+
+    if (completeTheChain) {
+      // Chain parentChain =
+      //     chainList.chains.firstWhere((sch) => sch.title == chain.title);
+
+      chain.chainStatus = statusDone;
+      //parentChain.chainStatus = statusNotStarted;
+      chain.endedAt = DateTime.now();
+      //parentChain.endedAt = null;
+
+      //await chainList.updateChain(parentChain);
+      await chainList.updateChainExecution(chain);
+      await chainList.completeTheChain(chain);
+    }
+    //nav.pop();
+  }
+
   Future<bool> onPopOut() async {
     return true;
   }
@@ -182,7 +257,11 @@ class _PlayChainState extends State<PlayChain> {
       if (chain.chainStatus == statusExecuting) {
         /* &&
           !chain.at!.isAfter(DateTime.now()) */
-        playTheChain();
+        if (chain.notificationId == trueInDB) {
+          playTheScheduledChain();
+        } else {
+          playTheChain();
+        }
       } else {
         invokeCounter = chain.activities.length;
       }
@@ -243,9 +322,13 @@ class _PlayChainState extends State<PlayChain> {
                           ? null
                           : () {
                               invokeCounter = 0;
-                              playTheChain();
+                              chain.notificationId == trueInDB
+                                  ? playTheScheduledChain()
+                                  : playTheChain();
                             },
-                      icon: const Icon(Icons.arrow_forward),
+                      icon: chain.notificationId == trueInDB
+                          ? const Icon(Icons.refresh)
+                          : const Icon(Icons.arrow_forward),
                     ),
                   ],
                 ),

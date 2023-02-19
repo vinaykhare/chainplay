@@ -1,10 +1,10 @@
 import 'dart:convert';
 
+import 'package:chain_activities/screens/play_chain_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/helpers/key_helper.dart';
-import 'package:chain_activities/screens/show_chain_from_notification.dart';
 
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse notificationResponse) {
@@ -12,7 +12,7 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
     Map<String, dynamic> responsePayload =
         jsonDecode(notificationResponse.payload!);
     Navigator.of(KeyHelper.navigatorKey!.currentContext!)
-        .pushReplacementNamed(ShowChainFromNotification.routename, arguments: {
+        .pushReplacementNamed(PlayChain.routename, arguments: {
       payLoadChainExecId: responsePayload[payLoadChainExecId],
       payLoadChainName: responsePayload[payLoadChainName],
       payLoadWidgetUrl: responsePayload[payLoadWidgetUrl],

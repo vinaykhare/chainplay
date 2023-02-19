@@ -1,4 +1,3 @@
-import 'package:chain_activities/screens/show_chain_from_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/models/chain.dart';
@@ -62,9 +61,7 @@ class ChainView extends StatelessWidget {
       await Provider.of<ChainList>(context, listen: false)
           .executeChainFurtherPossible(chainExecution);
       await nav.pushNamed(
-        chain.notificationId == trueInDB
-            ? ShowChainFromNotification.routename
-            : PlayChain.routename,
+        PlayChain.routename,
         arguments: {
           payLoadChainExecId: chainExecution.chainExecutionId,
           payLoadChainName: chainExecution.title,

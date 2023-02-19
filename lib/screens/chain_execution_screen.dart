@@ -1,4 +1,3 @@
-import 'package:chain_activities/screens/show_chain_from_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -119,9 +118,7 @@ class ChainExecutionScreen extends StatelessWidget {
                         const Text("Executed Chain"),
                       InkWell(
                         onTap: () => Navigator.of(context).pushNamed(
-                          chainExecution.notificationId == noValueInDB
-                              ? PlayChain.routename
-                              : ShowChainFromNotification.routename,
+                          PlayChain.routename,
                           arguments: {
                             payLoadChainExecId: chainExecution.chainExecutionId,
                             payLoadChainName: chainExecution.title,
@@ -134,7 +131,9 @@ class ChainExecutionScreen extends StatelessWidget {
                           decoration: BoxDecoration(
                               gradient: RadialGradient(
                             colors: [
-                              Theme.of(context).colorScheme.background,
+                              chainExecution.notificationId == trueInDB
+                                  ? Theme.of(context).colorScheme.secondary
+                                  : Theme.of(context).colorScheme.background,
                               Theme.of(context).scaffoldBackgroundColor,
                             ],
                           )),

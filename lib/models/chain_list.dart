@@ -4,7 +4,7 @@ import 'dart:convert';
 
 import 'package:chain_activities/helpers/system_configuration.dart';
 import 'package:chain_activities/models/chain_activity.dart';
-import 'package:chain_activities/screens/show_chain_from_notification.dart';
+import 'package:chain_activities/screens/play_chain_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:chain_activities/helpers/constants.dart';
 //import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -124,60 +124,6 @@ class ChainList with ChangeNotifier {
     }
   }
 
-  // Future<Chain?> evaluateChainExecutions(Chain chain,
-  //     [bool cancelNotification = true]) async {
-  //   // if (chain.at == null
-  //   //     // ||
-  //   //     //     chain.at!.isAfter(
-  //   //     //       DateTime.now(),
-  //   //     //     )
-  //   //     ) {
-  //   //   return null;
-  //   // }
-  //   Chain? executingChain;
-  //   //Chain? lastCompletedChain;
-
-  //   for (executingChain in chain.chainHistory) {
-  //     if (executingChain.chainStatus == statusDone) {
-  //       //await cancelScheduledNotification(executingChain);
-  //       //lastCompletedChain = executingChain;
-  //       continue;
-  //     }
-  //     // if (cancelNotification) {
-  //     //   await cancelScheduledNotificationExecution(executingChain);
-  //     // }
-  //     // Map<String, dynamic> executionResponse =
-  //     //     await executeChainFurtherPossible(executingChain);
-  //     await executeChainFurtherPossible(executingChain);
-  //     //lastCompletedChain = executionResponse["executingChain"];
-  //     // await scheduleNotificationForExecution(
-  //     //     lastCompletedChain!, executingChain.at!);
-  //     break; // only one execution is allowed.
-  //   }
-
-  //   /*
-  //   *
-  //   while (lastCompletedChain != null &&
-  //       chain.repeatType != repeatTypeDoesNotRepeat &&
-  //       (chain.repeatCount > 0 || chain.repeatCount == -1)) {
-  //     executingChain = await startChainExecution(chain);
-  //     lastCompletedChain =
-  //         await calculateAndGetLastCompletedChain(executingChain);
-
-  //     if (lastCompletedChain != null) {
-  //       chain.endedAt = lastCompletedChain.endedAt;
-  //       await completeTheChain(chain);
-  //     } else {
-  //       scheduleNotificationForExecution(executingChain, executingChain.at!);
-  //       break;
-  //     }
-  //   }
-  //   *
-  //   */
-
-  //   return executingChain;
-  // }
-
   Future<Map<String, dynamic>> executeChainFurtherPossible(Chain executingChain,
       [int from = 0]) async {
     List<ChainActivity> chainActivities = executingChain.activities;
@@ -188,11 +134,7 @@ class ChainList with ChangeNotifier {
         chainActivityIndex < chainActivities.length;
         chainActivityIndex++) {
       ChainActivity chainActivity = chainActivities[chainActivityIndex];
-      if (chainActivity.endedAt != null ||
-          chainActivity.activity.type == systemStartActivityInDB ||
-          (chainActivity.activity.type == systemWaitActivityInDB &&
-              chainActivity.activityDuration.inSeconds <= 0 &&
-              chainActivityIndex < (chainActivities.length - 1))) {
+      if (chainActivity.endedAt != null) {
         lastActivityEndedAt = chainActivity.endedAt ?? DateTime.now();
         continue;
       }
@@ -208,7 +150,8 @@ class ChainList with ChangeNotifier {
           "playScreenType": chainActivity.activity.type,
           "running": chainActivity.activityDurationLeft == null,
           "screenImage":
-              chainActivity.activity.specification?[activitySpecImagePath]
+              chainActivity.activity.specification?[activitySpecImagePath],
+          "showTimer": false,
         };
       }
 
@@ -222,7 +165,8 @@ class ChainList with ChangeNotifier {
           "playScreenType": chainActivity.activity.type,
           "running": chainActivity.activityDurationLeft == null,
           "screenImage":
-              chainActivity.activity.specification?[activitySpecImagePath]
+              chainActivity.activity.specification?[activitySpecImagePath],
+          "showTimer": true,
         };
       }
 
@@ -237,7 +181,8 @@ class ChainList with ChangeNotifier {
           "playScreenType": systemEndActivityInDB,
           "running": chainActivity.activityDurationLeft == null,
           "screenImage":
-              chainActivity.activity.specification?[activitySpecImagePath]
+              chainActivity.activity.specification?[activitySpecImagePath],
+          "showTimer": true,
         };
       }
 
@@ -254,7 +199,8 @@ class ChainList with ChangeNotifier {
           "playScreenType": chainActivity.activity.type,
           "running": chainActivity.activityDurationLeft == null,
           "screenImage":
-              chainActivity.activity.specification?[activitySpecImagePath]
+              chainActivity.activity.specification?[activitySpecImagePath],
+          "showTimer": false,
         };
       }
 
@@ -275,6 +221,7 @@ class ChainList with ChangeNotifier {
       "playScreenType": null,
       "running": null,
       "screenImage": null,
+      "showTimer": false,
     };
   }
 
@@ -1523,7 +1470,7 @@ class ChainList with ChangeNotifier {
         {
           payLoadChainName: chain.title,
           payLoadChainExecId: chain.chainExecutionId,
-          payLoadWidgetUrl: ShowChainFromNotification.routename,
+          payLoadWidgetUrl: PlayChain.routename,
           payLoadChainActivityIndex: i + 1,
           payLoadChainActivityCount: chain.activities.length,
         },
@@ -1568,7 +1515,7 @@ class ChainList with ChangeNotifier {
         {
           payLoadChainName: chain.title,
           payLoadChainExecId: chain.chainExecutionId,
-          payLoadWidgetUrl: ShowChainFromNotification.routename,
+          payLoadWidgetUrl: PlayChain.routename,
           payLoadChainActivityIndex: i + 2,
           payLoadChainActivityCount: chain.activities.length,
         },

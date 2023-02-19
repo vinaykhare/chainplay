@@ -1,7 +1,7 @@
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:chain_activities/screens/load_screen.dart';
-import 'package:chain_activities/screens/show_chain_from_notification.dart';
+import 'package:chain_activities/screens/play_chain_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,7 +21,7 @@ class Redirect extends StatelessWidget {
           return const LoadScreen();
         } else {
           if (chainList.notificationCameAs != null) {
-            return const ShowChainFromNotification();
+            return const PlayChain();
           } else {
             return const ChainListScreen();
           }

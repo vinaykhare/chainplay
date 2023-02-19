@@ -1,5 +1,4 @@
 import 'package:chain_activities/helpers/key_helper.dart';
-import 'package:chain_activities/screens/show_chain_from_notification.dart';
 import 'package:chain_activities/widgets/redirect.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -193,8 +192,6 @@ class ChainActivities extends StatelessWidget {
         ChainListScreen.routename: (context) => const ChainListScreen(),
         AddChainScreen.routename: (context) => const AddChainScreen(),
         PlayChain.routename: (context) => const PlayChain(),
-        ShowChainFromNotification.routename: (context) =>
-            const ShowChainFromNotification(),
         SearchChainScreen.routename: (context) => const SearchChainScreen(),
         SettingsScreen.routename: (context) => const SettingsScreen(),
         PlayWaitActivity.routename: (context) => const PlayWaitActivity(),
