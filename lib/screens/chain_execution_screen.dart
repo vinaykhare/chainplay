@@ -198,7 +198,7 @@ class ChainExecutionScreen extends StatelessWidget {
                 if (executingChains.isNotEmpty) const Text("Running Chain"),
                 if (executingChains.isNotEmpty)
                   ChainView(
-                    chain: executingChains.first,
+                    chain: chain,
                     showHistory: false,
                     allowFlag: false,
                     key: Key(

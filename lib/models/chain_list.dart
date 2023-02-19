@@ -1545,7 +1545,7 @@ class ChainList with ChangeNotifier {
 
   Future<void> cancelScheduledNotificationExecution(Chain chain) async {
     //Cancel Notifications
-    await cancelScheduledNotification(chain);
+    //await cancelScheduledNotification(chain);
     for (ChainActivity chainActivity in chain.activities) {
       if (chainActivity.startActivityNotificationId != noValueInDB) {
         await notificationHelper

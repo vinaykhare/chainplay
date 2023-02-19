@@ -208,10 +208,14 @@ class _PlayChainState extends State<PlayChain> {
       }
       chainActivity.activityDone = true;
       chainActivity.endedAt = DateTime.now();
+
       await chainList.updateChainActivityExecutionByActivityId(
         chain,
         chainActivity,
       );
+      await chainList.cancelScheduledNotificationExecution(chain);
+      await chainList.scheduleNotificationForExecution(
+          chain, chainActivity.endedAt!);
     }
 
     if (completeTheChain) {
