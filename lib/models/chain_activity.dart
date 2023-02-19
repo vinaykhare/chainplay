@@ -14,7 +14,7 @@ class ChainActivity {
   DateTime? at, endedAt;
   Activity activity;
   bool edit = false;
-  int index = -1;
+  int index;
 
   ChainActivity({
     required this.activity,
@@ -23,5 +23,6 @@ class ChainActivity {
     this.repeatTypeGap = repeatTypeDefaultGap,
     this.repeatCount = repeatTypeDefaultCount,
     this.activityDone = false,
+    this.index = -1,
   });
 }

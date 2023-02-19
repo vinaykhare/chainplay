@@ -961,8 +961,16 @@ class ChainList with ChangeNotifier {
     //   "type": "BOOL",
     // });
     chains = [];
+
     activities = [];
-    loadSampleChains();
+    loaded = false;
+    configUpdated = false;
+    configUpdateStarted = false;
+
+    notificationCameAs = {};
+    notificationIdsInDB = [];
+
+    // await loadSampleChains();
     notifyListeners();
   }
 
@@ -1174,9 +1182,13 @@ class ChainList with ChangeNotifier {
   }
 
   Future<void> loadSampleChains() async {
-    for (Chain chain in sampleChains) {
-      for (ChainActivity chainActivity in chain.activities) {
-        await addChain(chain, chainActivity);
+    for (Chain configuredChain in sampleChains) {
+      Chain chain = Chain();
+      chain.title = configuredChain.title;
+      for (ChainActivity configuredChainActivity
+          in configuredChain.activities) {
+        chain.activities.add(configuredChainActivity);
+        await addChain(chain, configuredChainActivity);
       }
       //chains.add(chain);
     }
