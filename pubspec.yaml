@@ -1,5 +1,5 @@
 name: chain_activities
-description: Flutter project to Chain the Activities (Timer Only for now).
+description: Flutter project to Chain the Activities with Timers.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -66,16 +66,16 @@ dev_dependencies:
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/logo/logo.png"
+  image_path: "assets/logo/AppIcons/playstore.png"
   min_sdk_android: 21 # android min sdk min:16, default 21
   web:
     generate: true
-    image_path: "assets/logo/logo.png"
+    image_path: "assets/logo/AppIcons/playstore.png"
     background_color: "#hexcode"
     theme_color: "#hexcode"
   windows:
     generate: true
-    image_path: "assets/logo/logo.png"
+    image_path: "assets/logo/AppIcons/playstore.png"
     icon_size: 48 # min:48, max:256, default: 48
 
   # The "flutter_lints" package below contains a set of recommended lints to

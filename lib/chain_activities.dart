@@ -28,7 +28,7 @@ class ChainActivities extends StatelessWidget {
         ? false
         : chainList.systemSettings[themeIndex].value == "TRUE";
     return MaterialApp(
-      title: 'Chain Activities',
+      title: 'CAT',
       //darkTheme: darkTheme ? ThemeData.dark() : null,
       debugShowCheckedModeBanner: false,
       theme: darkTheme

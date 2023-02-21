@@ -74,22 +74,22 @@ class _HelpHeaderState extends State<HelpHeader> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).scaffoldBackgroundColor.withOpacity(
-                    0.3,
-                  ),
-              borderRadius: const BorderRadius.all(
-                Radius.circular(20),
-              ),
-            ),
-            padding: const EdgeInsets.all(7),
-            child: Text(
-              "How 'Chain Activities' can help?",
-              style: Theme.of(context).textTheme.titleLarge,
-              textAlign: TextAlign.center,
-            ),
-          ),
+          // Container(
+          //   decoration: BoxDecoration(
+          //     color: Theme.of(context).scaffoldBackgroundColor.withOpacity(
+          //           0.3,
+          //         ),
+          //     borderRadius: const BorderRadius.all(
+          //       Radius.circular(20),
+          //     ),
+          //   ),
+          //   padding: const EdgeInsets.all(7),
+          //   child: Text(
+          //     "How 'Chain Activities' can help?",
+          //     style: Theme.of(context).textTheme.titleLarge,
+          //     textAlign: TextAlign.center,
+          //   ),
+          // ),
           const Divider(),
           GestureDetector(
             onHorizontalDragEnd: (details) {

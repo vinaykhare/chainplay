@@ -13,7 +13,7 @@ class HowItWorks extends StatelessWidget {
       // appBar: AppBar(
       //   centerTitle: true,
       //   automaticallyImplyLeading: false,
-      //   title: const Text("How Chain Activities Works??"),
+      //   title: const Text("How CAT Works??"),
       // ),
       drawer: const AppDrawer(),
       body: SafeArea(
@@ -24,7 +24,7 @@ class HowItWorks extends StatelessWidget {
             ),
             AppBar(
               centerTitle: true,
-              title: const Text("How Chain Activities Works??"),
+              title: const Text("How CAT Works??"),
             ),
           ],
         ),

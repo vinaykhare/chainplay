@@ -177,20 +177,21 @@ class LocalNotificationService with WidgetsBindingObserver {
         AndroidNotificationDetails(
       "CHAIN_EVENTS_CHANNEL_ID",
       "CHAIN_EVENTS_CHANNEL_NAME",
-      channelDescription: 'Chain Activities Channel',
+      channelDescription: 'CAT Channel',
       importance: Importance.max,
       priority: Priority.high,
-      ticker: 'Schedult It',
+      ticker: 'CAT',
       playSound: true,
-      sound: const RawResourceAndroidNotificationSound('chain_activity_alarm'),
+      sound: const RawResourceAndroidNotificationSound(
+          'chain_activity_alarm'), //android\app\src\main\res\raw\chain_activity_alarm.wav
       // sound: UriAndroidNotificationSound(
       //     assetMap['alarmAudio']!,
       fullScreenIntent: true,
       // styleInformation: BigPictureStyleInformation(
       //   DrawableResourceAndroidBitmap('@mipmap/launcher_icon'),
       //   largeIcon: DrawableResourceAndroidBitmap('@mipmap/launcher_icon'),
-      //   contentTitle: 'Chain Activities Big Picture Notification Title',
-      //   summaryText: 'Chain Activities Big Picture Notification Title',
+      //   contentTitle: 'CAT Big Picture Notification Title',
+      //   summaryText: 'CAT Big Picture Notification Title',
       // ),
       showProgress: true,
       maxProgress: maxProgressVal,
@@ -209,10 +210,10 @@ class LocalNotificationService with WidgetsBindingObserver {
         AndroidNotificationDetails(
       "CHAIN_EVENTS_CHANNEL_ID",
       "CHAIN_EVENTS_CHANNEL_NAME",
-      channelDescription: 'Chain Activities Channel with Action.',
+      channelDescription: 'CAT Channel with Action.',
       importance: Importance.max,
       priority: Priority.high,
-      ticker: 'Schedult It',
+      ticker: 'CAT',
       sound: RawResourceAndroidNotificationSound('chain_activity_alarm'),
       fullScreenIntent: true,
       actions: <AndroidNotificationAction>[

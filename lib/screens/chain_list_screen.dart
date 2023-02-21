@@ -36,6 +36,23 @@ class ChainListScreen extends StatelessWidget {
     return Scaffold(
       //key: KeyHelper.navigatorKey,
       drawer: const AppDrawer(),
+      appBar: AppBar(
+        title: const ListTile(
+          title: Text(
+            "C A T",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          subtitle: Text(
+            "CHAIN ACTIVITIES WITH TIMERS",
+            textAlign: TextAlign.center,
+          ),
+        ),
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+      ),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

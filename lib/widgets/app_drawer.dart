@@ -16,20 +16,30 @@ class AppDrawer extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           AppBar(
-            title: const Text('Chain Activities'),
-            automaticallyImplyLeading: false,
-            actions: [
-              IconButton(
-                onPressed: () {
-                  while (Navigator.of(context).canPop()) {
-                    Navigator.of(context).pop();
-                  }
-                  Navigator.of(context)
-                      .pushReplacementNamed(SettingsScreen.routename);
-                },
-                icon: const Icon(Icons.settings),
+            title: const ListTile(
+              title: Text(
+                "C A T",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ],
+              subtitle: Text(
+                "CHAIN ACTIVITIES WITH TIMERS",
+              ),
+            ),
+            automaticallyImplyLeading: false,
+            // actions: [
+            //   IconButton(
+            //     onPressed: () {
+            //       while (Navigator.of(context).canPop()) {
+            //         Navigator.of(context).pop();
+            //       }
+            //       Navigator.of(context)
+            //           .pushReplacementNamed(SettingsScreen.routename);
+            //     },
+            //     icon: const Icon(Icons.settings),
+            //   ),
+            // ],
           ),
           Column(
             children: [
@@ -52,7 +62,7 @@ class AppDrawer extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.help),
                 title: Text(
-                  'How "Chain Activities" Works',
+                  'How "CAT" Works',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 onTap: () {
@@ -73,6 +83,10 @@ class AppDrawer extends StatelessWidget {
                 ),
                 title: Text(
                   'Create Your Chain of Activities',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                subtitle: Text(
+                  'with Timers.',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 onTap: () {

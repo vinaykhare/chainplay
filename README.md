@@ -1,6 +1,6 @@
 # chain_activities
 
-Project Chain Activities Developed using Flutter Framework.
+Project CAT Developed using Flutter Framework.
 
 ## Getting Started
 
