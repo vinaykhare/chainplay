@@ -1,4 +1,5 @@
-import 'package:chain_activities/widgets/help_header.dart';
+import 'package:chain_activities/screens/add_chain_screen.dart';
+import 'package:chain_activities/widgets/clock.dart';
 import 'package:flutter/material.dart';
 //import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
@@ -36,29 +37,28 @@ class ChainListScreen extends StatelessWidget {
     return Scaffold(
       //key: KeyHelper.navigatorKey,
       drawer: const AppDrawer(),
-      appBar: AppBar(
-        title: const ListTile(
-          title: Text(
-            "C A T",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          subtitle: Text(
-            "CHAIN ACTIVITIES WITH TIMERS",
-            textAlign: TextAlign.center,
-          ),
-        ),
-        automaticallyImplyLeading: false,
-        centerTitle: true,
-      ),
+      // appBar: AppBar(
+      //   title: const Text("Clock"),
+      //   automaticallyImplyLeading: false,
+      //   centerTitle: true,
+      // ),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           //mainAxisSize: MainAxisSize.min,
           children: [
-            const HelpHeader(),
+            //const HelpHeader(),
+            const Clock(),
+            // if (chains.isNotEmpty) const Divider(),
+            // if (chains.isNotEmpty)
+            //   Padding(
+            //     padding: const EdgeInsets.all(8.0),
+            //     child: Text(
+            //       "Chains of Alarms & Timers",
+            //       style: Theme.of(context).textTheme.headlineSmall,
+            //     ),
+            //   ),
+            // if (chains.isNotEmpty) const Divider(),
             if (chains.isNotEmpty)
               Expanded(
                 child: ReorderableListView.builder(
@@ -70,33 +70,64 @@ class ChainListScreen extends StatelessWidget {
                   itemBuilder: (context, index) {
                     Chain chain = chains[index];
                     //BannerAd? adChain = chain.adBanner;
-                    return ChainListItem(
-                      //adChain: adChain,
-                      chain: chain,
-                      showHistory: true,
-                      allowFlag: true,
+                    return Column(
                       key: Key(
                         index.toString(),
                       ),
-                      index: index,
+                      children: [
+                        if (index == chains.length - 1)
+                          Text(
+                            "Chain of Timers",
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                        ChainListItem(
+                          //adChain: adChain,
+                          chain: chain,
+                          showHistory: true,
+                          allowFlag: true,
+                          key: Key(
+                            index.toString(),
+                          ),
+                          index: index,
+                        ),
+                      ],
                     );
                   },
                 ),
               )
             else
-              Center(
-                child: TextButton(
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  TextButton(
                     onPressed: () async {
                       await chainList.loadSampleChains();
                     },
                     child: CircleAvatar(
                       radius: 150,
                       child: Text(
-                        "No Chains Configured!!\n\nPress here\n to add a sample chain to Start.",
+                        "Add \n'Sample Chain of Timers' \nto Start.\n\nOR",
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
-                    )),
+                    ),
+                  ),
+                  Positioned(
+                    top: 250,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.of(context)
+                            .pushReplacementNamed(AddChainScreen.routename);
+                      },
+                      label: Text(
+                        "Add Your Custom Chain of Timers.",
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                      icon: const Icon(Icons.add),
+                    ),
+                  ),
+                ],
               ),
             AppBar(
               centerTitle: true,

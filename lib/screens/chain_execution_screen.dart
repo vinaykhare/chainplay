@@ -115,7 +115,10 @@ class ChainExecutionScreen extends StatelessWidget {
                   return Column(
                     children: [
                       if (index == executedChains.length - 1)
-                        const Text("Executed Chain"),
+                        Text(
+                          "Executed Chain",
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
                       InkWell(
                         onTap: () => Navigator.of(context).pushNamed(
                           PlayChain.routename,
@@ -195,7 +198,11 @@ class ChainExecutionScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                if (executingChains.isNotEmpty) const Text("Running Chain"),
+                if (executingChains.isNotEmpty)
+                  Text(
+                    "Running Chain",
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                 if (executingChains.isNotEmpty)
                   ChainView(
                     chain: chain,

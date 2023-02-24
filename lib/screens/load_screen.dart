@@ -26,7 +26,7 @@ class LoadScreen extends StatelessWidget {
                   height: appHeight * 0.5,
                 ),
                 Text(
-                  "Loading CTA...",
+                  "Loading CAT...",
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),

@@ -1,3 +1,4 @@
+import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/screens/add_chain_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:chain_activities/screens/how_it_works.dart';
@@ -16,15 +17,23 @@ class AppDrawer extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           AppBar(
-            title: const ListTile(
-              title: Text(
+            title: ListTile(
+              onTap: () {
+                // while (Navigator.of(context).canPop()) {
+                //   Navigator.of(context).pop();
+                // }
+                Navigator.of(context)
+                    .pushReplacementNamed(ChainListScreen.routename);
+              },
+              leading: Image.asset(assetMap["logoImage"]!),
+              title: const Text(
                 "C A T",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              subtitle: Text(
-                "CHAIN ACTIVITIES WITH TIMERS",
+              subtitle: const Text(
+                "CHAIN OF \nALARMS & TIMERS",
               ),
             ),
             automaticallyImplyLeading: false,
@@ -82,13 +91,10 @@ class AppDrawer extends StatelessWidget {
                   size: 30,
                 ),
                 title: Text(
-                  'Create Your Chain of Activities',
+                  'Create Your Own Chain',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                subtitle: Text(
-                  'with Timers.',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
+                subtitle: const Text("with Alarms OR Timers"),
                 onTap: () {
                   while (Navigator.of(context).canPop()) {
                     Navigator.of(context).pop();
@@ -98,11 +104,15 @@ class AppDrawer extends StatelessWidget {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.watch_later),
+                leading: const Icon(
+                  Icons.home,
+                  size: 35,
+                ),
                 title: Text(
-                  'Chains',
+                  'All Chains',
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
+                subtitle: const Text('of Alarms & Timers'),
                 onTap: () {
                   // while (Navigator.of(context).canPop()) {
                   //   Navigator.of(context).pop();
