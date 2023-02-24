@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/widgets/clock_digit_widget.dart';
 
 import 'package:flutter/material.dart';
