@@ -52,6 +52,7 @@ class _ClockState extends State<Clock> {
     Chain chain = Chain();
     chain.title =
         "System_Alarm_${Provider.of<ChainList>(context, listen: false).chains.length + 1}";
+    chain.repeatType = repeatTypeDaily;
     ChainActivity startChainActivity = ChainActivity(
       activity: Activity(
         activityId: const Uuid().v1(),

@@ -488,7 +488,9 @@ class _AddChainScreenState extends State<AddChainScreen> {
       selectedTime.hour,
       selectedTime.minute,
     );
-    addStartTimeController.text = DateFormat.jms().format(chainStartTime!);
+    setState(() {
+      addStartTimeController.text = DateFormat.jms().format(chainStartTime!);
+    });
   }
 
   @override
@@ -499,6 +501,9 @@ class _AddChainScreenState extends State<AddChainScreen> {
         pageTitle = tempChain.title;
         chainNameOnPageLoad = tempChain.title;
         //tempChain.loadActivities();
+
+        repeatTypes.remove(tempChain.repeatType);
+        repeatTypes.insert(0, tempChain.repeatType);
 
         if (tempChain.activities.length == 1) {
           editActivity(tempChain.activities[0]);
@@ -864,7 +869,9 @@ class _AddChainScreenState extends State<AddChainScreen> {
                   Expanded(
                     child: TextFormField(
                       keyboardType: TextInputType.number,
-                      initialValue: tempChain.repeatCount.toString(),
+                      initialValue: tempChain.repeatCount == -1
+                          ? "infinite"
+                          : tempChain.repeatCount.toString(),
                       textAlign: TextAlign.center,
                       decoration: const InputDecoration(
                         floatingLabelAlignment: FloatingLabelAlignment.center,
@@ -872,6 +879,9 @@ class _AddChainScreenState extends State<AddChainScreen> {
                       ),
                       validator: (value) {
                         try {
+                          if (value == "infinite") {
+                            return null;
+                          }
                           if (value != null &&
                               int.parse(value) ==
                                   int.parse(value).roundToDouble()) {
@@ -887,10 +897,12 @@ class _AddChainScreenState extends State<AddChainScreen> {
                           return "Insert valid integer value";
                         }
                       },
-                      onSaved: (newValue) => tempChain.repeatCount =
-                          newValue == null
+                      onSaved: (newValue) =>
+                          tempChain.repeatCount = newValue == null
                               ? repeatTypeDefaultCount
-                              : int.parse(newValue),
+                              : newValue == "infinite"
+                                  ? -1
+                                  : int.parse(newValue),
                     ),
                   ),
                 //if (repeatOccur[0] == repeatOccurAfter)
