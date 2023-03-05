@@ -499,6 +499,10 @@ class _AddChainScreenState extends State<AddChainScreen> {
         pageTitle = tempChain.title;
         chainNameOnPageLoad = tempChain.title;
         //tempChain.loadActivities();
+
+        if (tempChain.activities.length == 1) {
+          editActivity(tempChain.activities[0]);
+        }
       } else {
         showSaveAndExit = true;
       }
