@@ -11,12 +11,16 @@ class SystemWaitActivity extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CircleAvatar(
-      radius: 25,
+      radius: 30,
       backgroundColor: Theme.of(context).primaryColor,
-      child: Text(
-        taskText,
-        style: TextStyle(
-          color: Theme.of(context).textTheme.titleLarge?.color,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          taskText,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Theme.of(context).textTheme.titleLarge?.color,
+          ),
         ),
       ),
     );

@@ -64,7 +64,7 @@ class ChainActivitiesWidget extends StatelessWidget {
                         taskText:
                             "${tempChain.at!.isAfter(DateTime.now()) ? 'Scheduled to Start at' : 'Started on '} \n${DateFormat.yMd().add_jms().format(tempChain.at!)}",
                       )
-                    : const SystemWaitActivity(taskText: "Start"),
+                    : const SystemWaitActivity(taskText: "Add Alarm"),
               ),
             ],
           );

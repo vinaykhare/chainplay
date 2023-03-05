@@ -7,7 +7,6 @@ import 'package:chain_activities/screens/add_chain_screen.dart';
 import 'package:chain_activities/screens/play_chain_screen.dart';
 import 'package:chain_activities/screens/chain_execution_screen.dart';
 import 'package:chain_activities/helpers/constants.dart';
-import 'package:intl/intl.dart';
 
 class ChainTileView extends StatelessWidget {
   final Chain chain;

@@ -412,6 +412,9 @@ class _AddChainScreenState extends State<AddChainScreen> {
             ? DateFormat.jms().format(chainStartTime!)
             : "";
       });
+      if (tempChain.at == null) {
+        await pickTime();
+      }
     } else {
       setState(() {
         addingScheduleToChain = false;
@@ -431,6 +434,61 @@ class _AddChainScreenState extends State<AddChainScreen> {
     if (!updatingSystemWaitActivityInDB && !addingScheduleToChain) {
       focusScope.requestFocus(addActivityFocus);
     }
+  }
+
+  Future<void> pickDate() async {
+    chainStartDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(3000),
+    );
+    if (chainStartDate == null) {
+      return;
+    }
+    addStartDateController.text = DateFormat.yMEd().format(chainStartDate!);
+    // TimeOfDay initTime = TimeOfDay.fromDateTime(
+    //     DateTime.now().add(const Duration(minutes: 1)));
+    // // TimeOfDay initTime = TimeOfDay(
+    // //   hour: TimeOfDay.now().hour,
+    // //   minute: TimeOfDay.now().minute + 5,
+    // // );
+    // TimeOfDay? selectedTime = await showTimePicker(
+    //       context: context,
+    //       initialTime: initTime,
+    //     ) ??
+    //     initTime;
+
+    // chainStartTime = DateTime(
+    //   selectedDate.year,
+    //   selectedDate.month,
+    //   selectedDate.day,
+    //   selectedTime.hour,
+    //   selectedTime.minute,
+    // );
+    // addStartTimeController.text =
+    //     DateFormat.yMEd().add_jms().format(chainStartTime!);
+  }
+
+  Future<void> pickTime() async {
+    TimeOfDay initTime =
+        TimeOfDay.fromDateTime(DateTime.now().add(const Duration(minutes: 1)));
+    TimeOfDay? selectedTime = await showTimePicker(
+          context: context,
+          initialTime: initTime,
+        ) ??
+        initTime;
+
+    chainStartDate ??= DateTime.now();
+    addStartDateController.text = DateFormat.yMEd().format(chainStartDate!);
+    chainStartTime = DateTime(
+      chainStartDate!.year,
+      chainStartDate!.month,
+      chainStartDate!.day,
+      selectedTime.hour,
+      selectedTime.minute,
+    );
+    addStartTimeController.text = DateFormat.jms().format(chainStartTime!);
   }
 
   @override
@@ -596,40 +654,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
               Expanded(
                 child: TextFormField(
                   controller: addStartDateController,
-                  onTap: () async {
-                    chainStartDate = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime(3000),
-                    );
-                    if (chainStartDate == null) {
-                      return;
-                    }
-                    addStartDateController.text =
-                        DateFormat.yMEd().format(chainStartDate!);
-                    // TimeOfDay initTime = TimeOfDay.fromDateTime(
-                    //     DateTime.now().add(const Duration(minutes: 1)));
-                    // // TimeOfDay initTime = TimeOfDay(
-                    // //   hour: TimeOfDay.now().hour,
-                    // //   minute: TimeOfDay.now().minute + 5,
-                    // // );
-                    // TimeOfDay? selectedTime = await showTimePicker(
-                    //       context: context,
-                    //       initialTime: initTime,
-                    //     ) ??
-                    //     initTime;
-
-                    // chainStartTime = DateTime(
-                    //   selectedDate.year,
-                    //   selectedDate.month,
-                    //   selectedDate.day,
-                    //   selectedTime.hour,
-                    //   selectedTime.minute,
-                    // );
-                    // addStartTimeController.text =
-                    //     DateFormat.yMEd().add_jms().format(chainStartTime!);
-                  },
+                  onTap: pickDate,
                   keyboardType: TextInputType.none,
                   textInputAction: TextInputAction.none,
                   textAlign: TextAlign.center,
@@ -657,28 +682,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
               Expanded(
                 child: TextFormField(
                   controller: addStartTimeController,
-                  onTap: () async {
-                    TimeOfDay initTime = TimeOfDay.fromDateTime(
-                        DateTime.now().add(const Duration(minutes: 1)));
-                    TimeOfDay? selectedTime = await showTimePicker(
-                          context: context,
-                          initialTime: initTime,
-                        ) ??
-                        initTime;
-
-                    chainStartDate ??= DateTime.now();
-                    addStartDateController.text =
-                        DateFormat.yMEd().format(chainStartDate!);
-                    chainStartTime = DateTime(
-                      chainStartDate!.year,
-                      chainStartDate!.month,
-                      chainStartDate!.day,
-                      selectedTime.hour,
-                      selectedTime.minute,
-                    );
-                    addStartTimeController.text =
-                        DateFormat.jms().format(chainStartTime!);
-                  },
+                  onTap: pickTime,
                   keyboardType: TextInputType.none,
                   textInputAction: TextInputAction.none,
                   textAlign: TextAlign.center,
@@ -1052,11 +1056,28 @@ class _AddChainScreenState extends State<AddChainScreen> {
                         IconButton(
                           onPressed: () {
                             undoEdit(chainActivityInEditMode!);
+                            // tempChain.at = null;
+                            // tempChain.repeatType = repeatTypeDoesNotRepeat;
+                            // tempChain.repeatCount = repeatTypeDefaultCount;
+                          },
+                          icon: const Icon(Icons.cancel_outlined),
+                        ),
+                      if (addingScheduleToChain && tempChain.at != null)
+                        TextButton(
+                          onPressed: () {
+                            undoEdit(chainActivityInEditMode!);
                             tempChain.at = null;
                             tempChain.repeatType = repeatTypeDoesNotRepeat;
                             tempChain.repeatCount = repeatTypeDefaultCount;
                           },
-                          icon: const Icon(Icons.cancel_outlined),
+                          child: CircleAvatar(
+                            radius: 50,
+                            child: Text(
+                              "Remove\nAlarm",
+                              style: Theme.of(context).textTheme.labelSmall,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
                         ),
                       IconButton(
                         onPressed: onSubmitText,
