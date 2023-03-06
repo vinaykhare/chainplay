@@ -170,23 +170,6 @@ class ChainList with ChangeNotifier {
         };
       }
 
-      if (chainActivity.activityDuration.inSeconds == 0 &&
-          (chainActivity.activity.type == systemWaitActivityInDB ||
-              chainActivity.activity.type == systemStartActivityInDB) &&
-          chainActivityIndex >= (chainActivities.length - 1)) {
-        return {
-          "executingChain": executingChain,
-          "invokeCounter": chainActivityIndex,
-          "waitDuration": chainActivity.activityDuration,
-          "chainActivity": chainActivity,
-          "playScreenType": systemEndActivityInDB,
-          "running": chainActivity.activityDurationLeft == null,
-          "screenImage":
-              chainActivity.activity.specification?[activitySpecImagePath],
-          "showTimer": true,
-        };
-      }
-
       DateTime activityEndDateTime =
           chainActivity.at!.add(chainActivity.activityDuration);
       if (activityEndDateTime.isAfter(
@@ -202,6 +185,23 @@ class ChainList with ChangeNotifier {
           "screenImage":
               chainActivity.activity.specification?[activitySpecImagePath],
           "showTimer": false,
+        };
+      }
+
+      if (chainActivity.activityDuration.inSeconds == 0 &&
+          (chainActivity.activity.type == systemWaitActivityInDB ||
+              chainActivity.activity.type == systemStartActivityInDB) &&
+          chainActivityIndex >= (chainActivities.length - 1)) {
+        return {
+          "executingChain": executingChain,
+          "invokeCounter": chainActivityIndex,
+          "waitDuration": chainActivity.activityDuration,
+          "chainActivity": chainActivity,
+          "playScreenType": systemEndActivityInDB,
+          "running": chainActivity.activityDurationLeft == null,
+          "screenImage":
+              chainActivity.activity.specification?[activitySpecImagePath],
+          "showTimer": true,
         };
       }
 

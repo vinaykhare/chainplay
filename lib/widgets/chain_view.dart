@@ -2,7 +2,6 @@ import 'package:chain_activities/widgets/alarm_tile_view.dart';
 import 'package:chain_activities/widgets/chain_tile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:chain_activities/models/chain.dart';
-import 'package:intl/intl.dart';
 
 class ChainView extends StatelessWidget {
   final Chain chain;
@@ -27,32 +26,31 @@ class ChainView extends StatelessWidget {
       ),
       child: Column(
         children: [
-          chain.at != null && chain.activities.length <= 1
-              ? AlarmTileView(
-                  chain: chain,
-                  showHistory: showHistory,
-                  allowFlag: allowFlag,
-                  key: key,
-                  index: index,
-                )
-              : ChainTileView(
-                  chain: chain,
-                  showHistory: showHistory,
-                  allowFlag: allowFlag,
-                  key: key,
-                  index: index,
-                ),
-          if (chain.activities.length > 1)
-            Padding(
-              padding: const EdgeInsets.all(5),
-              child: chain.at != null
-                  ? Text(
-                      "${chain.at!.isAfter(DateTime.now()) ? 'Scheduled at: ' : 'Started at: '} ${DateFormat.yMEd().add_jms().format(chain.at!)}",
-                    )
-                  : Text(
-                      'Last Updated: ${DateFormat.yMEd().add_jms().format(chain.lastUpdatedAt)}',
-                    ),
-            ),
+          //if (chain.activities.length > 1)
+          Padding(
+            padding: const EdgeInsets.all(5),
+            child: chain.at != null
+                // ? Text(
+                //     "${chain.at!.isAfter(DateTime.now()) ? 'Scheduled at: ' : 'Started at: '} ${DateFormat.yMEd().add_jms().format(chain.at!)}",
+                //   )
+                ? AlarmTileView(
+                    chain: chain,
+                    showHistory: showHistory,
+                    allowFlag: allowFlag,
+                    key: key,
+                    index: index,
+                  )
+                : ChainTileView(
+                    chain: chain,
+                    showHistory: showHistory,
+                    allowFlag: allowFlag,
+                    key: key,
+                    index: index,
+                  ),
+            // Text(
+            //         'Last Updated: ${DateFormat.yMEd().add_jms().format(chain.lastUpdatedAt)}',
+            //       ),
+          ),
         ],
       ),
     );

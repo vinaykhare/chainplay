@@ -1,5 +1,5 @@
+import 'package:chain_activities/widgets/tile_time_format.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
@@ -24,9 +24,18 @@ class AlarmTileView extends StatelessWidget {
 
   Future<void> playTheChain(BuildContext context) async {
     NavigatorState nav = Navigator.of(context);
+    ChainList chainList = Provider.of<ChainList>(context, listen: false);
     if (chain.chainStatus == statusExecuting) {
-      await Provider.of<ChainList>(context, listen: false)
-          .stopChainExecution(chain);
+      await chainList.stopChainExecution(chain);
+      // if (chain.activities.length == 1) {
+      //   await chainList.removeChain(chain);
+      // }
+      chain.edit = true;
+      await chainList.updateChain(chain);
+      await nav.pushNamed(
+        AddChainScreen.routename,
+        arguments: chain,
+      );
     } else {
       //await Provider.of<ChainList>(context, listen: false).loadActivities(chain);
       Chain chainExecution =
@@ -89,34 +98,13 @@ class AlarmTileView extends StatelessWidget {
       // tileColor: chain.chainStatus == statusDone
       //     ? Theme.of(context).disabledColor
       //     : Theme.of(context).cardColor,
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Column(
-              children: [
-                Text(
-                  "Scheduled for",
-                  style: Theme.of(context).textTheme.labelMedium,
-                ),
-                InkWell(
-                  onTap: () async {},
-                  child: Text(
-                    DateFormat.yMd().format(chain.at!),
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          InkWell(
-            onTap: () async {},
-            child: Text(
-              "at ${chain.at!.hour.toString().padLeft(2, '0')}:${chain.at!.minute.toString().padLeft(2, '0')}",
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-          ),
-        ],
+      title: TileTimeView(
+        at: chain.at!,
+        tileTimeHeading: chain.at!.isAfter(DateTime.now())
+            ? 'Scheduled for: '
+            : 'Started on: ',
+        textStyleForDate: Theme.of(context).textTheme.bodyLarge,
+        textStyleForTime: Theme.of(context).textTheme.titleLarge,
       ),
 
       leading: CircleAvatar(

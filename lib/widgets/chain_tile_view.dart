@@ -1,3 +1,4 @@
+import 'package:chain_activities/widgets/tile_time_format.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/models/chain.dart';
@@ -89,6 +90,12 @@ class ChainTileView extends StatelessWidget {
       //     ? Theme.of(context).disabledColor
       //     : Theme.of(context).cardColor,
       title: Text(chain.title),
+      subtitle: TileTimeView(
+        at: chain.lastUpdatedAt,
+        tileTimeHeading: 'Last Updated on',
+        textStyleForDate: Theme.of(context).textTheme.bodyLarge,
+        textStyleForTime: Theme.of(context).textTheme.bodyLarge,
+      ),
 
       leading: CircleAvatar(
         backgroundColor: Theme.of(context).primaryColorLight,
