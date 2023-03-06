@@ -7,7 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class HelpHeader extends StatefulWidget {
-  const HelpHeader({super.key});
+  final double appHeight;
+  final double appWidth;
+  const HelpHeader(
+      {super.key, required this.appHeight, required this.appWidth});
 
   @override
   State<HelpHeader> createState() => _HelpHeaderState();
@@ -49,7 +52,8 @@ class _HelpHeaderState extends State<HelpHeader> {
 
   @override
   Widget build(BuildContext context) {
-    double appWidth = MediaQuery.of(context).size.width - 16;
+    double appHeight = widget.appHeight - 70;
+    double appWidth = widget.appWidth;
     return Container(
       //margin: const EdgeInsets.only(top: 10),
       padding: const EdgeInsets.all(8),
@@ -112,7 +116,7 @@ class _HelpHeaderState extends State<HelpHeader> {
                 SizedBox(
                   // width: appWidth * 0.3,
                   width: appWidth,
-                  height: 125,
+                  height: appHeight,
                   child: Image.asset(
                     headerSlideContent[page]["imageAsset"]!,
                     fit: BoxFit.contain,
@@ -157,7 +161,8 @@ class _HelpHeaderState extends State<HelpHeader> {
                       });
                     },
                     child: Text(
-                      (index + 1).toString(),
+                      //(index + 1).toString(),
+                      "o",
                       style: TextStyle(
                           color: page == index
                               ? Theme.of(context).primaryColorDark

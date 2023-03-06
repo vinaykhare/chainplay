@@ -171,7 +171,8 @@ class ChainList with ChangeNotifier {
       }
 
       if (chainActivity.activityDuration.inSeconds == 0 &&
-          chainActivity.activity.type == systemWaitActivityInDB &&
+          (chainActivity.activity.type == systemWaitActivityInDB ||
+              chainActivity.activity.type == systemStartActivityInDB) &&
           chainActivityIndex >= (chainActivities.length - 1)) {
         return {
           "executingChain": executingChain,
@@ -613,7 +614,7 @@ class ChainList with ChangeNotifier {
       chains[chainIndex].repeatCount--;
       //chains[chainIndex].chainStatus = statusExecuting;
     }
-    if (chains[chainIndex].repeatCount <= 0) {
+    if (chains[chainIndex].repeatCount == 0) {
       chains[chainIndex].repeatType = repeatTypeDoesNotRepeat;
       chains[chainIndex].at = null;
       chains[chainIndex].endedAt = null;
@@ -622,6 +623,7 @@ class ChainList with ChangeNotifier {
 
     if (chains[chainIndex].repeatCount <= -1) {
       // repeat forever
+      chains[chainIndex].chainStatus = statusExecuting;
     }
 
     if (chains[chainIndex].at != null) {

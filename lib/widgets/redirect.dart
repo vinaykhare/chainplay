@@ -1,5 +1,7 @@
 import 'package:chain_activities/models/chain_list.dart';
+import 'package:chain_activities/models/system_setting.dart';
 import 'package:chain_activities/screens/chain_list_screen.dart';
+import 'package:chain_activities/screens/how_it_works.dart';
 import 'package:chain_activities/screens/load_screen.dart';
 import 'package:chain_activities/screens/play_chain_screen.dart';
 import 'package:flutter/material.dart';
@@ -17,10 +19,18 @@ class Redirect extends StatelessWidget {
       future:
           Provider.of<ChainList>(context, listen: false).checkAndUpdateConfig(),
       builder: (context, snapshot) {
+        List<SystemSetting> systemSettings = chainList.systemSettings;
+        int showHelpEntryIndex = systemSettings.indexWhere(
+          (set) => set.key == "Show help on next boot",
+        );
+
         if (!chainList.configUpdated) {
           return const LoadScreen();
         } else {
-          if (chainList.notificationCameAs != null) {
+          if (showHelpEntryIndex != -1 &&
+              systemSettings[showHelpEntryIndex].value == "TRUE") {
+            return const HowItWorks();
+          } else if (chainList.notificationCameAs != null) {
             return const PlayChain();
           } else {
             return const ChainListScreen();

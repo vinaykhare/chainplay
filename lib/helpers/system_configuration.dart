@@ -118,6 +118,12 @@ const sqlInitScript = [
       'BOOL'
     )
   ''',
+  '''INSERT INTO settings(key, value, type) VALUES (
+      'Show help on next boot', 
+      'TRUE',
+      'BOOL'
+    )
+  ''',
 ];
 
 // Constant Header Content

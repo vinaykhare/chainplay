@@ -175,8 +175,8 @@ class LocalNotificationService with WidgetsBindingObserver {
       int maxProgressVal, int progressVal) async {
     AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
-      "CHAIN_EVENTS_CHANNEL_ID",
-      "CHAIN_EVENTS_CHANNEL_NAME",
+      "CAT_TEST_CHANNEL_1",
+      "CAT_TEST_CHANNEL_N1",
       channelDescription: 'CAT Channel',
       importance: Importance.max,
       priority: Priority.high,
@@ -208,8 +208,8 @@ class LocalNotificationService with WidgetsBindingObserver {
   Future<NotificationDetails> _getNotificationWithActions() async {
     const AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
-      "CHAIN_EVENTS_CHANNEL_ID",
-      "CHAIN_EVENTS_CHANNEL_NAME",
+      "CAT_TEST_CHANNEL_1",
+      "CAT_TEST_CHANNEL_N1",
       channelDescription: 'CAT Channel with Action.',
       importance: Importance.max,
       priority: Priority.high,

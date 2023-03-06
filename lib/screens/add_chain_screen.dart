@@ -160,6 +160,11 @@ class _AddChainScreenState extends State<AddChainScreen> {
       chainList.removeChain(tempChain);
     }
 
+    if (tempChain.activities.length == 1 && tempChain.at == null) {
+      tempChain.title = chainNameOnPageLoad;
+      chainList.removeChain(tempChain);
+    }
+
     if (tempChain.activities.isNotEmpty &&
         tempChain.title != chainNameOnPageLoad) {
       chainList.renameChain(
@@ -471,13 +476,19 @@ class _AddChainScreenState extends State<AddChainScreen> {
   }
 
   Future<void> pickTime() async {
+    NavigatorState nav = Navigator.of(context);
     TimeOfDay initTime =
         TimeOfDay.fromDateTime(DateTime.now().add(const Duration(minutes: 1)));
     TimeOfDay? selectedTime = await showTimePicker(
-          context: context,
-          initialTime: initTime,
-        ) ??
-        initTime;
+      context: context,
+      initialTime: initTime,
+    );
+
+    if (selectedTime == null) {
+      validateForm();
+      nav.pop();
+      return;
+    }
 
     chainStartDate ??= DateTime.now();
     addStartDateController.text = DateFormat.yMEd().format(chainStartDate!);
