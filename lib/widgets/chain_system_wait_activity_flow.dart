@@ -1,7 +1,7 @@
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:chain_activities/helpers/transform_functions.dart';
+import 'package:chain_activities/helpers/helper_functions.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_activity.dart';
 import 'package:chain_activities/models/chain_list.dart';
@@ -64,7 +64,7 @@ class ChainSystemWaitActivityFlow extends StatelessWidget {
                               : Theme.of(context).primaryColor,
                         ),
                         child: Text(
-                          "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? ' before scheduled duration' : TransformFunctions.durationToString(chainActivity.activityDuration)}.",
+                          "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? ' before scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDuration)}.",
                         ),
                       )
                     : Icon(

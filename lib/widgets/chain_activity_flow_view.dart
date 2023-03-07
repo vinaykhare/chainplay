@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:chain_activities/helpers/transform_functions.dart';
+import 'package:chain_activities/helpers/helper_functions.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_activity.dart';
 import 'package:chain_activities/models/chain_list.dart';
@@ -113,7 +113,7 @@ class ChainActivityFlowView extends StatelessWidget {
                       ],
                     ),
                     subtitle: Text(
-                      "${chainActivity.endedAt != null ? 'Completed' : 'will Complete'} ${activities[index].isInterrupted ? ' before scheduled duration' : TransformFunctions.durationToString(chainActivity.activityDuration)}.",
+                      "${chainActivity.endedAt != null ? 'Completed' : 'will Complete'} ${activities[index].isInterrupted ? ' before scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDuration)}.",
                     ),
                     trailing:
                         (chainActivity.endedAt != null || editActivity == null)
@@ -189,7 +189,7 @@ class ChainActivityFlowView extends StatelessWidget {
                           ],
                         ),
                         subtitle: Text(
-                          "${chainActivity.endedAt != null ? 'Completed' : 'will Complete'} ${activities[index].isInterrupted ? ' before scheduled duration' : TransformFunctions.durationToString(chainActivity.activityDuration)}.",
+                          "${chainActivity.endedAt != null ? 'Completed' : 'will Complete'} ${activities[index].isInterrupted ? ' before scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDuration)}.",
                         ),
                         leading: Checkbox(
                           key: ValueKey(

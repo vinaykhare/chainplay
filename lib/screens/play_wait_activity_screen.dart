@@ -5,7 +5,7 @@ import 'package:chain_activities/helpers/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/helpers/notification_helper.dart';
-import 'package:chain_activities/helpers/transform_functions.dart';
+import 'package:chain_activities/helpers/helper_functions.dart';
 import 'package:chain_activities/models/chain_activity.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/models/system_setting.dart';
@@ -146,7 +146,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
     // timeLeft = "$hours:$minutes:$displaySeconds";
     timeLeft = hours == 0 && minutes == 0 && seconds != 0
         ? " in "
-        : TransformFunctions.durationToString(
+        : HelperFunctions.durationToString(
             Duration(
               hours: hours,
               minutes: minutes,

@@ -1,7 +1,7 @@
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/models/system_setting.dart';
 
-class TransformFunctions {
+class HelperFunctions {
   static String durationToString(Duration activityDuration) {
     String drStr = "in ";
     int activityDurationHour = activityDuration.inHours;

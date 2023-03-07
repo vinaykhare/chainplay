@@ -58,7 +58,7 @@ const String repeatOccurNever = "Never";
 
 //assets
 const Map<String, String> assetMap = {
-  'logoImage': 'assets/logo/logo.png',
+  'logoImage': 'assets/AppIcons/playstore.png',
   'howItWorksPDF': 'assets/help_documents/howitworks.pdf',
   'alarmAudio': 'assets/sound/chain_activity_alarm.wav',
   'beepAudio': 'assets/sound/chain_activity_beep.mp3',

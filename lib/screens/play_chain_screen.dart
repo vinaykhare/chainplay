@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:chain_activities/helpers/transform_functions.dart';
+import 'package:chain_activities/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/helpers/constants.dart';
@@ -77,9 +77,9 @@ class _PlayChainState extends State<PlayChain> {
 
       String textToSpeak = chainActivity.activity.type == systemWaitActivityInDB
           ? invokeCounter < chain.activities.length - 1
-              ? "Take Rest. Next Activity will start ${TransformFunctions.durationToString(waitDuration)}."
+              ? "Take Rest. Next Activity will start ${HelperFunctions.durationToString(waitDuration)}."
               : "Complete the chain by pressing done or go forward."
-          : "Activity ${chainActivity.activity.title} has started. It will complete ${TransformFunctions.durationToString(waitDuration)}.";
+          : "Activity ${chainActivity.activity.title} has started. It will complete ${HelperFunctions.durationToString(waitDuration)}.";
       if (chainActivity.activityDurationLeft != null) {
         textToSpeak += " after resuming.";
       }
@@ -181,9 +181,9 @@ class _PlayChainState extends State<PlayChain> {
 
       String textToSpeak = chainActivity.activity.type == systemWaitActivityInDB
           ? invokeCounter < chain.activities.length - 1
-              ? "Take Rest. Next Activity will start ${TransformFunctions.durationToString(waitDuration)}."
+              ? "Take Rest. Next Activity will start ${HelperFunctions.durationToString(waitDuration)}."
               : "Complete the chain by pressing done or go forward."
-          : "Activity ${chainActivity.activity.title} has started. It will complete ${TransformFunctions.durationToString(waitDuration)}.";
+          : "Activity ${chainActivity.activity.title} has started. It will complete ${HelperFunctions.durationToString(waitDuration)}.";
       if (chainActivity.activityDurationLeft != null) {
         textToSpeak += " after resuming.";
       }
