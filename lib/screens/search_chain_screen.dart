@@ -63,9 +63,14 @@ class _SearchChainScreenState extends State<SearchChainScreen> {
     } else {
       setState(() {
         displayChains = chainList.chains
-            .where((element) => element.title
-                .toLowerCase()
-                .contains(filter.toString().toLowerCase()))
+            .where((element) =>
+                element.title
+                    .toLowerCase()
+                    .contains(filter.toString().toLowerCase()) ||
+                element.activities.indexWhere((act) => act.activity.title
+                        .toLowerCase()
+                        .contains(filter.toString().toLowerCase())) !=
+                    -1)
             .toList();
       });
     }
@@ -151,7 +156,7 @@ class _SearchChainScreenState extends State<SearchChainScreen> {
                               ? Theme.of(context).secondaryHeaderColor
                               : Theme.of(context).disabledColor,
                         ),
-                        label: const Text("Running"),
+                        label: const Text("Active"),
                         onPressed: () {
                           showRunning = !showRunning;
                           runPredefinedFilter();
