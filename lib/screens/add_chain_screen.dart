@@ -1,4 +1,5 @@
 import 'package:chain_activities/screens/chain_list_screen.dart';
+import 'package:chain_activities/screens/settings_screen.dart';
 import 'package:chain_activities/widgets/help_clip_horizontal.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -392,10 +393,11 @@ class _AddChainScreenState extends State<AddChainScreen> {
   }
 
   void editActivity(ChainActivity chainActivity) async {
-    FocusScopeNode focusScope = FocusScope.of(context);
+    //FocusScopeNode focusScope = FocusScope.of(context);
     ChainList chainList = Provider.of<ChainList>(context, listen: false);
     //await chainList.resetChain(tempChain);
     chainActivityInEditMode = chainActivity;
+    ScaffoldMessengerState smState = ScaffoldMessenger.of(context);
 
     chainActivityInEditMode!.edit = true;
 
@@ -410,6 +412,26 @@ class _AddChainScreenState extends State<AddChainScreen> {
     Duration chainActivityDuration = chainActivityInEditMode!.activityDuration;
 
     if (chainActivity.activity.type == systemStartActivityInDB) {
+      if (chainList.notificationHelper.notificationSettingIsFor() !=
+          notificationTypeSettingValueAppNotify) {
+        undoEdit(chainActivity);
+        smState.showSnackBar(
+          SnackBar(
+            content: const Text(
+                'Set "$notificationTypeSettingKey" to \n"$notificationTypeSettingValueAppNotify" in Settings.'),
+            duration: const Duration(
+              seconds: 5,
+            ),
+            action: SnackBarAction(
+                label: "Settings",
+                onPressed: () {
+                  Navigator.of(context)
+                      .pushReplacementNamed(SettingsScreen.routename);
+                }),
+          ),
+        );
+        return;
+      }
       setState(() {
         addingScheduleToChain = true;
         addingDurationToActivity = false;

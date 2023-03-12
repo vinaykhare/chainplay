@@ -6,6 +6,7 @@ import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_activity.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/screens/add_chain_screen.dart';
+import 'package:chain_activities/screens/settings_screen.dart';
 import 'package:chain_activities/widgets/clock_digit_widget.dart';
 
 import 'package:flutter/material.dart';
@@ -23,10 +24,12 @@ class Clock extends StatefulWidget {
 class _ClockState extends State<Clock> {
   Timer? countdownTimer;
   String hour = "00", minute = "00", second = "00";
+  late ChainList chainList;
 
   @override
   void initState() {
     super.initState();
+    chainList = Provider.of<ChainList>(context, listen: false);
     countdownTimer = Timer.periodic(
       const Duration(
         seconds: 1,
@@ -49,6 +52,24 @@ class _ClockState extends State<Clock> {
 
   Future<void> addAlarmChain() async {
     NavigatorState nav = Navigator.of(context);
+    if (chainList.notificationHelper.notificationSettingIsFor() !=
+        notificationTypeSettingValueAppNotify) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+              'Set "$notificationTypeSettingKey" to \n"$notificationTypeSettingValueAppNotify" in Settings.'),
+          duration: const Duration(
+            seconds: 5,
+          ),
+          action: SnackBarAction(
+              label: "Settings",
+              onPressed: () {
+                nav.pushReplacementNamed(SettingsScreen.routename);
+              }),
+        ),
+      );
+      return;
+    }
     Chain chain = Chain();
     chain.title =
         "System_Alarm_${Provider.of<ChainList>(context, listen: false).chains.length + 1}";
@@ -66,7 +87,7 @@ class _ClockState extends State<Clock> {
     chain.activities.add(
       startChainActivity,
     );
-    await Provider.of<ChainList>(context, listen: false).addChain(
+    await chainList.addChain(
       chain,
       startChainActivity,
     );
