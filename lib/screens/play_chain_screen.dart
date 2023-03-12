@@ -317,7 +317,8 @@ class _PlayChainState extends State<PlayChain> {
                           floatingLabelAlignment: FloatingLabelAlignment.center,
                           floatingLabelBehavior: FloatingLabelBehavior.never,
                         ),
-                        initialValue: chain.title,
+                        initialValue:
+                            chain.activities.length > 1 ? chain.title : "Alarm",
                         enabled: false,
                       ),
                     ),

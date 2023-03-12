@@ -92,48 +92,62 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       dropdownValue = listOfValues.first;
                     }
 
-                    return Row(
-                      key: ValueKey(settings[index].key),
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                    return Column(
                       children: [
-                        Expanded(child: Text(settings[index].key)),
-                        if (settings[index].type == "BOOL")
-                          Switch(
-                            value: settings[index].value == "TRUE",
-                            onChanged: (value) async {
-                              await chainList.setSetting(
-                                settings[index].key,
-                                value == true ? "TRUE" : "FALSE",
-                              );
-                            },
-                          )
-                        else if (settings[index].type == "LIST")
-                          DropdownButton<String>(
-                            value: dropdownValue,
-                            onChanged: (String? value) async {
-                              if (value == null || value == "") {
-                                return;
-                              }
-                              listOfValues.remove(value);
-                              listOfValues.insert(0, value);
-                              String result = "";
-                              for (String value in listOfValues) {
-                                result += '$value,';
-                              }
-                              await chainList.setSetting(
-                                settings[index].key,
-                                result.substring(0, result.length - 1),
-                              );
-                            },
-                            items: listOfValues
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
+                        Row(
+                          key: ValueKey(settings[index].key),
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(child: Text(settings[index].key)),
+                            if (settings[index].type == "BOOL")
+                              Switch(
+                                value: settings[index].value == "TRUE",
+                                onChanged: (value) async {
+                                  await chainList.setSetting(
+                                    settings[index].key,
+                                    value == true ? "TRUE" : "FALSE",
+                                  );
+                                },
+                              )
+                            else if (settings[index].type == "LIST")
+                              DropdownButton<String>(
+                                value: dropdownValue,
+                                onChanged: (String? value) async {
+                                  if (value == null || value == "") {
+                                    return;
+                                  }
+                                  listOfValues.remove(value);
+                                  listOfValues.insert(0, value);
+                                  String result = "";
+                                  for (String value in listOfValues) {
+                                    result += '$value,';
+                                  }
+                                  await chainList.setSetting(
+                                    settings[index].key,
+                                    result.substring(0, result.length - 1),
+                                  );
+                                },
+                                items: listOfValues
+                                    .map<DropdownMenuItem<String>>(
+                                        (String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList(),
+                              ),
+                          ],
+                        ),
+                        if (settings[index].value == 'App Notification,None')
+                          Text(
+                            "You may need to give Notification Permissions to this App in Android Settings.",
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.error,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
+                        const Divider(),
                       ],
                     );
                   },

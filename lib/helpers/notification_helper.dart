@@ -11,6 +11,8 @@ class NotificationHelper {
   LocalNotificationService localNotificationService =
       LocalNotificationService();
   List<SystemSetting> systemSettings = [];
+  FlutterTts? flutterTts;
+  bool speakerInitialized = false;
 
   set systemSetting(List<SystemSetting> newSystemSettings) {
     systemSettings = newSystemSettings;
@@ -74,11 +76,22 @@ class NotificationHelper {
     }
   }
 
-  Future<void> speakText(String text) async {
+  Future<FlutterTts?> speakText(String text) async {
+    if (isAppSoundEnabled() && !speakerInitialized) {
+      flutterTts = FlutterTts();
+      await flutterTts!.awaitSpeakCompletion(true);
+      speakerInitialized = true;
+    }
     if (isAppSoundEnabled()) {
-      FlutterTts flutterTts = FlutterTts();
-      await flutterTts.awaitSpeakCompletion(true);
-      flutterTts.speak(text);
+      flutterTts!.speak(text);
+      return flutterTts;
+    }
+    return null;
+  }
+
+  Future<void> stopSpeech() async {
+    if (isAppSoundEnabled() && flutterTts != null) {
+      flutterTts!.stop();
     }
   }
 

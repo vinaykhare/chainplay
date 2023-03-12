@@ -1,10 +1,9 @@
-import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/models/system_setting.dart';
 import 'package:chain_activities/widgets/help_header.dart';
 import 'package:flutter/material.dart';
 import 'package:chain_activities/widgets/app_drawer.dart';
-import 'package:pdf_render/pdf_render_widgets.dart';
+// import 'package:pdf_render/pdf_render_widgets.dart';
 import 'package:provider/provider.dart';
 
 class HowItWorks extends StatefulWidget {
@@ -16,7 +15,7 @@ class HowItWorks extends StatefulWidget {
 }
 
 class _HowItWorksState extends State<HowItWorks> {
-  bool pdfView = false;
+  // bool pdfView = false;
 
   late ChainList chainList;
 
@@ -49,26 +48,26 @@ class _HowItWorksState extends State<HowItWorks> {
     final appBarWidget = AppBar(
       centerTitle: true,
       title: const Text("How CAT Works??"),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              const Text("Detailed View?"),
-              Expanded(
-                child: Switch(
-                  value: pdfView,
-                  onChanged: (value) {
-                    setState(() {
-                      pdfView = value;
-                    });
-                  },
-                ),
-              ),
-            ],
-          ),
-        )
-      ],
+      // actions: [
+      //   Padding(
+      //     padding: const EdgeInsets.all(8.0),
+      //     child: Column(
+      //       children: [
+      //         const Text("Detailed View?"),
+      //         Expanded(
+      //           child: Switch(
+      //             value: pdfView,
+      //             onChanged: (value) {
+      //               setState(() {
+      //                 pdfView = value;
+      //               });
+      //             },
+      //           ),
+      //         ),
+      //       ],
+      //     ),
+      //   )
+      // ],
     );
     double appHeight = MediaQuery.of(context).size.height -
         (appBarWidget.preferredSize.height * 1) -
@@ -85,14 +84,15 @@ class _HowItWorksState extends State<HowItWorks> {
       body: SafeArea(
         child: Column(
           children: [
-            if (pdfView)
-              Expanded(child: PdfViewer.openAsset(assetMap['howItWorksPDF']!))
-            else
-              Expanded(
-                  child: HelpHeader(
+            // if (pdfView)
+            //   Expanded(child: PdfViewer.openAsset(assetMap['howItWorksPDF']!))
+            // else
+            Expanded(
+              child: HelpHeader(
                 appHeight: appHeight,
                 appWidth: appWidth,
-              )),
+              ),
+            ),
             appBarWidget,
           ],
         ),

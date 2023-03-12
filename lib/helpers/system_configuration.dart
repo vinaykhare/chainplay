@@ -108,7 +108,7 @@ const sqlInitScript = [
   ''',
   '''INSERT INTO settings(key, value, type) VALUES (
       'Notification Type',
-      'App Notification,None',
+      'None,App Notification',
       'LIST'
     )
   ''',
@@ -130,43 +130,61 @@ const sqlInitScript = [
 
 const List<Map<String, String>> headerSlideContent = [
   {
-    "imageAsset": "assets/help_images/app_drawer_menu.png",
-    "content": "Get Menu items by pressing the Burger Icon.",
+    "imageAsset": "assets/help_images/0.png",
+    "content": "CAT welcomes you. Lets check what is it and how it works.",
   },
   {
-    "imageAsset": "assets/help_images/check_executions.png",
-    "content": "Check the chain Execution history.",
-  },
-  {
-    "imageAsset": "assets/help_images/home.png",
-    "content": "Home Screen with List of Chains.",
-  },
-  {
-    "imageAsset": "assets/help_images/howitworks.png",
-    "content": "Check Help Menu for all App Features and its usage.",
-  },
-  {
-    "imageAsset": "assets/help_images/mark_favorite.png",
-    "content": "You can mark the chains as favorite, and filter them fast.",
-  },
-  {
-    "imageAsset": "assets/help_images/play_chain.png",
-    "content": "Play the chain of Activitites by pressing the play Button.",
-  },
-  {
-    "imageAsset": "assets/help_images/search_chains.png",
+    "imageAsset": "assets/help_images/1.png",
     "content":
-        "Search the chains when list of chain grows and its difficult to look out the desired chain.",
+        "CAT allows you to create the chain of timers and schedule alarm to it.",
   },
   {
-    "imageAsset": "assets/help_images/settings.png",
+    "imageAsset": "assets/help_images/2.png",
     "content":
-        "Control the settings for this app like Dark Theme, App Notification etc.",
+        "CAT comes with a Sample Chain of Timers to Start with. It is a simple workout schedule. You can add it by tapping this circle on Home Screen Or you can add your own Chain.",
   },
   {
-    "imageAsset": "assets/help_images/start_chain.png",
+    "imageAsset": "assets/help_images/3.png",
     "content":
-        "Edit Chain to Schedule for future execution, just by tapping on Start.",
+        "You can create your own chain of Timers by Click this button on Home screen when there are not chains created.",
+  },
+  {
+    "imageAsset": "assets/help_images/4.png",
+    "content": "And you can always create your own chain from Menu here.",
+  },
+  {
+    "imageAsset": "assets/help_images/5.png",
+    "content":
+        "Lets check what all can we do on a tile of a chain on Home Screen. Every unscheduled Chain has a Play Pause button to left. You can use it to play the chain right away, or stop the execution of running chain.",
+  },
+  {
+    "imageAsset": "assets/help_images/9.png",
+    "content":
+        "Here, home screen has three Chains, with all possible stats of Play button.",
+  },
+  {
+    "imageAsset": "assets/help_images/10.png",
+    "content":
+        "First chain is running, and we can stop by pressing pause button. Second chain is scheduled and we can wait for Local Notification. Thir chain is stopped, and we can play it by pressing play button. We go to the Edit Chain screen for scheduling it.",
+  },
+  {
+    "imageAsset": "assets/help_images/6.png",
+    "content":
+        "Tapping on the body of Chain tile will take you to Screen where you can Edit Chain and Add Alarm to it.",
+  },
+  {
+    "imageAsset": "assets/help_images/7.png",
+    "content":
+        "Forward arrow to the right of Chain takes you to the page with Chain Execution history.",
+  },
+  {
+    "imageAsset": "assets/help_images/8.png",
+    "content": "You can mark the chain as Favorite too.",
+  },
+  {
+    "imageAsset": "",
+    "content":
+        "We hope you got the basics and ready to play around. Tap me to go to CAT Home.",
   },
 ];
 

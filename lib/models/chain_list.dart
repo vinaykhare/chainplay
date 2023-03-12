@@ -15,6 +15,7 @@ import 'package:chain_activities/helpers/notification_helper.dart';
 import 'package:chain_activities/models/activity.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/system_setting.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:uuid/uuid.dart';
 //import 'package:chain_activities/screens/play_chain_screen.dart';
 
@@ -623,7 +624,10 @@ class ChainList with ChangeNotifier {
 
     if (chains[chainIndex].repeatCount <= -1) {
       // repeat forever
-      chains[chainIndex].chainStatus = statusExecuting;
+      chains[chainIndex].chainStatus =
+          chains[chainIndex].notificationId == noValueInDB
+              ? statusNotStarted
+              : statusExecuting;
     }
 
     if (chains[chainIndex].at != null) {
@@ -1135,8 +1139,12 @@ class ChainList with ChangeNotifier {
     await notificationHelper.playNotificationSound();
   }
 
-  Future<void> speakText(String text) async {
-    await notificationHelper.speakText(text);
+  Future<FlutterTts?> speakText(String text) async {
+    return await notificationHelper.speakText(text);
+  }
+
+  Future<void> stopSpeech() async {
+    await notificationHelper.stopSpeech();
   }
 
   // disposeAds() {

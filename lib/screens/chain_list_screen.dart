@@ -77,7 +77,7 @@ class ChainListScreen extends StatelessWidget {
                       children: [
                         if (index == chains.length - 1)
                           Text(
-                            "Chain of Timers",
+                            "Chain of Timers & Alarms",
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                         ChainListItem(
@@ -120,7 +120,7 @@ class ChainListScreen extends StatelessWidget {
                             .pushReplacementNamed(AddChainScreen.routename);
                       },
                       label: Text(
-                        "Add Your Custom Chain of Timers.",
+                        "Add Your Own Chain of Timers.",
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.labelLarge,
                       ),

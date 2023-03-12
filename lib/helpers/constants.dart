@@ -71,4 +71,5 @@ const Map<String, String> assetMap = {
   'helpImageSearchChain': 'assets/help_images/search_chains.png',
   'helpImageSettings': 'assets/help_images/settings.png',
   'helpImageStartChain': 'assets/help_images/start_chain.png',
+  'go_home': 'assets/help_images/go_home.png',
 };
