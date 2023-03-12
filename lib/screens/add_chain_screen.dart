@@ -1,4 +1,5 @@
 import 'package:chain_activities/screens/chain_list_screen.dart';
+import 'package:chain_activities/widgets/help_clip_horizontal.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -105,11 +106,13 @@ class _AddChainScreenState extends State<AddChainScreen> {
 
   Future<void> saveAndExit() async {
     NavigatorState navigatorState = Navigator.of(context);
-    await validateForm();
-    navigatorState.pushReplacementNamed(ChainListScreen.routename);
+    bool result = await validateForm();
+    if (result) {
+      navigatorState.pushReplacementNamed(ChainListScreen.routename);
+    }
   }
 
-  Future<bool> validateForm() async {
+  Future<bool> validateForm([bool existingScreen = true]) async {
     ChainList chainList = Provider.of<ChainList>(context, listen: false);
     if (chainFormKey.currentState == null) {
       return true;
@@ -131,9 +134,12 @@ class _AddChainScreenState extends State<AddChainScreen> {
       return false;
     }
 
-    if (tempChain.activities.isEmpty && tempChain.title != "") {
+    if (tempChain.activities.isEmpty &&
+        tempChain.title != "" &&
+        existingScreen) {
       setState(() {
-        errorString = "Add atleast one activity to this Chain.";
+        errorString =
+            "Add atleast one Timer Activity to this Chain.\n Or Remove the Chain Name and go back to Discard the Chain.";
       });
       return false;
     }
@@ -153,10 +159,9 @@ class _AddChainScreenState extends State<AddChainScreen> {
 
     //tempChain.name = pageTitle;
 
-    if (tempChain.activities.isEmpty &&
-        tempChain.title == "" &&
-        chainNameOnPageLoad != "") {
-      tempChain.title = chainNameOnPageLoad;
+    if (tempChain.activities.isEmpty && tempChain.title == "") {
+      tempChain.title =
+          chainNameOnPageLoad != "" ? chainNameOnPageLoad : tempChain.title;
       chainList.removeChain(tempChain);
     }
 
@@ -436,9 +441,9 @@ class _AddChainScreenState extends State<AddChainScreen> {
       });
     }
     addActivityController.text = chainActivity.activity.title;
-    if (!updatingSystemWaitActivityInDB && !addingScheduleToChain) {
-      focusScope.requestFocus(addActivityFocus);
-    }
+    // if (!updatingSystemWaitActivityInDB && !addingScheduleToChain) {
+    //   focusScope.requestFocus(addActivityFocus);
+    // }
   }
 
   Future<void> pickDate() async {
@@ -625,39 +630,55 @@ class _AddChainScreenState extends State<AddChainScreen> {
               ),
             ],
           ),
-          Row(
-            children: [
-              Expanded(
-                child: TextFormField(
-                  key: ValueKey(
-                    "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_image",
-                  ),
-                  keyboardType: TextInputType.number,
-                  textAlign: TextAlign.center,
-                  controller: activityImageController,
-                  // onSaved: (_) => chainActivityInEditMode!
-                  //         .activity.specification![activitySpecImagePath] =
-                  //     activityImageController.text,
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    label: const Text("Image Path"),
-                    hintText: activityDurationSecond.toString().padLeft(2, '0'),
-                    alignLabelWithHint: true,
+          if (chainActivityInEditMode?.activity.type !=
+                  systemStartActivityInDB &&
+              chainActivityInEditMode?.activity.type != systemWaitActivityInDB)
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    key: ValueKey(
+                      "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_image",
+                    ),
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    controller: activityImageController,
+                    // onSaved: (_) => chainActivityInEditMode!
+                    //         .activity.specification![activitySpecImagePath] =
+                    //     activityImageController.text,
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      label: const Text(
+                          "Paste HTTP Path from Internet here. \nOR Select from Local."),
+                      hintText:
+                          activityDurationSecond.toString().padLeft(2, '0'),
+                      alignLabelWithHint: true,
+                      floatingLabelBehavior: FloatingLabelBehavior.never,
+                    ),
                   ),
                 ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.browse_gallery),
-                onPressed: () async {
-                  XFile? pickedImage = await ImagePicker()
-                      .pickImage(source: ImageSource.gallery);
-                  if (pickedImage != null) {
-                    activityImageController.text = pickedImage.path;
-                  }
-                },
-              ),
-            ],
-          )
+                Column(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.file_copy),
+                      onPressed: () async {
+                        XFile? pickedImage = await ImagePicker()
+                            .pickImage(source: ImageSource.gallery);
+                        if (pickedImage != null) {
+                          activityImageController.text = pickedImage.path;
+                        }
+                      },
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: Text(
+                        "Select Local",
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            )
         ],
       ),
     );
@@ -941,45 +962,74 @@ class _AddChainScreenState extends State<AddChainScreen> {
       ),
     );
 
-    final chainInputForm = Form(
-      key: chainFormKey,
-      child: Column(
-        children: [
-          TextFormField(
-            autofocus: tempChain.title == "",
-            textAlign: TextAlign.center,
-            // style: TextStyle(
-            //   color: Theme.of(context).cardColor,
-            //   fontSize: 22,
-            //   fontWeight: FontWeight.bold,
-            // ),
-            style: Theme.of(context).textTheme.titleLarge,
-            decoration: const InputDecoration(
-              border: InputBorder.none,
-              floatingLabelAlignment: FloatingLabelAlignment.center,
-              floatingLabelBehavior: FloatingLabelBehavior.never,
-              label: Center(
-                child: Text(
-                  "Unique Chain Name",
+    final chainInputForm = Column(
+      children: [
+        Form(
+          key: chainFormKey,
+          child: Column(
+            children: [
+              TextFormField(
+                autofocus: tempChain.title == "",
+                textAlign: TextAlign.center,
+                // style: TextStyle(
+                //   color: Theme.of(context).cardColor,
+                //   fontSize: 22,
+                //   fontWeight: FontWeight.bold,
+                // ),
+                style: Theme.of(context).textTheme.titleLarge,
+                decoration: const InputDecoration(
+                  //border: InputBorder.none,
+                  floatingLabelAlignment: FloatingLabelAlignment.center,
+                  floatingLabelBehavior: FloatingLabelBehavior.never,
+                  label: Center(
+                    child: Text(
+                      "Unique Chain Name",
+                    ),
+                  ),
+                  // prefix: Icon(
+                  //   Icons.help_outline,
+                  // ),
+                  // suffix: InkWell(
+                  //   onTap: () {
+                  //     // clear text
+                  //   },
+                  //   child: const Icon(
+                  //     Icons.clear,
+                  //   ),
+                  // ),
                 ),
+
+                initialValue: tempChain.title,
+                validator: (value) {
+                  if ((value == null || value == "") &&
+                      tempChain.activities.isNotEmpty) {
+                    return "Inesrt valid Chain Name";
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  tempChain.title = value ?? "";
+                },
+                onFieldSubmitted: (value) {
+                  validateForm(false);
+                  //addingDurationToActivity = true;
+                  //FocusScope.of(context).requestFocus(addActivityFocus);
+                },
               ),
-            ),
-            initialValue: tempChain.title,
-            validator: (value) {
-              if ((value == null || value == "") &&
-                  tempChain.activities.isNotEmpty) {
-                return "Inesrt valid Chain Name";
-              }
-              return null;
-            },
-            onSaved: (value) {
-              tempChain.title = value ?? "";
-            },
-            onFieldSubmitted: (value) =>
-                FocusScope.of(context).requestFocus(addActivityFocus),
+            ],
           ),
-        ],
-      ),
+        ),
+        if (tempChain.title.isEmpty || tempChain.title == "")
+          const Icon(Icons.arrow_upward),
+        if (tempChain.title.isEmpty || tempChain.title == "")
+          const CircleAvatar(
+            radius: 50,
+            child: Text(
+              "Insert a Unique Chain Name first & Submit",
+              textAlign: TextAlign.center,
+            ),
+          ),
+      ],
     );
 
     // final appBarWidget = AppBar(
@@ -1002,6 +1052,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
             child: Column(
               //mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                chainInputForm,
                 if (errorString != "")
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -1027,9 +1078,14 @@ class _AddChainScreenState extends State<AddChainScreen> {
                     ),
                   ),
                 ),
-                chainInputForm,
                 if (addingDurationToActivity) duraitonInputForm,
+                if (addingScheduleToChain) const Text("Set Alarm"),
                 if (addingScheduleToChain) startDateTimeInputForm,
+                if (tempChain.activities.length <= 1 &&
+                    tempChain.title.isNotEmpty &&
+                    !addingScheduleToChain &&
+                    !addingDurationToActivity)
+                  const HelpClipHorizontal(),
                 AppBar(
                   automaticallyImplyLeading: !updatingSystemWaitActivityInDB &&
                       !addingScheduleToChain &&
@@ -1038,13 +1094,16 @@ class _AddChainScreenState extends State<AddChainScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       if (showSaveAndExit &&
-                          MediaQuery.of(context).viewInsets.bottom == 0)
+                          (MediaQuery.of(context).viewInsets.bottom == 0 ||
+                              tempChain.title.isEmpty ||
+                              tempChain.title == ""))
                         IconButton(
                           onPressed: saveAndExit,
                           icon: const Icon(Icons.arrow_back),
                         ),
                       if (!updatingSystemWaitActivityInDB &&
-                          !addingScheduleToChain)
+                          !addingScheduleToChain &&
+                          tempChain.title.isNotEmpty)
                         Expanded(
                           child: TextField(
                             cursorColor: Theme.of(context).shadowColor,
@@ -1053,7 +1112,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
                               floatingLabelBehavior:
                                   FloatingLabelBehavior.never,
                               label: const Text(
-                                'Add Task or Activity',
+                                'Add Timer Activity to this Chain',
                               ),
                               border: const OutlineInputBorder(
                                 borderSide: BorderSide.none,
@@ -1067,7 +1126,9 @@ class _AddChainScreenState extends State<AddChainScreen> {
                                   });
                                 },
                                 icon: Icon(
-                                  Icons.timelapse,
+                                  addingDurationToActivity
+                                      ? Icons.watch_off
+                                      : Icons.watch_outlined,
                                   color: Theme.of(context).iconTheme.color,
                                 ),
                               ),
@@ -1106,14 +1167,15 @@ class _AddChainScreenState extends State<AddChainScreen> {
                             ),
                           ),
                         ),
-                      IconButton(
-                        onPressed: onSubmitText,
-                        icon: chainActivityInEditMode != null
-                            ? const Icon(Icons.done_outline)
-                            : updatingSystemWaitActivityInDB
-                                ? const Icon(Icons.done)
-                                : const Icon(Icons.add_task_outlined),
-                      ),
+                      if (tempChain.title.isNotEmpty)
+                        IconButton(
+                          onPressed: onSubmitText,
+                          icon: chainActivityInEditMode != null
+                              ? const Icon(Icons.done_outline)
+                              : updatingSystemWaitActivityInDB
+                                  ? const Icon(Icons.done)
+                                  : const Icon(Icons.add_task_outlined),
+                        ),
                     ],
                   ),
                 ),

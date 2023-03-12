@@ -67,13 +67,29 @@ class ChainSystemWaitActivityFlow extends StatelessWidget {
                           "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? ' before scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDuration)}.",
                         ),
                       )
-                    : Icon(
-                        Icons.circle_outlined,
-                        size: 15,
-                        color: activities[index].edit
-                            ? Theme.of(context).colorScheme.error
-                            : Theme.of(context).primaryColor,
+                    : Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: activities[index].edit
+                              ? Theme.of(context).primaryColor.withOpacity(0.5)
+                              : Theme.of(context).primaryColor,
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(30),
+                            bottom: Radius.circular(30),
+                          ),
+                        ),
+                        child: const Text(
+                          "Tap to add rest\nbetween two timer activities.",
+                          textAlign: TextAlign.center,
+                        ),
                       ),
+                // : Icon(
+                //     Icons.circle_outlined,
+                //     size: 15,
+                //     color: activities[index].edit
+                //         ? Theme.of(context).colorScheme.error
+                //         : Theme.of(context).primaryColor,
+                //   ),
               ),
             if (index == 0) arrowWidget,
             if (index == 0)
