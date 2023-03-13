@@ -1,5 +1,7 @@
+import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/models/system_setting.dart';
+import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:chain_activities/widgets/help_header.dart';
 import 'package:flutter/material.dart';
 import 'package:chain_activities/widgets/app_drawer.dart';
@@ -46,8 +48,40 @@ class _HowItWorksState extends State<HowItWorks> {
   Widget build(BuildContext context) {
     chainList = Provider.of<ChainList>(context, listen: false);
     final appBarWidget = AppBar(
+      backgroundColor: Theme.of(context).dialogBackgroundColor,
       centerTitle: true,
-      title: const Text("How CAT Works??"),
+      automaticallyImplyLeading: false,
+      title: ListTile(
+        title: ElevatedButton(
+          onPressed: () {
+            Navigator.of(context)
+                .pushReplacementNamed(ChainListScreen.routename);
+          },
+          style: ElevatedButton.styleFrom(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30.0)),
+            backgroundColor: Theme.of(context).primaryColor,
+            textStyle: Theme.of(context).textTheme.labelLarge,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Image.asset(
+                assetMap["logoImage"]!,
+                height: 50,
+              ),
+              Expanded(
+                child: Text(
+                  "SKIP Introduction \n& Go Home",
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+
       // actions: [
       //   Padding(
       //     padding: const EdgeInsets.all(8.0),
