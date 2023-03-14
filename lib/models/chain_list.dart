@@ -949,7 +949,7 @@ class ChainList with ChangeNotifier {
     await DBHelper.removeData('activity', "", []);
     await DBHelper.removeData('chain', "", []);
     setSetting("DARK THEME", "FALSE");
-    setSetting("Notification Type", "App Notification,None");
+    setSetting("Notification Type", "None,App Notification");
     setSetting("App Sound", "TRUE");
     // await DBHelper.insert("settings", {
     //   "key": "DARK THEME",
