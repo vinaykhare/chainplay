@@ -94,7 +94,7 @@ class _HelpHeaderState extends State<HelpHeader> {
 
   Future<void> speak() async {
     if (flutterTts != null) {
-      flutterTts!.stop();
+      await flutterTts!.stop();
     }
     flutterTts = await chainList.speakText(
       headerSlideContent[page]["content"]!,

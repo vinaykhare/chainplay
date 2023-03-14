@@ -6,7 +6,6 @@ import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_activity.dart';
 import 'package:chain_activities/models/chain_list.dart';
-import 'package:chain_activities/widgets/system_wait_activity.dart';
 import 'package:chain_activities/widgets/system_wait_activity_with_duration.dart';
 
 import 'package:chain_activities/widgets/chain_activity_flow_view.dart';
@@ -15,11 +14,14 @@ import 'package:chain_activities/widgets/chain_activity_flow_view.dart';
 class ChainActivitiesWidget extends StatelessWidget {
   final Chain tempChain;
   final Function? editActivity, undoEdit, addStartDateToChain;
+
+  final ScrollController? scrollController;
   const ChainActivitiesWidget({
     super.key,
     required this.tempChain,
     required this.editActivity,
     required this.undoEdit,
+    required this.scrollController,
     this.addStartDateToChain,
   });
 
@@ -64,7 +66,8 @@ class ChainActivitiesWidget extends StatelessWidget {
                         taskText:
                             "${tempChain.at!.isAfter(DateTime.now()) ? 'Scheduled to Start at' : 'Started on '} \n${DateFormat.yMd().add_jms().format(tempChain.at!)}",
                       )
-                    : const SystemWaitActivity(taskText: "Add Alarm"),
+                    : const SystemWaitActivityWithDuration(
+                        taskText: "Tap to Schedule\n this Chain."),
               ),
             ],
           );
@@ -113,6 +116,7 @@ class ChainActivitiesWidget extends StatelessWidget {
     return ReorderableListView.builder(
       reverse: true,
       buildDefaultDragHandles: true,
+      scrollController: scrollController,
       onReorder: (oldIndex, newIndex) {
         oldIndex = activities.length - oldIndex - 1;
         newIndex = activities.length - newIndex - 1;

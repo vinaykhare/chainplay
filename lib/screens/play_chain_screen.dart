@@ -183,7 +183,9 @@ class _PlayChainState extends State<PlayChain> {
           ? invokeCounter < chain.activities.length - 1
               ? "Take Rest. Next Activity will start ${HelperFunctions.durationToString(waitDuration)}."
               : "Complete the chain by pressing done or go forward."
-          : "Activity ${chainActivity.activity.title} has started. It will complete ${HelperFunctions.durationToString(waitDuration)}.";
+          : chainActivity.activity.type == systemStartActivityInDB
+              ? "Complete the Alarm by pressing done or go forward."
+              : "Activity ${chainActivity.activity.title} has started. It will complete ${HelperFunctions.durationToString(waitDuration)}.";
       if (chainActivity.activityDurationLeft != null) {
         textToSpeak += " after resuming.";
       }
@@ -293,6 +295,7 @@ class _PlayChainState extends State<PlayChain> {
                       tempChain: chain,
                       editActivity: null,
                       undoEdit: null,
+                      scrollController: null,
                     ),
                   ),
                 ),

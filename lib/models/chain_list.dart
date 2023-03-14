@@ -1487,8 +1487,10 @@ class ChainList with ChangeNotifier {
           await notificationHelper.scheduleNotification(
         fromDateTime,
         nextNotificationId,
-        chain.title,
-        "$activityTitle has Started.",
+        chain.activities.length > 1 ? chain.title : "Scheduled Alarm",
+        chain.activities.length > 1
+            ? "$activityTitle has Started."
+            : "Complete your Scheduled Alarm",
         {
           payLoadChainName: chain.title,
           payLoadChainExecId: chain.chainExecutionId,
@@ -1532,8 +1534,10 @@ class ChainList with ChangeNotifier {
           await notificationHelper.scheduleNotification(
         fromDateTime,
         nextNotificationId,
-        chain.title,
-        "$activityTitle has Ended.",
+        chain.activities.length > 1 ? chain.title : "Scheduled Alarm",
+        chain.activities.length > 1
+            ? "$activityTitle has Ended."
+            : "Complete your Scheduled Alarm",
         {
           payLoadChainName: chain.title,
           payLoadChainExecId: chain.chainExecutionId,
