@@ -44,7 +44,7 @@ class LocalNotificationService with WidgetsBindingObserver {
 
   //late InitializationSettings initializationSettings;
 
-  Future<void> initialize() async {
+  Future<bool?> initialize() async {
     initializeTimeZones();
     // tz.setLocalLocation(tz.getLocation("timeZoneName"));
     //Android settings
@@ -140,6 +140,10 @@ class LocalNotificationService with WidgetsBindingObserver {
       // },
       onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
     );
+    return await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestPermission();
   }
 
   Future<Map<String, dynamic>?> checkForNotification() async {

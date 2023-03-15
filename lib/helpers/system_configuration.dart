@@ -182,6 +182,16 @@ const List<Map<String, String>> headerSlideContent = [
     "content": "You can mark the chain as Favorite too.",
   },
   {
+    "imageAsset": "assets/help_images/11.png",
+    "content":
+        "You can also add a Scheduled Chain by tapping on Clock on Home Screen. This takes you to add/edit chain scren where you will add Alarm to Chain first and then Timer Activities to it optionally. This way you can also use the Chain as Alarm with various options to repeat it.",
+  },
+  {
+    "imageAsset": "assets/help_images/12.png",
+    "content":
+        "Local Notifications are disabled by Default in App Settings. To use Scheduled chain or Alarms, you need to set App Notification as Notification Type in App Settings, and give Notification Permissions to this app by going to Android Settings. Else Notifications and Alarms will not work in this app.",
+  },
+  {
     "imageAsset": "",
     "content":
         "We hope you got the basics and ready to play around. Tap me to go to CAT Home.",

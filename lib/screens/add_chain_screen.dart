@@ -849,8 +849,10 @@ class _AddChainScreenState extends State<AddChainScreen> {
                       if (value == null || value == "") {
                         return;
                       }
-                      repeatTypes.remove(value);
-                      repeatTypes.insert(0, value);
+                      setState(() {
+                        repeatTypes.remove(value);
+                        repeatTypes.insert(0, value);
+                      });
                       if (repeatTypes[0] == repeatTypeDoesNotRepeat) {
                         tempChain.repeatCount = repeatTypeDefaultCount;
                       } else {
