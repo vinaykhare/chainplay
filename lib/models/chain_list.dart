@@ -1147,6 +1147,10 @@ class ChainList with ChangeNotifier {
     await notificationHelper.stopSpeech();
   }
 
+  Future<bool?> askNotificationPermission() async {
+    return await notificationHelper.askNotificationPermission();
+  }
+
   // disposeAds() {
   //   for (int i = 0; i < adIndexInChains.length; i++) {
   //     chains[adIndexInChains[i]].dispose();

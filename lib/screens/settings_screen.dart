@@ -15,6 +15,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   late ChainList chainList;
   List<SystemSetting> settings = [];
+  bool showNotificationPermissionWarning = false;
 
   @override
   void didChangeDependencies() {
@@ -117,6 +118,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   if (value == null || value == "") {
                                     return;
                                   }
+                                  //Notification specific check Start
+                                  bool userResponse = true;
+                                  if (value == 'App Notification') {
+                                    userResponse = await chainList
+                                            .askNotificationPermission() ??
+                                        false;
+                                  }
+
+                                  if (!userResponse) {
+                                    setState(() {
+                                      showNotificationPermissionWarning = true;
+                                    });
+                                  }
+                                  //Notification specific check End
+
                                   listOfValues.remove(value);
                                   listOfValues.insert(0, value);
                                   String result = "";
@@ -139,7 +155,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               ),
                           ],
                         ),
-                        if (settings[index].value == 'App Notification,None')
+                        if (settings[index].value == 'App Notification,None' &&
+                            showNotificationPermissionWarning)
                           Text(
                             "You may need to give Notification Permissions to this App in Android Settings.",
                             style: TextStyle(

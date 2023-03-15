@@ -23,6 +23,10 @@ class NotificationHelper {
     await localNotificationService.initialize();
   }
 
+  Future<bool?> askNotificationPermission() async {
+    return await localNotificationService.askNotificationPermission();
+  }
+
   Future<Map<String, dynamic>?> checkForNotification() async {
     Map<String, dynamic>? responsePayload =
         await localNotificationService.checkForNotification();
