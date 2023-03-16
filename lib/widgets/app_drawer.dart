@@ -1,9 +1,11 @@
 import 'package:chain_activities/helpers/constants.dart';
+import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/screens/add_chain_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:chain_activities/screens/how_it_works.dart';
 import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:chain_activities/screens/settings_screen.dart';
+import 'package:provider/provider.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({
@@ -52,7 +54,9 @@ class AppDrawer extends StatelessWidget {
           ),
           Column(
             children: [
-              const Divider(),
+              const Divider(
+                height: 30,
+              ),
               ListTile(
                 leading: const Icon(Icons.settings),
                 title: Text(
@@ -67,7 +71,9 @@ class AppDrawer extends StatelessWidget {
                       .pushReplacementNamed(SettingsScreen.routename);
                 },
               ),
-              const Divider(),
+              const Divider(
+                height: 30,
+              ),
               ListTile(
                 leading: const Icon(Icons.help),
                 title: Text(
@@ -86,6 +92,22 @@ class AppDrawer extends StatelessWidget {
                 height: 30,
               ),
               ListTile(
+                leading: const Icon(Icons.link),
+                title: Text(
+                  'Add Sample Chains',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                onTap: () async {
+                  NavigatorState nav = Navigator.of(context);
+                  while (Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
+                  }
+                  await Provider.of<ChainList>(context, listen: false)
+                      .loadSampleChains();
+                  nav.pushReplacementNamed(ChainListScreen.routename);
+                },
+              ),
+              ListTile(
                 leading: const Icon(
                   Icons.post_add,
                   size: 30,
@@ -102,6 +124,9 @@ class AppDrawer extends StatelessWidget {
                   Navigator.of(context)
                       .pushReplacementNamed(AddChainScreen.routename);
                 },
+              ),
+              const Divider(
+                height: 30,
               ),
               ListTile(
                 leading: const Icon(

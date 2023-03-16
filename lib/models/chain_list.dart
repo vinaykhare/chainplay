@@ -2,7 +2,7 @@
 
 import 'dart:convert';
 
-import 'package:chain_activities/helpers/system_configuration.dart';
+import 'package:chain_activities/helpers/sample_chain_configuration.dart';
 import 'package:chain_activities/models/chain_activity.dart';
 import 'package:chain_activities/screens/play_chain_screen.dart';
 import 'package:flutter/material.dart';
@@ -951,6 +951,7 @@ class ChainList with ChangeNotifier {
     setSetting("DARK THEME", "FALSE");
     setSetting("Notification Type", "None,App Notification");
     setSetting("App Sound", "TRUE");
+    // setSetting("Show help on next boot", "TRUE");
     // await DBHelper.insert("settings", {
     //   "key": "DARK THEME",
     //   "value": "FALSE",

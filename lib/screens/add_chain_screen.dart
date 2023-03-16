@@ -759,6 +759,13 @@ class _AddChainScreenState extends State<AddChainScreen> {
                     suffixIcon: const Icon(Icons.calendar_month),
                   ),
                   validator: (value) {
+                    chainStartTime = DateTime(
+                      chainStartDate!.year,
+                      chainStartDate!.month,
+                      chainStartDate!.day,
+                      chainStartTime!.hour,
+                      chainStartTime!.minute,
+                    );
                     if (chainStartTime != null &&
                         chainStartTime!.isAfter(DateTime.now())) {
                       return null;
