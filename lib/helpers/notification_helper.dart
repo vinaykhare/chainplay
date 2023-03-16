@@ -87,7 +87,7 @@ class NotificationHelper {
       speakerInitialized = true;
     }
     if (isAppSoundEnabled()) {
-      flutterTts!.speak(text);
+      await flutterTts!.speak(text);
       return flutterTts;
     }
     return null;
@@ -95,7 +95,7 @@ class NotificationHelper {
 
   Future<void> stopSpeech() async {
     if (isAppSoundEnabled() && flutterTts != null) {
-      flutterTts!.stop();
+      await flutterTts!.stop();
     }
   }
 
