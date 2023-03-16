@@ -80,7 +80,8 @@ class _PlayChainState extends State<PlayChain> {
               ? "Take Rest. Next Activity will start ${HelperFunctions.durationToString(waitDuration)}."
               : "Complete the chain by pressing done or go forward."
           : "Activity ${chainActivity.activity.title} has started. It will complete ${HelperFunctions.durationToString(waitDuration)}.";
-      if (chainActivity.activityDurationLeft != null) {
+      if (chainActivity.activityDurationLeft != null &&
+          waitDuration.inSeconds > 0) {
         textToSpeak += " after resuming.";
       }
       await chainList.speakText(textToSpeak);
@@ -186,7 +187,8 @@ class _PlayChainState extends State<PlayChain> {
           : chainActivity.activity.type == systemStartActivityInDB
               ? "Complete the Alarm by pressing done or go forward."
               : "Activity ${chainActivity.activity.title} has started. It will complete ${HelperFunctions.durationToString(waitDuration)}.";
-      if (chainActivity.activityDurationLeft != null) {
+      if (chainActivity.activityDurationLeft != null &&
+          waitDuration.inSeconds > 0) {
         textToSpeak += " after resuming.";
       }
       await chainList.speakText(textToSpeak);

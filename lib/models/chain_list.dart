@@ -328,7 +328,9 @@ class ChainList with ChangeNotifier {
   Future<void> removeChain(Chain chain) async {
     chains.removeWhere((sch) => sch.title == chain.title);
     await cancelScheduledNotification(chain);
-
+    for (Chain chainExec in chain.chainHistory) {
+      await cancelScheduledNotificationExecution(chainExec);
+    }
     await DBHelper.removeData(
       "chain_activity",
       "title = ?",
@@ -1198,6 +1200,11 @@ class ChainList with ChangeNotifier {
 
   Future<void> loadSampleChains() async {
     for (Chain configuredChain in sampleChains) {
+      int chainIndex =
+          chains.indexWhere((chn) => chn.title == configuredChain.title);
+      if (chainIndex != -1) {
+        await removeChain(chains[chainIndex]);
+      }
       Chain chain = Chain();
       chain.title = configuredChain.title;
       for (ChainActivity configuredChainActivity
