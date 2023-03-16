@@ -15,7 +15,6 @@ import 'package:chain_activities/helpers/notification_helper.dart';
 import 'package:chain_activities/models/activity.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/system_setting.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:uuid/uuid.dart';
 //import 'package:chain_activities/screens/play_chain_screen.dart';
 
@@ -1142,12 +1141,18 @@ class ChainList with ChangeNotifier {
     await notificationHelper.playNotificationSound();
   }
 
-  Future<FlutterTts?> speakText(String text) async {
-    return await notificationHelper.speakText(text);
+  Future<bool> speakText(String text) async {
+    await notificationHelper.speakText(text);
+    return notificationHelper.isTtsPlaying;
   }
 
-  Future<void> stopSpeech() async {
+  Future<bool> stopSpeech() async {
     await notificationHelper.stopSpeech();
+    return notificationHelper.isTtsPlaying;
+  }
+
+  bool isTtsPlaying() {
+    return notificationHelper.isTtsPlaying;
   }
 
   Future<bool?> askNotificationPermission() async {

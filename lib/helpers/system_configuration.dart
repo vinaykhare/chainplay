@@ -136,7 +136,7 @@ const List<Map<String, String>> headerSlideContent = [
   {
     "imageAsset": "assets/help_images/2.png",
     "content":
-        "CAT comes with a Sample Chain of Timers to Start with. It is a simple workout schedule. You can add it by tapping this circle on Home Screen Or you can add your own Chain.",
+        "CAT comes with a Sample Chain of Timers to Start with. Sample includes Workout Chain, Diet Chain and a Medicine Schedule chain. You can add it by tapping this circle on Home Screen Or you can add your own Chain.",
   },
   {
     "imageAsset": "assets/help_images/3.png",

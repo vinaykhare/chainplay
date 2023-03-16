@@ -2,6 +2,7 @@
 
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/helpers/local_notifications/local_notification_service.dart';
+import 'package:chain_activities/helpers/tts_state.dart';
 
 import 'package:chain_activities/models/system_setting.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -13,6 +14,12 @@ class NotificationHelper {
   List<SystemSetting> systemSettings = [];
   FlutterTts? flutterTts;
   bool speakerInitialized = false;
+  TtsState ttsState = TtsState.stopped;
+
+  get isTtsPlaying => ttsState == TtsState.playing;
+  get isTtsStopped => ttsState == TtsState.stopped;
+  get isTtsPaused => ttsState == TtsState.paused;
+  get isTtsContinued => ttsState == TtsState.continued;
 
   set systemSetting(List<SystemSetting> newSystemSettings) {
     systemSettings = newSystemSettings;
@@ -80,22 +87,49 @@ class NotificationHelper {
     }
   }
 
-  Future<FlutterTts?> speakText(String text) async {
+  Future<void> initTts() async {
+    flutterTts = FlutterTts();
+    await flutterTts!.awaitSpeakCompletion(true);
+    flutterTts!.setStartHandler(() {
+      ttsState = TtsState.playing;
+    });
+    flutterTts!.setCompletionHandler(() {
+      ttsState = TtsState.stopped;
+    });
+    flutterTts!.setCancelHandler(() {
+      ttsState = TtsState.stopped;
+    });
+    flutterTts!.setPauseHandler(() {
+      ttsState = TtsState.paused;
+    });
+    flutterTts!.setContinueHandler(() {
+      ttsState = TtsState.continued;
+    });
+
+    flutterTts!.setErrorHandler((msg) {
+      ttsState = TtsState.stopped;
+    });
+
+    await flutterTts!.setSpeechRate(0.4);
+  }
+
+  Future<dynamic> speakText(String text) async {
     if (isAppSoundEnabled() && !speakerInitialized) {
-      flutterTts = FlutterTts();
-      await flutterTts!.awaitSpeakCompletion(true);
+      await initTts();
       speakerInitialized = true;
     }
     if (isAppSoundEnabled()) {
-      await flutterTts!.speak(text);
-      return flutterTts;
+      return await flutterTts!.speak(text);
     }
     return null;
   }
 
-  Future<void> stopSpeech() async {
+  Future<dynamic> stopSpeech() async {
     if (isAppSoundEnabled() && flutterTts != null) {
-      await flutterTts!.stop();
+      var result = await flutterTts!.stop();
+      if (result == 1) {
+        ttsState = TtsState.stopped;
+      }
     }
   }
 

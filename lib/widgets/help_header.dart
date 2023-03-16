@@ -5,7 +5,6 @@ import 'package:chain_activities/helpers/system_configuration.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:provider/provider.dart';
 
 class HelpHeader extends StatefulWidget {
@@ -22,7 +21,7 @@ class _HelpHeaderState extends State<HelpHeader> {
   int page = 0;
   Timer? countdownTimer;
   late ChainList chainList;
-  FlutterTts? flutterTts;
+  bool isNotPlaying = false;
 
   @override
   void initState() {
@@ -35,18 +34,11 @@ class _HelpHeaderState extends State<HelpHeader> {
   @override
   void dispose() {
     super.dispose();
-    Future.delayed(
-      const Duration(seconds: 2),
-    );
-    if (countdownTimer != null) countdownTimer?.cancel();
-    if (flutterTts != null) {
-      flutterTts!.stop().then((value) {
-        if (countdownTimer != null) {
-          countdownTimer?.cancel();
-        }
-        flutterTts!.stop();
-      });
-    }
+    // Future.delayed(
+    //   const Duration(seconds: 2),
+    // );
+    //if (countdownTimer != null) countdownTimer?.cancel();
+    chainList.stopSpeech();
   }
 
   // void startTimer() {
@@ -93,12 +85,20 @@ class _HelpHeaderState extends State<HelpHeader> {
   }
 
   Future<void> speak() async {
-    if (flutterTts != null) {
-      await flutterTts!.stop();
-    }
-    flutterTts = await chainList.speakText(
+    setState(() {
+      isNotPlaying = chainList.isTtsPlaying();
+    });
+    isNotPlaying = await chainList.stopSpeech();
+
+    setState(() {
+      isNotPlaying = chainList.isTtsPlaying();
+    });
+    isNotPlaying = await chainList.speakText(
       headerSlideContent[page]["content"]!,
     );
+    setState(() {
+      isNotPlaying = chainList.isTtsPlaying();
+    });
   }
 
   @override
@@ -161,15 +161,16 @@ class _HelpHeaderState extends State<HelpHeader> {
             },
             child: Row(
               children: [
-                IconButton(
-                  onPressed: () => setState(() {
-                    decrementPage();
-                    // resetTimer();
-                  }),
-                  icon: const Icon(
-                    Icons.skip_previous,
+                if (isNotPlaying)
+                  IconButton(
+                    onPressed: () => setState(() {
+                      decrementPage();
+                      // resetTimer();
+                    }),
+                    icon: const Icon(
+                      Icons.skip_previous,
+                    ),
                   ),
-                ),
                 Expanded(
                   child: SizedBox(
                     // width: appWidth * 0.3,
@@ -183,7 +184,6 @@ class _HelpHeaderState extends State<HelpHeader> {
                           )
                         : InkWell(
                             onTap: () {
-                              flutterTts!.stop();
                               Navigator.of(context)
                                   .pushNamed(ChainListScreen.routename);
                             },
@@ -194,15 +194,16 @@ class _HelpHeaderState extends State<HelpHeader> {
                           ),
                   ),
                 ),
-                IconButton(
-                  onPressed: () => setState(() {
-                    incrementPage();
-                    // resetTimer();
-                  }),
-                  icon: const Icon(
-                    Icons.skip_next,
+                if (isNotPlaying)
+                  IconButton(
+                    onPressed: () => setState(() {
+                      incrementPage();
+                      // resetTimer();
+                    }),
+                    icon: const Icon(
+                      Icons.skip_next,
+                    ),
                   ),
-                ),
                 // SizedBox(
                 //   width: appWidth * 0.7,
                 //   height: 100,
