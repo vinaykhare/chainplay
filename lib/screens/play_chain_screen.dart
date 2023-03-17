@@ -24,14 +24,13 @@ class _PlayChainState extends State<PlayChain> {
   late ChainList chainList;
   int invokeCounter = 0;
   bool initializing = true;
+  //bool buildDone = false;
 
   // @override
   // void initState() {
   //   super.initState();
   //   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-  //     chainList.cancelScheduledNotificationExecution(
-  //       chain,
-  //     );
+  //     buildDone = true;
   //   });
   // }
 
@@ -84,7 +83,12 @@ class _PlayChainState extends State<PlayChain> {
           waitDuration.inSeconds > 0) {
         textToSpeak += " after resuming.";
       }
-      await chainList.speakText(textToSpeak);
+      await chainList.speakTextWithoutWait(textToSpeak);
+      // while (!buildDone) {
+      //   Future.delayed(
+      //     const Duration(microseconds: 1),
+      //   );
+      // }
       popResponse = await nav.pushNamed(
         PlayWaitActivity.routename,
         arguments: {
@@ -93,8 +97,10 @@ class _PlayChainState extends State<PlayChain> {
           "playScreenType": playScreenType,
           "running": running,
           "screenImage": screenImage,
+          // "textToSpeak": textToSpeak,
         },
       );
+      await chainList.stopSpeech();
 
       if (popResponse != null) {
         if (popResponse["interruptAndCompleted"] == false) {
@@ -191,7 +197,7 @@ class _PlayChainState extends State<PlayChain> {
           waitDuration.inSeconds > 0) {
         textToSpeak += " after resuming.";
       }
-      await chainList.speakText(textToSpeak);
+      await chainList.speakTextWithoutWait(textToSpeak);
       popResponse = await nav.pushNamed(
         PlayWaitActivity.routename,
         arguments: {
@@ -200,8 +206,10 @@ class _PlayChainState extends State<PlayChain> {
           "playScreenType": playScreenType,
           "running": running,
           "screenImage": screenImage,
+          // "textToSpeak": textToSpeak,
         },
       );
+      await chainList.stopSpeech();
 
       if (popResponse == null) {
         chainActivity.activityDurationLeft = null;

@@ -1146,6 +1146,11 @@ class ChainList with ChangeNotifier {
     return notificationHelper.isTtsPlaying;
   }
 
+  Future<bool> speakTextWithoutWait(String text) async {
+    await notificationHelper.speakTextWithoutWait(text);
+    return notificationHelper.isTtsPlaying;
+  }
+
   Future<bool> stopSpeech() async {
     await notificationHelper.stopSpeech();
     return notificationHelper.isTtsPlaying;

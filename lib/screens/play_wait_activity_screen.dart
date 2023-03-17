@@ -22,17 +22,46 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
   List<SystemSetting> systemSettings = [];
   late Duration waitDuration, initialWaitDuration;
   DateTime? resumedAt;
+  // late ChainList chainList;
   late ChainActivity chainActivity;
   bool initializing = true;
-  bool running = true, showPlayPause = true, appSoundEnabled = true;
+  bool running = true,
+      showPlayPause = true,
+      appSoundEnabled = true,
+      speechPlayed = false;
+  //isNotPlaying = false;
   String? screenImage, title;
+  // String? textToSpeak;
   NotificationHelper notificationHelper = NotificationHelper();
   int playScreenType = waitActivityInDB;
+
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+
+  //   if (!speechPlayed && textToSpeak != null && textToSpeak!.isNotEmpty) {
+  //     speak();
+  //     speechPlayed = true;
+  //   }
+  // }
+
   @override
   void dispose() {
     super.dispose();
     if (countdownTimer != null) countdownTimer?.cancel();
   }
+
+  // Future<void> speak() async {
+  //   chainList = Provider.of<ChainList>(context, listen: false);
+  //   isNotPlaying = chainList.isTtsPlaying();
+  //   isNotPlaying = await chainList.stopSpeech();
+
+  //   isNotPlaying = chainList.isTtsPlaying();
+  //   isNotPlaying = await chainList.speakText(
+  //     textToSpeak!,
+  //   );
+  //   isNotPlaying = chainList.isTtsPlaying();
+  // }
 
   Future<void> setCountDown() async {
     final seconds = waitDuration.inSeconds - 1;
@@ -114,7 +143,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
       playScreenType = input["playScreenType"];
       running = input["running"];
       screenImage = input["screenImage"];
-
+      // textToSpeak = input["textToSpeak"];
       switch (playScreenType) {
         case systemWaitActivityInDB:
           title = "Rest";
@@ -156,6 +185,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
     double appHeight = MediaQuery.of(context).size.height -
         MediaQuery.of(context).viewPadding.top -
         MediaQuery.of(context).viewPadding.bottom;
+
     return Scaffold(
       body: SingleChildScrollView(
         child: SafeArea(

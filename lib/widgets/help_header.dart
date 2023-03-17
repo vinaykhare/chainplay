@@ -85,14 +85,14 @@ class _HelpHeaderState extends State<HelpHeader> {
   }
 
   Future<void> speak() async {
-    setState(() {
-      isNotPlaying = chainList.isTtsPlaying();
-    });
+    // setState(() {
+    //   isNotPlaying = chainList.isTtsPlaying();
+    // });
     isNotPlaying = await chainList.stopSpeech();
 
-    setState(() {
-      isNotPlaying = chainList.isTtsPlaying();
-    });
+    // setState(() {
+    //   isNotPlaying = chainList.isTtsPlaying();
+    // });
     isNotPlaying = await chainList.speakText(
       headerSlideContent[page]["content"]!,
     );
@@ -147,18 +147,20 @@ class _HelpHeaderState extends State<HelpHeader> {
           // ),
           const Divider(),
           GestureDetector(
-            onHorizontalDragEnd: (details) {
-              setState(() {
-                if ((details.primaryVelocity ?? 0) < 0) {
-                  // Page forwards
-                  incrementPage();
-                } else if ((details.primaryVelocity ?? 0) > 0) {
-                  // Page backwards
-                  decrementPage();
-                }
-                // resetTimer();
-              });
-            },
+            onHorizontalDragEnd: isNotPlaying
+                ? (details) {
+                    setState(() {
+                      if ((details.primaryVelocity ?? 0) < 0) {
+                        // Page forwards
+                        incrementPage();
+                      } else if ((details.primaryVelocity ?? 0) > 0) {
+                        // Page backwards
+                        decrementPage();
+                      }
+                      // resetTimer();
+                    });
+                  }
+                : null,
             child: Row(
               children: [
                 if (isNotPlaying)
@@ -238,13 +240,15 @@ class _HelpHeaderState extends State<HelpHeader> {
                 itemCount: headerSlideContent.length,
                 itemBuilder: (context, index) {
                   return TextButton(
-                    onPressed: () {
-                      setState(() {
-                        page = index;
-                        // resetTimer();
-                        speak();
-                      });
-                    },
+                    onPressed: isNotPlaying
+                        ? () {
+                            setState(() {
+                              page = index;
+                              // resetTimer();
+                              speak();
+                            });
+                          }
+                        : null,
                     child: Text(
                       //(index + 1).toString(),
                       "o",
