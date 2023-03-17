@@ -6,7 +6,8 @@ class ScrollButton extends StatelessWidget {
   const ScrollButton({super.key, required this.scrollController});
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton.icon(
+    //return ElevatedButton.icon(
+    return ElevatedButton(
       style: ElevatedButton.styleFrom(
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
@@ -14,9 +15,9 @@ class ScrollButton extends StatelessWidget {
             Theme.of(context).secondaryHeaderColor.withOpacity(0.1),
         textStyle: Theme.of(context).textTheme.labelLarge,
       ),
-      icon: scrollController.hasClients && scrollController.position.pixels == 0
-          ? const Icon(Icons.arrow_upward)
-          : const Icon(Icons.arrow_downward),
+      // icon: scrollController.hasClients && scrollController.position.pixels == 0
+      //     ? const Icon(Icons.arrow_upward)
+      //     : const Icon(Icons.arrow_downward),
       onPressed: () {
         if (scrollController.hasClients) {
           final position = scrollController.position.pixels == 0
@@ -29,16 +30,23 @@ class ScrollButton extends StatelessWidget {
           );
         }
       },
-      label:
-          scrollController.hasClients && scrollController.position.pixels == 0
-              ? const Text(
-                  "Start\nof Chain",
-                  textAlign: TextAlign.center,
-                )
-              : const Text(
-                  "End\nof Chain",
-                  textAlign: TextAlign.center,
-                ),
+      child: Row(children: const [
+        Icon(Icons.arrow_upward),
+        Text(
+          "Chain\nEdge",
+          textAlign: TextAlign.center,
+        ),
+        Icon(Icons.arrow_downward),
+      ]),
+      // label : scrollController.hasClients && scrollController.position.pixels == 0
+      //     ? const Text(
+      //         "Start\nof Chain",
+      //         textAlign: TextAlign.center,
+      //       )
+      //     : const Text(
+      //         "End\nof Chain",
+      //         textAlign: TextAlign.center,
+      //       ),
     );
   }
 }
