@@ -1,4 +1,5 @@
 import 'package:chain_activities/helpers/key_helper.dart';
+import 'package:chain_activities/widgets/my_error_widget.dart';
 import 'package:chain_activities/widgets/redirect.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -29,6 +30,15 @@ class ChainActivities extends StatelessWidget {
         : chainList.systemSettings[themeIndex].value == "TRUE";
     return MaterialApp(
       title: 'CAT',
+      builder: (context, widget) {
+        Widget error = const MyErrorWidget();
+        // if (widget is Scaffold || widget is Navigator) {
+        error = Scaffold(body: Center(child: error));
+        // }
+        ErrorWidget.builder = (errorDetails) => error;
+        if (widget != null) return widget;
+        throw ('widget is null');
+      },
       //darkTheme: darkTheme ? ThemeData.dark() : null,
       debugShowCheckedModeBanner: false,
       theme: darkTheme

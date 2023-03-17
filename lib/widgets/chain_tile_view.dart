@@ -52,7 +52,8 @@ class ChainTileView extends StatelessWidget {
     if (chainExecution == null) {
       //await Provider.of<ChainList>(context, listen: false).loadActivities(chain);
       chain.edit = true;
-      await Provider.of<ChainList>(context, listen: false).updateChain(chain);
+      await Provider.of<ChainList>(context, listen: false)
+          .updateChain(chain, false);
       await nav.pushNamed(
         AddChainScreen.routename,
         arguments: chain,
@@ -84,52 +85,59 @@ class ChainTileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
+    return InkWell(
       onTap: () => navigateToAddChainOrPlayChain(context),
-      // tileColor: chain.chainStatus == statusDone
-      //     ? Theme.of(context).disabledColor
-      //     : Theme.of(context).cardColor,
-      title: Text(chain.title),
-      subtitle: TileTimeView(
-        at: chain.lastUpdatedAt,
-        tileTimeHeading: 'Last Updated on',
-        textStyleForDate: Theme.of(context).textTheme.bodyLarge,
-        textStyleForTime: Theme.of(context).textTheme.bodyLarge,
-      ),
-
-      leading: CircleAvatar(
-        backgroundColor: Theme.of(context).primaryColorLight,
-        child: IconButton(
-          onPressed: () => playTheChain(context),
-          icon: getIconForChain(chain),
-        ),
-      ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
+      child: Column(
         children: [
-          if (allowFlag)
-            IconButton(
-              icon: chain.pinned
-                  ? const Icon(Icons.favorite)
-                  : const Icon(Icons.favorite_border_outlined),
-              onPressed: () async {
-                chain.pinned = !chain.pinned;
-                await Provider.of<ChainList>(context, listen: false)
-                    .updateChain(chain);
-              },
+          ListTile(
+            // tileColor: chain.chainStatus == statusDone
+            //     ? Theme.of(context).disabledColor
+            //     : Theme.of(context).cardColor,
+            // subtitle: Text(chain.title),
+            title: TileTimeView(
+              at: chain.lastUpdatedAt,
+              tileTimeHeading: 'Last Updated on',
+              textStyleForDate: Theme.of(context).textTheme.bodyLarge,
+              textStyleForTime: Theme.of(context).textTheme.bodyLarge,
             ),
-          if (showHistory)
-            IconButton(
-              onPressed: () async {
-                NavigatorState navState = Navigator.of(context);
 
-                navState.pushNamed(
-                  ChainExecutionScreen.routename,
-                  arguments: chain,
-                );
-              },
-              icon: const Icon(Icons.arrow_forward),
+            leading: CircleAvatar(
+              backgroundColor: Theme.of(context).primaryColorLight,
+              child: IconButton(
+                onPressed: () => playTheChain(context),
+                icon: getIconForChain(chain),
+              ),
             ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (allowFlag)
+                  IconButton(
+                    icon: chain.pinned
+                        ? const Icon(Icons.favorite)
+                        : const Icon(Icons.favorite_border_outlined),
+                    onPressed: () async {
+                      chain.pinned = !chain.pinned;
+                      await Provider.of<ChainList>(context, listen: false)
+                          .updateChain(chain, false);
+                    },
+                  ),
+                if (showHistory)
+                  IconButton(
+                    onPressed: () async {
+                      NavigatorState navState = Navigator.of(context);
+
+                      navState.pushNamed(
+                        ChainExecutionScreen.routename,
+                        arguments: chain,
+                      );
+                    },
+                    icon: const Icon(Icons.arrow_forward),
+                  ),
+              ],
+            ),
+          ),
+          Text(chain.title),
         ],
       ),
     );

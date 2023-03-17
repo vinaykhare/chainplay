@@ -175,17 +175,19 @@ class _AddChainScreenState extends State<AddChainScreen> {
 
     if (tempChain.activities.isNotEmpty &&
         tempChain.title != chainNameOnPageLoad) {
-      chainList.renameChain(
+      await chainList.renameChain(
         chainNameOnPageLoad,
         tempChain.title,
       );
+      tempChain.lastUpdatedAt = DateTime.now();
+      await chainList.updateChain(tempChain);
     }
 
     if (!(tempChain.title == "" &&
         tempChain.activities.isEmpty &&
         chainNameOnPageLoad == "")) {
       tempChain.edit = false;
-      await chainList.updateChain(tempChain);
+      await chainList.updateChain(tempChain, false);
       await chainList.updatChainActivityByChainName(tempChain);
     }
     return true;
@@ -246,6 +248,8 @@ class _AddChainScreenState extends State<AddChainScreen> {
       newActivity,
     );
     await chainList.updateActivity(newActivity.activity);
+    tempChain.lastUpdatedAt = DateTime.now();
+    await chainList.updateChain(tempChain);
     setState(() {
       chainActivityInEditMode = null;
       updatingSystemWaitActivityInDB = false;

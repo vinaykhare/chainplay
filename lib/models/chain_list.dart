@@ -227,6 +227,7 @@ class ChainList with ChangeNotifier {
   }
 
   Future<void> addChain(Chain chain, ChainActivity chainActivity) async {
+    chain.lastUpdatedAt = DateTime.now();
     int chainIndex = chains.indexWhere((sch) => sch.title == chain.title);
 
     if (chainIndex == -1) {
@@ -244,6 +245,7 @@ class ChainList with ChangeNotifier {
 
     if (activityIndex == -1) {
       activities.add(chainActivity.activity);
+      chainActivity.activity.lastUpdatedAt = DateTime.now();
       await DBHelper.insert(
         "activity",
         {
@@ -364,6 +366,7 @@ class ChainList with ChangeNotifier {
       "chain",
       {
         "title": newChainTitle,
+        "lastUpdatedAt": DateTime.now().millisecondsSinceEpoch,
       },
       "title = ?",
       [oldChainTitle],
@@ -656,12 +659,16 @@ class ChainList with ChangeNotifier {
     await resetChain(chain);
   }
 
-  Future<void> updateChain(Chain chain) async {
+  Future<void> updateChain(Chain chain,
+      [bool updateLastUpdateDate = true]) async {
     int chainIndex = chains.indexWhere((sch) => sch.title == chain.title);
 
     if (chainIndex == -1) {
       return;
     }
+
+    chain.lastUpdatedAt =
+        updateLastUpdateDate ? DateTime.now() : chain.lastUpdatedAt;
     chains[chainIndex] = chain;
 
     await DBHelper.update(
@@ -840,6 +847,7 @@ class ChainList with ChangeNotifier {
     chain.repeatType = repeatTypeDoesNotRepeat;
     chain.repeatTypeGap = repeatTypeDefaultGap;
     chain.repeatCount = repeatTypeDefaultCount;
+    chain.lastUpdatedAt = DateTime.now();
     await updateChain(chain);
 
     notifyListeners();
@@ -910,7 +918,8 @@ class ChainList with ChangeNotifier {
     }
 
     updateActivityIndex(chain);
-
+    chain.lastUpdatedAt = DateTime.now();
+    await updateChain(chain);
     notifyListeners();
   }
 
@@ -923,6 +932,7 @@ class ChainList with ChangeNotifier {
   }
 
   Future<void> updateActivity(Activity activity) async {
+    activity.lastUpdatedAt = DateTime.now();
     await DBHelper.update(
       "activity",
       {
@@ -1047,6 +1057,8 @@ class ChainList with ChangeNotifier {
     // chain.activities.insert(newIndex, itemAtOldIndex);
 
     await updateActivityIndex(chain);
+    chain.lastUpdatedAt = DateTime.now();
+    await updateChain(chain);
     notifyListeners();
   }
 
