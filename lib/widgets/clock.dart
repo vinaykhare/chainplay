@@ -72,7 +72,8 @@ class _ClockState extends State<Clock> {
     }
     Chain chain = Chain();
     chain.title =
-        "System_Alarm_${Provider.of<ChainList>(context, listen: false).chains.length + 1}";
+        "Alarm added on ${DateFormat.yMd().add_Hms().format(DateTime.now())}";
+    //"Alarm ${Provider.of<ChainList>(context, listen: false).chains.length + 1}";
     chain.repeatType = repeatTypeDaily;
     ChainActivity startChainActivity = ChainActivity(
       activity: Activity(
@@ -98,22 +99,20 @@ class _ClockState extends State<Clock> {
   Widget build(BuildContext context) {
     //double appWidth = MediaQuery.of(context).size.width - 16;
     return Container(
-      margin: const EdgeInsets.all(5),
-      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor,
-        borderRadius: const BorderRadius.all(Radius.circular(30)),
-      ),
+          borderRadius: const BorderRadius.all(Radius.circular(30)),
+          gradient: LinearGradient(
+            colors: [
+              Theme.of(context).primaryColor,
+              Theme.of(context).secondaryHeaderColor,
+            ],
+          )),
       child: InkWell(
         onTap: addAlarmChain,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              "C A T",
-              style: Theme.of(context).textTheme.labelLarge,
-            ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(

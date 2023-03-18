@@ -1056,13 +1056,23 @@ class _AddChainScreenState extends State<AddChainScreen> {
             ],
           ),
         ),
-        if (tempChain.title.isEmpty || tempChain.title == "")
+        if (tempChain.title.isEmpty ||
+            tempChain.title == "" ||
+            tempChain.activities.length == 1)
           const Icon(Icons.arrow_upward),
         if (tempChain.title.isEmpty || tempChain.title == "")
           const CircleAvatar(
             radius: 50,
             child: Text(
               "Insert a Unique Chain Name first & Submit",
+              textAlign: TextAlign.center,
+            ),
+          )
+        else if (tempChain.activities.length == 1)
+          const CircleAvatar(
+            radius: 50,
+            child: Text(
+              "You can modify this Alarm Title",
               textAlign: TextAlign.center,
             ),
           ),

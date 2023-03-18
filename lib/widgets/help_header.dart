@@ -90,9 +90,9 @@ class _HelpHeaderState extends State<HelpHeader> {
     // });
     isNotPlaying = await chainList.stopSpeech();
 
-    // setState(() {
-    //   isNotPlaying = chainList.isTtsPlaying();
-    // });
+    setState(() {
+      isNotPlaying = chainList.isTtsPlaying();
+    });
     isNotPlaying = await chainList.speakText(
       headerSlideContent[page]["content"]!,
     );
@@ -103,11 +103,11 @@ class _HelpHeaderState extends State<HelpHeader> {
 
   @override
   Widget build(BuildContext context) {
-    double appHeight = widget.appHeight - 70;
+    double appHeight = widget.appHeight - 48;
     double appWidth = widget.appWidth;
     return Container(
       //margin: const EdgeInsets.only(top: 10),
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
           gradient: RadialGradient(
             colors: [
@@ -145,7 +145,7 @@ class _HelpHeaderState extends State<HelpHeader> {
           //     textAlign: TextAlign.center,
           //   ),
           // ),
-          const Divider(),
+          // const Divider(),
           GestureDetector(
             onHorizontalDragEnd: isNotPlaying
                 ? (details) {
@@ -161,107 +161,147 @@ class _HelpHeaderState extends State<HelpHeader> {
                     });
                   }
                 : null,
-            child: Row(
-              children: [
-                if (isNotPlaying)
-                  IconButton(
-                    onPressed: () => setState(() {
-                      decrementPage();
-                      // resetTimer();
-                    }),
-                    icon: const Icon(
-                      Icons.skip_previous,
+            child: SizedBox(
+              // width: appWidth * 0.3,
+              width: appWidth,
+              height: appHeight,
+              child: headerSlideContent[page]["imageAsset"] != "" &&
+                      headerSlideContent[page]["imageAsset"] != null
+                  ? Image.asset(
+                      headerSlideContent[page]["imageAsset"]!,
+                      fit: BoxFit.contain,
+                    )
+                  : InkWell(
+                      onTap: () {
+                        Navigator.of(context)
+                            .pushNamed(ChainListScreen.routename);
+                      },
+                      child: Image.asset(
+                        assetMap["go_home"]!,
+                        fit: BoxFit.contain,
+                      ),
                     ),
-                  ),
-                Expanded(
-                  child: SizedBox(
-                    // width: appWidth * 0.3,
-                    width: appWidth,
-                    height: appHeight,
-                    child: headerSlideContent[page]["imageAsset"] != "" &&
-                            headerSlideContent[page]["imageAsset"] != null
-                        ? Image.asset(
-                            headerSlideContent[page]["imageAsset"]!,
-                            fit: BoxFit.contain,
-                          )
-                        : InkWell(
-                            onTap: () {
-                              Navigator.of(context)
-                                  .pushNamed(ChainListScreen.routename);
-                            },
-                            child: Image.asset(
-                              assetMap["go_home"]!,
-                              fit: BoxFit.contain,
-                            ),
-                          ),
+            ),
+          ),
+          if (isNotPlaying)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    IconButton(
+                      onPressed: () => setState(() {
+                        decrementPage();
+                        // resetTimer();
+                      }),
+                      icon: const Icon(
+                        Icons.skip_previous,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => setState(() {
+                        decrementPage();
+                        // resetTimer();
+                      }),
+                      child: const Text("Previous"),
+                    ),
+                  ],
+                ),
+                IconButton(
+                  onPressed: () => setState(() {
+                    speak();
+                    // resetTimer();
+                  }),
+                  icon: const Icon(
+                    Icons.refresh,
                   ),
                 ),
-                if (isNotPlaying)
-                  IconButton(
-                    onPressed: () => setState(() {
-                      incrementPage();
-                      // resetTimer();
-                    }),
-                    icon: const Icon(
-                      Icons.skip_next,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => setState(() {
+                        incrementPage();
+                        // resetTimer();
+                      }),
+                      child: const Text(
+                        "Next",
+                        textAlign: TextAlign.right,
+                      ),
                     ),
-                  ),
-                // SizedBox(
-                //   width: appWidth * 0.7,
-                //   height: 100,
-                //   child: Padding(
-                //     padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                //     child: Text(
-                //       headerSlideContent[page]["content"]!,
-                //       style: Theme.of(context).textTheme.titleLarge,
-                //     ),
-                //   ),
-                // ),
+                    IconButton(
+                      onPressed: () => setState(() {
+                        incrementPage();
+                        // resetTimer();
+                      }),
+                      icon: const Icon(
+                        Icons.skip_next,
+                      ),
+                    ),
+                  ],
+                ),
               ],
-            ),
-          ),
-
-          Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).scaffoldBackgroundColor.withOpacity(
-                    0.3,
+            )
+          else
+            IconButton(
+              onPressed: () async {
+                isNotPlaying = await chainList.stopSpeech();
+                await Future.delayed(
+                  const Duration(
+                    microseconds: 1,
                   ),
-              borderRadius: const BorderRadius.all(
-                Radius.circular(20),
+                );
+                setState(() {
+                  isNotPlaying = !chainList.isTtsPlaying();
+                });
+              },
+              icon: const Icon(
+                Icons.volume_up_outlined,
               ),
             ),
-            child: SizedBox(
-              height: 30,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemExtent: 25,
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                itemCount: headerSlideContent.length,
-                itemBuilder: (context, index) {
-                  return TextButton(
-                    onPressed: isNotPlaying
-                        ? () {
-                            setState(() {
-                              page = index;
-                              // resetTimer();
-                              speak();
-                            });
-                          }
-                        : null,
-                    child: Text(
-                      //(index + 1).toString(),
-                      "o",
-                      style: TextStyle(
-                          color: page == index
-                              ? Theme.of(context).primaryColorDark
-                              : Theme.of(context).primaryColorLight),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
+
+          // Container(
+          //   decoration: BoxDecoration(
+          //     color: Theme.of(context).scaffoldBackgroundColor.withOpacity(
+          //           0.3,
+          //         ),
+          //     borderRadius: const BorderRadius.all(
+          //       Radius.circular(20),
+          //     ),
+          //   ),
+          //   child: SizedBox(
+          //     height: 30,
+          //     child: ListView.builder(
+          //       scrollDirection: Axis.horizontal,
+          //       itemExtent: 25,
+          //       shrinkWrap: true,
+          //       padding: EdgeInsets.zero,
+          //       itemCount: headerSlideContent.length,
+          //       itemBuilder: (context, index) {
+          //         return TextButton(
+          //           onPressed: isNotPlaying
+          //               ? () {
+          //                   setState(() {
+          //                     page = index;
+          //                     // resetTimer();
+          //                     speak();
+          //                   });
+          //                 }
+          //               : null,
+          //           child: Text(
+          //             //(index + 1).toString(),
+          //             "o",
+          //             style: TextStyle(
+          //                 color: page == index
+          //                     ? Theme.of(context).primaryColorDark
+          //                     : Theme.of(context).primaryColorLight),
+          //           ),
+          //         );
+          //       },
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

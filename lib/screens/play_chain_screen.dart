@@ -261,7 +261,8 @@ class _PlayChainState extends State<PlayChain> {
       //   chain = chainList.notificationCameForChain!;
       //   chainList.notificationCameForChain = null;
       // } else {
-      Map<String, dynamic> chArg = chainList.notificationCameAs != null
+      Map<String, dynamic> chArg = chainList.notificationCameAs != null &&
+              chainList.notificationCameAs!.isNotEmpty
           ? chainList.notificationCameAs!
           : ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
       parentChainItem = chainList.chains
@@ -330,8 +331,7 @@ class _PlayChainState extends State<PlayChain> {
                           floatingLabelAlignment: FloatingLabelAlignment.center,
                           floatingLabelBehavior: FloatingLabelBehavior.never,
                         ),
-                        initialValue:
-                            chain.activities.length > 1 ? chain.title : "Alarm",
+                        initialValue: chain.title,
                         enabled: false,
                       ),
                     ),

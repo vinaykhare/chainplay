@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:chain_activities/helpers/constants.dart';
+import 'package:chain_activities/widgets/card_help_text.dart';
 import 'package:flutter/material.dart';
 import 'package:chain_activities/helpers/helper_functions.dart';
 import 'package:chain_activities/models/chain.dart';
@@ -60,15 +61,8 @@ class ChainActivityFlowView extends StatelessWidget {
             child: editActivity != null
                 ? Column(
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).primaryColorLight,
-                          borderRadius: const BorderRadius.vertical(
-                            bottom: Radius.circular(30),
-                          ),
-                        ),
-                        child: const Text("Tap this Card to edit"),
+                      const CardHelpText(
+                        title: "Tap this Card to edit",
                       ),
                       ListTile(
                         onTap: () async {

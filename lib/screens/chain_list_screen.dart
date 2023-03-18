@@ -1,11 +1,13 @@
 import 'package:chain_activities/screens/add_chain_screen.dart';
+import 'package:chain_activities/screens/search_chain_screen.dart';
+import 'package:chain_activities/widgets/cat_container.dart';
+import 'package:chain_activities/widgets/chain_tile_help.dart';
 import 'package:chain_activities/widgets/clock.dart';
 import 'package:flutter/material.dart';
 //import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
-import 'package:chain_activities/screens/search_chain_screen.dart';
 import 'package:chain_activities/widgets/app_drawer.dart';
 //import 'package:chain_activities/widgets/app_drawer.dart';
 import 'package:chain_activities/widgets/chain_list_item.dart';
@@ -33,7 +35,47 @@ class ChainListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     ChainList chainList = Provider.of<ChainList>(context, listen: true);
     List<Chain> chains = chainList.chains;
-
+    final appBarWidget = AppBar(
+      centerTitle: true,
+      //automaticallyImplyLeading: false,
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: TextField(
+              keyboardType: TextInputType.none,
+              cursorColor: Theme.of(context).cardColor,
+              showCursor: false,
+              onTap: () =>
+                  Navigator.of(context).pushNamed(SearchChainScreen.routename),
+              decoration: InputDecoration(
+                floatingLabelBehavior: FloatingLabelBehavior.never,
+                label: const Text("Search Chains"),
+                border: const OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: Theme.of(context).iconTheme.color,
+                ),
+              ),
+            ),
+          ),
+          // IconButton(
+          //   onPressed: () {
+          //     Navigator.of(context).pushNamed(AddChainScreen.routename);
+          //   },
+          //   icon: const Icon(
+          //     Icons.watch_later,
+          //     size: 30,
+          //   ),
+          // )
+        ],
+      ),
+    );
+    double appHeight =
+        MediaQuery.of(context).size.height - appBarWidget.preferredSize.height;
     return Scaffold(
       //key: KeyHelper.navigatorKey,
       drawer: const AppDrawer(),
@@ -48,7 +90,28 @@ class ChainListScreen extends StatelessWidget {
           //mainAxisSize: MainAxisSize.min,
           children: [
             //const HelpHeader(),
-            const Clock(),
+            const CatContainer(
+              key: ValueKey("Clock"),
+              childWidget: Clock(),
+              containerTitle: "\t\tC hain of A larms & T imers",
+              helpText: "Tap this Clock to add a Scheduled Chain.",
+            ),
+            // if (chains.isNotEmpty)
+            //   Container(
+            //     margin: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+            //     child: const CatContainerHeader(
+            //       containerTitle: "Chain of Alarms & Timers",
+            //     ),
+            //   ),
+            // if (chains.isNotEmpty)
+            //   Container(
+            //     height: 10,
+            //     margin: const EdgeInsets.symmetric(horizontal: 20),
+            //     decoration: BoxDecoration(
+            //       color: Theme.of(context).primaryColor,
+            //       borderRadius: const BorderRadius.all(Radius.circular(30)),
+            //     ),
+            //   ),
             // if (chains.isNotEmpty) const Divider(),
             // if (chains.isNotEmpty)
             //   Padding(
@@ -59,115 +122,86 @@ class ChainListScreen extends StatelessWidget {
             //     ),
             //   ),
             // if (chains.isNotEmpty) const Divider(),
+
             if (chains.isNotEmpty)
               Expanded(
-                child: ReorderableListView.builder(
-                  reverse: true,
-                  onReorder: (oldIndex, newIndex) =>
-                      Provider.of<ChainList>(context, listen: false)
-                          .rearrangeChains(oldIndex, newIndex),
-                  itemCount: chains.length,
-                  itemBuilder: (context, index) {
-                    Chain chain = chains[index];
-                    //BannerAd? adChain = chain.adBanner;
-                    return Column(
-                      key: Key(
-                        index.toString(),
+                child: CatContainer(
+                  containerTitle: "All Chains, of Alarms & Timers",
+                  childWidget: SizedBox(
+                    height: chains.isNotEmpty && chains.length <= 3
+                        ? appHeight * 0.4
+                        : appHeight * 0.59,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ReorderableListView.builder(
+                        //reverse: true,
+                        onReorder: (oldIndex, newIndex) =>
+                            Provider.of<ChainList>(context, listen: false)
+                                .rearrangeChains(oldIndex, newIndex),
+                        itemCount: chains.length,
+                        itemBuilder: (context, index) {
+                          Chain chain = chains[index];
+                          //BannerAd? adChain = chain.adBanner;
+                          return ChainListItem(
+                            //adChain: adChain,
+                            chain: chain,
+                            showHistory: true,
+                            allowFlag: true,
+                            key: Key(
+                              index.toString(),
+                            ),
+                            index: index,
+                          );
+                        },
                       ),
-                      children: [
-                        if (index == chains.length - 1)
-                          Text(
-                            "Chain of Timers & Alarms",
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                        ChainListItem(
-                          //adChain: adChain,
-                          chain: chain,
-                          showHistory: true,
-                          allowFlag: true,
-                          key: Key(
-                            index.toString(),
-                          ),
-                          index: index,
-                        ),
-                      ],
-                    );
-                  },
+                    ),
+                  ),
                 ),
               )
             else
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  TextButton(
-                    onPressed: () async {
-                      await chainList.loadSampleChains();
-                    },
-                    child: CircleAvatar(
-                      radius: 150,
-                      child: Text(
-                        "Add \n'Sample Chain of Timers' \nto Start.\n\nOR",
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.headlineSmall,
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 250,
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.of(context)
-                            .pushReplacementNamed(AddChainScreen.routename);
+              CatContainer(
+                containerTitle: "Starter Chains",
+                childWidget: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () async {
+                        await chainList.loadSampleChains();
                       },
-                      label: Text(
-                        "Add Your Own Chain of Timers.",
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.labelLarge,
-                      ),
-                      icon: const Icon(Icons.add),
-                    ),
-                  ),
-                ],
-              ),
-            AppBar(
-              centerTitle: true,
-              //automaticallyImplyLeading: false,
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: TextField(
-                      keyboardType: TextInputType.none,
-                      cursorColor: Theme.of(context).cardColor,
-                      showCursor: false,
-                      onTap: () => Navigator.of(context)
-                          .pushNamed(SearchChainScreen.routename),
-                      decoration: InputDecoration(
-                        floatingLabelBehavior: FloatingLabelBehavior.never,
-                        label: const Text("Search Chains"),
-                        border: const OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                        ),
-                        filled: true,
-                        prefixIcon: Icon(
-                          Icons.search,
-                          color: Theme.of(context).iconTheme.color,
+                      child: CircleAvatar(
+                        radius: 150,
+                        child: Text(
+                          "Add \n'Sample Chain of Timers' \nto Start.\n\nOR",
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.headlineSmall,
                         ),
                       ),
                     ),
-                  ),
-                  // IconButton(
-                  //   onPressed: () {
-                  //     Navigator.of(context).pushNamed(AddChainScreen.routename);
-                  //   },
-                  //   icon: const Icon(
-                  //     Icons.watch_later,
-                  //     size: 30,
-                  //   ),
-                  // )
-                ],
+                    Positioned(
+                      top: 250,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.of(context)
+                              .pushReplacementNamed(AddChainScreen.routename);
+                        },
+                        label: Text(
+                          "Add Your Own Chain of Timers.",
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.labelLarge,
+                        ),
+                        icon: const Icon(Icons.add),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
+            if (chains.isNotEmpty && chains.length <= 3)
+              const CatContainer(
+                key: ValueKey("Help With Chain Tile Controls"),
+                childWidget: ChainTileHelp(),
+                containerTitle: "Help With Chain Tile Controls",
+              ),
+            appBarWidget,
           ],
         ),
       ),

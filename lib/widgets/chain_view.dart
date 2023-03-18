@@ -20,41 +20,36 @@ class ChainView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(5),
+      padding: const EdgeInsets.only(bottom: 5),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         color: chain.at != null
             ? chain.activities.length > 1
                 ? Theme.of(context).cardColor.withOpacity(0.7)
-                : Theme.of(context).primaryColor.withOpacity(0.4)
+                : Theme.of(context).primaryColorDark
             : Theme.of(context).cardColor,
       ),
       child: Column(
         children: [
           //if (chain.activities.length > 1)
-          Padding(
-            padding: const EdgeInsets.all(5),
-            child: chain.at != null
-                // ? Text(
-                //     "${chain.at!.isAfter(DateTime.now()) ? 'Scheduled at: ' : 'Started at: '} ${DateFormat.yMEd().add_jms().format(chain.at!)}",
-                //   )
-                ? AlarmTileView(
-                    chain: chain,
-                    showHistory: showHistory,
-                    allowFlag: allowFlag,
-                    key: key,
-                    index: index,
-                  )
-                : ChainTileView(
-                    chain: chain,
-                    showHistory: showHistory,
-                    allowFlag: allowFlag,
-                    key: key,
-                    index: index,
-                  ),
-            // Text(
-            //         'Last Updated: ${DateFormat.yMEd().add_jms().format(chain.lastUpdatedAt)}',
-            //       ),
-          ),
+          chain.at != null
+              // ? Text(
+              //     "${chain.at!.isAfter(DateTime.now()) ? 'Scheduled at: ' : 'Started at: '} ${DateFormat.yMEd().add_jms().format(chain.at!)}",
+              //   )
+              ? AlarmTileView(
+                  chain: chain,
+                  showHistory: showHistory,
+                  allowFlag: allowFlag,
+                  key: key,
+                  index: index,
+                )
+              : ChainTileView(
+                  chain: chain,
+                  showHistory: showHistory,
+                  allowFlag: allowFlag,
+                  key: key,
+                  index: index,
+                ),
         ],
       ),
     );
