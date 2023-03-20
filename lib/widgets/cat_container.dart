@@ -16,24 +16,26 @@ class CatContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //double appWidth = MediaQuery.of(context).size.width - 16;
-    return Column(
-      children: [
-        CatContainerHeader(containerTitle: containerTitle),
-        Container(
-          width: double.infinity,
-          margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-          padding: const EdgeInsets.only(bottom: 8),
-          decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor,
-            borderRadius: const BorderRadius.all(Radius.circular(30)),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          CatContainerHeader(containerTitle: containerTitle),
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+            padding: const EdgeInsets.only(bottom: 8),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+              borderRadius: const BorderRadius.all(Radius.circular(30)),
+            ),
+            child: childWidget,
           ),
-          child: childWidget,
-        ),
-        if (helpText != null)
-          CardHelpText(
-            title: helpText!,
-          ),
-      ],
+          if (helpText != null)
+            CardHelpText(
+              title: helpText!,
+            ),
+        ],
+      ),
     );
   }
 }

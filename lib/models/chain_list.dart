@@ -461,63 +461,63 @@ class ChainList with ChangeNotifier {
   DateTime? getNextStartDateTime(DateTime lastChainEndedAt, String repeatType,
       int repeatTypeGap, int repeatCount) {
     DateTime newStartDate = lastChainEndedAt;
-    //do {
-    switch (repeatType) {
-      case repeatTypeSecond:
-        newStartDate = lastChainEndedAt.add(
-          Duration(seconds: repeatTypeGap),
-        );
-        break;
-      case repeatTypeMinute:
-        newStartDate = lastChainEndedAt.add(
-          Duration(minutes: repeatTypeGap),
-        );
-        break;
-      case repeatTypeHourly:
-        newStartDate = lastChainEndedAt.add(
-          Duration(hours: repeatTypeGap),
-        );
-        break;
-      case repeatTypeDaily:
-        newStartDate = lastChainEndedAt.add(
-          Duration(days: repeatTypeGap),
-        );
-        break;
-      case repeatTypeWeekly:
-        newStartDate = DateTime(
-          lastChainEndedAt.year,
-          lastChainEndedAt.month,
-          lastChainEndedAt.day + (7 * repeatTypeGap),
-          lastChainEndedAt.hour,
-          lastChainEndedAt.minute,
-          lastChainEndedAt.second,
-        );
-        break;
-      case repeatTypeMonthly:
-        newStartDate = DateTime(
-          lastChainEndedAt.year,
-          lastChainEndedAt.month + repeatTypeGap,
-          lastChainEndedAt.day,
-          lastChainEndedAt.hour,
-          lastChainEndedAt.minute,
-          lastChainEndedAt.second,
-        );
-        break;
-      case repeatTypeYearly:
-        newStartDate = DateTime(
-          lastChainEndedAt.year + repeatTypeGap,
-          lastChainEndedAt.month,
-          lastChainEndedAt.day,
-          lastChainEndedAt.hour,
-          lastChainEndedAt.minute,
-          lastChainEndedAt.second,
-        );
-        break;
-      case repeatTypeDoesNotRepeat:
-      default:
-        return null;
-    }
-    //} while (!newStartDate.isAfter(DateTime.now()));
+    do {
+      switch (repeatType) {
+        case repeatTypeSecond:
+          newStartDate = lastChainEndedAt.add(
+            Duration(seconds: repeatTypeGap),
+          );
+          break;
+        case repeatTypeMinute:
+          newStartDate = lastChainEndedAt.add(
+            Duration(minutes: repeatTypeGap),
+          );
+          break;
+        case repeatTypeHourly:
+          newStartDate = lastChainEndedAt.add(
+            Duration(hours: repeatTypeGap),
+          );
+          break;
+        case repeatTypeDaily:
+          newStartDate = lastChainEndedAt.add(
+            Duration(days: repeatTypeGap),
+          );
+          break;
+        case repeatTypeWeekly:
+          newStartDate = DateTime(
+            lastChainEndedAt.year,
+            lastChainEndedAt.month,
+            lastChainEndedAt.day + (7 * repeatTypeGap),
+            lastChainEndedAt.hour,
+            lastChainEndedAt.minute,
+            lastChainEndedAt.second,
+          );
+          break;
+        case repeatTypeMonthly:
+          newStartDate = DateTime(
+            lastChainEndedAt.year,
+            lastChainEndedAt.month + repeatTypeGap,
+            lastChainEndedAt.day,
+            lastChainEndedAt.hour,
+            lastChainEndedAt.minute,
+            lastChainEndedAt.second,
+          );
+          break;
+        case repeatTypeYearly:
+          newStartDate = DateTime(
+            lastChainEndedAt.year + repeatTypeGap,
+            lastChainEndedAt.month,
+            lastChainEndedAt.day,
+            lastChainEndedAt.hour,
+            lastChainEndedAt.minute,
+            lastChainEndedAt.second,
+          );
+          break;
+        case repeatTypeDoesNotRepeat:
+        default:
+          return null;
+      }
+    } while (!newStartDate.isAfter(DateTime.now()));
     return newStartDate;
   }
 
@@ -1326,6 +1326,40 @@ class ChainList with ChangeNotifier {
       return parentChain.chainHistory[i];
     }
     return null;
+  }
+
+  List<Chain> getChainsByPredefinedFilter(
+      bool showFavorites, bool showRunning) {
+    List<Chain> result = showFavorites || showRunning
+        ? chains
+            .where(
+              (element) =>
+                  (showFavorites && element.pinned == true) ||
+                  (showRunning && element.chainStatus == statusExecuting),
+            )
+            .toList()
+        : chains;
+
+    notifyListeners();
+    return result;
+  }
+
+  List<Chain> getChainsByTextFilter(String filter) {
+    List<Chain> result = filter.isEmpty || filter == ''
+        ? chains
+        : chains
+            .where((element) =>
+                element.title
+                    .toLowerCase()
+                    .contains(filter.toString().toLowerCase()) ||
+                element.activities.indexWhere((act) => act.activity.title
+                        .toLowerCase()
+                        .contains(filter.toString().toLowerCase())) !=
+                    -1)
+            .toList();
+
+    notifyListeners();
+    return result;
   }
 
   Future<List<ChainActivity>> loadChainActivityHistory(

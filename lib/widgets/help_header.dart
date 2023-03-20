@@ -94,7 +94,7 @@ class _HelpHeaderState extends State<HelpHeader> {
       isNotPlaying = chainList.isTtsPlaying();
     });
     isNotPlaying = await chainList.speakText(
-      headerSlideContent[page]["content"]!,
+      headerSlideContent[page]["speech"]!,
     );
     setState(() {
       isNotPlaying = chainList.isTtsPlaying();
@@ -109,23 +109,25 @@ class _HelpHeaderState extends State<HelpHeader> {
       //margin: const EdgeInsets.only(top: 10),
       padding: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
-          gradient: RadialGradient(
-            colors: [
-              Theme.of(context).primaryColor,
-              Theme.of(context).colorScheme.background,
-            ],
-          ),
-          image: DecorationImage(
-            opacity: 0.1,
-            image: AssetImage(
-              assetMap['logoImage']!,
-            ),
-            fit: BoxFit.contain,
-          )
-          // borderRadius: const BorderRadius.all(
-          //   Radius.circular(20),
-          // ),
-          ),
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Theme.of(context).primaryColor,
+            Theme.of(context).colorScheme.background,
+          ],
+        ),
+        // image: DecorationImage(
+        //   opacity: 0.1,
+        //   image: AssetImage(
+        //     assetMap['logoImage']!,
+        //   ),
+        //   fit: BoxFit.contain,
+        // )
+        // borderRadius: const BorderRadius.all(
+        //   Radius.circular(20),
+        // ),
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -146,6 +148,17 @@ class _HelpHeaderState extends State<HelpHeader> {
           //   ),
           // ),
           // const Divider(),
+          FittedBox(
+            //height: 80,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(50, 15, 50, 0),
+              child: Text(
+                headerSlideContent[page]["title"]!,
+                style: Theme.of(context).textTheme.titleLarge,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
           GestureDetector(
             onHorizontalDragEnd: isNotPlaying
                 ? (details) {
@@ -164,7 +177,7 @@ class _HelpHeaderState extends State<HelpHeader> {
             child: SizedBox(
               // width: appWidth * 0.3,
               width: appWidth,
-              height: appHeight,
+              height: appHeight - 65,
               child: headerSlideContent[page]["imageAsset"] != "" &&
                       headerSlideContent[page]["imageAsset"] != null
                   ? Image.asset(
@@ -191,20 +204,26 @@ class _HelpHeaderState extends State<HelpHeader> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     IconButton(
-                      onPressed: () => setState(() {
-                        decrementPage();
-                        // resetTimer();
-                      }),
+                      onPressed: () => page > 0
+                          ? setState(() {
+                              decrementPage();
+                              // resetTimer();
+                            })
+                          : Navigator.of(context)
+                              .pushNamed(ChainListScreen.routename),
                       icon: const Icon(
                         Icons.skip_previous,
                       ),
                     ),
                     TextButton(
-                      onPressed: () => setState(() {
-                        decrementPage();
-                        // resetTimer();
-                      }),
-                      child: const Text("Previous"),
+                      onPressed: () => page > 0
+                          ? setState(() {
+                              decrementPage();
+                              // resetTimer();
+                            })
+                          : Navigator.of(context)
+                              .pushNamed(ChainListScreen.routename),
+                      child: Text(page > 0 ? "Previous" : "CAT Home"),
                     ),
                   ],
                 ),
@@ -221,20 +240,28 @@ class _HelpHeaderState extends State<HelpHeader> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     TextButton(
-                      onPressed: () => setState(() {
-                        incrementPage();
-                        // resetTimer();
-                      }),
-                      child: const Text(
-                        "Next",
+                      onPressed: () => page < (headerSlideContent.length - 1)
+                          ? setState(() {
+                              incrementPage();
+                              // resetTimer();
+                            })
+                          : Navigator.of(context)
+                              .pushNamed(ChainListScreen.routename),
+                      child: Text(
+                        page < (headerSlideContent.length - 1)
+                            ? "Next"
+                            : "Done",
                         textAlign: TextAlign.right,
                       ),
                     ),
                     IconButton(
-                      onPressed: () => setState(() {
-                        incrementPage();
-                        // resetTimer();
-                      }),
+                      onPressed: () => page < (headerSlideContent.length - 1)
+                          ? setState(() {
+                              incrementPage();
+                              // resetTimer();
+                            })
+                          : Navigator.of(context)
+                              .pushNamed(ChainListScreen.routename),
                       icon: const Icon(
                         Icons.skip_next,
                       ),

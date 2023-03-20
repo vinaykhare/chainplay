@@ -15,31 +15,8 @@ class ChainTileHelp extends StatelessWidget {
           //borderRadius: const BorderRadius.all(Radius.circular(30)),
           ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Divider(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              CircleAvatar(
-                radius: 10,
-                backgroundColor: Theme.of(context).primaryColorLight,
-                child: const Icon(Icons.schedule, size: 15),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text("Stop Scheduled chain."),
-              ),
-              CircleAvatar(
-                radius: 10,
-                backgroundColor: Theme.of(context).primaryColorLight,
-                child: const Icon(Icons.pause, size: 15),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text("Stop Running Chain."),
-              ),
-            ],
-          ),
           const Divider(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -51,7 +28,7 @@ class ChainTileHelp extends StatelessWidget {
               ),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text("Play Chain"),
+                child: Text("Play"),
               ),
               CircleAvatar(
                 radius: 10,
@@ -60,7 +37,7 @@ class ChainTileHelp extends StatelessWidget {
               ),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text("Favorite Chain"),
+                child: Text("Favorite"),
               ),
               CircleAvatar(
                 radius: 10,
@@ -70,6 +47,39 @@ class ChainTileHelp extends StatelessWidget {
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
                 child: FittedBox(child: Text("History")),
+              ),
+            ],
+          ),
+          const Divider(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              CircleAvatar(
+                radius: 10,
+                backgroundColor: Theme.of(context).primaryColorLight,
+                child: const Icon(Icons.schedule, size: 15),
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text("Stop Alarm."),
+              ),
+              CircleAvatar(
+                radius: 10,
+                backgroundColor: Theme.of(context).primaryColorLight,
+                child: const Icon(Icons.pause, size: 15),
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text("Stop Chain."),
+              ),
+              CircleAvatar(
+                radius: 10,
+                backgroundColor: Theme.of(context).primaryColorLight,
+                child: const Icon(Icons.touch_app_outlined, size: 20),
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text("Tap to Edit"),
               ),
             ],
           ),

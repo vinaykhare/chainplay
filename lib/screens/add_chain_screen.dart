@@ -204,6 +204,8 @@ class _AddChainScreenState extends State<AddChainScreen> {
       return;
     }
 
+    tempChain.edit = true;
+
     if (tempChain.activities.isEmpty) {
       ChainActivity startChainActivity = ChainActivity(
         activity: startActivity,
@@ -249,6 +251,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
     );
     await chainList.updateActivity(newActivity.activity);
     tempChain.lastUpdatedAt = DateTime.now();
+    tempChain.edit = true;
     await chainList.updateChain(tempChain);
     setState(() {
       chainActivityInEditMode = null;
