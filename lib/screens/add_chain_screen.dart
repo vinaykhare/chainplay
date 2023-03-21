@@ -168,10 +168,10 @@ class _AddChainScreenState extends State<AddChainScreen> {
       chainList.removeChain(tempChain);
     }
 
-    if (tempChain.activities.length == 1 && tempChain.at == null) {
-      tempChain.title = chainNameOnPageLoad;
-      chainList.removeChain(tempChain);
-    }
+    // if (tempChain.activities.length == 1 && tempChain.at == null) {
+    //   tempChain.title = chainNameOnPageLoad;
+    //   chainList.removeChain(tempChain);
+    // }
 
     if (tempChain.activities.isNotEmpty &&
         tempChain.title != chainNameOnPageLoad) {
@@ -942,7 +942,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
                     child: TextFormField(
                       keyboardType: TextInputType.number,
                       initialValue: tempChain.repeatCount == -1
-                          ? "infinite"
+                          ? "∞"
                           : tempChain.repeatCount.toString(),
                       textAlign: TextAlign.center,
                       decoration: const InputDecoration(
@@ -951,7 +951,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
                       ),
                       validator: (value) {
                         try {
-                          if (value == "infinite") {
+                          if (value == "∞") {
                             return null;
                           }
                           if (value != null &&
@@ -972,7 +972,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
                       onSaved: (newValue) =>
                           tempChain.repeatCount = newValue == null
                               ? repeatTypeDefaultCount
-                              : newValue == "infinite"
+                              : newValue == "∞"
                                   ? -1
                                   : int.parse(newValue),
                     ),

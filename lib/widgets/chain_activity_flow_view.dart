@@ -223,10 +223,12 @@ class ChainActivityFlowView extends StatelessWidget {
                             cardTitle: null,
                             startTime: chainActivity.at,
                             endTime: chainActivity.endedAt,
-                            textInBetween:
-                                chainActivity.activityDurationLeft != null
-                                    ? "Paused"
-                                    : null,
+                            textInBetween: chainActivity.activityDurationLeft !=
+                                        null &&
+                                    chainActivity.endedAt == null &&
+                                    chainActivity.activityDuration.inSeconds > 0
+                                ? "Paused"
+                                : null,
                           ),
                         ),
                     ],

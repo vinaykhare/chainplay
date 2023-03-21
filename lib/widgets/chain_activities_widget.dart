@@ -69,6 +69,16 @@ class ChainActivitiesWidget extends StatelessWidget {
                     : const SystemWaitActivityWithDuration(
                         taskText: "Tap to Schedule\n this Chain."),
               ),
+              if (tempChain.activities.length == 1 &&
+                  tempChain.repeatType != repeatTypeDoesNotRepeat &&
+                  (tempChain.repeatCount - 1) != 0)
+                arrowWidget,
+              if (tempChain.activities.length == 1 &&
+                  tempChain.repeatType != repeatTypeDoesNotRepeat &&
+                  (tempChain.repeatCount - 1) != 0)
+                SystemWaitActivityWithDuration(
+                    taskText:
+                        "And Repeats every ${tempChain.repeatTypeGap} ${tempChain.repeatType}.\n${(tempChain.repeatCount - 1) > -1 ? 'Chain will repeat ${tempChain.repeatCount - 1} more time${(tempChain.repeatCount - 1) > 1 ? "s" : ""}.' : 'Repeat ends Never.'}")
             ],
           );
         case systemWaitActivityInDB:

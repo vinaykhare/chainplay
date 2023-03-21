@@ -52,7 +52,7 @@ class ChainSystemWaitActivityFlow extends StatelessWidget {
                     undoEdit!(chainActivity);
                   }
                 },
-                child: (activities[index].activityDuration.inSeconds != 0)
+                child: (activities[index].activityDuration.inSeconds > 0)
                     ? Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
@@ -64,7 +64,8 @@ class ChainSystemWaitActivityFlow extends StatelessWidget {
                               : Theme.of(context).primaryColor,
                         ),
                         child: Text(
-                          "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? ' before scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDuration)}.",
+                          "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? 'before scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDuration)}${activities[index].activityDurationLeft != null ? '\nafter resuming.' : '.'}",
+                          textAlign: TextAlign.center,
                         ),
                       )
                     : Container(
@@ -78,8 +79,10 @@ class ChainSystemWaitActivityFlow extends StatelessWidget {
                             bottom: Radius.circular(30),
                           ),
                         ),
-                        child: const Text(
-                          "Tap to add rest\nbetween two timer activities.",
+                        child: Text(
+                          undoEdit == null || editActivity == null
+                              ? ""
+                              : "Tap to add rest\nbetween two timer activities.",
                           textAlign: TextAlign.center,
                         ),
                       ),

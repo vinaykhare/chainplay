@@ -27,6 +27,8 @@ class ChainTileView extends StatelessWidget {
     if (chain.chainStatus == statusExecuting) {
       await Provider.of<ChainList>(context, listen: false)
           .stopChainExecution(chain);
+    } else if (chain.activities.length <= 1) {
+      await navigateToAddChainOrPlayChain(context);
     } else {
       //await Provider.of<ChainList>(context, listen: false).loadActivities(chain);
       Chain chainExecution =

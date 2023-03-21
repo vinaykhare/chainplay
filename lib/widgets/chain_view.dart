@@ -23,11 +23,11 @@ class ChainView extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 5),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: chain.at != null
-            ? chain.activities.length > 1
+        color: chain.activities.length > 1
+            ? chain.at != null
                 ? Theme.of(context).cardColor.withOpacity(0.7)
-                : Theme.of(context).primaryColorDark
-            : Theme.of(context).cardColor,
+                : Theme.of(context).cardColor
+            : Theme.of(context).primaryColorDark,
       ),
       child: Column(
         children: [

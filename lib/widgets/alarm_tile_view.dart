@@ -30,27 +30,13 @@ class AlarmTileView extends StatelessWidget {
       // if (chain.activities.length == 1) {
       //   await chainList.removeChain(chain);
       // }
-      chain.edit = true;
-      await chainList.updateChain(chain, false);
-      await nav.pushNamed(
-        AddChainScreen.routename,
-        arguments: chain,
-      );
-    } else {
-      //await Provider.of<ChainList>(context, listen: false).loadActivities(chain);
-      Chain chainExecution =
-          await Provider.of<ChainList>(context, listen: false)
-              .startChainExecution(chain);
-      await nav.pushNamed(
-        PlayChain.routename,
-        arguments: {
-          payLoadChainExecId: chainExecution.chainExecutionId,
-          payLoadChainName: chainExecution.title,
-          payLoadChainActivityIndex: index, //0
-          payLoadChainActivityCount: chain.chainHistory.length,
-        },
-      );
     }
+    chain.edit = true;
+    await chainList.updateChain(chain, false);
+    await nav.pushNamed(
+      AddChainScreen.routename,
+      arguments: chain,
+    );
   }
 
   Future<void> navigateToAddChainOrPlayChain(BuildContext context) async {
