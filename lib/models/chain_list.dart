@@ -1328,37 +1328,31 @@ class ChainList with ChangeNotifier {
     return null;
   }
 
-  List<Chain> getChainsByPredefinedFilter(
-      bool showFavorites, bool showRunning) {
-    List<Chain> result = showFavorites || showRunning
+  List<Chain> getChainsByFilters(
+      String filter, bool showFavorites, bool showRunning) {
+    List<Chain> result = showFavorites ||
+            showRunning ||
+            (filter.isNotEmpty && filter != '')
         ? chains
             .where(
               (element) =>
                   (showFavorites && element.pinned == true) ||
-                  (showRunning && element.chainStatus == statusExecuting),
+                  (showRunning && element.chainStatus == statusExecuting) ||
+                  (filter.isNotEmpty &&
+                      filter != '' &&
+                      (element.title
+                              .toLowerCase()
+                              .contains(filter.toString().toLowerCase()) ||
+                          element.activities.indexWhere((act) => act
+                                  .activity.title
+                                  .toLowerCase()
+                                  .contains(filter.toString().toLowerCase())) !=
+                              -1)),
             )
             .toList()
         : chains;
 
-    notifyListeners();
-    return result;
-  }
-
-  List<Chain> getChainsByTextFilter(String filter) {
-    List<Chain> result = filter.isEmpty || filter == ''
-        ? chains
-        : chains
-            .where((element) =>
-                element.title
-                    .toLowerCase()
-                    .contains(filter.toString().toLowerCase()) ||
-                element.activities.indexWhere((act) => act.activity.title
-                        .toLowerCase()
-                        .contains(filter.toString().toLowerCase())) !=
-                    -1)
-            .toList();
-
-    notifyListeners();
+    // notifyListeners();
     return result;
   }
 

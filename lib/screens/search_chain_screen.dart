@@ -1,11 +1,10 @@
+import 'package:chain_activities/widgets/chain_list_item.dart';
 import 'package:flutter/material.dart';
 //import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
-import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
 //import 'package:chain_activities/widgets/app_drawer.dart';
-import 'package:chain_activities/widgets/chain_list_item.dart';
 
 class SearchChainScreen extends StatefulWidget {
   static String routename = "/search_chains";
@@ -19,65 +18,20 @@ class SearchChainScreen extends StatefulWidget {
 class _SearchChainScreenState extends State<SearchChainScreen> {
   List<Chain> displayChains = [];
   late ChainList chainList;
-
   bool showFavorites = false, showRunning = false;
+  String? textFilter;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    chainList = Provider.of<ChainList>(context, listen: true);
-    displayChains = chainList.chains;
-    showFavorites = false;
-    showRunning = false;
-  }
-
-  runPredefinedFilter() {
-    if (showFavorites || showRunning) {
-      setState(
-        () {
-          displayChains = chainList.chains
-              .where(
-                (element) =>
-                    (showFavorites && element.pinned == true) ||
-                    (showRunning && element.chainStatus == statusExecuting),
-              )
-              .toList();
-        },
-      );
-    } else {
-      setState(() {
-        displayChains = chainList.chains;
-      });
-    }
-  }
-
-  runFilter(filter) {
-    setState(() {
-      showFavorites = false;
-      showRunning = false;
-    });
-    if (filter == '') {
-      setState(() {
-        displayChains = chainList.chains;
-      });
-    } else {
-      setState(() {
-        displayChains = chainList.chains
-            .where((element) =>
-                element.title
-                    .toLowerCase()
-                    .contains(filter.toString().toLowerCase()) ||
-                element.activities.indexWhere((act) => act.activity.title
-                        .toLowerCase()
-                        .contains(filter.toString().toLowerCase())) !=
-                    -1)
-            .toList();
-      });
-    }
+    chainList = Provider.of<ChainList>(context, listen: false);
   }
 
   @override
   Widget build(BuildContext context) {
+    displayChains = chainList.getChainsByFilters(
+        textFilter ?? '', showFavorites, showRunning);
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -128,9 +82,10 @@ class _SearchChainScreenState extends State<SearchChainScreen> {
                               : Theme.of(context).disabledColor,
                         ),
                         label: const Text("Favorites"),
-                        onPressed: () {
-                          showFavorites = !showFavorites;
-                          runPredefinedFilter();
+                        onPressed: () async {
+                          setState(() {
+                            showFavorites = !showFavorites;
+                          });
                         },
                       ),
                     ),
@@ -158,8 +113,9 @@ class _SearchChainScreenState extends State<SearchChainScreen> {
                         ),
                         label: const Text("Active"),
                         onPressed: () {
-                          showRunning = !showRunning;
-                          runPredefinedFilter();
+                          setState(() {
+                            showRunning = !showRunning;
+                          });
                         },
                       ),
                     ),
@@ -174,7 +130,9 @@ class _SearchChainScreenState extends State<SearchChainScreen> {
                 keyboardType: TextInputType.text,
                 cursorColor: Theme.of(context).iconTheme.color,
                 onChanged: (value) {
-                  runFilter(value);
+                  setState(() {
+                    textFilter = value;
+                  });
                 },
                 decoration: InputDecoration(
                   floatingLabelBehavior: FloatingLabelBehavior.never,
