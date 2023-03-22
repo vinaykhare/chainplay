@@ -103,19 +103,16 @@ flutter:
     - assets/sound/chain_activity_alarm.wav
     - assets/sound/chain_activity_beep.mp3
     - assets/help_images/0.png
-    - assets/help_images/1.png
-    - assets/help_images/2.png
-    - assets/help_images/3.png
-    - assets/help_images/4.png
-    - assets/help_images/5.png
-    - assets/help_images/6.png
-    - assets/help_images/7.png
-    - assets/help_images/8.png
-    - assets/help_images/9.png
-    - assets/help_images/10.png
-    - assets/help_images/11.png
-    - assets/help_images/12.png
     - assets/help_images/go_home.png
+    - assets/help_images/home page.png
+    - assets/help_images/Chain Categories.png
+    - assets/help_images/gif/CAT Settings.gif
+    - assets/help_images/gif/Create Chain.gif
+    - assets/help_images/gif/Play Chain.gif
+    - assets/help_images/gif/Create Scheduled Chain.gif
+    - assets/help_images/gif/Play Scheduled Chain.gif
+    - assets/help_images/gif/Stop Chains.gif
+    - assets/help_images/gif/Filter Chains.gif
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

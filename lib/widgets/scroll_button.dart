@@ -33,7 +33,7 @@ class ScrollButton extends StatelessWidget {
       child: Row(children: const [
         Icon(Icons.arrow_upward),
         Text(
-          "Chain\nEdge",
+          "Scroll",
           textAlign: TextAlign.center,
         ),
         Icon(Icons.arrow_downward),

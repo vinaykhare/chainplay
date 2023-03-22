@@ -942,16 +942,17 @@ class _AddChainScreenState extends State<AddChainScreen> {
                     child: TextFormField(
                       keyboardType: TextInputType.number,
                       initialValue: tempChain.repeatCount == -1
-                          ? "∞"
+                          ? "."
                           : tempChain.repeatCount.toString(),
                       textAlign: TextAlign.center,
                       decoration: const InputDecoration(
                         floatingLabelAlignment: FloatingLabelAlignment.center,
-                        floatingLabelBehavior: FloatingLabelBehavior.never,
+                        // floatingLabelBehavior: FloatingLabelBehavior.never,
+                        label: Text("insert a dot '.' for infinite"),
                       ),
                       validator: (value) {
                         try {
-                          if (value == "∞") {
+                          if (value == ".") {
                             return null;
                           }
                           if (value != null &&
@@ -972,7 +973,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
                       onSaved: (newValue) =>
                           tempChain.repeatCount = newValue == null
                               ? repeatTypeDefaultCount
-                              : newValue == "∞"
+                              : newValue == "."
                                   ? -1
                                   : int.parse(newValue),
                     ),

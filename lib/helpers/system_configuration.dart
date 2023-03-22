@@ -126,78 +126,63 @@ const sqlInitScript = [
 const List<Map<String, String>> headerSlideContent = [
   {
     "imageAsset": "assets/help_images/0.png",
-    "title": "Hey,\nthis is CAT",
-    "speech": "CAT welcomes you. Lets check what is it and how it works.",
-  },
-  {
-    "imageAsset": "assets/help_images/1.png",
-    "title": "Slide Title",
+    "title": "C A T,\nChain of Alarms & Timers.",
     "speech":
-        "CAT allows you to create the chain of timers and schedule alarm to it.",
+        "CAT welcomes you. CAT allows you to create the chain of timer activities and schedule alarm to it. Lets check what is it and how it works.",
   },
   {
-    "imageAsset": "assets/help_images/2.png",
-    "title": "Slide Title",
+    "imageAsset": "assets/help_images/home page.png",
+    "title": "CAT Home\n on first load.",
     "speech":
-        "CAT comes with a Sample Chain of Timers to Start with. Sample includes Workout Chain, Diet Chain and a Medicine Schedule chain. You can add it by tapping this circle on Home Screen Or you can add your own Chain.",
+        "CAT comes with a Sample Chain of Timers to Start with. Sample includes Workout Chain, Diet Chain and a Medicine Schedule chain. When there are no chains created, home page of CAT gives the option to add these sample chains or create your own.",
   },
   {
-    "imageAsset": "assets/help_images/3.png",
-    "title": "Slide Title",
+    "imageAsset": "assets/help_images/Chain Categories.png",
+    "title": "Chain Categories",
     "speech":
-        "You can create your own chain of Timers by Click this button on Home screen when there are not chains created.",
+        "CAT has three Categories of Chains. One, Chain of Timer Activities, which we can play interactively. Second, Scheduled Chain of Timer Activities which executes chain of timers in backgroud at scheduled time. It prompts User for completing Manual Actvities defined in Chain and also for completing the chain in the end. And third, Scheduled Chain without Timer Activities, which acts as Alarm Clock."
   },
   {
-    "imageAsset": "assets/help_images/4.png",
-    "title": "Slide Title",
-    "speech": "And you can always create your own chain from Menu here.",
-  },
-  {
-    "imageAsset": "assets/help_images/5.png",
-    "title": "Slide Title",
+    "imageAsset": "assets/help_images/gif/Create Chain.gif",
+    "title": "Create Chain of Timer Activities",
     "speech":
-        "Lets check what all can we do on a tile of a chain on Home Screen. Every unscheduled Chain has a Play Pause button to left. You can use it to play the chain right away, or stop the execution of running chain.",
+        "Lets check how we create the Chain of Timer Activities. CAT Interface to create chain allows us to add Manual and Timer Actvities to the chain. Any activity with default zero duration is treated as Manual Activity. This requires user intervention to complete activity during chain execution. If check box is checked, then activity is considered done and it will be skipped while chain execution. User can edit the Activity Added into chain by tapping over it, or remove it by swiping it right.",
   },
   {
-    "imageAsset": "assets/help_images/9.png",
-    "title": "Slide Title",
+    "imageAsset": "assets/help_images/gif/Play Chain.gif",
+    "title": "Play Chain of Timer Activities",
     "speech":
-        "Here, home screen has three Chains, with all possible stats of Play button.",
+        "Listed Tiles of Chais on Home Screen has a button to play or stop the chain. Playing the Chain of Timer Activities takes us to play Chain screen, where we can see the current timer, pause it, skip it and check the Chain Execution status by going back.",
   },
   {
-    "imageAsset": "assets/help_images/10.png",
-    "title": "Slide Title",
+    "imageAsset": "assets/help_images/gif/Create Scheduled Chain.gif",
+    "title": "Create Scheduled Chain\nor Alarm",
     "speech":
-        "First chain is running, and we can stop by pressing pause button. Second chain is scheduled and we can wait for Local Notification. Thir chain is stopped, and we can play it by pressing play button. We go to the Edit Chain screen for scheduling it.",
+        "Lets check how we create the Scheduled Chain of Timer Activities or Alarm. Tap the Digital clock on CAT Home. It will prompt you to select a Future Time & Date for Alarm. You can select the options to repeat its occurance and frequency, and same will reflect on screen. CAT allows you to add Manual or Timer activities to this just created alarm, and conver the Alarm into Scheduled Chain of Timer Activities.",
   },
   {
-    "imageAsset": "assets/help_images/6.png",
-    "title": "Slide Title",
+    "imageAsset": "assets/help_images/gif/Play Scheduled Chain.gif",
+    "title": "Play Scheduled Chain of Timers or Alarms",
     "speech":
-        "Tapping on the body of Chain tile will take you to Screen where you can Edit Chain and Add Alarm to it.",
+        "As soon as we exit the Scheduled Chain Creation screen, Alarm is scheduled to start the chain at selected time in future. When time comes, user gets the Notification about the start and completion of Timer Activities in the Chain. If Chain has Manual Activity that is a Timer activity with Zero duration, then tapping on Chain notification shall take you to the screen to mark Activity completion manually.",
   },
   {
-    "imageAsset": "assets/help_images/7.png",
-    "title": "Slide Title",
+    "imageAsset": "assets/help_images/gif/Stop Chains.gif",
+    "title": "Stop the Running and Scheduled Chains",
     "speech":
-        "Forward arrow to the right of Chain takes you to the page with Chain Execution history.",
+        "When the Chains are running or scheduled then we see the Stop or Clock button instead of Play Button. Pressing this button will stop the chain. Once stopped, chain will again be listed with Play button.",
   },
   {
-    "imageAsset": "assets/help_images/8.png",
-    "title": "Slide Title",
-    "speech": "You can mark the chain as Favorite too.",
-  },
-  {
-    "imageAsset": "assets/help_images/Add Alarm.gif",
-    "title": "Add Alarm\nScheduled Chain of Timers",
+    "imageAsset": "assets/help_images/gif/Filter Chains.gif",
+    "title": "Filter Chains",
     "speech":
-        "You can also add a Scheduled Chain by tapping on Clock on Home Screen. This takes you to add/edit chain scren where you will add Alarm to Chain first and then Timer Activities to it optionally. This way you can also use the Chain as Alarm with various options to repeat it.",
+        "There can be chances when you want to filter the number of chains listed on Home. We can filter them with predefined filters of Favorite Chain and Running Chain. We can use text filter to search by Chain Name of name of activity inside the chain.",
   },
   {
-    "imageAsset": "assets/help_images/12.png",
-    "title": "Slide Title",
+    "imageAsset": "assets/help_images/gif/CAT Settings.gif",
+    "title": "CAT Settings\n Set Notification Type to App Notification.",
     "speech":
-        "Local Notifications are disabled by Default in App Settings. To use Scheduled chain or Alarms, you need to set App Notification as Notification Type in App Settings, and give Notification Permissions to this app by going to Android Settings. Else Notifications and Alarms will not work in this app.",
+        "CAT Settings helps you with your preferences. Notfication type is set to None by default. Please set it to App Notification so enable the feature to Schedule the chains. And, CAT has Dark theme too.",
   },
   {
     "imageAsset": "",

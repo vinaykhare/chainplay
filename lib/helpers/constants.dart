@@ -44,7 +44,7 @@ const String payLoadChainActivityCount = "chainActivityCount";
 
 //Schedule Repeat Types
 const int repeatTypeDefaultGap = 1;
-const int repeatTypeDefaultCount = -1;
+const int repeatTypeDefaultCount = 0;
 const String repeatTypeDoesNotRepeat = "Never";
 const String repeatTypeSecond = "Second";
 const String repeatTypeMinute = "Minute";
