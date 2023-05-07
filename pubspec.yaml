@@ -47,8 +47,9 @@ dependencies:
   #add_2_calendar: ^2.2.3
 
   # pdf_render: ^1.3.6
-  showcaseview: ^2.0.0+1
+  # showcaseview: ^2.0.0+1
   image_picker: ^0.8.6
+  http: ^0.13.6
   flutter_tts: ^3.6.3
 
   # Library for Google Ads
