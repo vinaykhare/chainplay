@@ -207,8 +207,9 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                             fit: BoxFit.cover,
                           )
                         : screenImage!.startsWith("http")
-                            ? Image.network(
-                                screenImage!,
+                            ? FadeInImage.assetNetwork(
+                                placeholder: assetMap["logoImage"]!,
+                                image: screenImage!,
                                 height: 250,
                                 fit: BoxFit.cover,
                               )

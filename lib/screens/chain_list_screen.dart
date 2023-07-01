@@ -177,38 +177,44 @@ class ChainListScreen extends StatelessWidget {
               Expanded(
                 child: CatContainer(
                   containerTitle: "Starter Chains",
-                  childWidget: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      TextButton(
-                        onPressed: () async {
-                          await chainList.loadSampleChains();
-                        },
-                        child: CircleAvatar(
-                          radius: 150,
-                          child: Text(
-                            "Add \n'Sample Chain of Timers' \nto Start.\n\nOR",
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.headlineSmall,
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        top: 250,
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            Navigator.of(context)
-                                .pushReplacementNamed(AddChainScreen.routename);
+                  childWidget: SizedBox(
+                    height: chains.isNotEmpty && chains.length <= 3
+                        ? appHeight * 0.4
+                        : appHeight * 0.59,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      // mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        TextButton(
+                          onPressed: () async {
+                            await chainList.loadSampleChains();
                           },
-                          label: Text(
-                            "Add Your Own Chain of Timers.",
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.labelLarge,
+                          child: CircleAvatar(
+                            radius: 150,
+                            child: Text(
+                              "Add \n'Sample Chain of Timers' \nto Start.",
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.headlineSmall,
+                            ),
                           ),
-                          icon: const Icon(Icons.add),
                         ),
-                      ),
-                    ],
+                        Positioned(
+                          top: 300,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              Navigator.of(context).pushReplacementNamed(
+                                  AddChainScreen.routename);
+                            },
+                            label: Text(
+                              "Add Your Own Chain of Timers.",
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.labelLarge,
+                            ),
+                            icon: const Icon(Icons.add),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

@@ -82,7 +82,11 @@ class ChainList with ChangeNotifier {
       return;
     }
     configUpdateStarted = true;
-    await notificationHelper.initialize(systemSettings);
+    await setSetting(eventNotificationsKey, trueSettingValue);
+    if (notificationHelper.eventNotificationsEnabled()) {
+      await notificationHelper.initialize(systemSettings);
+    }
+
     notificationCameAs = null;
 
     Map<String, dynamic>? checkForNotificationResponse =
@@ -959,13 +963,14 @@ class ChainList with ChangeNotifier {
     await DBHelper.removeData('chain_activity', "", []);
     await DBHelper.removeData('activity', "", []);
     await DBHelper.removeData('chain', "", []);
-    setSetting("DARK THEME", "FALSE");
-    setSetting("Notification Type", "None,App Notification");
-    setSetting("App Sound", "TRUE");
-    // setSetting("Show help on next boot", "TRUE");
+    setSetting(darkThemeSettingKey, falseSettingValue);
+    setSetting(eventNotificationsKey, trueSettingValue);
+    setSetting(appSoundSettingKey, trueSettingValue);
+    setSetting(showHelpOnNextBootKey, trueSettingValue);
+    // setSetting(showHelpOnNextBootKey, trueSettingValue);
     // await DBHelper.insert("settings", {
     //   "key": "DARK THEME",
-    //   "value": "FALSE",
+    //   "value": falseSettingValue,
     //   "type": "BOOL",
     // });
     // await DBHelper.insert("settings", {
@@ -975,7 +980,7 @@ class ChainList with ChangeNotifier {
     // });
     // await DBHelper.insert("settings", {
     //   "key": "App Sound",
-    //   "value": "TRUE",
+    //   "value": trueSettingValue,
     //   "type": "BOOL",
     // });
     chains = [];
@@ -1190,7 +1195,21 @@ class ChainList with ChangeNotifier {
     }
   }
 
-  Future<void> setSetting(String key, String value) async {
+  Future<int> setSetting(String key, String value) async {
+    //Notification specific check Start
+    int setResponse = setSuccessful;
+    if (key == eventNotificationsKey && value == trueSettingValue) {
+      bool? userResponse = true;
+      userResponse = await askNotificationPermission();
+      if (userResponse == null || !userResponse) {
+        value = falseSettingValue;
+        setResponse = setFailedDueToAppPermission;
+      } else {
+        //Check if not initialized
+        await notificationHelper.initialize(systemSettings);
+      }
+    }
+    //Notification specific check End
     int keyIndex = systemSettings.indexWhere((set) => set.key == key);
     systemSettings[keyIndex].value = value;
     await DBHelper.update(
@@ -1203,6 +1222,7 @@ class ChainList with ChangeNotifier {
     );
     notificationHelper.systemSetting = systemSettings;
     notifyListeners();
+    return setResponse;
   }
 
   Future<List<SystemSetting>> fetchSettings() async {

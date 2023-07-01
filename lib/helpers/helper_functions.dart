@@ -1,6 +1,3 @@
-import 'package:chain_activities/helpers/constants.dart';
-import 'package:chain_activities/models/system_setting.dart';
-
 class HelperFunctions {
   static String durationToString(Duration activityDuration) {
     String drStr = "in ";
@@ -66,9 +63,9 @@ class HelperFunctions {
     return drStr;
   }
 
-  static String notificationSettingIsFor(List<SystemSetting> systemSettings) {
-    SystemSetting notificationSettingValue = systemSettings
-        .firstWhere((set) => set.key == notificationTypeSettingKey);
-    return notificationSettingValue.value.split(",")[0];
-  }
+  // static String notificationSettingIsFor(List<SystemSetting> systemSettings) {
+  //   SystemSetting notificationSettingValue =
+  //       systemSettings.firstWhere((set) => set.key == eventNotificationsKey);
+  //   return notificationSettingValue.value.split(",")[0];
+  // }
 }

@@ -102,8 +102,10 @@ class ChainActivityFlowView extends StatelessWidget {
                                                   activitySpecImagePath]
                                               .toString()
                                               .startsWith("http")
-                                          ? Image.network(
-                                              chainActivity
+                                          ? FadeInImage.assetNetwork(
+                                              placeholder:
+                                                  assetMap["logoImage"]!,
+                                              image: chainActivity
                                                       .activity.specification![
                                                   activitySpecImagePath],
                                               fit: BoxFit.cover,
@@ -180,8 +182,10 @@ class ChainActivityFlowView extends StatelessWidget {
                                                   activitySpecImagePath]
                                               .toString()
                                               .startsWith("http")
-                                          ? Image.network(
-                                              chainActivity
+                                          ? FadeInImage.assetNetwork(
+                                              placeholder:
+                                                  assetMap["logoImage"]!,
+                                              image: chainActivity
                                                       .activity.specification![
                                                   activitySpecImagePath],
                                               fit: BoxFit.cover,

@@ -1,3 +1,4 @@
+import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/models/system_setting.dart';
 import 'package:chain_activities/screens/chain_list_screen.dart';
@@ -21,14 +22,14 @@ class Redirect extends StatelessWidget {
       builder: (context, snapshot) {
         List<SystemSetting> systemSettings = chainList.systemSettings;
         int showHelpEntryIndex = systemSettings.indexWhere(
-          (set) => set.key == "Show help on next boot",
+          (set) => set.key == showHelpOnNextBootKey,
         );
 
         if (!chainList.configUpdated) {
           return const LoadScreen();
         } else {
           if (showHelpEntryIndex != -1 &&
-              systemSettings[showHelpEntryIndex].value == "TRUE") {
+              systemSettings[showHelpEntryIndex].value == trueSettingValue) {
             return const HowItWorks();
           } else if (chainList.notificationCameAs != null) {
             return const PlayChain();

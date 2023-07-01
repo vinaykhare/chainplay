@@ -49,8 +49,9 @@ dependencies:
   # pdf_render: ^1.3.6
   # showcaseview: ^2.0.0+1
   image_picker: ^0.8.6
-  http: ^0.13.6
+  # transparent_image: ^2.0.1
   flutter_tts: ^3.6.3
+  app_settings: ^4.2.0
 
   # Library for Google Ads
   # google_mobile_ads: ^2.2.0
@@ -103,17 +104,6 @@ flutter:
     - assets/AppIcons/playstore.png
     - assets/sound/chain_activity_alarm.wav
     - assets/sound/chain_activity_beep.mp3
-    - assets/help_images/0.png
-    - assets/help_images/go_home.png
-    - assets/help_images/home page.png
-    - assets/help_images/Chain Categories.png
-    - assets/help_images/gif/CAT Settings.gif
-    - assets/help_images/gif/Create Chain.gif
-    - assets/help_images/gif/Play Chain.gif
-    - assets/help_images/gif/Create Scheduled Chain.gif
-    - assets/help_images/gif/Play Scheduled Chain.gif
-    - assets/help_images/gif/Stop Chains.gif
-    - assets/help_images/gif/Filter Chains.gif
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

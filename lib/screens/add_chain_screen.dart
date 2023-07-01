@@ -421,13 +421,11 @@ class _AddChainScreenState extends State<AddChainScreen> {
     Duration chainActivityDuration = chainActivityInEditMode!.activityDuration;
 
     if (chainActivity.activity.type == systemStartActivityInDB) {
-      if (chainList.notificationHelper.notificationSettingIsFor() !=
-          notificationTypeSettingValueAppNotify) {
+      if (!chainList.notificationHelper.eventNotificationsEnabled()) {
         undoEdit(chainActivity);
         smState.showSnackBar(
           SnackBar(
-            content: const Text(
-                'Set "$notificationTypeSettingKey" to \n"$notificationTypeSettingValueAppNotify" in Settings.'),
+            content: const Text('Enable "$eventNotificationsKey" in Settings.'),
             duration: const Duration(
               seconds: 5,
             ),

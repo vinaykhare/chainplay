@@ -43,8 +43,8 @@ class NotificationHelper {
 
   Future<int> scheduleNotification(DateTime chainAt, int notificationId,
       String title, String body, Map<String, dynamic> payload) async {
-    String notificationFor = notificationSettingIsFor();
-    if (notificationFor == notificationTypeSettingValueAppNotify) {
+    bool eventNotificationsAreEnabled = eventNotificationsEnabled();
+    if (eventNotificationsAreEnabled) {
       if (await localNotificationService.scheduleNotification(
           chainAt, notificationId, title, body, payload)) {
         return notificationId;
@@ -65,8 +65,8 @@ class NotificationHelper {
   }
 
   Future<void> cancelNotificationById(int id) async {
-    String notificationFor = notificationSettingIsFor();
-    if (notificationFor == notificationTypeSettingValueAppNotify) {
+    bool eventNotificationsAreEnabled = eventNotificationsEnabled();
+    if (eventNotificationsAreEnabled) {
       await localNotificationService.cancelScheduledNotification(id);
     }
     // if (notificationFor == notificationTypeSettingValueAlarm) {
@@ -149,8 +149,9 @@ class NotificationHelper {
     return systemSettings.firstWhere((set) => set.key == key);
   }
 
-  String notificationSettingIsFor() {
-    return getSettingByKey(notificationTypeSettingKey).value.split(",")[0];
+  bool eventNotificationsEnabled() {
+    //return getSettingByKey(eventNotificationsKey).value.split(",")[0];
+    return getSettingByKey(eventNotificationsKey).value == trueSettingValue;
   }
 
   bool isAppSoundEnabled() {

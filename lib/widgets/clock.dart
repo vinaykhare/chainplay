@@ -52,12 +52,10 @@ class _ClockState extends State<Clock> {
 
   Future<void> addAlarmChain() async {
     NavigatorState nav = Navigator.of(context);
-    if (chainList.notificationHelper.notificationSettingIsFor() !=
-        notificationTypeSettingValueAppNotify) {
+    if (!chainList.notificationHelper.eventNotificationsEnabled()) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text(
-              'Set "$notificationTypeSettingKey" to \n"$notificationTypeSettingValueAppNotify" in Settings.'),
+          content: const Text('Enable "$eventNotificationsKey" in Settings.'),
           duration: const Duration(
             seconds: 5,
           ),

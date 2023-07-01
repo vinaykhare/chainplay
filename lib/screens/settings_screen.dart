@@ -1,3 +1,5 @@
+import 'package:app_settings/app_settings.dart';
+import 'package:chain_activities/helpers/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/models/chain_list.dart';
@@ -35,7 +37,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       drawer: const AppDrawer(),
       body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             ElevatedButton.icon(
@@ -79,6 +81,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
+            if (showNotificationPermissionWarning)
+              const SizedBox(
+                height: 50,
+              ),
+            if (showNotificationPermissionWarning)
+              CircleAvatar(
+                radius: 120,
+                child: TextButton(
+                  onPressed: () => AppSettings.openAppSettings(),
+                  child: SizedBox(
+                    child: Text(
+                      "Grant\nNotification Permission\nin App Settings\n&\nThen try to\nEnable\nEvent Notifications.",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             Expanded(
               child: Container(
                 margin: const EdgeInsets.all(10),
@@ -103,12 +126,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             Expanded(child: Text(settings[index].key)),
                             if (settings[index].type == "BOOL")
                               Switch(
-                                value: settings[index].value == "TRUE",
+                                value:
+                                    settings[index].value == trueSettingValue,
                                 onChanged: (value) async {
-                                  await chainList.setSetting(
+                                  int setResponse = await chainList.setSetting(
                                     settings[index].key,
-                                    value == true ? "TRUE" : "FALSE",
+                                    value == true
+                                        ? trueSettingValue
+                                        : falseSettingValue,
                                   );
+                                  if (setResponse ==
+                                      setFailedDueToAppPermission) {
+                                    setState(() {
+                                      showNotificationPermissionWarning = true;
+                                    });
+                                  } else {
+                                    setState(() {
+                                      showNotificationPermissionWarning = false;
+                                    });
+                                  }
                                 },
                               )
                             else if (settings[index].type == "LIST")
@@ -118,20 +154,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   if (value == null || value == "") {
                                     return;
                                   }
-                                  //Notification specific check Start
-                                  bool userResponse = true;
-                                  if (value == 'App Notification') {
-                                    userResponse = await chainList
-                                            .askNotificationPermission() ??
-                                        false;
-                                  }
-
-                                  if (!userResponse) {
-                                    setState(() {
-                                      showNotificationPermissionWarning = true;
-                                    });
-                                  }
-                                  //Notification specific check End
 
                                   listOfValues.remove(value);
                                   listOfValues.insert(0, value);
@@ -155,15 +177,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               ),
                           ],
                         ),
-                        if (settings[index].value == 'App Notification,None' &&
-                            showNotificationPermissionWarning)
-                          Text(
-                            "You may need to give Notification Permissions to this App in Android Settings.",
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.error,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
                         const Divider(),
                       ],
                     );

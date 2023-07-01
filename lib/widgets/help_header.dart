@@ -129,6 +129,7 @@ class _HelpHeaderState extends State<HelpHeader> {
         // ),
       ),
       child: Column(
+        key: ValueKey(page),
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           // Container(
@@ -180,8 +181,9 @@ class _HelpHeaderState extends State<HelpHeader> {
               height: appHeight - 65,
               child: headerSlideContent[page]["imageAsset"] != "" &&
                       headerSlideContent[page]["imageAsset"] != null
-                  ? Image.asset(
-                      headerSlideContent[page]["imageAsset"]!,
+                  ? FadeInImage.assetNetwork(
+                      placeholder: assetMap["logoImage"]!,
+                      image: headerSlideContent[page]["imageAsset"]!,
                       fit: BoxFit.contain,
                     )
                   : InkWell(
@@ -189,8 +191,9 @@ class _HelpHeaderState extends State<HelpHeader> {
                         Navigator.of(context)
                             .pushNamed(ChainListScreen.routename);
                       },
-                      child: Image.asset(
-                        assetMap["go_home"]!,
+                      child: FadeInImage.assetNetwork(
+                        placeholder: assetMap["logoImage"]!,
+                        image: assetMap["go_home"]!,
                         fit: BoxFit.contain,
                       ),
                     ),

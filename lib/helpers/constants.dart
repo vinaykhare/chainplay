@@ -21,18 +21,21 @@ const int statusNotStarted = 0;
 const int statusDone = 1;
 const int statusExecuting = 2;
 
+//Settings Set Response
+
+const int setSuccessful = 0;
+const int setFailed = 1;
+const int setFailedDueToAppPermission = 2;
+
 //Settings
 const String appSoundSettingKey = "App Sound";
 const String darkThemeSettingKey = "DARK THEME";
+const String eventNotificationsKey = "Event Notifications";
+const String showHelpOnNextBootKey = "Show help on next boot";
 const String trueSettingValue = "TRUE";
 const String falseSettingValue = "FALSE";
-
-const String notificationTypeSettingKey = "Notification Type";
-const String notificationTypeSettingValueAppNotify = "App Notification";
-const String notificationTypeSettingValueAlarm = "Alarm";
-const String notificationTypeSettingValueCalendar = "Calendar";
-const String notificationTypeSettingValueNone = "None";
-const String notificationTypeSettingValueAll = "All";
+const String settingDataTypeBool = "BOOL";
+const String settingDataTypeList = "LIST";
 
 //Notification Payload fields
 
@@ -61,5 +64,6 @@ const Map<String, String> assetMap = {
   'logoImage': 'assets/AppIcons/playstore.png',
   'alarmAudio': 'assets/sound/chain_activity_alarm.wav',
   'beepAudio': 'assets/sound/chain_activity_beep.mp3',
-  'go_home': 'assets/help_images/go_home.png',
+  'go_home':
+      'https://github.com/vinaykhare/cat_help_content/raw/main/help_images/go_home.png',
 };

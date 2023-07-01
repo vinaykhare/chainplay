@@ -1,3 +1,4 @@
+import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/widgets/my_error_widget.dart';
 import 'package:chain_activities/widgets/redirect.dart';
@@ -27,7 +28,7 @@ class ChainActivities extends StatelessWidget {
     );
     bool darkTheme = themeIndex == -1
         ? false
-        : chainList.systemSettings[themeIndex].value == "TRUE";
+        : chainList.systemSettings[themeIndex].value == trueSettingValue;
     return MaterialApp(
       title: 'CAT',
       builder: (context, widget) {
