@@ -1,42 +1,203 @@
 import 'package:chain_activities/screens/add_chain_screen.dart';
 import 'package:chain_activities/screens/search_chain_screen.dart';
 import 'package:chain_activities/widgets/cat_container.dart';
-import 'package:chain_activities/widgets/chain_tile_help.dart';
 import 'package:chain_activities/widgets/clock.dart';
+import 'package:chain_activities/widgets/home_button_widget.dart';
 import 'package:flutter/material.dart';
-//import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/widgets/app_drawer.dart';
 //import 'package:chain_activities/widgets/app_drawer.dart';
 import 'package:chain_activities/widgets/chain_list_item.dart';
+import 'package:chain_activities/widgets/chain_tile_help.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
-class ChainListScreen extends StatelessWidget {
+class ChainListScreen extends StatefulWidget {
   static String routename = "/chains";
 
   const ChainListScreen({super.key});
 
+  @override
+  State<ChainListScreen> createState() => _ChainListScreenState();
+}
+
+class _ChainListScreenState extends State<ChainListScreen> {
+  bool showHelp = true;
+  late TutorialCoachMark tutorialCoachMark;
+  GlobalKey titleClockKey = GlobalKey();
+  GlobalKey chainsKey = GlobalKey();
+  GlobalKey addChainKey = GlobalKey();
+
+  List<TargetFocus> _createTargets() {
+    List<TargetFocus> targets = [];
+
+    targets.add(
+      TargetFocus(
+        identify: "titleClockKey",
+        keyTarget: titleClockKey,
+        shape: ShapeLightFocus.RRect,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            builder: (context, controller) {
+              return Column(
+                children: [
+                  const Text(
+                    "CAT Clock.",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.0),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => controller.next(),
+                    child: const Text("Next"),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+    targets.add(
+      TargetFocus(
+        identify: "chainsKey",
+        keyTarget: chainsKey,
+        shape: ShapeLightFocus.RRect,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            builder: (context, controller) {
+              return Column(
+                children: [
+                  const Text(
+                    "All Chains",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.0),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => controller.next(),
+                    child: const Text("Next"),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+    targets.add(
+      TargetFocus(
+        identify: "addChainKey",
+        keyTarget: addChainKey,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            builder: (context, controller) {
+              return Column(
+                children: [
+                  const Text(
+                    "Add Chain.",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.0),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => controller.next(),
+                    child: const Text("Next"),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+    return targets;
+  }
+
+  void createTutorial() {
+    tutorialCoachMark = TutorialCoachMark(
+      targets: _createTargets(),
+      colorShadow: Colors.black,
+      //textSkip: "SKIP",
+      paddingFocus: 10,
+      opacityShadow: 0.8,
+      //imageFilter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+      alignSkip: Alignment.bottomCenter,
+      skipWidget: const Card(
+        elevation: 30,
+        child: Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            "Skip",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+      onFinish: () {
+        print("finish");
+      },
+      onClickTarget: (target) {
+        print('onClickTarget: $target');
+      },
+      onClickTargetWithTapPosition: (target, tapDetails) {
+        print("target: $target");
+        print(
+            "clicked at position local: ${tapDetails.localPosition} - global: ${tapDetails.globalPosition}");
+      },
+      onClickOverlay: (target) {
+        print('onClickOverlay: $target');
+      },
+      onSkip: () {
+        print("skip");
+      },
+    );
+  }
+
+  void showTutorial() {
+    tutorialCoachMark.show(context: context);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    createTutorial();
+    Future.delayed(Duration.zero, showTutorial);
+  }
+
   // late ChainList chainList;
-  // List<Chain> chains = [];
-
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //   chainList = Provider.of<ChainList>(context, listen: true);
-  //   // chainList.fetchChains().then((value) {
-  //   //   setState(() {
-  //   //     chains = value;
-  //   //   });
-  //   // });
-  // }
-
   @override
   Widget build(BuildContext context) {
     ChainList chainList = Provider.of<ChainList>(context, listen: true);
     List<Chain> chains = chainList.chains;
+
     final appBarWidget = AppBar(
       centerTitle: true,
+      actions: [
+        Padding(
+          padding: const EdgeInsets.all(2.0),
+          child: FloatingActionButton(
+            key: addChainKey,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            onPressed: () {
+              Navigator.of(context)
+                  .pushReplacementNamed(AddChainScreen.routename);
+            },
+            child: const Icon(Icons.add),
+          ),
+        )
+      ],
       //automaticallyImplyLeading: false,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -62,163 +223,133 @@ class ChainListScreen extends StatelessWidget {
               ),
             ),
           ),
-          // IconButton(
-          //   onPressed: () {
-          //     Navigator.of(context).pushNamed(AddChainScreen.routename);
-          //   },
-          //   icon: const Icon(
-          //     Icons.watch_later,
-          //     size: 30,
-          //   ),
-          // )
         ],
       ),
     );
     double appHeight =
         MediaQuery.of(context).size.height - appBarWidget.preferredSize.height;
     return Scaffold(
-      //key: KeyHelper.navigatorKey,
       drawer: const AppDrawer(),
-      // appBar: AppBar(
-      //   title: const Text("Clock"),
-      //   automaticallyImplyLeading: false,
-      //   centerTitle: true,
-      // ),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           //mainAxisSize: MainAxisSize.min,
           children: [
-            const Padding(
-              padding: EdgeInsets.only(
-                top: 5,
-              ),
+            // const Padding(
+            //   padding: EdgeInsets.only(
+            //     top: 5,
+            //   ),
+            // ),
+            CatContainer(
+              //key: ValueKey("Clock"),
+              key: titleClockKey,
+              childWidget: const Clock(),
+              containerTitle: "\t\tChain the Alarms & Timers",
+              helpText: "Tap this Clock to Create a Scheduled Chain.",
             ),
-            const CatContainer(
-              key: ValueKey("Clock"),
-              childWidget: Clock(),
-              containerTitle: "\t\tC hain of A larms & T imers",
-              helpText: "Tap this Clock to add a Scheduled Chain.",
-            ),
-            // if (chains.isNotEmpty)
-            //   Container(
-            //     margin: const EdgeInsets.fromLTRB(0, 10, 0, 0),
-            //     child: const CatContainerHeader(
-            //       containerTitle: "Chain of Alarms & Timers",
-            //     ),
-            //   ),
-            // if (chains.isNotEmpty)
-            //   Container(
-            //     height: 10,
-            //     margin: const EdgeInsets.symmetric(horizontal: 20),
-            //     decoration: BoxDecoration(
-            //       color: Theme.of(context).primaryColor,
-            //       borderRadius: const BorderRadius.all(Radius.circular(30)),
-            //     ),
-            //   ),
-            // if (chains.isNotEmpty) const Divider(),
-            // if (chains.isNotEmpty)
-            //   Padding(
-            //     padding: const EdgeInsets.all(8.0),
-            //     child: Text(
-            //       "Chains of Alarms & Timers",
-            //       style: Theme.of(context).textTheme.headlineSmall,
-            //     ),
-            //   ),
-            // if (chains.isNotEmpty) const Divider(),
-
-            if (chains.isNotEmpty)
-              Expanded(
-                child: CatContainer(
-                  containerTitle: "All Chains, of Alarms & Timers",
-                  childWidget: Column(
+            Expanded(
+              child: CatContainer(
+                key: chainsKey,
+                onPressed: () {
+                  setState(() {
+                    showHelp = !showHelp;
+                  });
+                },
+                containerTitle: chains.isEmpty
+                    ? "Oops, No Chains!"
+                    : "All Chains, of Alarms & Timers",
+                childWidget: SizedBox(
+                  // height: chains.isNotEmpty && chains.length <= 3
+                  //     ? appHeight * 0.4
+                  //     : appHeight * 0.59,
+                  //height: appHeight * (showHelp ? 0.45 : 0.59),
+                  height: appHeight * 0.60,
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      SizedBox(
-                        height: chains.isNotEmpty && chains.length <= 3
-                            ? appHeight * 0.4
-                            : appHeight * 0.59,
+                      Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ReorderableListView.builder(
-                            //reverse: true,
-                            onReorder: (oldIndex, newIndex) =>
-                                Provider.of<ChainList>(context, listen: false)
-                                    .rearrangeChains(oldIndex, newIndex),
-                            itemCount: chains.length,
-                            itemBuilder: (context, index) {
-                              Chain chain = chains[index];
-                              //BannerAd? adChain = chain.adBanner;
-                              return ChainListItem(
-                                //adChain: adChain,
-                                chain: chain,
-                                showHistory: true,
-                                allowFlag: true,
-                                key: Key(
-                                  index.toString(),
+                          padding: const EdgeInsets.all(5.0),
+                          child: chains.isNotEmpty
+                              ? ReorderableListView.builder(
+                                  //reverse: true,
+                                  onReorder: (oldIndex, newIndex) =>
+                                      Provider.of<ChainList>(context,
+                                              listen: false)
+                                          .rearrangeChains(oldIndex, newIndex),
+                                  itemCount: chains.length,
+                                  itemBuilder: (context, index) {
+                                    Chain chain = chains[index];
+                                    //BannerAd? adChain = chain.adBanner;
+                                    return ChainListItem(
+                                      //adChain: adChain,
+                                      chain: chain,
+                                      showHistory: true,
+                                      allowFlag: true,
+                                      key: Key(
+                                        index.toString(),
+                                      ),
+                                      index: index,
+                                    );
+                                  },
+                                )
+                              : ListView(
+                                  children: [
+                                    HomeButtonWidget(
+                                      chainListFunction: "loadSampleChains",
+                                      buttonText:
+                                          "Add \n'Sample Chain of Timers'",
+                                      logo: Icon(
+                                        Icons.account_box,
+                                        size: 50,
+                                        color:
+                                            Theme.of(context).primaryColorDark,
+                                      ),
+                                    ),
+                                    HomeButtonWidget(
+                                      chainListFunction:
+                                          "navigateToAddChainScreen",
+                                      buttonText:
+                                          "Create\nYour Own Chain of Timers.",
+                                      logo: Icon(
+                                        Icons.create_outlined,
+                                        size: 50,
+                                        color:
+                                            Theme.of(context).primaryColorDark,
+                                      ),
+                                    ),
+                                    HomeButtonWidget(
+                                      chainListFunction: "navigateToHelpScreen",
+                                      buttonText:
+                                          "Know\nmore about Chains (CAT).",
+                                      logo: Icon(
+                                        Icons.help,
+                                        size: 50,
+                                        color:
+                                            Theme.of(context).primaryColorDark,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                index: index,
-                              );
-                            },
-                          ),
                         ),
                       ),
-                      if (chains.isNotEmpty && chains.length <= 3)
-                        const CatContainer(
-                          key: ValueKey("Help With Chain Tile Controls"),
-                          childWidget: ChainTileHelp(),
-                          containerTitle: "Help With Chain Tile Controls",
-                        ),
+                      if (showHelp)
+                        Container(
+                          width: double.infinity,
+                          margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                          padding: const EdgeInsets.only(bottom: 8),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(30)),
+                          ),
+                          child: const ChainTileHelp(),
+                        )
                     ],
                   ),
                 ),
-              )
-            else
-              Expanded(
-                child: CatContainer(
-                  containerTitle: "Starter Chains",
-                  childWidget: SizedBox(
-                    height: chains.isNotEmpty && chains.length <= 3
-                        ? appHeight * 0.4
-                        : appHeight * 0.59,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      // mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        TextButton(
-                          onPressed: () async {
-                            await chainList.loadSampleChains();
-                          },
-                          child: CircleAvatar(
-                            radius: 150,
-                            child: Text(
-                              "Add \n'Sample Chain of Timers' \nto Start.",
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.headlineSmall,
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          top: 300,
-                          child: ElevatedButton.icon(
-                            onPressed: () {
-                              Navigator.of(context).pushReplacementNamed(
-                                  AddChainScreen.routename);
-                            },
-                            label: Text(
-                              "Add Your Own Chain of Timers.",
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.labelLarge,
-                            ),
-                            icon: const Icon(Icons.add),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
               ),
-
+            ),
             appBarWidget,
           ],
         ),

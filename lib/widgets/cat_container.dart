@@ -7,11 +7,14 @@ class CatContainer extends StatelessWidget {
   final String containerTitle;
   final String? helpText;
   final Widget childWidget;
-  const CatContainer(
-      {super.key,
-      required this.childWidget,
-      required this.containerTitle,
-      this.helpText});
+  final VoidCallback? onPressed;
+  const CatContainer({
+    super.key,
+    required this.childWidget,
+    required this.containerTitle,
+    this.helpText,
+    this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +22,10 @@ class CatContainer extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          CatContainerHeader(containerTitle: containerTitle),
+          CatContainerHeader(
+            containerTitle: containerTitle,
+            onPressed: onPressed,
+          ),
           Container(
             width: double.infinity,
             margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),

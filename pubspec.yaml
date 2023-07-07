@@ -52,6 +52,7 @@ dependencies:
   # transparent_image: ^2.0.1
   flutter_tts: ^3.6.3
   app_settings: ^4.2.0
+  tutorial_coach_mark: ^1.2.9
 
   # Library for Google Ads
   # google_mobile_ads: ^2.2.0

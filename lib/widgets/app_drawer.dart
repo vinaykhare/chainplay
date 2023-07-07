@@ -35,7 +35,7 @@ class AppDrawer extends StatelessWidget {
                 ),
               ),
               subtitle: const Text(
-                "CHAIN OF \nALARMS & TIMERS",
+                "CHAIN THE \nALARMS & TIMERS",
               ),
             ),
             automaticallyImplyLeading: false,
@@ -77,7 +77,7 @@ class AppDrawer extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.help),
                 title: Text(
-                  'How "CAT" Works',
+                  'What is CAT?',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 onTap: () {

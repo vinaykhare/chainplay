@@ -5,9 +5,11 @@ class CatContainerHeader extends StatelessWidget {
   const CatContainerHeader({
     super.key,
     required this.containerTitle,
+    this.onPressed,
   });
 
   final String containerTitle;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +25,12 @@ class CatContainerHeader extends StatelessWidget {
               top: Radius.circular(30),
             ),
           ),
-          child: Image.asset(
-            assetMap["logoImage"]!,
-            height: 50,
+          child: InkWell(
+            onTap: onPressed,
+            child: Image.asset(
+              assetMap["logoImage"]!,
+              height: 50,
+            ),
           ),
         ),
         Container(
