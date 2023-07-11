@@ -1,6 +1,4 @@
-import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/models/chain_list.dart';
-import 'package:chain_activities/models/system_setting.dart';
 import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:chain_activities/widgets/help_header.dart';
 import 'package:flutter/material.dart';
@@ -22,27 +20,34 @@ class _HowItWorksState extends State<HowItWorks> {
   late ChainList chainList;
 
   @override
+  void initState() {
+    super.initState();
+    chainList = Provider.of<ChainList>(context, listen: false);
+    chainList.showHelpOnNextLoad();
+  }
+
+  @override
   void dispose() {
     super.dispose();
-    dontShowHelpOnNextLoad();
+    // chainList.dontShowHelpOnNextLoad();
   }
 
-  Future<bool> dontShowHelpOnNextLoad() async {
-    List<SystemSetting> systemSettings = chainList.systemSettings;
-    int showHelpEntryIndex = systemSettings.indexWhere(
-      (set) => set.key == showHelpOnNextBootKey,
-    );
+  // Future<bool> dontShowHelpOnNextLoad() async {
+  //   List<SystemSetting> systemSettings = chainList.systemSettings;
+  //   int showHelpEntryIndex = systemSettings.indexWhere(
+  //     (set) => set.key == showHelpOnNextBootKey,
+  //   );
 
-    if (showHelpEntryIndex != -1 &&
-        systemSettings[showHelpEntryIndex].value == trueSettingValue) {
-      systemSettings[showHelpEntryIndex].value == falseSettingValue;
-      await chainList.setSetting(
-        showHelpOnNextBootKey,
-        falseSettingValue,
-      );
-    }
-    return true;
-  }
+  //   if (showHelpEntryIndex != -1 &&
+  //       systemSettings[showHelpEntryIndex].value == trueSettingValue) {
+  //     systemSettings[showHelpEntryIndex].value == falseSettingValue;
+  //     await chainList.setSetting(
+  //       showHelpOnNextBootKey,
+  //       falseSettingValue,
+  //     );
+  //   }
+  //   return true;
+  // }
 
   // final appBarWidget = AppBar(
   //   backgroundColor: Theme.of(context).dialogBackgroundColor,
@@ -103,8 +108,6 @@ class _HowItWorksState extends State<HowItWorks> {
 
   @override
   Widget build(BuildContext context) {
-    chainList = Provider.of<ChainList>(context, listen: false);
-
     double appHeight = MediaQuery.of(context).size.height -
         // (appBarWidget.preferredSize.height * 1) -
         MediaQuery.of(context).viewPadding.top;
@@ -139,7 +142,7 @@ class _HowItWorksState extends State<HowItWorks> {
                   ),
                   onPressed: () async {
                     NavigatorState nav = Navigator.of(context);
-                    await dontShowHelpOnNextLoad();
+                    //await chainList.dontShowHelpOnNextLoad();
                     nav.pushReplacementNamed(ChainListScreen.routename);
                   },
                 ),

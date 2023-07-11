@@ -15,6 +15,7 @@ import 'package:chain_activities/helpers/notification_helper.dart';
 import 'package:chain_activities/models/activity.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/system_setting.dart';
+import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 //import 'package:chain_activities/screens/play_chain_screen.dart';
 
@@ -47,6 +48,7 @@ Util:
 
 class ChainList with ChangeNotifier {
   bool loaded = false, configUpdated = false, configUpdateStarted = false;
+  String catClockMode = "HH:MM:SS"; // ["HH:MM:SS","HH:MM","AM/PM"];
   List<Chain> chains = [];
   List<Activity> activities = [];
   List<SystemSetting> systemSettings = [];
@@ -1118,6 +1120,60 @@ class ChainList with ChangeNotifier {
     }
     //chain.activities = [];
     return allDone;
+  }
+
+  //helper function
+  SystemSetting getSettingByKey(String key) {
+    return systemSettings.firstWhere((set) => set.key == key);
+  }
+
+  //helper function
+  String getFormattedTimeBySetting(String catClockMode) {
+    String time = "";
+    switch (catClockMode) {
+      case "HH:MM:SS":
+        time = DateFormat('kk:mm:ss').format(DateTime.now());
+        break;
+      case "HH:MM":
+        time = DateFormat('kk:mm').format(DateTime.now());
+        break;
+      case "AM/PM":
+        time = DateFormat.jm().format(DateTime.now());
+        break;
+    }
+    return time;
+  }
+
+  Future<bool> dontShowHelpOnNextLoad() async {
+    int showHelpEntryIndex = systemSettings.indexWhere(
+      (set) => set.key == showHelpOnNextBootKey,
+    );
+
+    if (showHelpEntryIndex != -1 &&
+        systemSettings[showHelpEntryIndex].value == trueSettingValue) {
+      systemSettings[showHelpEntryIndex].value == falseSettingValue;
+      await setSetting(
+        showHelpOnNextBootKey,
+        falseSettingValue,
+      );
+    }
+    return true;
+  }
+
+  Future<bool> showHelpOnNextLoad() async {
+    int showHelpEntryIndex = systemSettings.indexWhere(
+      (set) => set.key == showHelpOnNextBootKey,
+    );
+
+    if (showHelpEntryIndex != -1 &&
+        systemSettings[showHelpEntryIndex].value == falseSettingValue) {
+      systemSettings[showHelpEntryIndex].value == trueSettingValue;
+      await setSetting(
+        showHelpOnNextBootKey,
+        trueSettingValue,
+      );
+    }
+    return true;
   }
 
   Future<void> flipDoneActivity(

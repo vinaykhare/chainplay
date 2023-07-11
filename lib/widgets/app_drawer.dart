@@ -1,10 +1,10 @@
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/screens/add_chain_screen.dart';
+import 'package:chain_activities/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:chain_activities/screens/how_it_works.dart';
 import 'package:chain_activities/screens/chain_list_screen.dart';
-import 'package:chain_activities/screens/settings_screen.dart';
 import 'package:provider/provider.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -16,7 +16,7 @@ class AppDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           AppBar(
             title: ListTile(
@@ -54,26 +54,7 @@ class AppDrawer extends StatelessWidget {
           ),
           Column(
             children: [
-              const Divider(
-                height: 30,
-              ),
-              ListTile(
-                leading: const Icon(Icons.settings),
-                title: Text(
-                  'Settings',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                onTap: () {
-                  while (Navigator.of(context).canPop()) {
-                    Navigator.of(context).pop();
-                  }
-                  Navigator.of(context)
-                      .pushReplacementNamed(SettingsScreen.routename);
-                },
-              ),
-              const Divider(
-                height: 30,
-              ),
+              const Divider(),
               ListTile(
                 leading: const Icon(Icons.help),
                 title: Text(
@@ -88,15 +69,14 @@ class AppDrawer extends StatelessWidget {
                       .pushReplacementNamed(HowItWorks.routename);
                 },
               ),
-              const Divider(
-                height: 30,
-              ),
+              const Divider(),
               ListTile(
-                leading: const Icon(Icons.link),
+                leading: const Icon(Icons.web_stories),
                 title: Text(
                   'Add Sample Chains',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
+                subtitle: const Text("made of Timer & Manual Tasks"),
                 onTap: () async {
                   NavigatorState nav = Navigator.of(context);
                   while (Navigator.of(context).canPop()) {
@@ -109,14 +89,14 @@ class AppDrawer extends StatelessWidget {
               ),
               ListTile(
                 leading: const Icon(
-                  Icons.post_add,
+                  Icons.create_outlined,
                   size: 30,
                 ),
                 title: Text(
                   'Create Your Own Chain',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                subtitle: const Text("with Alarms OR Timers"),
+                subtitle: const Text("of Timer & Manual Tasks"),
                 onTap: () {
                   while (Navigator.of(context).canPop()) {
                     Navigator.of(context).pop();
@@ -125,30 +105,31 @@ class AppDrawer extends StatelessWidget {
                       .pushReplacementNamed(AddChainScreen.routename);
                 },
               ),
-              const Divider(
-                height: 30,
-              ),
-              ListTile(
-                leading: const Icon(
-                  Icons.home,
-                  size: 35,
-                ),
-                title: Text(
-                  'All Chains',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                subtitle: const Text('of Alarms & Timers'),
-                onTap: () {
-                  // while (Navigator.of(context).canPop()) {
-                  //   Navigator.of(context).pop();
-                  // }
-                  Navigator.of(context)
-                      .pushReplacementNamed(ChainListScreen.routename);
-                },
-              ),
-              const Divider(),
             ],
-          )
+          ),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Divider(),
+                ListTile(
+                  leading: const Icon(Icons.settings),
+                  title: Text(
+                    'Settings',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  onTap: () {
+                    while (Navigator.of(context).canPop()) {
+                      Navigator.of(context).pop();
+                    }
+                    Navigator.of(context)
+                        .pushReplacementNamed(SettingsScreen.routename);
+                  },
+                ),
+              ],
+            ),
+          ),
+          const Divider(),
         ],
       ),
     );

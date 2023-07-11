@@ -1,15 +1,16 @@
-import 'package:chain_activities/helpers/constants.dart';
 import 'package:flutter/material.dart';
 
 class CatContainerHeader extends StatelessWidget {
   const CatContainerHeader({
     super.key,
-    required this.containerTitle,
+    required this.catContainerTitle,
     this.onPressed,
+    required this.catContainerIcon,
   });
 
-  final String containerTitle;
+  final String catContainerTitle;
   final VoidCallback? onPressed;
+  final Widget catContainerIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -27,10 +28,7 @@ class CatContainerHeader extends StatelessWidget {
           ),
           child: InkWell(
             onTap: onPressed,
-            child: Image.asset(
-              assetMap["logoImage"]!,
-              height: 50,
-            ),
+            child: catContainerIcon,
           ),
         ),
         Container(
@@ -45,7 +43,7 @@ class CatContainerHeader extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.only(left: 10),
               child: Text(
-                containerTitle,
+                catContainerTitle,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),

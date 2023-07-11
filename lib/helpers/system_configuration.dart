@@ -121,6 +121,12 @@ const sqlInitScript = [
       '$settingDataTypeBool'
     )
   ''',
+  '''INSERT INTO settings(key, value, type) VALUES (
+      '$catClockModeKey', 
+      '$catClockModeValue',
+      '$settingDataTypeList'
+    )
+  ''',
 ];
 
 // Constant Header Content

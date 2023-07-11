@@ -6,13 +6,9 @@ class ClockDigitWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Center(
-        child: Text(
-          text,
-          style: Theme.of(context).textTheme.displaySmall,
-        ),
-      ),
+    return Text(
+      text,
+      style: Theme.of(context).textTheme.displaySmall,
     );
   }
 }

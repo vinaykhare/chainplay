@@ -4,16 +4,18 @@ import 'package:chain_activities/widgets/cat_container_header.dart';
 import 'package:flutter/material.dart';
 
 class CatContainer extends StatelessWidget {
-  final String containerTitle;
+  final String catContainerTitle;
   final String? helpText;
   final Widget childWidget;
   final VoidCallback? onPressed;
+  final Widget catContainerIcon;
   const CatContainer({
     super.key,
     required this.childWidget,
-    required this.containerTitle,
+    required this.catContainerTitle,
     this.helpText,
     this.onPressed,
+    required this.catContainerIcon,
   });
 
   @override
@@ -23,13 +25,14 @@ class CatContainer extends StatelessWidget {
       child: Column(
         children: [
           CatContainerHeader(
-            containerTitle: containerTitle,
+            catContainerTitle: catContainerTitle,
             onPressed: onPressed,
+            catContainerIcon: catContainerIcon,
           ),
           Container(
             width: double.infinity,
             margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-            padding: const EdgeInsets.only(bottom: 8),
+            //padding: const EdgeInsets.only(bottom: 8),
             decoration: BoxDecoration(
               color: Theme.of(context).primaryColor,
               borderRadius: const BorderRadius.all(Radius.circular(30)),

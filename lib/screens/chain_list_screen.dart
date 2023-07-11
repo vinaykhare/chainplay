@@ -1,6 +1,9 @@
+import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/screens/add_chain_screen.dart';
 import 'package:chain_activities/screens/search_chain_screen.dart';
 import 'package:chain_activities/widgets/cat_container.dart';
+import 'package:chain_activities/widgets/chain_list_item.dart';
+import 'package:chain_activities/widgets/chain_tile_help.dart';
 import 'package:chain_activities/widgets/clock.dart';
 import 'package:chain_activities/widgets/home_button_widget.dart';
 import 'package:flutter/material.dart';
@@ -9,8 +12,6 @@ import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/widgets/app_drawer.dart';
 //import 'package:chain_activities/widgets/app_drawer.dart';
-import 'package:chain_activities/widgets/chain_list_item.dart';
-import 'package:chain_activities/widgets/chain_tile_help.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 class ChainListScreen extends StatefulWidget {
@@ -23,8 +24,9 @@ class ChainListScreen extends StatefulWidget {
 }
 
 class _ChainListScreenState extends State<ChainListScreen> {
-  bool showHelp = true;
+  bool showChainControlSummary = true;
   late TutorialCoachMark tutorialCoachMark;
+  late ChainList chainList;
   GlobalKey titleClockKey = GlobalKey();
   GlobalKey chainsKey = GlobalKey();
   GlobalKey addChainKey = GlobalKey();
@@ -96,7 +98,7 @@ class _ChainListScreenState extends State<ChainListScreen> {
         keyTarget: addChainKey,
         contents: [
           TargetContent(
-            align: ContentAlign.top,
+            align: ContentAlign.bottom,
             builder: (context, controller) {
               return Column(
                 children: [
@@ -145,21 +147,21 @@ class _ChainListScreenState extends State<ChainListScreen> {
         ),
       ),
       onFinish: () {
-        print("finish");
+        chainList.dontShowHelpOnNextLoad();
       },
-      onClickTarget: (target) {
-        print('onClickTarget: $target');
-      },
-      onClickTargetWithTapPosition: (target, tapDetails) {
-        print("target: $target");
-        print(
-            "clicked at position local: ${tapDetails.localPosition} - global: ${tapDetails.globalPosition}");
-      },
-      onClickOverlay: (target) {
-        print('onClickOverlay: $target');
-      },
+      // onClickTarget: (target) {
+      //   print('onClickTarget: $target');
+      // },
+      // onClickTargetWithTapPosition: (target, tapDetails) {
+      //   print("target: $target");
+      //   print(
+      //       "clicked at position local: ${tapDetails.localPosition} - global: ${tapDetails.globalPosition}");
+      // },
+      // onClickOverlay: (target) {
+      //   print('onClickOverlay: $target');
+      // },
       onSkip: () {
-        print("skip");
+        chainList.dontShowHelpOnNextLoad();
       },
     );
   }
@@ -171,9 +173,12 @@ class _ChainListScreenState extends State<ChainListScreen> {
   @override
   void initState() {
     super.initState();
-
-    createTutorial();
-    Future.delayed(Duration.zero, showTutorial);
+    chainList = Provider.of<ChainList>(context, listen: false);
+    if (chainList.getSettingByKey(showHelpOnNextBootKey).value ==
+        trueSettingValue) {
+      createTutorial();
+      Future.delayed(Duration.zero, showTutorial);
+    }
   }
 
   // late ChainList chainList;
@@ -184,50 +189,47 @@ class _ChainListScreenState extends State<ChainListScreen> {
 
     final appBarWidget = AppBar(
       centerTitle: true,
-      actions: [
-        Padding(
-          padding: const EdgeInsets.all(2.0),
-          child: FloatingActionButton(
-            key: addChainKey,
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            onPressed: () {
-              Navigator.of(context)
-                  .pushReplacementNamed(AddChainScreen.routename);
-            },
-            child: const Icon(Icons.add),
-          ),
-        )
-      ],
+      // actions: [
+      //   Padding(
+      //     padding: const EdgeInsets.all(2.0),
+      //     child: FloatingActionButton(
+      //       elevation: 10,
+      //       key: addChainKey,
+      //       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      //       onPressed: () {
+      //         Navigator.of(context)
+      //             .pushReplacementNamed(AddChainScreen.routename);
+      //       },
+      //       child: Image.asset(
+      //         assetMap["logoImage"]!,
+      //         height: 50,
+      //       ),
+      //     ),
+      //   )
+      // ],
       //automaticallyImplyLeading: false,
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: TextField(
-              keyboardType: TextInputType.none,
-              cursorColor: Theme.of(context).cardColor,
-              showCursor: false,
-              onTap: () =>
-                  Navigator.of(context).pushNamed(SearchChainScreen.routename),
-              decoration: InputDecoration(
-                floatingLabelBehavior: FloatingLabelBehavior.never,
-                label: const Text("Search Chains"),
-                border: const OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                prefixIcon: Icon(
-                  Icons.search,
-                  color: Theme.of(context).iconTheme.color,
-                ),
-              ),
-            ),
+      title: TextField(
+        keyboardType: TextInputType.none,
+        cursorColor: Theme.of(context).cardColor,
+        showCursor: false,
+        onTap: () =>
+            Navigator.of(context).pushNamed(SearchChainScreen.routename),
+        decoration: InputDecoration(
+          floatingLabelBehavior: FloatingLabelBehavior.never,
+          label: const Text("Search Chains"),
+          border: const OutlineInputBorder(
+            borderSide: BorderSide.none,
           ),
-        ],
+          filled: true,
+          prefixIcon: Icon(
+            Icons.search,
+            color: Theme.of(context).iconTheme.color,
+          ),
+        ),
       ),
     );
-    double appHeight =
-        MediaQuery.of(context).size.height - appBarWidget.preferredSize.height;
+    // double appHeight =
+    //     MediaQuery.of(context).size.height - appBarWidget.preferredSize.height;
     return Scaffold(
       drawer: const AppDrawer(),
       body: SafeArea(
@@ -244,112 +246,178 @@ class _ChainListScreenState extends State<ChainListScreen> {
               //key: ValueKey("Clock"),
               key: titleClockKey,
               childWidget: const Clock(),
-              containerTitle: "\t\tChain the Alarms & Timers",
-              helpText: "Tap this Clock to Create a Scheduled Chain.",
+              onPressed: () {
+                Navigator.of(context)
+                    .pushReplacementNamed(AddChainScreen.routename);
+              },
+              catContainerTitle: "CAT..Chain the Alarms & Timers",
+              helpText: "Tap this Clock to Add an Alarm",
+              catContainerIcon: Container(
+                key: addChainKey,
+                child: Image.asset(
+                  assetMap["logoImage"]!,
+                  height: 50,
+                ),
+              ),
             ),
-            Expanded(
-              child: CatContainer(
-                key: chainsKey,
-                onPressed: () {
-                  setState(() {
-                    showHelp = !showHelp;
-                  });
-                },
-                containerTitle: chains.isEmpty
-                    ? "Oops, No Chains!"
-                    : "All Chains, of Alarms & Timers",
-                childWidget: SizedBox(
-                  // height: chains.isNotEmpty && chains.length <= 3
-                  //     ? appHeight * 0.4
-                  //     : appHeight * 0.59,
-                  //height: appHeight * (showHelp ? 0.45 : 0.59),
-                  height: appHeight * 0.60,
+            // if (chains.isNotEmpty) //showHelp
+            // Container(
+            //   width: double.infinity,
+            //   margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+            //   padding: const EdgeInsets.only(bottom: 8),
+            //   decoration: BoxDecoration(
+            //     color: Theme.of(context).primaryColor,
+            //     borderRadius: const BorderRadius.all(Radius.circular(30)),
+            //   ),
+            //   child: const ChainTileHelp(),
+            // ),
+            if (chains.isNotEmpty)
+              Expanded(
+                child: Container(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(30),
+                    ),
+                  ),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: chains.isNotEmpty
-                              ? ReorderableListView.builder(
-                                  //reverse: true,
-                                  onReorder: (oldIndex, newIndex) =>
-                                      Provider.of<ChainList>(context,
-                                              listen: false)
-                                          .rearrangeChains(oldIndex, newIndex),
-                                  itemCount: chains.length,
-                                  itemBuilder: (context, index) {
-                                    Chain chain = chains[index];
-                                    //BannerAd? adChain = chain.adBanner;
-                                    return ChainListItem(
-                                      //adChain: adChain,
-                                      chain: chain,
-                                      showHistory: true,
-                                      allowFlag: true,
-                                      key: Key(
-                                        index.toString(),
-                                      ),
-                                      index: index,
-                                    );
-                                  },
-                                )
-                              : ListView(
-                                  children: [
-                                    HomeButtonWidget(
-                                      chainListFunction: "loadSampleChains",
-                                      buttonText:
-                                          "Add \n'Sample Chain of Timers'",
-                                      logo: Icon(
-                                        Icons.account_box,
-                                        size: 50,
-                                        color:
-                                            Theme.of(context).primaryColorDark,
-                                      ),
-                                    ),
-                                    HomeButtonWidget(
-                                      chainListFunction:
-                                          "navigateToAddChainScreen",
-                                      buttonText:
-                                          "Create\nYour Own Chain of Timers.",
-                                      logo: Icon(
-                                        Icons.create_outlined,
-                                        size: 50,
-                                        color:
-                                            Theme.of(context).primaryColorDark,
-                                      ),
-                                    ),
-                                    HomeButtonWidget(
-                                      chainListFunction: "navigateToHelpScreen",
-                                      buttonText:
-                                          "Know\nmore about Chains (CAT).",
-                                      logo: Icon(
-                                        Icons.help,
-                                        size: 50,
-                                        color:
-                                            Theme.of(context).primaryColorDark,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "All Chains",
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                       ),
-                      if (showHelp)
+                      Expanded(
+                        child: ReorderableListView.builder(
+                          //reverse: true,
+                          onReorder: (oldIndex, newIndex) =>
+                              Provider.of<ChainList>(context, listen: false)
+                                  .rearrangeChains(oldIndex, newIndex),
+                          itemCount: chains.length,
+                          itemBuilder: (context, index) {
+                            Chain chain = chains[index];
+                            //BannerAd? adChain = chain.adBanner;
+                            return ChainListItem(
+                              //adChain: adChain,
+                              chain: chain,
+                              showHistory: true,
+                              allowFlag: true,
+                              key: Key(
+                                index.toString(),
+                              ),
+                              index: index,
+                            );
+                          },
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            showChainControlSummary = !showChainControlSummary;
+                          });
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(30),
+                            ),
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                          ),
+                          child: Text(
+                            "Summary of Chain Controls",
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                      if (showChainControlSummary)
                         Container(
                           width: double.infinity,
                           margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                           padding: const EdgeInsets.only(bottom: 8),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(30)),
-                          ),
+                              color: Theme.of(context).primaryColor,
+                              border: Border.all(
+                                width: 1,
+                                color:
+                                    Theme.of(context).scaffoldBackgroundColor,
+                              )),
                           child: const ChainTileHelp(),
-                        )
+                        ),
                     ],
                   ),
                 ),
               ),
-            ),
+            if (chains.isEmpty)
+              Expanded(
+                child: Container(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(30),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "No Chains to Play or Schedule",
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                        ),
+                      ),
+                      HomeButtonWidget(
+                        chainListFunction: "loadSampleChains",
+                        buttonText: "Add \n'Sample Chain of Timers'",
+                        logo: Icon(
+                          Icons.web_stories,
+                          size: 50,
+                          color: Theme.of(context).primaryColorDark,
+                        ),
+                      ),
+                      HomeButtonWidget(
+                        chainListFunction: "navigateToAddChainScreen",
+                        buttonText: "Create\nYour Own Chain of Timers.",
+                        logo: Icon(
+                          Icons.create_outlined,
+                          size: 50,
+                          color: Theme.of(context).primaryColorDark,
+                        ),
+                      ),
+                      HomeButtonWidget(
+                        chainListFunction: "navigateToHelpScreen",
+                        buttonText: "Know\nmore about Chains (CAT).",
+                        logo: Icon(
+                          Icons.help,
+                          size: 50,
+                          color: Theme.of(context).primaryColorDark,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             appBarWidget,
           ],
         ),
