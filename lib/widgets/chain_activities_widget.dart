@@ -1,4 +1,5 @@
 import 'package:chain_activities/widgets/chain_system_wait_activity_flow.dart';
+import 'package:chain_activities/widgets/scroll_button.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -11,20 +12,24 @@ import 'package:chain_activities/widgets/system_wait_activity_with_duration.dart
 import 'package:chain_activities/widgets/chain_activity_flow_view.dart';
 //import 'package:chain_activities/screens/add_chain_activity_screen.dart';
 
-class ChainActivitiesWidget extends StatelessWidget {
+class ChainActivitiesWidget extends StatefulWidget {
   final Chain tempChain;
   final Function? editActivity, undoEdit, addStartDateToChain;
 
-  final ScrollController? scrollController;
   const ChainActivitiesWidget({
     super.key,
     required this.tempChain,
     required this.editActivity,
     required this.undoEdit,
-    required this.scrollController,
     this.addStartDateToChain,
   });
 
+  @override
+  State<ChainActivitiesWidget> createState() => _ChainActivitiesWidgetState();
+}
+
+class _ChainActivitiesWidgetState extends State<ChainActivitiesWidget> {
+  final ScrollController scrollController = ScrollController();
   @override
   Widget build(BuildContext context) {
     ChainList chainList = Provider.of<ChainList>(context);
@@ -40,7 +45,7 @@ class ChainActivitiesWidget extends StatelessWidget {
       color: Theme.of(context).primaryColor,
     );
 
-    List<ChainActivity> activities = tempChain.activities;
+    List<ChainActivity> activities = widget.tempChain.activities;
     activities = activities.reversed.toList();
 
     Widget getChainActivityView(BuildContext context, int index) {
@@ -52,33 +57,33 @@ class ChainActivitiesWidget extends StatelessWidget {
             children: [
               GestureDetector(
                 onLongPressMoveUpdate: (details) {},
-                onTap: undoEdit != null && editActivity != null
+                onTap: widget.undoEdit != null && widget.editActivity != null
                     ? () async {
                         if (!chainActivity.edit) {
-                          editActivity!(chainActivity);
+                          widget.editActivity!(chainActivity);
                         } else {
-                          undoEdit!(chainActivity);
+                          widget.undoEdit!(chainActivity);
                         }
                       }
                     : null,
-                child: tempChain.at != null
+                child: widget.tempChain.at != null
                     ? SystemWaitActivityWithDuration(
                         taskText:
-                            "${tempChain.at!.isAfter(DateTime.now()) ? 'Scheduled to Start at' : 'Started on '} \n${DateFormat.yMd().add_jms().format(tempChain.at!)}",
+                            "${widget.tempChain.at!.isAfter(DateTime.now()) ? 'Scheduled to Start at' : 'Started on '} \n${DateFormat.yMd().add_jms().format(widget.tempChain.at!)}",
                       )
                     : const SystemWaitActivityWithDuration(
                         taskText: "Tap to Schedule\n this Chain."),
               ),
-              if (tempChain.activities.length == 1 &&
-                  tempChain.repeatType != repeatTypeDoesNotRepeat &&
-                  (tempChain.repeatCount - 1) != 0)
+              if (widget.tempChain.activities.length == 1 &&
+                  widget.tempChain.repeatType != repeatTypeDoesNotRepeat &&
+                  (widget.tempChain.repeatCount - 1) != 0)
                 arrowWidget,
-              if (tempChain.activities.length == 1 &&
-                  tempChain.repeatType != repeatTypeDoesNotRepeat &&
-                  (tempChain.repeatCount - 1) != 0)
+              if (widget.tempChain.activities.length == 1 &&
+                  widget.tempChain.repeatType != repeatTypeDoesNotRepeat &&
+                  (widget.tempChain.repeatCount - 1) != 0)
                 SystemWaitActivityWithDuration(
                     taskText:
-                        "And Repeats every ${tempChain.repeatTypeGap} ${tempChain.repeatType}.\n${(tempChain.repeatCount - 1) > -1 ? 'Chain will repeat ${tempChain.repeatCount - 1} more time${(tempChain.repeatCount - 1) > 1 ? "s" : ""}.' : 'Repeat ends Never.'}")
+                        "And Repeats every ${widget.tempChain.repeatTypeGap} ${widget.tempChain.repeatType}.\n${(widget.tempChain.repeatCount - 1) > -1 ? 'Chain will repeat ${widget.tempChain.repeatCount - 1} more time${(widget.tempChain.repeatCount - 1) > 1 ? "s" : ""}.' : 'Repeat ends Never.'}")
             ],
           );
         case systemWaitActivityInDB:
@@ -88,9 +93,9 @@ class ChainActivitiesWidget extends StatelessWidget {
             arrowWidget: arrowWidget,
             chainActivity: chainActivity,
             chainList: chainList,
-            tempChain: tempChain,
-            editActivity: editActivity,
-            undoEdit: undoEdit,
+            tempChain: widget.tempChain,
+            editActivity: widget.editActivity,
+            undoEdit: widget.undoEdit,
             lineWidget: lineWidget,
             index: index,
           );
@@ -102,9 +107,9 @@ class ChainActivitiesWidget extends StatelessWidget {
             arrowWidget: arrowWidget,
             chainActivity: chainActivity,
             chainList: chainList,
-            tempChain: tempChain,
-            editActivity: editActivity,
-            undoEdit: undoEdit,
+            tempChain: widget.tempChain,
+            editActivity: widget.editActivity,
+            undoEdit: widget.undoEdit,
             lineWidget: lineWidget,
             index: index,
           );
@@ -123,21 +128,45 @@ class ChainActivitiesWidget extends StatelessWidget {
     // return IgnorePointer(
     //   ignoring: undoEdit == null || editActivity == null,
     //   child:
-    return ReorderableListView.builder(
-      reverse: true,
-      buildDefaultDragHandles: true,
-      scrollController: scrollController,
-      onReorder: (oldIndex, newIndex) {
-        oldIndex = activities.length - oldIndex - 1;
-        newIndex = activities.length - newIndex - 1;
-        chainList.rearrangeActivites(tempChain, oldIndex, newIndex);
-      },
-      itemCount: activities.length,
-      itemBuilder: (context, index) => IgnorePointer(
-        key: Key(index.toString()),
-        ignoring: tempChain.endedAt != null,
-        child: getChainActivitySequence(context, index),
-      ),
+    return Stack(
+      children: [
+        ReorderableListView.builder(
+          reverse: true,
+          buildDefaultDragHandles: true,
+          scrollController: scrollController,
+          onReorder: (oldIndex, newIndex) {
+            oldIndex = activities.length - oldIndex - 1;
+            newIndex = activities.length - newIndex - 1;
+            chainList.rearrangeActivites(widget.tempChain, oldIndex, newIndex);
+          },
+          itemCount: activities.length,
+          itemBuilder: (context, index) => IgnorePointer(
+            key: Key(index.toString()),
+            ignoring: widget.tempChain.endedAt != null,
+            child: getChainActivitySequence(context, index),
+          ),
+        ),
+        if (scrollController.hasClients &&
+            scrollController.position.pixels == 0 &&
+            widget.tempChain.activities.length > 4)
+          Positioned(
+            right: 0,
+            bottom: 0,
+            child: ScrollButton(
+              scrollController: scrollController,
+            ),
+          ),
+        if (scrollController.hasClients &&
+            scrollController.position.pixels > 0 &&
+            widget.tempChain.activities.length > 4)
+          Positioned(
+            right: 0,
+            top: 0,
+            child: ScrollButton(
+              scrollController: scrollController,
+            ),
+          ),
+      ],
     );
     //);
     // return editActivity == null

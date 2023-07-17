@@ -1,7 +1,6 @@
 import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:chain_activities/screens/settings_screen.dart';
 import 'package:chain_activities/widgets/help_clip_horizontal.dart';
-import 'package:chain_activities/widgets/scroll_button.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -1126,28 +1125,27 @@ class _AddChainScreenState extends State<AddChainScreen> {
                           tempChain: tempChain,
                           editActivity: editActivity,
                           undoEdit: undoEdit,
-                          scrollController: scrollController,
                         ),
-                        if (scrollController.hasClients &&
-                            scrollController.position.pixels == 0 &&
-                            tempChain.activities.length > 4)
-                          Positioned(
-                            right: 0,
-                            bottom: 0,
-                            child: ScrollButton(
-                              scrollController: scrollController,
-                            ),
-                          ),
-                        if (scrollController.hasClients &&
-                            scrollController.position.pixels > 0 &&
-                            tempChain.activities.length > 4)
-                          Positioned(
-                            right: 0,
-                            top: 0,
-                            child: ScrollButton(
-                              scrollController: scrollController,
-                            ),
-                          ),
+                        // if (scrollController.hasClients &&
+                        //     scrollController.position.pixels == 0 &&
+                        //     tempChain.activities.length > 4)
+                        //   Positioned(
+                        //     right: 0,
+                        //     bottom: 0,
+                        //     child: ScrollButton(
+                        //       scrollController: scrollController,
+                        //     ),
+                        //   ),
+                        // if (scrollController.hasClients &&
+                        //     scrollController.position.pixels > 0 &&
+                        //     tempChain.activities.length > 4)
+                        //   Positioned(
+                        //     right: 0,
+                        //     top: 0,
+                        //     child: ScrollButton(
+                        //       scrollController: scrollController,
+                        //     ),
+                        //   ),
                       ],
                     ),
                   ),

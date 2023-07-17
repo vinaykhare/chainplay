@@ -179,24 +179,29 @@ class _HelpHeaderState extends State<HelpHeader> {
               // width: appWidth * 0.3,
               width: appWidth,
               height: appHeight - 65,
-              child: headerSlideContent[page]["imageAsset"] != "" &&
-                      headerSlideContent[page]["imageAsset"] != null
-                  ? FadeInImage.assetNetwork(
-                      placeholder: assetMap["logoImage"]!,
-                      image: headerSlideContent[page]["imageAsset"]!,
-                      fit: BoxFit.contain,
-                    )
-                  : InkWell(
-                      onTap: () {
-                        Navigator.of(context)
-                            .pushNamed(ChainListScreen.routename);
-                      },
-                      child: FadeInImage.assetNetwork(
-                        placeholder: assetMap["logoImage"]!,
-                        image: assetMap["go_home"]!,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
+              child: InkWell(
+                onTap: () {
+                  if (page == (headerSlideContent.length - 1)) {
+                    Navigator.of(context).pushNamed(ChainListScreen.routename);
+                  } else {
+                    incrementPage();
+                  }
+                },
+                // child: FadeInImage.assetNetwork(
+                //   placeholder: assetMap["logoImage"]!,
+                //   image: headerSlideContent[page]["imageAsset"]!,
+                //   // image: headerSlideContent[page]["imageAsset"] != "" &&
+                //   //         headerSlideContent[page]["imageAsset"] != null
+                //   //     ? headerSlideContent[page]["imageAsset"]!
+                //   //     : assetMap["go_home"]!,
+                //   fit: BoxFit.contain,
+                // ),
+                child: FadeInImage(
+                  placeholder: AssetImage(assetMap["logoImage"]!),
+                  image: AssetImage(headerSlideContent[page]["imageAsset"]!),
+                  fit: BoxFit.fill,
+                ),
+              ),
             ),
           ),
           if (isNotPlaying)

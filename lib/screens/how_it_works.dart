@@ -143,6 +143,7 @@ class _HowItWorksState extends State<HowItWorks> {
                   onPressed: () async {
                     NavigatorState nav = Navigator.of(context);
                     //await chainList.dontShowHelpOnNextLoad();
+                    await chainList.stopSpeech();
                     nav.pushReplacementNamed(ChainListScreen.routename);
                   },
                 ),

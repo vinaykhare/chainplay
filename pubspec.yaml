@@ -105,6 +105,10 @@ flutter:
     - assets/AppIcons/playstore.png
     - assets/sound/chain_activity_alarm.wav
     - assets/sound/chain_activity_beep.mp3
+    - assets/WhatIsCAT/cat_intro.png
+    - assets/WhatIsCAT/chain_categories.png
+    - assets/WhatIsCAT/go_home.png
+    
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

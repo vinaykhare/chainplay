@@ -1,3 +1,4 @@
+import 'package:chain_activities/screens/view_chain_screen.dart';
 import 'package:chain_activities/widgets/tile_time_format.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -68,6 +69,16 @@ class AlarmTileView extends StatelessWidget {
     }
   }
 
+  Future<void> viewChain(BuildContext context) async {
+    NavigatorState nav = Navigator.of(context);
+    await nav.pushNamed(
+      ViewChain.routename,
+      arguments: {
+        payLoadChainName: chain.title,
+      },
+    );
+  }
+
   Widget getIconForChain(Chain chain) {
     if (chain.notificationId == trueInDB) {
       return const Icon(Icons.schedule);
@@ -81,7 +92,7 @@ class AlarmTileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => navigateToAddChainOrPlayChain(context),
+      onTap: () => viewChain(context), //navigateToAddChainOrPlayChain(context),
       child: Column(
         children: [
           ListTile(

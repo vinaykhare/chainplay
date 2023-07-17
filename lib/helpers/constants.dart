@@ -66,6 +66,7 @@ const Map<String, String> assetMap = {
   'logoImage': 'assets/AppIcons/playstore.png',
   'alarmAudio': 'assets/sound/chain_activity_alarm.wav',
   'beepAudio': 'assets/sound/chain_activity_beep.mp3',
-  'go_home':
-      'https://github.com/vinaykhare/cat_help_content/raw/main/help_images/go_home.png',
+  'go_home': 'assets/WhatIsCAT/go_home.png',
+  'cat_intro': 'assets/WhatIsCAT/cat_intro.png',
+  'chain_categories': 'assets/WhatIsCAT/chain_categories.png',
 };

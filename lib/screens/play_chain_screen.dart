@@ -306,7 +306,6 @@ class _PlayChainState extends State<PlayChain> {
                       tempChain: chain,
                       editActivity: null,
                       undoEdit: null,
-                      scrollController: null,
                     ),
                   ),
                 ),

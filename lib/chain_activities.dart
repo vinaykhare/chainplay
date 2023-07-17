@@ -1,5 +1,6 @@
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/helpers/key_helper.dart';
+import 'package:chain_activities/screens/view_chain_screen.dart';
 import 'package:chain_activities/widgets/my_error_widget.dart';
 import 'package:chain_activities/widgets/redirect.dart';
 import 'package:flutter/material.dart';
@@ -210,6 +211,7 @@ class ChainActivities extends StatelessWidget {
         HowItWorks.routename: (context) => const HowItWorks(),
         ChainExecutionScreen.routename: (context) =>
             const ChainExecutionScreen(),
+        ViewChain.routename: (context) => const ViewChain(),
       },
     );
   }

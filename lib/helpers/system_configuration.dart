@@ -131,10 +131,10 @@ const sqlInitScript = [
 
 // Constant Header Content
 
-const List<Map<String, String>> headerSlideContent = [
+List<Map<String, String>> headerSlideContent = [
   {
-    "imageAsset":
-        "https://raw.githubusercontent.com/vinaykhare/cat_help_content/main/help_images/0.png",
+    "imageAsset": assetMap["cat_intro"]!,
+    //"https://raw.githubusercontent.com/vinaykhare/cat_help_content/main/help_images/0.png",
     "title": "C A T,\nChain the Alarms & Timers.",
     "speech":
         "What is CAT.  Well. CAT is all about the Chains. Chain of Timers and Chain of Alarms. CAT allows you to create the Chain of Timers, and play it. CAT also allows you to add Alarms like a usual Clock, plus, it allows you to run your chosen 'Chain of Timers' when Alarm rings. So, we can Chain the Timers, and, we can Chain the Alarms, at user defined 'Timer Intervals'.",
@@ -147,8 +147,8 @@ const List<Map<String, String>> headerSlideContent = [
   //       "CAT comes with a Sample Chain of Timers to Start with. Sample includes Workout Chain, Diet Chain and a Medicine Schedule chain. When there are no chains created, home page of CAT gives the option to add these sample chains or create your own.",
   // },
   {
-    "imageAsset":
-        "https://github.com/vinaykhare/cat_help_content/raw/main/help_images/Chain%20Categories.png",
+    "imageAsset": assetMap["chain_categories"]!,
+    //"https://github.com/vinaykhare/cat_help_content/raw/main/help_images/Chain%20Categories.png",
     "title": "Chain Categories",
     "speech":
         "This way, CAT has three Categories of Chains. One, Chain of Timers, which we can play interactively. Second, Scheduled Chain of Timers which executes chain of timers in backgroud at scheduled time. It prompts User for completing Manual Actvities defined in Chain and also for completing the chain in the end. And third, Scheduled Chain without Timers, which acts as Alarm Clock."
@@ -203,7 +203,7 @@ const List<Map<String, String>> headerSlideContent = [
   //       "CAT Settings helps you with your preferences. Notfication type is set to None by default. Please set it to App Notification so enable the feature to Schedule the chains. And, CAT has Dark theme too.",
   // },
   {
-    "imageAsset": "",
+    "imageAsset": assetMap["go_home"]!,
     "title": "Now just Explore CAT",
     "speech":
         "I hope you understand CAT now. Now just explore it yourself. I am sure it will help.",
