@@ -2,6 +2,7 @@ import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/screens/add_chain_screen.dart';
 import 'package:chain_activities/screens/search_chain_screen.dart';
 import 'package:chain_activities/widgets/cat_container.dart';
+import 'package:chain_activities/widgets/chain_list_header.dart';
 import 'package:chain_activities/widgets/chain_list_item.dart';
 import 'package:chain_activities/widgets/chain_tile_help.dart';
 import 'package:chain_activities/widgets/clock.dart';
@@ -242,21 +243,24 @@ class _ChainListScreenState extends State<ChainListScreen> {
             //     top: 5,
             //   ),
             // ),
-            CatContainer(
-              //key: ValueKey("Clock"),
-              key: titleClockKey,
-              childWidget: const Clock(),
-              onPressed: () {
-                Navigator.of(context)
-                    .pushReplacementNamed(AddChainScreen.routename);
-              },
-              catContainerTitle: "CAT..Chain the Alarms & Timers",
-              helpText: "Tap this Clock to Add an Alarm",
-              catContainerIcon: Container(
-                key: addChainKey,
-                child: Image.asset(
-                  assetMap["logoImage"]!,
-                  height: 50,
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: CatContainer(
+                //key: ValueKey("Clock"),
+                key: titleClockKey,
+                childWidget: const Clock(),
+                onPressed: () {
+                  Navigator.of(context)
+                      .pushReplacementNamed(AddChainScreen.routename);
+                },
+                catContainerTitle: "Chain the Activities with Timers",
+                helpText: "Tap Clock to Create a Scheduled Chain | Alarm",
+                catContainerIcon: Container(
+                  key: addChainKey,
+                  child: Image.asset(
+                    assetMap["logoImage"]!,
+                    height: 50,
+                  ),
                 ),
               ),
             ),
@@ -286,16 +290,10 @@ class _ChainListScreenState extends State<ChainListScreen> {
                   child: Column(
                     //crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "All Chains",
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                        ),
-                      ),
+                      const ChainListHeader(),
+                      // Divider(
+                      //   color: Theme.of(context).primaryColorLight,
+                      // ),
                       Expanded(
                         child: ReorderableListView.builder(
                           //reverse: true,
@@ -350,13 +348,13 @@ class _ChainListScreenState extends State<ChainListScreen> {
                           width: double.infinity,
                           margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                           padding: const EdgeInsets.only(bottom: 8),
-                          decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor,
-                              border: Border.all(
-                                width: 1,
-                                color:
-                                    Theme.of(context).scaffoldBackgroundColor,
-                              )),
+                          // decoration: BoxDecoration(
+                          //   color: Theme.of(context).primaryColor,
+                          //   border: Border.all(
+                          //     width: 1,
+                          //     color: Theme.of(context).scaffoldBackgroundColor,
+                          //   ),
+                          // ),
                           child: const ChainTileHelp(),
                         ),
                     ],

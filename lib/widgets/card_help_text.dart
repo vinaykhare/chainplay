@@ -11,7 +11,7 @@ class CardHelpText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(1),
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColorLight,
         borderRadius: const BorderRadius.vertical(
@@ -24,6 +24,7 @@ class CardHelpText extends StatelessWidget {
             Text(
               title!,
               style: Theme.of(context).textTheme.labelSmall,
+              textAlign: TextAlign.center,
             ),
         ],
       ),

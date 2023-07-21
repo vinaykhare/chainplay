@@ -135,9 +135,9 @@ List<Map<String, String>> headerSlideContent = [
   {
     "imageAsset": assetMap["cat_intro"]!,
     //"https://raw.githubusercontent.com/vinaykhare/cat_help_content/main/help_images/0.png",
-    "title": "C A T,\nChain the Alarms & Timers.",
+    "title": "C A T,\nChain the Activities with Timers.",
     "speech":
-        "What is CAT.  Well. CAT is all about the Chains. Chain of Timers and Chain of Alarms. CAT allows you to create the Chain of Timers, and play it. CAT also allows you to add Alarms like a usual Clock, plus, it allows you to run your chosen 'Chain of Timers' when Alarm rings. So, we can Chain the Timers, and, we can Chain the Alarms, at user defined 'Timer Intervals'.",
+        "What is CAT.  Well. CAT is a tool that help you to Chain the Activities with Timers or Simple Manual Tasks, play it or schedule it. CAT Comes with Sample Chains which you can Play or Schedule, or Edit too. CAT helps you to create your own chain of Activities with the help of Manual Tasks and Timers. CAT also allows you to create Alarms like a regular clock, additionally you can execute your own defined chain when Alarm Rings.",
   },
   // {
   //   "imageAsset":

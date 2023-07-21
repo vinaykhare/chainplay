@@ -35,7 +35,7 @@ class AppDrawer extends StatelessWidget {
                 ),
               ),
               subtitle: const Text(
-                "CHAIN THE \nALARMS & TIMERS",
+                "CHAIN THE ACTIVITIES \nWITH TIMERS",
               ),
             ),
             automaticallyImplyLeading: false,

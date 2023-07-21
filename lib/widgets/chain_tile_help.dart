@@ -10,10 +10,6 @@ class ChainTileHelp extends StatelessWidget {
       //   top: 10,
       // ),
       padding: const EdgeInsets.symmetric(horizontal: 10),
-      decoration: const BoxDecoration(
-          //color: Theme.of(context).primaryColorLight,
-          //borderRadius: const BorderRadius.all(Radius.circular(30)),
-          ),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Column(

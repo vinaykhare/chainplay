@@ -199,7 +199,7 @@ class _HelpHeaderState extends State<HelpHeader> {
                 child: FadeInImage(
                   placeholder: AssetImage(assetMap["logoImage"]!),
                   image: AssetImage(headerSlideContent[page]["imageAsset"]!),
-                  fit: BoxFit.fill,
+                  //fit: BoxFit.fill,
                 ),
               ),
             ),
