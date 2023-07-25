@@ -162,90 +162,6 @@ class _PlayChainState extends State<PlayChain> {
     //nav.pop();
   }
 
-  Future<void> playTheScheduledChain() async {
-    dynamic popResponse;
-    NavigatorState nav = Navigator.of(context);
-    bool completeTheChain = true;
-    for (invokeCounter = 0;
-        invokeCounter < chain.activities.length;
-        invokeCounter++) {
-      Map<String, dynamic> dryRunResult =
-          await chainList.executeChainFurtherPossible(chain);
-      chain = dryRunResult["executingChain"];
-      invokeCounter = dryRunResult["invokeCounter"];
-      Duration waitDuration = dryRunResult["waitDuration"];
-      ChainActivity chainActivity = dryRunResult["chainActivity"];
-      int playScreenType = invokeCounter >= chain.activities.length - 1
-          ? systemEndActivityInDB
-          : dryRunResult["playScreenType"];
-      bool running = dryRunResult["running"];
-      String screenImage = dryRunResult["screenImage"] ?? "";
-      bool showTimer = dryRunResult["showTimer"];
-      if (!showTimer) {
-        completeTheChain = false;
-        break;
-      }
-
-      String textToSpeak = chainActivity.activity.type == systemWaitActivityInDB
-          ? invokeCounter < chain.activities.length - 1
-              ? "Take Rest. Next Activity will start ${HelperFunctions.durationToString(waitDuration)}."
-              : "Complete the chain by pressing done or go forward."
-          : chainActivity.activity.type == systemStartActivityInDB
-              ? "Complete the Alarm by pressing done or go forward."
-              : "Activity ${chainActivity.activity.title} has started. It will complete ${HelperFunctions.durationToString(waitDuration)}.";
-      if (chainActivity.activityDurationLeft != null &&
-          waitDuration.inSeconds > 0) {
-        textToSpeak += " after resuming.";
-      }
-      await chainList.speakTextWithoutWait(textToSpeak);
-      popResponse = await nav.pushNamed(
-        PlayWaitActivity.routename,
-        arguments: {
-          "waitDuration": waitDuration,
-          "chainActivity": chainActivity,
-          "playScreenType": playScreenType,
-          "running": running,
-          "screenImage": screenImage,
-          // "textToSpeak": textToSpeak,
-        },
-      );
-      await chainList.stopSpeech();
-
-      if (popResponse == null) {
-        chainActivity.activityDurationLeft = null;
-        chainActivity.isInterrupted = true;
-      } else {
-        completeTheChain = false;
-        break;
-      }
-      chainActivity.activityDone = true;
-      chainActivity.endedAt = DateTime.now();
-
-      await chainList.updateChainActivityExecutionByActivityId(
-        chain,
-        chainActivity,
-      );
-      await chainList.cancelScheduledNotificationExecution(chain);
-      await chainList.scheduleNotificationForExecution(
-          chain, chainActivity.endedAt!);
-    }
-
-    if (completeTheChain) {
-      // Chain parentChain =
-      //     chainList.chains.firstWhere((sch) => sch.title == chain.title);
-
-      chain.chainStatus = statusDone;
-      //parentChain.chainStatus = statusNotStarted;
-      chain.endedAt = DateTime.now();
-      //parentChain.endedAt = null;
-
-      //await chainList.updateChain(parentChain);
-      await chainList.updateChainExecution(chain);
-      await chainList.completeTheChain(chain);
-    }
-    //nav.pop();
-  }
-
   Future<bool> onPopOut() async {
     return true;
   }
@@ -261,29 +177,21 @@ class _PlayChainState extends State<PlayChain> {
       //   chain = chainList.notificationCameForChain!;
       //   chainList.notificationCameForChain = null;
       // } else {
-      Map<String, dynamic> chArg = chainList.notificationCameAs != null &&
-              chainList.notificationCameAs!.isNotEmpty
-          ? chainList.notificationCameAs!
-          : ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+      Map<String, dynamic> chArg =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
       parentChainItem = chainList.chains
           .firstWhere((ch) => ch.title == chArg[payLoadChainName]);
       chain = parentChainItem.chainHistory.firstWhere(
-          (schEx) => schEx.chainExecutionId == chArg[payLoadChainExecId]);
+        (schEx) => schEx.chainExecutionId == chArg[payLoadChainExecId],
+      );
       //}
 
       if (chain.chainStatus == statusExecuting) {
-        /* &&
-          !chain.at!.isAfter(DateTime.now()) */
-        if (chain.notificationId == trueInDB) {
-          playTheScheduledChain();
-        } else {
-          playTheChain();
-        }
+        playTheChain();
       } else {
         invokeCounter = chain.activities.length;
       }
       initializing = false;
-      chainList.notificationCameAs = null;
     }
     double appHeight = MediaQuery.of(context).size.height -
         MediaQuery.of(context).viewPadding.top -
@@ -339,9 +247,7 @@ class _PlayChainState extends State<PlayChain> {
                           ? null
                           : () {
                               invokeCounter = 0;
-                              chain.notificationId == trueInDB
-                                  ? playTheScheduledChain()
-                                  : playTheChain();
+                              playTheChain();
                             },
                       icon: chain.notificationId == trueInDB
                           ? const Icon(Icons.refresh)

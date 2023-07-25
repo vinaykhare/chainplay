@@ -53,7 +53,6 @@ class _ViewChainState extends State<ViewChain> {
           .firstWhere((ch) => ch.title == chArg[payLoadChainName]);
 
       initializing = false;
-      chainList.notificationCameAs = null;
     }
     double appHeight = MediaQuery.of(context).size.height -
         MediaQuery.of(context).viewPadding.top -

@@ -1,4 +1,3 @@
-import 'package:app_settings/app_settings.dart';
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/screens/how_it_works.dart';
 import 'package:flutter/material.dart';
@@ -91,27 +90,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
               ),
-              if (showNotificationPermissionWarning)
-                const SizedBox(
-                  height: 50,
-                ),
-              if (showNotificationPermissionWarning)
-                CircleAvatar(
-                  radius: 120,
-                  child: TextButton(
-                    onPressed: () => AppSettings.openAppSettings(),
-                    child: SizedBox(
-                      child: Text(
-                        "Grant\nNotification Permission\nin App Settings\n&\nThen try to\nEnable\nEvent Notifications.",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.error,
-                          fontSize: 20,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
               Expanded(
                 child: Container(
                   margin: const EdgeInsets.all(10),

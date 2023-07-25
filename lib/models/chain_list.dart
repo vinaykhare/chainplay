@@ -4,7 +4,6 @@ import 'dart:convert';
 
 import 'package:chain_activities/helpers/sample_chain_configuration.dart';
 import 'package:chain_activities/models/chain_activity.dart';
-import 'package:chain_activities/screens/play_chain_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:chain_activities/helpers/constants.dart';
 //import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -53,10 +52,8 @@ class ChainList with ChangeNotifier {
   List<Activity> activities = [];
   List<SystemSetting> systemSettings = [];
   NotificationHelper notificationHelper = NotificationHelper();
-  Map<String, dynamic>? notificationCameAs;
   // Chain? notificationCameForChain;
   // String? notificaitonCameForUrl;
-  List<int> notificationIdsInDB = [];
   //List<int> adIndexInChains = [];
   //final AdState adState;
   final BuildContext context;
@@ -84,50 +81,10 @@ class ChainList with ChangeNotifier {
       return;
     }
     configUpdateStarted = true;
-    await setSetting(eventNotificationsKey, trueSettingValue);
-    if (notificationHelper.eventNotificationsEnabled()) {
-      await notificationHelper.initialize(systemSettings);
-    }
-
-    notificationCameAs = null;
-
-    Map<String, dynamic>? checkForNotificationResponse =
-        await notificationHelper.localNotificationService
-            .checkForNotification();
-
-    for (int chainId = 0; chainId < chains.length; chainId++) {
-      Chain chain = chains[chainId];
-      collectNotificationIds(chain);
-      if (checkForNotificationResponse != null &&
-          chain.title == checkForNotificationResponse[payLoadChainName]) {
-        notificationCameAs = checkForNotificationResponse;
-      }
-      // await evaluateChainExecutions(chain);
-    }
+    await notificationHelper.initialize(systemSettings);
     configUpdated = true;
     configUpdateStarted = false;
     notifyListeners();
-  }
-
-  void collectNotificationIds(Chain chain) {
-    if (chain.notificationId == noValueInDB) {
-      return;
-    }
-    notificationIdsInDB.add(chain.notificationId);
-    Chain sch = chain;
-    for (int activityId = 0; activityId < sch.activities.length; activityId++) {
-      if (sch.activities[activityId].startActivityNotificationId ==
-          noValueInDB) {
-        continue;
-      }
-      notificationIdsInDB
-          .add(sch.activities[activityId].startActivityNotificationId);
-      if (sch.activities[activityId].endActivityNotificationId == noValueInDB) {
-        continue;
-      }
-      notificationIdsInDB
-          .add(sch.activities[activityId].endActivityNotificationId);
-    }
   }
 
   Future<Map<String, dynamic>> executeChainFurtherPossible(Chain executingChain,
@@ -334,10 +291,7 @@ class ChainList with ChangeNotifier {
 
   Future<void> removeChain(Chain chain) async {
     chains.removeWhere((sch) => sch.title == chain.title);
-    await cancelScheduledNotification(chain);
-    for (Chain chainExec in chain.chainHistory) {
-      await cancelScheduledNotificationExecution(chainExec);
-    }
+
     await DBHelper.removeData(
       "chain_activity",
       "title = ?",
@@ -641,9 +595,7 @@ class ChainList with ChangeNotifier {
     }
 
     if (chains[chainIndex].at != null) {
-      Chain chainInExecution = await startChainExecution(chains[chainIndex]);
-      await scheduleNotificationForExecution(
-          chainInExecution, chainInExecution.at!);
+      await startChainExecution(chains[chainIndex]);
 
       chains[chainIndex].notificationId = trueInDB;
     } else {
@@ -658,8 +610,6 @@ class ChainList with ChangeNotifier {
     int executingChainIndex = chain.chainHistory
         .indexWhere((sch) => sch.chainStatus == statusExecuting);
     if (executingChainIndex != -1) {
-      await cancelScheduledNotificationExecution(
-          chain.chainHistory[executingChainIndex]);
       await resetChainExecution(chain.chainHistory[executingChainIndex]);
     }
     await resetChain(chain);
@@ -823,8 +773,6 @@ class ChainList with ChangeNotifier {
   }
 
   Future<void> resetChain(Chain chain) async {
-    await cancelScheduledNotification(chain);
-
     for (ChainActivity activity in chain.activities) {
       activity.edit = false;
       activity.activityDone = false;
@@ -860,8 +808,6 @@ class ChainList with ChangeNotifier {
   }
 
   Future<void> resetChainExecution(Chain chainExecution) async {
-    await cancelScheduledNotificationExecution(chainExecution);
-
     int indexOfChain =
         chains.indexWhere((sch) => sch.title == chainExecution.title);
 
@@ -878,17 +824,6 @@ class ChainList with ChangeNotifier {
   Future<void> removeActivityFromChain(
       Chain chain, ChainActivity chainActivity) async {
     //chains.removeWhere((sc) => sc.name == chain.name);
-
-    //Cancel Notification
-    if (chainActivity.startActivityNotificationId != noValueInDB) {
-      await notificationHelper
-          .cancelNotificationById(chainActivity.startActivityNotificationId);
-    }
-
-    if (chainActivity.endActivityNotificationId != noValueInDB) {
-      await notificationHelper
-          .cancelNotificationById(chainActivity.endActivityNotificationId);
-    }
 
     await DBHelper.removeData(
       "chain_activity",
@@ -991,10 +926,6 @@ class ChainList with ChangeNotifier {
     loaded = false;
     configUpdated = false;
     configUpdateStarted = false;
-
-    notificationCameAs = {};
-    notificationIdsInDB = [];
-
     // await loadSampleChains();
     notifyListeners();
   }
@@ -1232,11 +1163,6 @@ class ChainList with ChangeNotifier {
   bool isTtsPlaying() {
     return notificationHelper.isTtsPlaying;
   }
-
-  Future<bool?> askNotificationPermission() async {
-    return await notificationHelper.askNotificationPermission();
-  }
-
   // disposeAds() {
   //   for (int i = 0; i < adIndexInChains.length; i++) {
   //     chains[adIndexInChains[i]].dispose();
@@ -1254,17 +1180,7 @@ class ChainList with ChangeNotifier {
   Future<int> setSetting(String key, String value) async {
     //Notification specific check Start
     int setResponse = setSuccessful;
-    if (key == eventNotificationsKey && value == trueSettingValue) {
-      bool? userResponse = true;
-      userResponse = await askNotificationPermission();
-      if (userResponse == null || !userResponse) {
-        value = falseSettingValue;
-        setResponse = setFailedDueToAppPermission;
-      } else {
-        //Check if not initialized
-        await notificationHelper.initialize(systemSettings);
-      }
-    }
+
     //Notification specific check End
     int keyIndex = systemSettings.indexWhere((set) => set.key == key);
     systemSettings[keyIndex].value = value;
@@ -1580,177 +1496,5 @@ class ChainList with ChangeNotifier {
     }
 
     return activities;
-  }
-
-  int getNextNotificationId() {
-    int nextNotificationId = 0;
-    while (notificationIdsInDB.contains(nextNotificationId)) {
-      nextNotificationId++;
-    }
-    notificationIdsInDB.add(nextNotificationId);
-    return nextNotificationId;
-  }
-
-  Future<DateTime?> scheduleNotificationForExecution(
-    Chain chain,
-    DateTime fromDateTime,
-  ) async {
-    int countOfActivities = chain.activities.length;
-    chain.notificationId = trueInDB;
-    await updateChainExecution(chain);
-    bool noBreakChain = true;
-    for (int i = 0; i < countOfActivities; i++) {
-      if (chain.activities[i].endedAt != null) {
-        fromDateTime = chain.activities[i].endedAt!;
-        continue;
-      }
-      if (chain.activities[i].activity.type == systemWaitActivityInDB) {
-        fromDateTime = fromDateTime.add(chain.activities[i].activityDuration);
-        fromDateTime = fromDateTime.add(const Duration(microseconds: 1));
-        continue;
-      }
-      int nextNotificationId = getNextNotificationId();
-      String activityTitle = chain.activities[i].activity.title;
-
-      if (chain.activities[i].activity.type == systemStartActivityInDB) {
-        //chain.notificationId = nextNotificationId;
-        activityTitle = "Chain of Activities '${chain.title}'";
-        //await updateChainExecution(chain);
-      }
-      if (chain.activities[i].startActivityNotificationId == noValueInDB) {
-        notificationHelper.cancelNotificationById(
-            chain.activities[i].startActivityNotificationId);
-      }
-      chain.activities[i].startActivityNotificationId =
-          await notificationHelper.scheduleNotification(
-        fromDateTime,
-        nextNotificationId,
-        chain.activities.length > 1 ? chain.title : "Scheduled Alarm",
-        chain.activities.length > 1
-            ? "$activityTitle has Started."
-            : "Complete your Scheduled Alarm",
-        {
-          payLoadChainName: chain.title,
-          payLoadChainExecId: chain.chainExecutionId,
-          payLoadWidgetUrl: PlayChain.routename,
-          payLoadChainActivityIndex: i + 1,
-          payLoadChainActivityCount: chain.activities.length,
-        },
-      );
-
-      await updateChainActivityExecutionByActivityId(
-        chain,
-        chain.activities[i],
-      );
-
-      if (chain.activities[i].activity.type != systemWaitActivityInDB &&
-          chain.activities[i].activity.type != systemStartActivityInDB &&
-          (chain.activities[i].activityDuration.inSeconds == 0 ||
-              (chain.activities[i].activityDurationLeft != null &&
-                  chain.activities[i].activityDurationLeft!.inSeconds > 0))) {
-        noBreakChain = false;
-        break;
-      }
-      DateTime dateTimeAfterDurationAddition =
-          fromDateTime.add(chain.activities[i].activityDuration);
-      if (fromDateTime == dateTimeAfterDurationAddition) {
-        fromDateTime = fromDateTime.add(const Duration(microseconds: 1));
-        continue;
-      }
-      fromDateTime = dateTimeAfterDurationAddition;
-
-      // Schedule Activity end notification
-      nextNotificationId = getNextNotificationId();
-      if (i == (countOfActivities - 2)) {
-        activityTitle = "Chain of Activities '${chain.title}'";
-      }
-      if (chain.activities[i].endActivityNotificationId != noValueInDB) {
-        notificationHelper.cancelNotificationById(
-            chain.activities[i].endActivityNotificationId);
-      }
-      chain.activities[i].endActivityNotificationId =
-          await notificationHelper.scheduleNotification(
-        fromDateTime,
-        nextNotificationId,
-        chain.activities.length > 1 ? chain.title : "Scheduled Alarm",
-        chain.activities.length > 1
-            ? "$activityTitle has Ended."
-            : "Complete your Scheduled Alarm",
-        {
-          payLoadChainName: chain.title,
-          payLoadChainExecId: chain.chainExecutionId,
-          payLoadWidgetUrl: PlayChain.routename,
-          payLoadChainActivityIndex: i + 2,
-          payLoadChainActivityCount: chain.activities.length,
-        },
-      );
-
-      await updateChainActivityExecutionByActivityId(
-        chain,
-        chain.activities[i],
-      );
-      fromDateTime = fromDateTime.add(const Duration(microseconds: 1));
-    }
-    notifyListeners();
-    return noBreakChain ? fromDateTime : null;
-  }
-
-  Future<void> cancelScheduledNotificationExecution(Chain chain) async {
-    //Cancel Notifications
-    //await cancelScheduledNotification(chain);
-    for (ChainActivity chainActivity in chain.activities) {
-      if (chainActivity.startActivityNotificationId != noValueInDB) {
-        await notificationHelper
-            .cancelNotificationById(chainActivity.startActivityNotificationId);
-        chainActivity.startActivityNotificationId = noValueInDB;
-      }
-      if (chainActivity.endActivityNotificationId != noValueInDB) {
-        await notificationHelper
-            .cancelNotificationById(chainActivity.endActivityNotificationId);
-        chainActivity.endActivityNotificationId = noValueInDB;
-      }
-      await updateChainActivityExecutionByActivityId(chain, chainActivity);
-    }
-
-    // await DBHelper.update(
-    //   "chain_activity",
-    //   {
-    //     "notificationId": noValueInDB.toString(),
-    //   },
-    //   "title = ?",
-    //   [chain.title],
-    // );
-    notifyListeners();
-  }
-
-  Future<void> cancelScheduledNotification(Chain chain) async {
-    //Cancel Notifications
-    if (chain.notificationId != noValueInDB) {
-      //await notificationHelper.cancelNotificationById(chain.notificationId);
-      chain.notificationId = noValueInDB;
-      await updateChainExecution(chain);
-    }
-    notifyListeners();
-  }
-
-  void printAllNotifications() {
-    for (int i = 0; i < chains.length; i++) {
-      for (int j = 0; j < chains[i].chainHistory.length; j++) {
-        if (chains[i].chainHistory[j].endedAt != null) {
-          continue;
-        }
-        print(
-          "Notification for Chain ${chains[i].title} is ${chains[i].notificationId}",
-        );
-        for (int k = 0; k < chains[i].chainHistory[j].activities.length; k++) {
-          print(
-            "Start Notification for Activity ${chains[i].chainHistory[j].activities[k].activity.title} is ${chains[i].chainHistory[j].activities[k].startActivityNotificationId},",
-          );
-          print(
-            "End Notification for Activity ${chains[i].chainHistory[j].activities[k].activity.title} is ${chains[i].chainHistory[j].activities[k].startActivityNotificationId},",
-          );
-        }
-      }
-    }
   }
 }

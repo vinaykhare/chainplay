@@ -32,15 +32,6 @@ class ChainTileHelp extends StatelessWidget {
                 CircleAvatar(
                   radius: 10,
                   backgroundColor: Theme.of(context).primaryColorLight,
-                  child: const Icon(Icons.schedule, size: 15),
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text("Stop Alarm"),
-                ),
-                CircleAvatar(
-                  radius: 10,
-                  backgroundColor: Theme.of(context).primaryColorLight,
                   child: const Icon(Icons.pause, size: 15),
                 ),
                 const Padding(
@@ -61,17 +52,17 @@ class ChainTileHelp extends StatelessWidget {
                 ),
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text("View Chain/Set Alarm"),
+                  child: Text("View Chain"),
                 ),
-                // CircleAvatar(
-                //   radius: 10,
-                //   backgroundColor: Theme.of(context).primaryColorLight,
-                //   child: const Icon(Icons.swipe_left, size: 15),
-                // ),
-                // const Padding(
-                //   padding: EdgeInsets.symmetric(horizontal: 8.0),
-                //   child: Text("Edit Chain."),
-                // ),
+                CircleAvatar(
+                  radius: 10,
+                  backgroundColor: Theme.of(context).primaryColorLight,
+                  child: const Icon(Icons.favorite, size: 15),
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text("Favorite"),
+                ),
                 CircleAvatar(
                   radius: 10,
                   backgroundColor: Theme.of(context).primaryColorLight,
@@ -86,17 +77,8 @@ class ChainTileHelp extends StatelessWidget {
             const Divider(),
 
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CircleAvatar(
-                  radius: 10,
-                  backgroundColor: Theme.of(context).primaryColorLight,
-                  child: const Icon(Icons.favorite, size: 15),
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text("Favorite"),
-                ),
                 CircleAvatar(
                   radius: 10,
                   backgroundColor: Theme.of(context).primaryColorLight,

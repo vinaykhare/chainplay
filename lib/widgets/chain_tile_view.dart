@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
 
-import 'package:chain_activities/screens/add_chain_screen.dart';
 import 'package:chain_activities/screens/play_chain_screen.dart';
 import 'package:chain_activities/screens/chain_execution_screen.dart';
 import 'package:chain_activities/helpers/constants.dart';
@@ -29,7 +28,7 @@ class ChainTileView extends StatelessWidget {
       await Provider.of<ChainList>(context, listen: false)
           .stopChainExecution(chain);
     } else if (chain.activities.length <= 1) {
-      await navigateToAddChainOrPlayChain(context);
+      await navigateToViewChainOrPlayChain(context);
     } else {
       //await Provider.of<ChainList>(context, listen: false).loadActivities(chain);
       Chain chainExecution =
@@ -47,7 +46,7 @@ class ChainTileView extends StatelessWidget {
     }
   }
 
-  Future<void> navigateToAddChainOrPlayChain(BuildContext context) async {
+  Future<void> navigateToViewChainOrPlayChain(BuildContext context) async {
     NavigatorState nav = Navigator.of(context);
     Chain? chainExecution =
         Provider.of<ChainList>(context, listen: false).getRunningChain(chain);
@@ -58,8 +57,10 @@ class ChainTileView extends StatelessWidget {
       await Provider.of<ChainList>(context, listen: false)
           .updateChain(chain, false);
       await nav.pushNamed(
-        AddChainScreen.routename,
-        arguments: chain,
+        ViewChain.routename,
+        arguments: {
+          payLoadChainName: chain.title,
+        },
       );
     } else {
       await Provider.of<ChainList>(context, listen: false)
@@ -99,7 +100,7 @@ class ChainTileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => viewChain(context), //navigateToAddChainOrPlayChain(context),
+      onTap: () => navigateToViewChainOrPlayChain(context),
       child: Column(
         children: [
           ListTile(
@@ -150,7 +151,32 @@ class ChainTileView extends StatelessWidget {
               ],
             ),
           ),
-          Text(chain.title),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Image.asset(
+                  assetMap["chainImage"]!,
+                  height: 20,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Text(
+                chain.title,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).hintColor,
+                    ),
+              ),
+              Expanded(
+                child: Image.asset(
+                  assetMap["chainImage"]!,
+                  height: 20,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );

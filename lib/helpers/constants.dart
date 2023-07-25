@@ -64,6 +64,8 @@ const String repeatOccurNever = "Never";
 //assets
 const Map<String, String> assetMap = {
   'logoImage': 'assets/AppIcons/playstore.png',
+  'chainImage': 'assets/AppIcons/chain.png',
+  'verticalChainImage': 'assets/AppIcons/vertical_chain.png',
   'alarmAudio': 'assets/sound/chain_activity_alarm.wav',
   'beepAudio': 'assets/sound/chain_activity_beep.mp3',
   'go_home': 'assets/WhatIsCAT/go_home.png',

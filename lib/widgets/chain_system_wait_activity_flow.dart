@@ -68,24 +68,26 @@ class ChainSystemWaitActivityFlow extends StatelessWidget {
                           textAlign: TextAlign.center,
                         ),
                       )
-                    : Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: activities[index].edit
-                              ? Theme.of(context).primaryColor.withOpacity(0.5)
-                              : Theme.of(context).primaryColor,
-                          borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(30),
-                            bottom: Radius.circular(30),
+                    : undoEdit == null || editActivity == null
+                        ? Container()
+                        : Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: activities[index].edit
+                                  ? Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.5)
+                                  : Theme.of(context).primaryColor,
+                              borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(30),
+                                bottom: Radius.circular(30),
+                              ),
+                            ),
+                            child: const Text(
+                              "Tap to add rest\nbetween two timer activities.",
+                              textAlign: TextAlign.center,
+                            ),
                           ),
-                        ),
-                        child: Text(
-                          undoEdit == null || editActivity == null
-                              ? ""
-                              : "Tap to add rest\nbetween two timer activities.",
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
                 // : Icon(
                 //     Icons.circle_outlined,
                 //     size: 15,

@@ -104,12 +104,6 @@ const sqlInitScript = [
     )
   ''',
   '''INSERT INTO settings(key, value, type) VALUES (
-      '$eventNotificationsKey',
-      '$trueSettingValue',
-      '$settingDataTypeBool'
-    )
-  ''',
-  '''INSERT INTO settings(key, value, type) VALUES (
       '$appSoundSettingKey',
       '$trueSettingValue',
       '$settingDataTypeBool'
@@ -119,12 +113,6 @@ const sqlInitScript = [
       '$showHelpOnNextBootKey', 
       '$trueSettingValue',
       '$settingDataTypeBool'
-    )
-  ''',
-  '''INSERT INTO settings(key, value, type) VALUES (
-      '$catClockModeKey', 
-      '$catClockModeValue',
-      '$settingDataTypeList'
     )
   ''',
 ];

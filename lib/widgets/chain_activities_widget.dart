@@ -1,5 +1,6 @@
 import 'package:chain_activities/widgets/chain_system_wait_activity_flow.dart';
 import 'package:chain_activities/widgets/scroll_button.dart';
+import 'package:chain_activities/widgets/system_wait_activity.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -34,17 +35,29 @@ class _ChainActivitiesWidgetState extends State<ChainActivitiesWidget> {
   Widget build(BuildContext context) {
     ChainList chainList = Provider.of<ChainList>(context);
 
-    final Widget lineWidget = Container(
-      width: 2,
-      height: 15,
-      decoration: BoxDecoration(color: Theme.of(context).primaryColor),
+    // final Widget lineWidget = Container(
+    //   width: 2,
+    //   height: 15,
+    //   decoration: BoxDecoration(color: Theme.of(context).primaryColor),
+    // );
+
+    final Widget lineWidget = Image.asset(
+      assetMap["verticalChainImage"]!,
+      height: 50,
+      width: 30,
+      fit: BoxFit.cover,
     );
 
-    Widget arrowWidget = Icon(
-      Icons.arrow_downward,
-      color: Theme.of(context).primaryColor,
+    // Widget arrowWidget = Icon(
+    //   Icons.arrow_downward,
+    //   color: Theme.of(context).primaryColor,
+    // );
+    Widget arrowWidget = Image.asset(
+      assetMap["verticalChainImage"]!,
+      height: 50,
+      width: 30,
+      fit: BoxFit.cover,
     );
-
     List<ChainActivity> activities = widget.tempChain.activities;
     activities = activities.reversed.toList();
 
@@ -56,24 +69,22 @@ class _ChainActivitiesWidgetState extends State<ChainActivitiesWidget> {
             key: Key(index.toString()),
             children: [
               GestureDetector(
-                onLongPressMoveUpdate: (details) {},
-                onTap: widget.undoEdit != null && widget.editActivity != null
-                    ? () async {
-                        if (!chainActivity.edit) {
-                          widget.editActivity!(chainActivity);
-                        } else {
-                          widget.undoEdit!(chainActivity);
+                  onLongPressMoveUpdate: (details) {},
+                  onTap: widget.undoEdit != null && widget.editActivity != null
+                      ? () async {
+                          if (!chainActivity.edit) {
+                            widget.editActivity!(chainActivity);
+                          } else {
+                            widget.undoEdit!(chainActivity);
+                          }
                         }
-                      }
-                    : null,
-                child: widget.tempChain.at != null
-                    ? SystemWaitActivityWithDuration(
-                        taskText:
-                            "${widget.tempChain.at!.isAfter(DateTime.now()) ? 'Scheduled to Start at' : 'Started on '} \n${DateFormat.yMd().add_jms().format(widget.tempChain.at!)}",
-                      )
-                    : const SystemWaitActivityWithDuration(
-                        taskText: "Tap to Schedule\n this Chain."),
-              ),
+                      : null,
+                  child: widget.tempChain.at != null
+                      ? SystemWaitActivityWithDuration(
+                          taskText:
+                              "${widget.tempChain.at!.isAfter(DateTime.now()) ? 'Scheduled to Start at' : 'Started on '} \n${DateFormat.yMd().add_jms().format(widget.tempChain.at!)}",
+                        )
+                      : const SystemWaitActivity(taskText: 'Start')),
               if (widget.tempChain.activities.length == 1 &&
                   widget.tempChain.repeatType != repeatTypeDoesNotRepeat &&
                   (widget.tempChain.repeatCount - 1) != 0)
