@@ -44,29 +44,40 @@ class _ListOfChainsState extends State<ListOfChains> {
             },
           ),
         ),
-        InkWell(
-          onTap: () {
-            setState(() {
-              showChainControlSummary = !showChainControlSummary;
-            });
-          },
-          child: Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(30),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(30),
+            ),
+            color: Theme.of(context).scaffoldBackgroundColor,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Text(
+                "Summary of Chain Controls",
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                textAlign: TextAlign.center,
               ),
-              color: Theme.of(context).scaffoldBackgroundColor,
-            ),
-            child: Text(
-              showChainControlSummary
-                  ? "Summary of Chain Controls"
-                  : "Tap here for Summary Chain Controls",
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-              textAlign: TextAlign.center,
-            ),
+              InkWell(
+                onTap: () {
+                  setState(() {
+                    showChainControlSummary = !showChainControlSummary;
+                  });
+                },
+                child: showChainControlSummary
+                    ? const Icon(
+                        Icons.expand_less,
+                      )
+                    : const Icon(
+                        Icons.expand_more_outlined,
+                      ),
+              )
+            ],
           ),
         ),
         if (showChainControlSummary)

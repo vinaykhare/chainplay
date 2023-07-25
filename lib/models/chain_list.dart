@@ -722,6 +722,9 @@ class ChainList with ChangeNotifier {
     Chain chain, [
     bool editChainActivity = false,
   ]) async {
+    for (int i = 0; i < chain.activities.length; i++) {
+      chain.activities[i].edit = false;
+    }
     await DBHelper.update(
       "chain_activity",
       {

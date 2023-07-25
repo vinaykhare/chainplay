@@ -79,6 +79,7 @@ class _ViewChainState extends State<ViewChain> {
                   ),
                 ),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
                       onPressed: () async {
@@ -90,18 +91,9 @@ class _ViewChainState extends State<ViewChain> {
                       },
                       icon: const Icon(Icons.arrow_back),
                     ),
-                    Expanded(
-                      child: TextFormField(
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.titleLarge,
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          floatingLabelAlignment: FloatingLabelAlignment.center,
-                          floatingLabelBehavior: FloatingLabelBehavior.never,
-                        ),
-                        initialValue: chain.title,
-                        enabled: false,
-                      ),
+                    Text(
+                      chain.title,
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
                     IconButton(
                       onPressed: () async {

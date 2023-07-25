@@ -332,7 +332,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
     }
   }
 
-  void undoEdit(ChainActivity chainActivity) async {
+  Future<void> undoEdit(ChainActivity chainActivity) async {
     FocusScopeNode focusScope = FocusScope.of(context);
     addActivityController.clear();
     activityImageController.clear();
@@ -355,15 +355,15 @@ class _AddChainScreenState extends State<AddChainScreen> {
     focusScope.unfocus();
   }
 
-  void editActivity(ChainActivity chainActivity) async {
+  Future<void> editActivity(ChainActivity chainActivity) async {
     //FocusScopeNode focusScope = FocusScope.of(context);
+
     ChainList chainList = Provider.of<ChainList>(context, listen: false);
-    //await chainList.resetChain(tempChain);
     chainActivityInEditMode = chainActivity;
     ScaffoldMessengerState smState = ScaffoldMessenger.of(context);
-
+    await chainList.updatChainActivityByChainName(tempChain);
     chainActivityInEditMode!.edit = true;
-
+    // await chainList.resetChain(tempChain);
     await chainList.updateChainActivityByActivityId(
       tempChain,
       chainActivityInEditMode!,
