@@ -6,7 +6,6 @@ import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
 
 import 'package:chain_activities/screens/play_chain_screen.dart';
-import 'package:chain_activities/screens/chain_execution_screen.dart';
 import 'package:chain_activities/helpers/constants.dart';
 
 class ChainTileView extends StatelessWidget {
@@ -125,6 +124,14 @@ class ChainTileView extends StatelessWidget {
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
+                if (showHistory)
+                  IconButton(
+                    icon: const Icon(Icons.share),
+                    onPressed: () async {
+                      await Provider.of<ChainList>(context, listen: false)
+                          .downloadChain(chain);
+                    },
+                  ),
                 if (allowFlag)
                   IconButton(
                     icon: chain.pinned
@@ -136,18 +143,18 @@ class ChainTileView extends StatelessWidget {
                           .updateChain(chain, false);
                     },
                   ),
-                if (showHistory)
-                  IconButton(
-                    onPressed: () async {
-                      NavigatorState navState = Navigator.of(context);
+                // if (showHistory)
+                //   IconButton(
+                //     onPressed: () async {
+                //       NavigatorState navState = Navigator.of(context);
 
-                      navState.pushNamed(
-                        ChainExecutionScreen.routename,
-                        arguments: chain,
-                      );
-                    },
-                    icon: const Icon(Icons.arrow_forward),
-                  ),
+                //       navState.pushNamed(
+                //         ChainExecutionScreen.routename,
+                //         arguments: chain,
+                //       );
+                //     },
+                //     icon: const Icon(Icons.arrow_forward),
+                //   ),
               ],
             ),
           ),

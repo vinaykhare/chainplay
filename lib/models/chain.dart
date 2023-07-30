@@ -19,4 +19,31 @@ class Chain {
   bool edit = true;
   int index = -1;
   String chainExecutionId = "";
+
+  Chain();
+
+  factory Chain.fromJson(Map<String, dynamic> map) {
+    Chain chainFromJson = Chain();
+    chainFromJson.title = map['title'];
+    return chainFromJson;
+    // return Chain(
+    //   title: map['title'],
+    //   at: DateTime.parse(map['at']),
+    //   endedAt: DateTime.parse(map['endedAt']),
+    //   pivotDate: DateTime.parse(map['pivotDate']),
+    // );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "title": title,
+      "at": at?.toIso8601String(),
+      "endedAt": endedAt?.toIso8601String(),
+      "pivotDate": pivotDate?.toIso8601String(),
+      "lastUpdatedAt": lastUpdatedAt.toIso8601String(),
+      "createdAt": createdAt.toIso8601String(),
+      "edit": false,
+      "activities": activities,
+    };
+  }
 }

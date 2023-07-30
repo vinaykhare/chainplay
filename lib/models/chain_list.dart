@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:chain_activities/helpers/sample_chain_configuration.dart';
 import 'package:chain_activities/models/chain_activity.dart';
@@ -15,6 +16,8 @@ import 'package:chain_activities/models/activity.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/system_setting.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:uuid/uuid.dart';
 //import 'package:chain_activities/screens/play_chain_screen.dart';
 
@@ -1499,5 +1502,16 @@ class ChainList with ChangeNotifier {
     }
 
     return activities;
+  }
+
+  Future<void> downloadChain(Chain chain) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final path = directory.path;
+    //const String path = '/storage/emulated/0/Download/';
+    File chainFile = File('$path/${chain.title}.cat');
+    await chainFile.writeAsString(jsonEncode(chain));
+    await Share.shareXFiles([XFile('$path/${chain.title}.cat')],
+        text: chain.title);
+    await chainFile.delete();
   }
 }

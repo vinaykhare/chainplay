@@ -46,8 +46,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         drawer: const AppDrawer(),
         body: SafeArea(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            //mainAxisAlignment: MainAxisAlignment.end,
+            //crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               ElevatedButton.icon(
                 label: const Text("Reset App to Factory Settings!"),
@@ -94,7 +94,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Container(
                   margin: const EdgeInsets.all(10),
                   child: ListView.builder(
-                    reverse: true,
+                    //reverse: true,
                     itemCount: settings.length,
                     itemBuilder: (context, index) {
                       List<String> listOfValues = [];

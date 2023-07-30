@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:chain_activities/screens/add_chain_screen.dart';
+import 'package:chain_activities/screens/chain_execution_screen.dart';
+import 'package:chain_activities/screens/play_chain_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/helpers/constants.dart';
@@ -31,6 +33,38 @@ class _ViewChainState extends State<ViewChain> {
   //     buildDone = true;
   //   });
   // }
+
+  Future<void> playTheChain(BuildContext context) async {
+    NavigatorState nav = Navigator.of(context);
+    if (chain.chainStatus == statusExecuting) {
+      await Provider.of<ChainList>(context, listen: false)
+          .stopChainExecution(chain);
+    } else {
+      //await Provider.of<ChainList>(context, listen: false).loadActivities(chain);
+      Chain chainExecution =
+          await Provider.of<ChainList>(context, listen: false)
+              .startChainExecution(chain);
+      await nav.pushNamed(
+        PlayChain.routename,
+        arguments: {
+          payLoadChainExecId: chainExecution.chainExecutionId,
+          payLoadChainName: chainExecution.title,
+          payLoadChainActivityIndex: 0,
+          payLoadChainActivityCount: chain.chainHistory.length,
+        },
+      );
+    }
+  }
+
+  Widget getIconForChain(Chain chain) {
+    if (chain.notificationId == trueInDB) {
+      return const Icon(Icons.schedule);
+    }
+    if (chain.chainStatus == statusExecuting) {
+      return const Icon(Icons.pause_circle_outline_rounded);
+    }
+    return const Icon(Icons.play_arrow_outlined);
+  }
 
   Future<bool> onPopOut() async {
     return true;
@@ -79,6 +113,63 @@ class _ViewChainState extends State<ViewChain> {
                   ),
                 ),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    CircleAvatar(
+                      child: IconButton(
+                        onPressed: () async {
+                          NavigatorState nav = Navigator.of(context);
+                          await chainList.removeChain(chain);
+                          nav.pop();
+                        },
+                        icon: const Icon(Icons.delete_forever_outlined),
+                      ),
+                    ),
+                    CircleAvatar(
+                      child: IconButton(
+                        onPressed: () async {
+                          await Provider.of<ChainList>(context, listen: false)
+                              .downloadChain(chain);
+                        },
+                        icon: const Icon(Icons.share_outlined),
+                      ),
+                    ),
+                    CircleAvatar(
+                      child: IconButton(
+                        icon: chain.pinned
+                            ? const Icon(Icons.favorite)
+                            : const Icon(Icons.favorite_border_outlined),
+                        onPressed: () async {
+                          chain.pinned = !chain.pinned;
+                          await Provider.of<ChainList>(context, listen: false)
+                              .updateChain(chain, false);
+                        },
+                      ),
+                    ),
+                    CircleAvatar(
+                      child: IconButton(
+                        onPressed: () async {
+                          NavigatorState nav = Navigator.of(context);
+                          bool allWell = await onPopOut();
+                          if (allWell) {
+                            nav.pushNamed(
+                              ChainExecutionScreen.routename,
+                              arguments: chain,
+                            );
+                          }
+                        },
+                        icon: const Icon(Icons.history),
+                      ),
+                    ),
+                    CircleAvatar(
+                      child: IconButton(
+                        onPressed: () => playTheChain(context),
+                        icon: getIconForChain(chain),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
@@ -97,6 +188,9 @@ class _ViewChainState extends State<ViewChain> {
                     ),
                     IconButton(
                       onPressed: () async {
+                        if (chain.chainStatus == statusExecuting) {
+                          return;
+                        }
                         NavigatorState nav = Navigator.of(context);
                         bool allWell = await onPopOut();
                         if (allWell) {
@@ -108,7 +202,12 @@ class _ViewChainState extends State<ViewChain> {
                           );
                         }
                       },
-                      icon: const Icon(Icons.edit),
+                      icon: Icon(
+                        Icons.edit,
+                        color: chain.chainStatus == statusExecuting
+                            ? Theme.of(context).disabledColor
+                            : Theme.of(context).iconTheme.color,
+                      ),
                     ),
                   ],
                 ),

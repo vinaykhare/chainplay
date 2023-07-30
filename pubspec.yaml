@@ -48,6 +48,8 @@ dependencies:
   # pdf_render: ^1.3.6
   # showcaseview: ^2.0.0+1
   image_picker: ^0.8.6
+  share_plus: ^7.0.2
+  path_provider: ^2.0.15
   # transparent_image: ^2.0.1
   flutter_tts: ^3.6.3
   tutorial_coach_mark: ^1.2.9

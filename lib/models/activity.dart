@@ -16,4 +16,15 @@ class Activity {
     this.type = waitActivityInDB,
     this.specification,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      "title": title,
+      "activityId": activityId,
+      "type": type,
+      "createdAt": createdAt.toIso8601String(),
+      "lastUpdatedAt": lastUpdatedAt.toIso8601String(),
+      "specification": specification,
+    };
+  }
 }

@@ -25,4 +25,12 @@ class ChainActivity {
     this.activityDone = false,
     this.index = -1,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      "activityDuration": activityDuration.inMilliseconds.toString(),
+      "edit": false,
+      "activity": activity,
+    };
+  }
 }

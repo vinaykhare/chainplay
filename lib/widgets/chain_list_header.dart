@@ -36,6 +36,13 @@ class ChainListHeader extends StatelessWidget {
             size: 30,
           ),
         ),
+        IconButton(
+          onPressed: () {},
+          icon: const Icon(
+            Icons.upload_outlined,
+            size: 30,
+          ),
+        ),
       ],
     );
   }

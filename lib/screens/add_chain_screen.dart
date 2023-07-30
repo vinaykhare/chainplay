@@ -50,7 +50,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
       chainNameOnPageLoad = "";
 
   bool showSaveAndExit = false,
-      addingDurationToActivity = false,
+      addingDurationToActivity = true,
       updatingSystemWaitActivityInDB = false,
       // scrollAtTop = false,
       pageInit = true;
@@ -298,7 +298,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
       activityDurationHour = 0;
       activityDurationMinute = 0;
       activityDurationSecond = 0;
-      addingDurationToActivity = false;
+      //addingDurationToActivity = false;
     });
   }
 
@@ -460,132 +460,144 @@ class _AddChainScreenState extends State<AddChainScreen> {
 
     final duraitonInputForm = Form(
       key: durationFormKey,
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: TextFormField(
-                  key: ValueKey(
-                    "${chainActivityInEditMode?.activity.title}_${chainActivityInEditMode?.index.toString()}_hours",
-                  ),
-                  keyboardType: TextInputType.number,
-                  textInputAction: TextInputAction.none,
-                  textAlign: TextAlign.center,
-                  initialValue: activityDurationHour == 0
-                      ? null
-                      : activityDurationHour.toString().padLeft(2, '0'),
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    label: const Text("Hour"),
-                    hintText: activityDurationHour.toString().padLeft(2, '0'),
-                  ),
-                  onSaved: (newValue) => activityDurationHour =
-                      newValue != "" && newValue != null
-                          ? int.parse(newValue)
-                          : 0,
-                  validator: (value) => validateHour(value),
-                ),
-              ),
-              Expanded(
-                child: TextFormField(
-                  key: ValueKey(
-                    "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_minutes",
-                  ),
-                  keyboardType: TextInputType.number,
-                  textAlign: TextAlign.center,
-                  initialValue: activityDurationMinute == 0
-                      ? null
-                      : activityDurationMinute.toString().padLeft(2, '0'),
-                  onSaved: (newValue) => activityDurationMinute =
-                      newValue != "" && newValue != null
-                          ? int.parse(newValue)
-                          : 0,
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    label: const Text(
-                      "Minute",
-                    ),
-                    hintText: activityDurationMinute.toString().padLeft(2, '0'),
-                  ),
-                  validator: (value) => validateMinuteOrSecond(value),
-                ),
-              ),
-              Expanded(
-                child: TextFormField(
-                  key: ValueKey(
-                    "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_seconds",
-                  ),
-                  keyboardType: TextInputType.number,
-                  textAlign: TextAlign.center,
-                  initialValue: activityDurationSecond == 0
-                      ? null
-                      : activityDurationSecond.toString().padLeft(2, '0'),
-                  onSaved: (newValue) => activityDurationSecond =
-                      newValue != "" && newValue != null
-                          ? int.parse(newValue)
-                          : 0,
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    label: const Text("Second"),
-                    hintText: activityDurationSecond.toString().padLeft(2, '0'),
-                    alignLabelWithHint: true,
-                  ),
-                  validator: (value) => validateMinuteOrSecond(value),
-                ),
-              ),
-            ],
-          ),
-          if (chainActivityInEditMode?.activity.type !=
-                  systemStartActivityInDB &&
-              chainActivityInEditMode?.activity.type != systemWaitActivityInDB)
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).primaryColor.withOpacity(0.3),
+        ),
+        child: Column(
+          children: [
             Row(
               children: [
                 Expanded(
                   child: TextFormField(
                     key: ValueKey(
-                      "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_image",
+                      "${chainActivityInEditMode?.activity.title}_${chainActivityInEditMode?.index.toString()}_hours",
+                    ),
+                    keyboardType: TextInputType.number,
+                    textInputAction: TextInputAction.none,
+                    textAlign: TextAlign.center,
+                    initialValue: activityDurationHour == 0
+                        ? null
+                        : activityDurationHour.toString().padLeft(2, '0'),
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      label: const Text("Hour"),
+                      hintText: activityDurationHour.toString().padLeft(2, '0'),
+                    ),
+                    onSaved: (newValue) => activityDurationHour =
+                        newValue != "" && newValue != null
+                            ? int.parse(newValue)
+                            : 0,
+                    validator: (value) => validateHour(value),
+                  ),
+                ),
+                Expanded(
+                  child: TextFormField(
+                    key: ValueKey(
+                      "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_minutes",
                     ),
                     keyboardType: TextInputType.number,
                     textAlign: TextAlign.center,
-                    controller: activityImageController,
-                    // onSaved: (_) => chainActivityInEditMode!
-                    //         .activity.specification![activitySpecImagePath] =
-                    //     activityImageController.text,
+                    initialValue: activityDurationMinute == 0
+                        ? null
+                        : activityDurationMinute.toString().padLeft(2, '0'),
+                    onSaved: (newValue) => activityDurationMinute =
+                        newValue != "" && newValue != null
+                            ? int.parse(newValue)
+                            : 0,
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
                       label: const Text(
-                          "Paste HTTP Path from Internet here. \nOR Select from Local."),
+                        "Minute",
+                      ),
+                      hintText:
+                          activityDurationMinute.toString().padLeft(2, '0'),
+                    ),
+                    validator: (value) => validateMinuteOrSecond(value),
+                  ),
+                ),
+                Expanded(
+                  child: TextFormField(
+                    key: ValueKey(
+                      "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_seconds",
+                    ),
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    initialValue: activityDurationSecond == 0
+                        ? null
+                        : activityDurationSecond.toString().padLeft(2, '0'),
+                    onSaved: (newValue) => activityDurationSecond =
+                        newValue != "" && newValue != null
+                            ? int.parse(newValue)
+                            : 0,
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      label: const Text("Second"),
                       hintText:
                           activityDurationSecond.toString().padLeft(2, '0'),
                       alignLabelWithHint: true,
-                      floatingLabelBehavior: FloatingLabelBehavior.never,
                     ),
+                    validator: (value) => validateMinuteOrSecond(value),
                   ),
                 ),
-                Column(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.file_copy),
-                      onPressed: () async {
-                        XFile? pickedImage = await ImagePicker()
-                            .pickImage(source: ImageSource.gallery);
-                        if (pickedImage != null) {
-                          activityImageController.text = pickedImage.path;
-                        }
-                      },
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(
-                        "Select Local",
+              ],
+            ),
+            if (chainActivityInEditMode?.activity.type !=
+                    systemStartActivityInDB &&
+                chainActivityInEditMode?.activity.type !=
+                    systemWaitActivityInDB)
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      key: ValueKey(
+                        "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_image",
+                      ),
+                      keyboardType: TextInputType.number,
+                      textAlign: TextAlign.center,
+                      controller: activityImageController,
+                      // onSaved: (_) => chainActivityInEditMode!
+                      //         .activity.specification![activitySpecImagePath] =
+                      //     activityImageController.text,
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        label: const Text("Paste HTTP or Local Path or Image."),
+                        hintText:
+                            activityDurationSecond.toString().padLeft(2, '0'),
+                        alignLabelWithHint: true,
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
                       ),
                     ),
-                  ],
-                ),
-              ],
-            )
-        ],
+                  ),
+                  Column(
+                    children: [
+                      TextButton.icon(
+                        label: Text("Select Image",
+                            style: Theme.of(context).textTheme.labelLarge),
+                        icon: Icon(
+                          Icons.photo,
+                          color: Theme.of(context).primaryColorDark,
+                        ),
+                        onPressed: () async {
+                          XFile? pickedImage = await ImagePicker()
+                              .pickImage(source: ImageSource.gallery);
+                          if (pickedImage != null) {
+                            activityImageController.text = pickedImage.path;
+                          }
+                        },
+                      ),
+                      // const Padding(
+                      //   padding: EdgeInsets.symmetric(horizontal: 10),
+                      //   child: Text(
+                      //     "Select Local",
+                      //   ),
+                      // ),
+                    ],
+                  ),
+                ],
+              )
+          ],
+        ),
       ),
     );
 
