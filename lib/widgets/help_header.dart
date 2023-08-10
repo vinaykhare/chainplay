@@ -33,12 +33,12 @@ class _HelpHeaderState extends State<HelpHeader> {
 
   @override
   void dispose() {
-    super.dispose();
     // Future.delayed(
     //   const Duration(seconds: 2),
     // );
     //if (countdownTimer != null) countdownTimer?.cancel();
     chainList.stopSpeech();
+    super.dispose();
   }
 
   // void startTimer() {

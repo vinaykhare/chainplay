@@ -58,7 +58,7 @@ class ChainTileView extends StatelessWidget {
       await nav.pushNamed(
         ViewChain.routename,
         arguments: {
-          payLoadChainName: chain.title,
+          "chain": chain,
         },
       );
     } else {
@@ -81,7 +81,7 @@ class ChainTileView extends StatelessWidget {
     await nav.pushNamed(
       ViewChain.routename,
       arguments: {
-        payLoadChainName: chain.title,
+        "chain": chain,
       },
     );
   }

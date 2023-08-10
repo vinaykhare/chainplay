@@ -22,10 +22,25 @@ class Chain {
 
   Chain();
 
-  factory Chain.fromJson(Map<String, dynamic> map) {
-    Chain chainFromJson = Chain();
-    chainFromJson.title = map['title'];
-    return chainFromJson;
+  factory Chain.fromJson(Map<String, dynamic> jsonMap) {
+    Chain chain = Chain();
+    chain.title = jsonMap['title'];
+    chain.at = jsonMap['at'] != null ? DateTime.parse(jsonMap['at']) : null;
+    chain.endedAt =
+        jsonMap['endedAt'] != null ? DateTime.parse(jsonMap['endedAt']) : null;
+    chain.pivotDate = jsonMap['pivotDate'] != null
+        ? DateTime.parse(jsonMap['pivotDate'])
+        : null;
+    chain.lastUpdatedAt = DateTime.parse(jsonMap['lastUpdatedAt']);
+    chain.createdAt = DateTime.parse(jsonMap['createdAt']);
+    chain.edit = jsonMap['edit'];
+    List<dynamic> listOfChainActivityJson = jsonMap['activities'];
+    for (var chainActivityJson in listOfChainActivityJson) {
+      chain.activities.add(
+        ChainActivity.fromJson(chainActivityJson as Map<String, dynamic>),
+      );
+    }
+    return chain;
     // return Chain(
     //   title: map['title'],
     //   at: DateTime.parse(map['at']),

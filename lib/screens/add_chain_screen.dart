@@ -70,9 +70,9 @@ class _AddChainScreenState extends State<AddChainScreen> {
 
   @override
   void dispose() {
-    super.dispose();
     addActivityFocus.dispose();
     addActivityController.dispose();
+    super.dispose();
   }
 
   Future<bool> isNameValid() async {

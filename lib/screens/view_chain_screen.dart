@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:chain_activities/screens/add_chain_screen.dart';
 import 'package:chain_activities/screens/chain_execution_screen.dart';
@@ -23,7 +25,7 @@ class _ViewChainState extends State<ViewChain> {
   late Chain parentChainItem;
   late ChainList chainList;
   int invokeCounter = 0;
-  bool initializing = true;
+  bool initializing = true, savedInDb = false;
   //bool buildDone = false;
 
   // @override
@@ -81,11 +83,18 @@ class _ViewChainState extends State<ViewChain> {
       //   chain = chainList.notificationCameForChain!;
       //   chainList.notificationCameForChain = null;
       // } else {
-      Map<String, dynamic> chArg =
-          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-      chain = chainList.chains
-          .firstWhere((ch) => ch.title == chArg[payLoadChainName]);
 
+      if (chainList.sharedFile != null) {
+        File sharedFile = File(chainList.sharedFile!.path);
+        String fileString = sharedFile.readAsStringSync();
+        Map<String, dynamic> jsonData = jsonDecode(fileString);
+        chain = Chain.fromJson(jsonData);
+      } else {
+        Map<String, dynamic> viewArgs =
+            ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+        chain = viewArgs['chain'];
+        savedInDb = viewArgs['savedInDb'] ?? true;
+      }
       initializing = false;
     }
     double appHeight = MediaQuery.of(context).size.height -
@@ -112,63 +121,76 @@ class _ViewChainState extends State<ViewChain> {
                     ),
                   ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    CircleAvatar(
-                      child: IconButton(
-                        onPressed: () async {
-                          NavigatorState nav = Navigator.of(context);
-                          await chainList.removeChain(chain);
-                          nav.pop();
-                        },
-                        icon: const Icon(Icons.delete_forever_outlined),
+                if (savedInDb == true)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      CircleAvatar(
+                        child: IconButton(
+                          onPressed: () async {
+                            NavigatorState nav = Navigator.of(context);
+                            await chainList.removeChain(chain);
+                            nav.pop();
+                          },
+                          icon: const Icon(Icons.delete_forever_outlined),
+                        ),
                       ),
-                    ),
-                    CircleAvatar(
-                      child: IconButton(
-                        onPressed: () async {
-                          await Provider.of<ChainList>(context, listen: false)
-                              .downloadChain(chain);
-                        },
-                        icon: const Icon(Icons.share_outlined),
+                      CircleAvatar(
+                        child: IconButton(
+                          onPressed: () async {
+                            await Provider.of<ChainList>(context, listen: false)
+                                .downloadChain(chain);
+                          },
+                          icon: const Icon(Icons.share_outlined),
+                        ),
                       ),
-                    ),
-                    CircleAvatar(
-                      child: IconButton(
-                        icon: chain.pinned
-                            ? const Icon(Icons.favorite)
-                            : const Icon(Icons.favorite_border_outlined),
-                        onPressed: () async {
-                          chain.pinned = !chain.pinned;
-                          await Provider.of<ChainList>(context, listen: false)
-                              .updateChain(chain, false);
-                        },
+                      CircleAvatar(
+                        child: IconButton(
+                          icon: chain.pinned
+                              ? const Icon(Icons.favorite)
+                              : const Icon(Icons.favorite_border_outlined),
+                          onPressed: () async {
+                            chain.pinned = !chain.pinned;
+                            await Provider.of<ChainList>(context, listen: false)
+                                .updateChain(chain, false);
+                          },
+                        ),
                       ),
-                    ),
-                    CircleAvatar(
-                      child: IconButton(
-                        onPressed: () async {
-                          NavigatorState nav = Navigator.of(context);
-                          bool allWell = await onPopOut();
-                          if (allWell) {
-                            nav.pushNamed(
-                              ChainExecutionScreen.routename,
-                              arguments: chain,
-                            );
-                          }
-                        },
-                        icon: const Icon(Icons.history),
+                      CircleAvatar(
+                        child: IconButton(
+                          onPressed: () async {
+                            NavigatorState nav = Navigator.of(context);
+                            bool allWell = await onPopOut();
+                            if (allWell) {
+                              nav.pushNamed(
+                                ChainExecutionScreen.routename,
+                                arguments: chain,
+                              );
+                            }
+                          },
+                          icon: const Icon(Icons.history),
+                        ),
                       ),
-                    ),
-                    CircleAvatar(
-                      child: IconButton(
-                        onPressed: () => playTheChain(context),
-                        icon: getIconForChain(chain),
+                      CircleAvatar(
+                        child: IconButton(
+                          onPressed: () => playTheChain(context),
+                          icon: getIconForChain(chain),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  )
+                else
+                  ElevatedButton(
+                    child: const Text("SAVE"),
+                    onPressed: () async {
+                      for (var chainActivity in chain.activities) {
+                        await chainList.addChain(chain, chainActivity);
+                      }
+                      setState(() {
+                        savedInDb = true;
+                      });
+                    },
+                  ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -193,7 +215,7 @@ class _ViewChainState extends State<ViewChain> {
                         }
                         NavigatorState nav = Navigator.of(context);
                         bool allWell = await onPopOut();
-                        if (allWell) {
+                        if (allWell && savedInDb) {
                           chain.edit = true;
                           await chainList.updateChain(chain, false);
                           await nav.pushNamed(
@@ -204,9 +226,10 @@ class _ViewChainState extends State<ViewChain> {
                       },
                       icon: Icon(
                         Icons.edit,
-                        color: chain.chainStatus == statusExecuting
-                            ? Theme.of(context).disabledColor
-                            : Theme.of(context).iconTheme.color,
+                        color:
+                            chain.chainStatus == statusExecuting || !savedInDb
+                                ? Theme.of(context).disabledColor
+                                : Theme.of(context).iconTheme.color,
                       ),
                     ),
                   ],

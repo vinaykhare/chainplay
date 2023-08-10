@@ -17,6 +17,19 @@ class Activity {
     this.specification,
   });
 
+  factory Activity.fromJson(Map<String, dynamic> jsonMap) {
+    Activity activity = Activity(
+      title: jsonMap['title'],
+      activityId: jsonMap['activityId'],
+      type: jsonMap['type'],
+      createdAt: DateTime.parse(jsonMap['createdAt']),
+      lastUpdatedAt: DateTime.parse(jsonMap['lastUpdatedAt']),
+      specification: jsonMap['specification'] as Map<String, dynamic>?,
+    );
+    //activity.edit = jsonMap['edit'];
+    return activity;
+  }
+
   Map<String, dynamic> toJson() {
     return {
       "title": title,

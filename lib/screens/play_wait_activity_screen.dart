@@ -47,8 +47,8 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
 
   @override
   void dispose() {
-    super.dispose();
     if (countdownTimer != null) countdownTimer?.cancel();
+    super.dispose();
   }
 
   // Future<void> speak() async {

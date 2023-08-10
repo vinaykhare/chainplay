@@ -26,6 +26,16 @@ class ChainActivity {
     this.index = -1,
   });
 
+  factory ChainActivity.fromJson(Map<String, dynamic> jsonMap) {
+    ChainActivity chainActivity = ChainActivity(
+      activityDuration:
+          Duration(milliseconds: int.parse(jsonMap['activityDuration'])),
+      activity: Activity.fromJson(jsonMap['activity']),
+    );
+    //chainActivity.edit = jsonMap['edit'];
+    return chainActivity;
+  }
+
   Map<String, dynamic> toJson() {
     return {
       "activityDuration": activityDuration.inMilliseconds.toString(),

@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -17,6 +18,7 @@ import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/system_setting.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:uuid/uuid.dart';
 //import 'package:chain_activities/screens/play_chain_screen.dart';
@@ -60,6 +62,7 @@ class ChainList with ChangeNotifier {
   //List<int> adIndexInChains = [];
   //final AdState adState;
   final BuildContext context;
+  SharedMediaFile? sharedFile;
 
   ChainList(
     this.context,
@@ -85,6 +88,7 @@ class ChainList with ChangeNotifier {
     }
     configUpdateStarted = true;
     await notificationHelper.initialize(systemSettings);
+    // await receiveIntent();
     configUpdated = true;
     configUpdateStarted = false;
     notifyListeners();
@@ -1508,10 +1512,44 @@ class ChainList with ChangeNotifier {
     final directory = await getApplicationDocumentsDirectory();
     final path = directory.path;
     //const String path = '/storage/emulated/0/Download/';
-    File chainFile = File('$path/${chain.title}.cat');
+    File chainFile = File('$path/${chain.title}.json');
     await chainFile.writeAsString(jsonEncode(chain));
-    await Share.shareXFiles([XFile('$path/${chain.title}.cat')],
+    await Share.shareXFiles([XFile('$path/${chain.title}.json')],
         text: chain.title);
     await chainFile.delete();
+  }
+
+  Future<void> receiveIntent() async {
+    StreamSubscription intentDataStreamSubscription;
+    List<SharedMediaFile> sharedFiles;
+    String? sharedText;
+
+    intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream().listen(
+        (List<SharedMediaFile> value) {
+      sharedFiles = value;
+      print("Shared Files: $sharedFiles");
+    }, onError: (err) {
+      print("getIntentDataStream error: $err");
+    });
+
+    await ReceiveSharingIntent.getInitialMedia()
+        .then((List<SharedMediaFile> value) {
+      sharedFiles = value;
+      print("Initial Shared Files: $sharedFiles");
+    });
+
+    intentDataStreamSubscription =
+        ReceiveSharingIntent.getTextStream().listen((String value) {
+      sharedText = value;
+      print("Shared Text: $sharedText");
+    }, onError: (err) {
+      print("getLinkStream error: $err");
+    });
+
+    await ReceiveSharingIntent.getInitialText().then((String? value) {
+      sharedText = value;
+    });
+
+    await intentDataStreamSubscription.cancel();
   }
 }
