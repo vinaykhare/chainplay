@@ -62,6 +62,7 @@ class ChainList with ChangeNotifier {
   //List<int> adIndexInChains = [];
   //final AdState adState;
   final BuildContext context;
+  StreamSubscription? intentDataStreamSubscription;
   SharedMediaFile? sharedFile;
 
   ChainList(
@@ -88,9 +89,9 @@ class ChainList with ChangeNotifier {
     }
     configUpdateStarted = true;
     await notificationHelper.initialize(systemSettings);
-    // await receiveIntent();
+    await receiveIntent();
     configUpdated = true;
-    configUpdateStarted = false;
+    // configUpdateStarted = false;
     notifyListeners();
   }
 
@@ -1519,37 +1520,49 @@ class ChainList with ChangeNotifier {
     await chainFile.delete();
   }
 
+  Future<void> cancelIntentSubscription() async {
+    sharedFile = null;
+    ReceiveSharingIntent.reset();
+    if (intentDataStreamSubscription != null) {
+      await intentDataStreamSubscription!.cancel();
+      intentDataStreamSubscription = null;
+    }
+  }
+
   Future<void> receiveIntent() async {
-    StreamSubscription intentDataStreamSubscription;
-    List<SharedMediaFile> sharedFiles;
-    String? sharedText;
+    // String? sharedText;
 
     intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream().listen(
-        (List<SharedMediaFile> value) {
-      sharedFiles = value;
-      print("Shared Files: $sharedFiles");
+        (List<SharedMediaFile> sharedMediaFiles) {
+      if (sharedMediaFiles.isNotEmpty && sharedMediaFiles.length == 1) {
+        sharedFile = sharedMediaFiles[0];
+      }
+      ReceiveSharingIntent.reset();
     }, onError: (err) {
       print("getIntentDataStream error: $err");
     });
 
     await ReceiveSharingIntent.getInitialMedia()
-        .then((List<SharedMediaFile> value) {
-      sharedFiles = value;
-      print("Initial Shared Files: $sharedFiles");
+        .then((List<SharedMediaFile> sharedMediaFiles) {
+      if (sharedMediaFiles.isNotEmpty && sharedMediaFiles.length == 1) {
+        sharedFile = sharedMediaFiles[0];
+      }
+      ReceiveSharingIntent.reset();
     });
 
-    intentDataStreamSubscription =
-        ReceiveSharingIntent.getTextStream().listen((String value) {
-      sharedText = value;
-      print("Shared Text: $sharedText");
-    }, onError: (err) {
-      print("getLinkStream error: $err");
-    });
+    // intentDataStreamSubscription =
+    //     ReceiveSharingIntent.getTextStream().listen((String value) {
+    //   sharedText = value;
+    //   print("Shared Text: $sharedText");
+    // }, onError: (err) {
+    //   print("getLinkStream error: $err");
+    // });
 
-    await ReceiveSharingIntent.getInitialText().then((String? value) {
-      sharedText = value;
-    });
-
-    await intentDataStreamSubscription.cancel();
+    // await ReceiveSharingIntent.getInitialText().then((String? value) {
+    //   sharedText = value;
+    // });
+    ReceiveSharingIntent.reset();
+    await intentDataStreamSubscription!.cancel();
+    intentDataStreamSubscription = null;
   }
 }

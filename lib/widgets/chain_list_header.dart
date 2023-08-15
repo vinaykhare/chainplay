@@ -48,14 +48,33 @@ class ChainListHeader extends StatelessWidget {
             FilePickerResult? result = await FilePicker.platform.pickFiles();
 
             if (result != null) {
-              File uploadedFile = File(result.files.single.path!);
-              String fileString = await uploadedFile.readAsString();
-              Map<String, dynamic> jsonData = jsonDecode(fileString);
-              Chain chain = Chain.fromJson(jsonData);
-              nav.pushNamed(ViewChain.routename, arguments: {
-                "chain": chain,
-                "savedInDb": false,
-              });
+              bool invalidChain = false, savedInDB = true;
+
+              Chain chain = Chain();
+
+              try {
+                File uploadedFile = File(result.files.single.path!);
+                String fileString = await uploadedFile.readAsString();
+
+                Map<String, dynamic> jsonData = jsonDecode(fileString);
+
+                if (jsonData['title'] != null &&
+                    jsonData['activities'] != null) {
+                  chain = Chain.fromJson(jsonData);
+                  savedInDB = false;
+                } else {
+                  invalidChain = true;
+                  // Navigator.of(context).pushReplacementNamed("");
+                }
+              } catch (e) {
+                invalidChain = true;
+              } finally {
+                nav.pushNamed(ViewChain.routename, arguments: {
+                  "chain": chain,
+                  "savedInDb": savedInDB,
+                  "invalidChain": invalidChain,
+                });
+              }
             } else {
               // User canceled the picker
             }
