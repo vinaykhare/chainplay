@@ -16,15 +16,16 @@ class NoChainsView extends StatelessWidget {
           top: Radius.circular(30),
         ),
       ),
-      child: Column(
+      child: ListView(
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              "No Chains to Play or Schedule",
+              "No Chains to Play",
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
+              textAlign: TextAlign.center,
             ),
           ),
           HomeButtonWidget(
@@ -41,6 +42,15 @@ class NoChainsView extends StatelessWidget {
             buttonText: "Create\nYour Own Chain of Timers.",
             logo: Icon(
               Icons.create_outlined,
+              size: 50,
+              color: Theme.of(context).primaryColorDark,
+            ),
+          ),
+          HomeButtonWidget(
+            chainListFunction: "uploadChain",
+            buttonText: "Upload\nChain using CAT's json file.",
+            logo: Icon(
+              Icons.upload,
               size: 50,
               color: Theme.of(context).primaryColorDark,
             ),

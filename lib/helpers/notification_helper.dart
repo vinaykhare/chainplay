@@ -102,11 +102,6 @@ class NotificationHelper {
     return systemSettings.firstWhere((set) => set.key == key);
   }
 
-  bool eventNotificationsEnabled() {
-    //return getSettingByKey(eventNotificationsKey).value.split(",")[0];
-    return getSettingByKey(eventNotificationsKey).value == trueSettingValue;
-  }
-
   bool isAppSoundEnabled() {
     return getSettingByKey(appSoundSettingKey).value == trueSettingValue;
   }

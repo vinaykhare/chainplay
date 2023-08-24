@@ -83,7 +83,7 @@ class AppDrawer extends StatelessWidget {
                     Navigator.of(context).pop();
                   }
                   await Provider.of<ChainList>(context, listen: false)
-                      .loadSampleChains();
+                      .loadSampleChainsFromAssets();
                   nav.pushReplacementNamed(ChainListScreen.routename);
                 },
               ),

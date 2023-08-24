@@ -1,6 +1,9 @@
+import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/screens/add_chain_screen.dart';
 import 'package:chain_activities/screens/how_it_works.dart';
+import 'package:chain_activities/screens/view_chain_screen.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -28,7 +31,7 @@ class HomeButtonWidget extends StatelessWidget {
         onPressed: () async {
           switch (chainListFunction) {
             case "loadSampleChains":
-              await chainList.loadSampleChains();
+              await chainList.loadSampleChainsFromAssets();
               break;
             case "navigateToAddChainScreen":
               Navigator.of(context)
@@ -36,6 +39,27 @@ class HomeButtonWidget extends StatelessWidget {
               break;
             case "navigateToHelpScreen":
               Navigator.of(context).pushReplacementNamed(HowItWorks.routename);
+              break;
+            case "uploadChain":
+              NavigatorState nav = Navigator.of(context);
+              ChainList chainList =
+                  Provider.of<ChainList>(context, listen: false);
+              FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+              if (result != null) {
+                Chain? chain =
+                    await chainList.uploadChain(result.files.single.path!);
+                nav.pushNamed(
+                  ViewChain.routename,
+                  arguments: {
+                    "chain": chain ?? Chain(),
+                    "savedInDb": chain == null,
+                    "invalidChain": chain == null,
+                  },
+                );
+              } else {
+                // User canceled the picker
+              }
               break;
           }
         },

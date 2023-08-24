@@ -4,7 +4,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:chain_activities/helpers/sample_chain_configuration.dart';
 import 'package:chain_activities/models/chain_activity.dart';
 import 'package:flutter/material.dart';
 import 'package:chain_activities/helpers/constants.dart';
@@ -912,7 +911,6 @@ class ChainList with ChangeNotifier {
     await DBHelper.removeData('activity', "", []);
     await DBHelper.removeData('chain', "", []);
     setSetting(darkThemeSettingKey, falseSettingValue);
-    setSetting(eventNotificationsKey, trueSettingValue);
     setSetting(appSoundSettingKey, trueSettingValue);
     setSetting(showHelpOnNextBootKey, trueSettingValue);
     // setSetting(showHelpOnNextBootKey, trueSettingValue);
@@ -1223,23 +1221,39 @@ class ChainList with ChangeNotifier {
     return systemSettings;
   }
 
-  Future<void> loadSampleChains() async {
-    for (Chain configuredChain in sampleChains) {
-      int chainIndex =
-          chains.indexWhere((chn) => chn.title == configuredChain.title);
-      if (chainIndex != -1) {
-        await removeChain(chains[chainIndex]);
+  Future<void> loadSampleChainsFromAssets() async {
+    for (String sampleChainFileName in [
+      'sample_workout_chain',
+      'sample_diet_routine_chain',
+      'sample_medicine_routine_chain',
+    ]) {
+      String sampleChain = await DefaultAssetBundle.of(context)
+          .loadString(assetMap[sampleChainFileName]!);
+      final sampleChainJson = jsonDecode(sampleChain);
+      Chain loadedChain = Chain.fromJson(sampleChainJson);
+      for (var chainActivity in loadedChain.activities) {
+        await addChain(loadedChain, chainActivity);
       }
-      Chain chain = Chain();
-      chain.title = configuredChain.title;
-      for (ChainActivity configuredChainActivity
-          in configuredChain.activities) {
-        chain.activities.add(configuredChainActivity);
-        await addChain(chain, configuredChainActivity);
-      }
-      //chains.add(chain);
     }
   }
+
+  // Future<void> loadSampleChains() async {
+  //   for (Chain configuredChain in sampleChains) {
+  //     int chainIndex =
+  //         chains.indexWhere((chn) => chn.title == configuredChain.title);
+  //     if (chainIndex != -1) {
+  //       await removeChain(chains[chainIndex]);
+  //     }
+  //     Chain chain = Chain();
+  //     chain.title = configuredChain.title;
+  //     for (ChainActivity configuredChainActivity
+  //         in configuredChain.activities) {
+  //       chain.activities.add(configuredChainActivity);
+  //       await addChain(chain, configuredChainActivity);
+  //     }
+  //     //chains.add(chain);
+  //   }
+  // }
 
   Future<List<ChainActivity>> loadActivities(Chain chain) async {
     List<Map<String, dynamic>> loadedChainActivity =
@@ -1518,6 +1532,26 @@ class ChainList with ChangeNotifier {
     await Share.shareXFiles([XFile('$path/${chain.title}.json')],
         text: chain.title);
     await chainFile.delete();
+  }
+
+  Future<Chain?> uploadChain(String path) async {
+    Chain? chain;
+    try {
+      File uploadedFile = File(path);
+      String fileString = await uploadedFile.readAsString();
+
+      Map<String, dynamic> jsonData = jsonDecode(fileString);
+
+      if (jsonData['title'] != null && jsonData['activities'] != null) {
+        chain = Chain.fromJson(jsonData);
+      } else {
+        chain = null;
+        // Navigator.of(context).pushReplacementNamed("");
+      }
+    } catch (e) {
+      chain = null;
+    }
+    return chain;
   }
 
   Future<void> cancelIntentSubscription() async {

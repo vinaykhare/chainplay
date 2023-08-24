@@ -37,7 +37,7 @@ class _HelpHeaderState extends State<HelpHeader> {
     //   const Duration(seconds: 2),
     // );
     //if (countdownTimer != null) countdownTimer?.cancel();
-    chainList.stopSpeech();
+    //chainList.stopSpeech();
     super.dispose();
   }
 
@@ -66,28 +66,29 @@ class _HelpHeaderState extends State<HelpHeader> {
   //   startTimer();
   // }
 
-  void incrementPage() {
+  void incrementPage() async {
     if (page < (headerSlideContent.length - 1)) {
       page++;
     } else {
       page = 0;
     }
-    speak();
+    await speak();
   }
 
-  void decrementPage() {
+  void decrementPage() async {
     if (page > 0) {
       page--;
     } else {
       page = headerSlideContent.length - 1;
     }
-    speak();
+    await speak();
   }
 
   Future<void> speak() async {
     // setState(() {
     //   isNotPlaying = chainList.isTtsPlaying();
     // });
+
     isNotPlaying = await chainList.stopSpeech();
 
     setState(() {

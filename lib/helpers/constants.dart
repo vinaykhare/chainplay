@@ -30,7 +30,6 @@ const int setFailedDueToAppPermission = 2;
 //Settings
 const String appSoundSettingKey = "App Sound";
 const String darkThemeSettingKey = "DARK THEME";
-const String eventNotificationsKey = "Event Notifications";
 const String showHelpOnNextBootKey = "Need CAT Introduction?";
 const String catClockModeKey = "Cat Clock Mode";
 const String catClockModeValue = "HH:MM:SS,HH:MM,AM/PM";
@@ -66,9 +65,23 @@ const Map<String, String> assetMap = {
   'logoImage': 'assets/AppIcons/playstore.png',
   'chainImage': 'assets/AppIcons/chain.png',
   'verticalChainImage': 'assets/AppIcons/vertical_chain.png',
-  'alarmAudio': 'assets/sound/chain_activity_alarm.wav',
-  'beepAudio': 'assets/sound/chain_activity_beep.mp3',
+  'beepAudio': 'assets/Sounds/chain_activity_beep.mp3',
   'go_home': 'assets/WhatIsCAT/go_home.png',
   'cat_intro': 'assets/WhatIsCAT/cat_intro.png',
-  'chain_categories': 'assets/WhatIsCAT/chain_categories.png',
+  'individual_chain': 'assets/WhatIsCAT/individual_chain.jpeg',
+  'chains': 'assets/WhatIsCAT/chains.jpeg',
+  'play_chain': 'assets/WhatIsCAT/play_chain.jpeg',
+  'share_chain': 'assets/WhatIsCAT/share_chain.jpeg',
+  'receive_chain': 'assets/WhatIsCAT/receive_chain.jpeg',
+  'upload_chain': 'assets/WhatIsCAT/upload_chain.jpeg',
+  'create_chain': 'assets/WhatIsCAT/create_chain.jpeg',
+  'create_chain_1': 'assets/WhatIsCAT/create_chain-1.jpeg',
+  'create_chain_2': 'assets/WhatIsCAT/create_chain-2.jpeg',
+  'create_chain_3': 'assets/WhatIsCAT/create_chain-3.jpeg',
+  'zero_duration': 'assets/WhatIsCAT/zero_duration.jpeg',
+  'sample_diet_routine_chain':
+      'assets/SampleChains/Sample_Diet_Routine_Chain.json',
+  'sample_medicine_routine_chain':
+      'assets/SampleChains/Sample_Medicine_Routine_Chain.json',
+  'sample_workout_chain': 'assets/SampleChains/Sample_Workout_Chain.json',
 };
