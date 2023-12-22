@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:chain_activities/helpers/constants.dart';
+import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/helpers/notification_helper.dart';
@@ -259,6 +260,15 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                     style: Theme.of(context).textTheme.headlineSmall,
                     textAlign: TextAlign.center,
                   ),
+                Container(
+                  margin: const EdgeInsets.all(5),
+                  padding: const EdgeInsets.only(bottom: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Theme.of(context).cardColor,
+                  ),
+                  child: const ShowBannerAd(),
+                ),
                 Row(
                   children: [
                     IconButton(

@@ -37,7 +37,7 @@ class _PlayChainState extends State<PlayChain> {
   Future<void> playTheChain() async {
     dynamic popResponse;
     NavigatorState nav = Navigator.of(context);
-
+    await chainList.loadInterstitialAd();
     for (invokeCounter = 0;
         invokeCounter < chain.activities.length;
         invokeCounter++) {
@@ -157,13 +157,27 @@ class _PlayChainState extends State<PlayChain> {
 
       //await chainList.updateChain(parentChain);
       await chainList.updateChainExecution(chain);
+      if (chainList.interstitialAd != null) {
+        await chainList.interstitialAd!.show();
+      }
       await chainList.completeTheChain(chain);
     }
     //nav.pop();
   }
 
   Future<bool> onPopOut() async {
+    await chainList.loadInterstitialAd();
+
+    await chainList.interstitialAd!.show();
+    await chainList.interstitialAd!.dispose();
+    chainList.interstitialAd = null;
     return true;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    chainList.disposeAds();
   }
 
   //Build Function

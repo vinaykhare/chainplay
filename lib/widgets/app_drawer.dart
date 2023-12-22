@@ -2,6 +2,7 @@ import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/screens/add_chain_screen.dart';
 import 'package:chain_activities/screens/settings_screen.dart';
+import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:chain_activities/screens/how_it_works.dart';
 import 'package:chain_activities/screens/chain_list_screen.dart';
@@ -109,8 +110,10 @@ class AppDrawer extends StatelessWidget {
           ),
           Expanded(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                const Divider(),
+                const ShowBannerAd(),
                 const Divider(),
                 ListTile(
                   leading: const Icon(Icons.settings),

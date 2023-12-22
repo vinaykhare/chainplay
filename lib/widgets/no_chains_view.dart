@@ -1,4 +1,5 @@
 import 'package:chain_activities/widgets/home_button_widget.dart';
+import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
 
 class NoChainsView extends StatelessWidget {
@@ -63,6 +64,15 @@ class NoChainsView extends StatelessWidget {
               size: 50,
               color: Theme.of(context).primaryColorDark,
             ),
+          ),
+          Container(
+            margin: const EdgeInsets.all(5),
+            padding: const EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: Theme.of(context).cardColor.withOpacity(0.7),
+            ),
+            child: const ShowBannerAd(),
           ),
         ],
       ),

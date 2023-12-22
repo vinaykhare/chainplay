@@ -1,5 +1,6 @@
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/screens/how_it_works.dart';
+import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/models/chain_list.dart';
@@ -90,6 +91,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
               ),
+              const ShowBannerAd(),
               Expanded(
                 child: Container(
                   margin: const EdgeInsets.all(10),
@@ -176,6 +178,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
               ),
+              const ShowBannerAd(),
               AppBar(
                 centerTitle: true,
                 title: const Text("Settings"),

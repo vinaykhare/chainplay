@@ -1,3 +1,4 @@
+import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -159,6 +160,15 @@ class ChainExecutionScreen extends StatelessWidget {
             Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                Container(
+                  margin: const EdgeInsets.all(5),
+                  padding: const EdgeInsets.only(bottom: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Theme.of(context).cardColor,
+                  ),
+                  child: const ShowBannerAd(),
+                ),
                 if (executingChains.isEmpty)
                   const Text(
                     "Play Now",

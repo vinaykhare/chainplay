@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:chain_activities/screens/add_chain_screen.dart';
 import 'package:chain_activities/screens/chain_execution_screen.dart';
 import 'package:chain_activities/screens/play_chain_screen.dart';
+import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/helpers/constants.dart';
@@ -175,6 +176,7 @@ class _ViewChainState extends State<ViewChain> {
                             ),
                           ]),
                     ),
+                  const ShowBannerAd(),
                   if (savedInDb == true && invalidChain == false)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,

@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:chain_activities/helpers/ad_state.dart';
 import 'package:chain_activities/models/chain_activity.dart';
 import 'package:flutter/material.dart';
 import 'package:chain_activities/helpers/constants.dart';
@@ -15,6 +16,7 @@ import 'package:chain_activities/helpers/notification_helper.dart';
 import 'package:chain_activities/models/activity.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/system_setting.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
@@ -64,6 +66,10 @@ class ChainList with ChangeNotifier {
   StreamSubscription? intentDataStreamSubscription;
   SharedMediaFile? sharedFile;
 
+  List<BannerAd> bannerAds = [];
+  InterstitialAd? interstitialAd;
+  late AdState adState;
+
   ChainList(
     this.context,
     //this.notificationHelper,
@@ -75,6 +81,9 @@ class ChainList with ChangeNotifier {
       return;
     }
     await fetchSettings();
+    Future<InitializationStatus> initMobileAds =
+        MobileAds.instance.initialize();
+    adState = AdState(initMobileAds);
     await fetchActivities();
     await fetchChains();
 
@@ -194,6 +203,47 @@ class ChainList with ChangeNotifier {
       "screenImage": null,
       "showTimer": false,
     };
+  }
+
+  BannerAd addBannerAd() {
+    BannerAd adBanner = BannerAd(
+      adUnitId: adState.bannerAdUnitId,
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: adState.adListener,
+    )..load();
+    bannerAds.add(adBanner);
+    return adBanner;
+  }
+
+  Future<void> loadInterstitialAd() async {
+    return InterstitialAd.load(
+      adUnitId: adState.interstitialAdUnitId,
+      request: const AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          ad.fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (ad) {
+              Navigator.of(context).pop();
+            },
+          );
+
+          interstitialAd = ad;
+        },
+        onAdFailedToLoad: (err) {
+          interstitialAd = null;
+        },
+      ),
+    );
+  }
+
+  void disposeAds() {
+    for (int i = 0; i < bannerAds.length; i++) {
+      bannerAds[i].dispose();
+    }
+    if (interstitialAd != null) {
+      interstitialAd!.dispose();
+    }
   }
 
   Future<void> addChain(Chain chain, ChainActivity chainActivity) async {

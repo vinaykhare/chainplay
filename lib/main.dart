@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/chain_activities.dart';
 
@@ -14,6 +15,7 @@ void main() {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+  MobileAds.instance.initialize();
   // LocalNotificationService localNotifyService = LocalNotificationService();
   // localNotifyService.initialize();
   // final initMobileAds = MobileAds.instance.initialize();

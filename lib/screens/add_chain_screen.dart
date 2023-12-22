@@ -1,5 +1,6 @@
 import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:chain_activities/widgets/help_clip_horizontal.dart';
+import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 //import 'package:intl/intl.dart';
@@ -678,6 +679,15 @@ class _AddChainScreenState extends State<AddChainScreen> {
                     ],
                   ),
                 ),
+              ),
+              Container(
+                margin: const EdgeInsets.all(5),
+                padding: const EdgeInsets.only(bottom: 5),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Theme.of(context).cardColor,
+                ),
+                child: const ShowBannerAd(),
               ),
               if (addingDurationToActivity) duraitonInputForm,
               if (tempChain.activities.length <= 1 &&

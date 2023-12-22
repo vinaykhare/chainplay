@@ -2,6 +2,7 @@ import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/widgets/chain_list_item.dart';
 import 'package:chain_activities/widgets/chain_tile_help.dart';
+import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,6 +22,15 @@ class _ListOfChainsState extends State<ListOfChains> {
     return Column(
       //crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Container(
+          margin: const EdgeInsets.all(5),
+          padding: const EdgeInsets.only(bottom: 5),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: Theme.of(context).cardColor,
+          ),
+          child: const ShowBannerAd(),
+        ),
         Expanded(
           child: ReorderableListView.builder(
             //reverse: true,
@@ -43,6 +53,15 @@ class _ListOfChainsState extends State<ListOfChains> {
               );
             },
           ),
+        ),
+        Container(
+          margin: const EdgeInsets.all(5),
+          padding: const EdgeInsets.only(bottom: 5),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: Theme.of(context).cardColor,
+          ),
+          child: const ShowBannerAd(),
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10),
