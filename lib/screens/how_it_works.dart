@@ -29,7 +29,7 @@ class _HowItWorksState extends State<HowItWorks> {
   @override
   void dispose() {
     super.dispose();
-    // chainList.dontShowHelpOnNextLoad();
+    chainList.dontShowHelpOnNextLoad();
   }
 
   // Future<bool> dontShowHelpOnNextLoad() async {
