@@ -205,18 +205,19 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                     child: screenImage == null || screenImage == ""
                         ? Image.asset(
                             assetMap['logoImage']!,
-                            fit: BoxFit.cover,
+                            fit: BoxFit.fitHeight,
+                            height: appHeight * 0.45,
                           )
                         : screenImage!.startsWith("http")
                             ? FadeInImage.assetNetwork(
                                 placeholder: assetMap["logoImage"]!,
                                 image: screenImage!,
-                                height: 250,
+                                height: appHeight * 0.45,
                                 fit: BoxFit.cover,
                               )
                             : Image.file(
                                 File(screenImage!),
-                                height: 250,
+                                height: appHeight * 0.45,
                                 fit: BoxFit.cover,
                               ),
                   ),

@@ -56,7 +56,7 @@ class _ListOfChainsState extends State<ListOfChains> {
         ),
         Container(
           margin: const EdgeInsets.all(5),
-          padding: const EdgeInsets.only(bottom: 5),
+          //padding: const EdgeInsets.only(bottom: 5),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             color: Theme.of(context).cardColor,
@@ -64,39 +64,36 @@ class _ListOfChainsState extends State<ListOfChains> {
           child: const ShowBannerAd(),
         ),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(
+            horizontal: 10,
+            vertical: 0,
+          ),
           decoration: BoxDecoration(
             borderRadius: const BorderRadius.vertical(
               top: Radius.circular(30),
             ),
             color: Theme.of(context).scaffoldBackgroundColor,
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Text(
-                "Summary of Chain Controls",
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                textAlign: TextAlign.center,
-              ),
-              InkWell(
-                onTap: () {
-                  setState(() {
-                    showChainControlSummary = !showChainControlSummary;
-                  });
-                },
-                child: showChainControlSummary
-                    ? const Icon(
-                        Icons.expand_less,
-                      )
-                    : const Icon(
-                        Icons.expand_more_outlined,
-                      ),
-              )
-            ],
+          child: TextButton.icon(
+            onPressed: () {
+              setState(() {
+                showChainControlSummary = !showChainControlSummary;
+              });
+            },
+            icon: const Icon(
+              Icons.help,
+              color: Colors.black,
+            ),
+            label: Text(
+              showChainControlSummary
+                  ? "Tap to hide the summary of Chain Controls"
+                  : "Tap to show the summary of Chain Controls",
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontSize: 15,
+                  ),
+              textAlign: TextAlign.center,
+            ),
           ),
         ),
         if (showChainControlSummary)

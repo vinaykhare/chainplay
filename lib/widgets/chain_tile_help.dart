@@ -18,7 +18,7 @@ class ChainTileHelp extends StatelessWidget {
             //const Divider(),
 
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CircleAvatar(
                   radius: 10,
@@ -28,6 +28,9 @@ class ChainTileHelp extends StatelessWidget {
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8.0),
                   child: Text("Play Chain"),
+                ),
+                const SizedBox(
+                  width: 50,
                 ),
                 CircleAvatar(
                   radius: 10,
@@ -43,7 +46,7 @@ class ChainTileHelp extends StatelessWidget {
 
             const Divider(),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CircleAvatar(
                   radius: 10,
@@ -54,6 +57,9 @@ class ChainTileHelp extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 8.0),
                   child: Text("View Chain"),
                 ),
+                const SizedBox(
+                  width: 50,
+                ),
                 CircleAvatar(
                   radius: 10,
                   backgroundColor: Theme.of(context).primaryColorLight,
@@ -62,6 +68,9 @@ class ChainTileHelp extends StatelessWidget {
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8.0),
                   child: Text("Favorite"),
+                ),
+                const SizedBox(
+                  width: 50,
                 ),
                 CircleAvatar(
                   radius: 10,

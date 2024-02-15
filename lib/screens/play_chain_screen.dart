@@ -167,9 +167,10 @@ class _PlayChainState extends State<PlayChain> {
 
   Future<bool> onPopOut() async {
     await chainList.loadInterstitialAd();
-
-    await chainList.interstitialAd!.show();
-    await chainList.interstitialAd!.dispose();
+    if (chainList.interstitialAd != null) {
+      await chainList.interstitialAd!.show();
+      await chainList.interstitialAd!.dispose();
+    }
     chainList.interstitialAd = null;
     return true;
   }

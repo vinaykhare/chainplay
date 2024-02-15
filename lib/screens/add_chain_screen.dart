@@ -689,7 +689,8 @@ class _AddChainScreenState extends State<AddChainScreen> {
                 ),
                 child: const ShowBannerAd(),
               ),
-              if (addingDurationToActivity) duraitonInputForm,
+              if (addingDurationToActivity && tempChain.title.isNotEmpty)
+                duraitonInputForm,
               if (tempChain.activities.length <= 1 &&
                   tempChain.title.isNotEmpty &&
                   !addingDurationToActivity)
