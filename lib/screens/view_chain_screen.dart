@@ -117,185 +117,189 @@ class _ViewChainState extends State<ViewChain> {
     double appHeight = MediaQuery.of(context).size.height -
         MediaQuery.of(context).viewPadding.top -
         MediaQuery.of(context).viewPadding.bottom;
-    return WillPopScope(
-      onWillPop: onPopOut,
-      child: Scaffold(
-        body: SingleChildScrollView(
-          child: SafeArea(
-            child: SizedBox(
-              // margin: const EdgeInsets.only(top: 50),
-              // padding: const EdgeInsets.all(10),
-              height: appHeight,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  if (invalidChain == false)
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ChainActivitiesWidget(
-                          tempChain: chain,
-                          editActivity: null,
-                          undoEdit: null,
+    return Semantics(
+      label: "View Chain Screen",
+      child: WillPopScope(
+        onWillPop: onPopOut,
+        child: Scaffold(
+          body: SingleChildScrollView(
+            child: SafeArea(
+              child: SizedBox(
+                // margin: const EdgeInsets.only(top: 50),
+                // padding: const EdgeInsets.all(10),
+                height: appHeight,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    if (invalidChain == false)
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ChainActivitiesWidget(
+                            tempChain: chain,
+                            editActivity: null,
+                            undoEdit: null,
+                          ),
                         ),
-                      ),
-                    )
-                  else
-                    Container(
-                      padding: const EdgeInsets.all(50),
-                      margin: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).canvasColor,
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(30),
+                      )
+                    else
+                      Container(
+                        padding: const EdgeInsets.all(50),
+                        margin: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).canvasColor,
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(30),
+                          ),
                         ),
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Invalid Chain\n",
+                                style:
+                                    Theme.of(context).textTheme.headlineMedium,
+                                textAlign: TextAlign.center,
+                              ),
+                              Text(
+                                "Go back and try with Valid CAT's JSON File.\n",
+                                style: Theme.of(context).textTheme.labelLarge,
+                                textAlign: TextAlign.center,
+                              ),
+                              Text(
+                                "CAT's valid JSON File has a predefined format.\n",
+                                style: Theme.of(context).textTheme.labelLarge,
+                                textAlign: TextAlign.center,
+                              ),
+                              Text(
+                                "CAT's valid JSON File must have a title and more than one activity.\n",
+                                style: Theme.of(context).textTheme.labelLarge,
+                                textAlign: TextAlign.center,
+                              ),
+                            ]),
                       ),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Invalid Chain\n",
-                              style: Theme.of(context).textTheme.headlineMedium,
-                              textAlign: TextAlign.center,
+                    const ShowBannerAd(),
+                    if (savedInDb == true && invalidChain == false)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          CircleAvatar(
+                            child: IconButton(
+                              onPressed: () async {
+                                NavigatorState nav = Navigator.of(context);
+                                await chainList.removeChain(chain);
+                                nav.pop();
+                              },
+                              icon: const Icon(Icons.delete_forever_outlined),
                             ),
-                            Text(
-                              "Go back and try with Valid CAT's JSON File.\n",
-                              style: Theme.of(context).textTheme.labelLarge,
-                              textAlign: TextAlign.center,
+                          ),
+                          CircleAvatar(
+                            child: IconButton(
+                              onPressed: () async {
+                                await Provider.of<ChainList>(context,
+                                        listen: false)
+                                    .downloadChain(chain);
+                              },
+                              icon: const Icon(Icons.share_outlined),
                             ),
-                            Text(
-                              "CAT's valid JSON File has a predefined format.\n",
-                              style: Theme.of(context).textTheme.labelLarge,
-                              textAlign: TextAlign.center,
+                          ),
+                          CircleAvatar(
+                            child: IconButton(
+                              icon: chain.pinned
+                                  ? const Icon(Icons.favorite)
+                                  : const Icon(Icons.favorite_border_outlined),
+                              onPressed: () async {
+                                chain.pinned = !chain.pinned;
+                                await Provider.of<ChainList>(context,
+                                        listen: false)
+                                    .updateChain(chain, false);
+                              },
                             ),
-                            Text(
-                              "CAT's valid JSON File must have a title and more than one activity.\n",
-                              style: Theme.of(context).textTheme.labelLarge,
-                              textAlign: TextAlign.center,
+                          ),
+                          CircleAvatar(
+                            child: IconButton(
+                              onPressed: () async {
+                                NavigatorState nav = Navigator.of(context);
+                                bool allWell = await onPopOut();
+                                if (allWell) {
+                                  nav.pushNamed(
+                                    ChainExecutionScreen.routename,
+                                    arguments: chain,
+                                  );
+                                }
+                              },
+                              icon: const Icon(Icons.history),
                             ),
-                          ]),
-                    ),
-                  const ShowBannerAd(),
-                  if (savedInDb == true && invalidChain == false)
+                          ),
+                          CircleAvatar(
+                            child: IconButton(
+                              onPressed: () => playTheChain(context),
+                              icon: getIconForChain(chain),
+                            ),
+                          ),
+                        ],
+                      ),
+                    if (savedInDb == false && invalidChain == false)
+                      ElevatedButton(
+                        child: const Text("SAVE"),
+                        onPressed: () async {
+                          for (var chainActivity in chain.activities) {
+                            await chainList.addChain(chain, chainActivity);
+                          }
+                          setState(() {
+                            savedInDb = true;
+                          });
+                        },
+                      ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        CircleAvatar(
-                          child: IconButton(
-                            onPressed: () async {
-                              NavigatorState nav = Navigator.of(context);
-                              await chainList.removeChain(chain);
-                              nav.pop();
-                            },
-                            icon: const Icon(Icons.delete_forever_outlined),
-                          ),
+                        IconButton(
+                          onPressed: () async {
+                            NavigatorState nav = Navigator.of(context);
+                            bool allWell = await onPopOut();
+                            allWell && nav.canPop()
+                                ? nav.pop()
+                                : nav.pushReplacementNamed(
+                                    ChainListScreen.routename);
+                          },
+                          icon: const Icon(Icons.arrow_back),
                         ),
-                        CircleAvatar(
-                          child: IconButton(
-                            onPressed: () async {
-                              await Provider.of<ChainList>(context,
-                                      listen: false)
-                                  .downloadChain(chain);
-                            },
-                            icon: const Icon(Icons.share_outlined),
-                          ),
+                        Text(
+                          chain.title,
+                          style: Theme.of(context).textTheme.titleLarge,
                         ),
-                        CircleAvatar(
-                          child: IconButton(
-                            icon: chain.pinned
-                                ? const Icon(Icons.favorite)
-                                : const Icon(Icons.favorite_border_outlined),
-                            onPressed: () async {
-                              chain.pinned = !chain.pinned;
-                              await Provider.of<ChainList>(context,
-                                      listen: false)
-                                  .updateChain(chain, false);
-                            },
-                          ),
-                        ),
-                        CircleAvatar(
-                          child: IconButton(
-                            onPressed: () async {
-                              NavigatorState nav = Navigator.of(context);
-                              bool allWell = await onPopOut();
-                              if (allWell) {
-                                nav.pushNamed(
-                                  ChainExecutionScreen.routename,
-                                  arguments: chain,
-                                );
-                              }
-                            },
-                            icon: const Icon(Icons.history),
-                          ),
-                        ),
-                        CircleAvatar(
-                          child: IconButton(
-                            onPressed: () => playTheChain(context),
-                            icon: getIconForChain(chain),
+                        IconButton(
+                          onPressed: () async {
+                            if (chain.chainStatus == statusExecuting ||
+                                invalidChain) {
+                              return;
+                            }
+                            NavigatorState nav = Navigator.of(context);
+                            bool allWell = await onPopOut();
+                            if (allWell && savedInDb && !invalidChain) {
+                              chain.edit = true;
+                              await chainList.updateChain(chain, false);
+                              await nav.pushNamed(
+                                AddChainScreen.routename,
+                                arguments: chain,
+                              );
+                            }
+                          },
+                          icon: Icon(
+                            Icons.edit,
+                            color: invalidChain ||
+                                    chain.chainStatus == statusExecuting ||
+                                    !savedInDb
+                                ? Theme.of(context).disabledColor
+                                : Theme.of(context).iconTheme.color,
                           ),
                         ),
                       ],
                     ),
-                  if (savedInDb == false && invalidChain == false)
-                    ElevatedButton(
-                      child: const Text("SAVE"),
-                      onPressed: () async {
-                        for (var chainActivity in chain.activities) {
-                          await chainList.addChain(chain, chainActivity);
-                        }
-                        setState(() {
-                          savedInDb = true;
-                        });
-                      },
-                    ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        onPressed: () async {
-                          NavigatorState nav = Navigator.of(context);
-                          bool allWell = await onPopOut();
-                          allWell && nav.canPop()
-                              ? nav.pop()
-                              : nav.pushReplacementNamed(
-                                  ChainListScreen.routename);
-                        },
-                        icon: const Icon(Icons.arrow_back),
-                      ),
-                      Text(
-                        chain.title,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      IconButton(
-                        onPressed: () async {
-                          if (chain.chainStatus == statusExecuting ||
-                              invalidChain) {
-                            return;
-                          }
-                          NavigatorState nav = Navigator.of(context);
-                          bool allWell = await onPopOut();
-                          if (allWell && savedInDb && !invalidChain) {
-                            chain.edit = true;
-                            await chainList.updateChain(chain, false);
-                            await nav.pushNamed(
-                              AddChainScreen.routename,
-                              arguments: chain,
-                            );
-                          }
-                        },
-                        icon: Icon(
-                          Icons.edit,
-                          color: invalidChain ||
-                                  chain.chainStatus == statusExecuting ||
-                                  !savedInDb
-                              ? Theme.of(context).disabledColor
-                              : Theme.of(context).iconTheme.color,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

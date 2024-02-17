@@ -113,43 +113,46 @@ class _HowItWorksState extends State<HowItWorks> {
         MediaQuery.of(context).viewPadding.top;
 
     double appWidth = MediaQuery.of(context).size.width - 16;
-    return Scaffold(
-      // appBar: AppBar(
-      //   centerTitle: true,
-      //   automaticallyImplyLeading: false,
-      //   title: const Text("How CAT Works??"),
-      // ),
-      drawer: const AppDrawer(),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            // if (pdfView)
-            //   Expanded(child: PdfViewer.openAsset(assetMap['howItWorksPDF']!))
-            // else
-            HelpHeader(
-              appHeight: appHeight,
-              appWidth: appWidth,
-            ),
-            Positioned(
-              top: 0,
-              right: 0,
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.cancel,
-                    size: 35,
+    return Semantics(
+      label: "Help Screen to guide how it works",
+      child: Scaffold(
+        // appBar: AppBar(
+        //   centerTitle: true,
+        //   automaticallyImplyLeading: false,
+        //   title: const Text("How CAT Works??"),
+        // ),
+        drawer: const AppDrawer(),
+        body: SafeArea(
+          child: Stack(
+            children: [
+              // if (pdfView)
+              //   Expanded(child: PdfViewer.openAsset(assetMap['howItWorksPDF']!))
+              // else
+              HelpHeader(
+                appHeight: appHeight,
+                appWidth: appWidth,
+              ),
+              Positioned(
+                top: 0,
+                right: 0,
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: IconButton(
+                    icon: const Icon(
+                      Icons.cancel,
+                      size: 35,
+                    ),
+                    onPressed: () async {
+                      NavigatorState nav = Navigator.of(context);
+                      //await chainList.dontShowHelpOnNextLoad();
+                      await chainList.stopSpeech();
+                      nav.pushReplacementNamed(ChainListScreen.routename);
+                    },
                   ),
-                  onPressed: () async {
-                    NavigatorState nav = Navigator.of(context);
-                    //await chainList.dontShowHelpOnNextLoad();
-                    await chainList.stopSpeech();
-                    nav.pushReplacementNamed(ChainListScreen.routename);
-                  },
-                ),
-              ), //appBarWidget,
-            ),
-          ],
+                ), //appBarWidget,
+              ),
+            ],
+          ),
         ),
       ),
     );

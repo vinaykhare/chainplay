@@ -10,28 +10,31 @@ class LoadScreen extends StatelessWidget {
     double appHeight = MediaQuery.of(context).size.height -
         MediaQuery.of(context).viewPadding.top -
         MediaQuery.of(context).viewPadding.bottom;
-    return Scaffold(
-      body: SafeArea(
-        child: Container(
-          color: Theme.of(context).primaryColor,
-          height: appHeight,
-          width: double.infinity,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Image(
-                  image: AssetImage(assetMap['logoImage']!),
-                  fit: BoxFit.fill,
-                  height: appHeight * 0.5,
-                ),
-                Text(
-                  "Loading CAT...",
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-              ],
+    return Semantics(
+      label: "Loading Screen",
+      child: Scaffold(
+        body: SafeArea(
+          child: Container(
+            color: Theme.of(context).primaryColor,
+            height: appHeight,
+            width: double.infinity,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Image(
+                    image: AssetImage(assetMap['logoImage']!),
+                    fit: BoxFit.fill,
+                    height: appHeight * 0.5,
+                  ),
+                  Text(
+                    "Loading CAT...",
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

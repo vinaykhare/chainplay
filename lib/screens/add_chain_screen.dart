@@ -650,15 +650,23 @@ class _AddChainScreenState extends State<AddChainScreen> {
           child: Column(
             //mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              chainInputForm,
+              Semantics(
+                label: tempChain.title.isEmpty
+                    ? "Chain Input Form"
+                    : "Chain Input Form for : ${tempChain.title}",
+                child: chainInputForm,
+              ),
               if (errorString != "")
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    errorString,
-                    style:
-                        TextStyle(color: Theme.of(context).colorScheme.error),
-                    textAlign: TextAlign.center,
+                Semantics(
+                  label: "Error Message",
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      errorString,
+                      style:
+                          TextStyle(color: Theme.of(context).colorScheme.error),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ),
               if (errorString != "")
@@ -671,10 +679,13 @@ class _AddChainScreenState extends State<AddChainScreen> {
                   padding: const EdgeInsets.all(8.0),
                   child: Stack(
                     children: [
-                      ChainActivitiesWidget(
-                        tempChain: tempChain,
-                        editActivity: editActivity,
-                        undoEdit: undoEdit,
+                      Semantics(
+                        label: "Editable Chain of Activities",
+                        child: ChainActivitiesWidget(
+                          tempChain: tempChain,
+                          editActivity: editActivity,
+                          undoEdit: undoEdit,
+                        ),
                       ),
                     ],
                   ),

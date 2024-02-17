@@ -32,120 +32,123 @@ class _SearchChainScreenState extends State<SearchChainScreen> {
     displayChains = chainList.getChainsByFilters(
         textFilter ?? '', showFavorites, showRunning);
 
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          //mainAxisSize: MainAxisSize.min,
-          children: [
-            Expanded(
-              child: ListView.builder(
-                reverse: true,
-                itemCount: displayChains.length,
-                itemBuilder: (context, index) {
-                  Chain chain = displayChains[index];
-                  //BannerAd? adChain = chain.adBanner;
-                  return ChainListItem(
-                    //adChain: adChain,
-                    chain: chain,
-                    showHistory: true,
-                    allowFlag: true,
-                    key: Key(
-                      index.toString(),
-                    ),
-                    index: index,
-                  );
-                },
-              ),
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: Card(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Theme.of(context).cardColor,
-                            Theme.of(context).primaryColor,
-                          ],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                        ),
+    return Semantics(
+      label: "Search Chains Screen",
+      child: Scaffold(
+        body: SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            //mainAxisSize: MainAxisSize.min,
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  reverse: true,
+                  itemCount: displayChains.length,
+                  itemBuilder: (context, index) {
+                    Chain chain = displayChains[index];
+                    //BannerAd? adChain = chain.adBanner;
+                    return ChainListItem(
+                      //adChain: adChain,
+                      chain: chain,
+                      showHistory: true,
+                      allowFlag: true,
+                      key: Key(
+                        index.toString(),
                       ),
-                      child: TextButton.icon(
-                        icon: Icon(
-                          Icons.favorite,
-                          color: showFavorites
-                              ? Theme.of(context).secondaryHeaderColor
-                              : Theme.of(context).disabledColor,
-                        ),
-                        label: const Text("Favorites"),
-                        onPressed: () async {
-                          setState(() {
-                            showFavorites = !showFavorites;
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Card(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Theme.of(context).cardColor,
-                            Theme.of(context).primaryColor,
-                          ],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                        ),
-                      ),
-                      child: TextButton.icon(
-                        icon: Icon(
-                          Icons.run_circle,
-                          color: showRunning
-                              ? Theme.of(context).secondaryHeaderColor
-                              : Theme.of(context).disabledColor,
-                        ),
-                        label: const Text("Active"),
-                        onPressed: () {
-                          setState(() {
-                            showRunning = !showRunning;
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            AppBar(
-              title: TextField(
-                autofocus: true,
-                textInputAction: TextInputAction.search,
-                keyboardType: TextInputType.text,
-                cursorColor: Theme.of(context).iconTheme.color,
-                onChanged: (value) {
-                  setState(() {
-                    textFilter = value;
-                  });
-                },
-                decoration: InputDecoration(
-                  floatingLabelBehavior: FloatingLabelBehavior.never,
-                  label: const Text("Search Chains"),
-                  border: const OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  fillColor: Theme.of(context).primaryColor,
+                      index: index,
+                    );
+                  },
                 ),
               ),
-            )
-          ],
+              Row(
+                children: [
+                  Expanded(
+                    child: Card(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Theme.of(context).cardColor,
+                              Theme.of(context).primaryColor,
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                        ),
+                        child: TextButton.icon(
+                          icon: Icon(
+                            Icons.favorite,
+                            color: showFavorites
+                                ? Theme.of(context).secondaryHeaderColor
+                                : Theme.of(context).disabledColor,
+                          ),
+                          label: const Text("Favorites"),
+                          onPressed: () async {
+                            setState(() {
+                              showFavorites = !showFavorites;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Card(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Theme.of(context).cardColor,
+                              Theme.of(context).primaryColor,
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                        ),
+                        child: TextButton.icon(
+                          icon: Icon(
+                            Icons.run_circle,
+                            color: showRunning
+                                ? Theme.of(context).secondaryHeaderColor
+                                : Theme.of(context).disabledColor,
+                          ),
+                          label: const Text("Active"),
+                          onPressed: () {
+                            setState(() {
+                              showRunning = !showRunning;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              AppBar(
+                title: TextField(
+                  autofocus: true,
+                  textInputAction: TextInputAction.search,
+                  keyboardType: TextInputType.text,
+                  cursorColor: Theme.of(context).iconTheme.color,
+                  onChanged: (value) {
+                    setState(() {
+                      textFilter = value;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.never,
+                    label: const Text("Search Chains"),
+                    border: const OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: Theme.of(context).primaryColor,
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

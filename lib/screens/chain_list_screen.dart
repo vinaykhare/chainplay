@@ -54,47 +54,50 @@ class _ChainListScreenState extends State<ChainListScreen> {
     );
     // double appHeight =
     //     MediaQuery.of(context).size.height - appBarWidget.preferredSize.height;
-    return Scaffold(
-      drawer: const AppDrawer(),
-      body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              // margin: const EdgeInsets.symmetric(
-              //   vertical: 10,
-              // ),
-              margin: const EdgeInsets.all(10),
-              child: const ChainListHeader(),
-            ),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.all(5),
-                margin: const EdgeInsets.fromLTRB(8, 5, 8, 0),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30)),
-                ),
-                child: (chains.isNotEmpty)
-                    ? const ListOfChains()
-                    : const NoChainsView(),
+    return Semantics(
+      label: "Home Screen with list of chains and other options.",
+      child: Scaffold(
+        drawer: const AppDrawer(),
+        body: SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                // margin: const EdgeInsets.symmetric(
+                //   vertical: 10,
+                // ),
+                margin: const EdgeInsets.all(10),
+                child: const ChainListHeader(),
               ),
-            ),
-            appBarWidget,
-          ],
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(5),
+                  margin: const EdgeInsets.fromLTRB(8, 5, 8, 0),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30)),
+                  ),
+                  child: (chains.isNotEmpty)
+                      ? const ListOfChains()
+                      : const NoChainsView(),
+                ),
+              ),
+              appBarWidget,
+            ],
+          ),
         ),
-      ),
 
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     Navigator.of(context).pushNamed(AddChainScreen.routename);
-      //   },
-      //   child: const Icon(
-      //     Icons.add,
-      //   ),
-      // ),
+        // floatingActionButton: FloatingActionButton(
+        //   onPressed: () {
+        //     Navigator.of(context).pushNamed(AddChainScreen.routename);
+        //   },
+        //   child: const Icon(
+        //     Icons.add,
+        //   ),
+        // ),
+      ),
     );
   }
 }

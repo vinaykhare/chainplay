@@ -29,15 +29,18 @@ class _ShowBannerAdState extends State<ShowBannerAd> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 50,
-      margin: const EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: Theme.of(context).cardColor,
-      ),
-      child: AdWidget(
-        ad: adBanner,
+    return Semantics(
+      label: "AdMod Advertisement",
+      child: Container(
+        height: 50,
+        margin: const EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Theme.of(context).cardColor,
+        ),
+        child: AdWidget(
+          ad: adBanner,
+        ),
       ),
     );
   }

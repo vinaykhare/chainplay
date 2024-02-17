@@ -211,66 +211,70 @@ class _PlayChainState extends State<PlayChain> {
     double appHeight = MediaQuery.of(context).size.height -
         MediaQuery.of(context).viewPadding.top -
         MediaQuery.of(context).viewPadding.bottom;
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: SizedBox(
-            // margin: const EdgeInsets.only(top: 50),
-            // padding: const EdgeInsets.all(10),
-            height: appHeight,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ChainActivitiesWidget(
-                      tempChain: chain,
-                      editActivity: null,
-                      undoEdit: null,
-                    ),
-                  ),
-                ),
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () async {
-                        NavigatorState nav = Navigator.of(context);
-                        bool allWell = await onPopOut();
-                        allWell && nav.canPop()
-                            ? nav.pop()
-                            : nav.pushNamed(ChainListScreen.routename);
-                      },
-                      icon: const Icon(Icons.arrow_back),
-                    ),
-                    Expanded(
-                      child: TextFormField(
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.titleLarge,
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          floatingLabelAlignment: FloatingLabelAlignment.center,
-                          floatingLabelBehavior: FloatingLabelBehavior.never,
-                        ),
-                        initialValue: chain.title,
-                        enabled: false,
+    return Semantics(
+      label: "Play Chain Screen",
+      child: Scaffold(
+        body: SingleChildScrollView(
+          child: SafeArea(
+            child: SizedBox(
+              // margin: const EdgeInsets.only(top: 50),
+              // padding: const EdgeInsets.all(10),
+              height: appHeight,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ChainActivitiesWidget(
+                        tempChain: chain,
+                        editActivity: null,
+                        undoEdit: null,
                       ),
                     ),
-                    IconButton(
-                      onPressed: invokeCounter >= chain.activities.length
-                          ? null
-                          : () {
-                              invokeCounter = 0;
-                              playTheChain();
-                            },
-                      icon: chain.notificationId == trueInDB
-                          ? const Icon(Icons.refresh)
-                          : const Icon(Icons.arrow_forward),
-                    ),
-                  ],
-                ),
-              ],
+                  ),
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () async {
+                          NavigatorState nav = Navigator.of(context);
+                          bool allWell = await onPopOut();
+                          allWell && nav.canPop()
+                              ? nav.pop()
+                              : nav.pushNamed(ChainListScreen.routename);
+                        },
+                        icon: const Icon(Icons.arrow_back),
+                      ),
+                      Expanded(
+                        child: TextFormField(
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.titleLarge,
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            floatingLabelAlignment:
+                                FloatingLabelAlignment.center,
+                            floatingLabelBehavior: FloatingLabelBehavior.never,
+                          ),
+                          initialValue: chain.title,
+                          enabled: false,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: invokeCounter >= chain.activities.length
+                            ? null
+                            : () {
+                                invokeCounter = 0;
+                                playTheChain();
+                              },
+                        icon: chain.notificationId == trueInDB
+                            ? const Icon(Icons.refresh)
+                            : const Icon(Icons.arrow_forward),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

@@ -31,41 +31,47 @@ class ChainListHeader extends StatelessWidget {
             ),
           ),
         ),
-        IconButton(
-          onPressed: () {
-            Navigator.of(context)
-                .pushReplacementNamed(AddChainScreen.routename);
-          },
-          icon: const Icon(
-            Icons.add_box_outlined,
-            size: 30,
+        Semantics(
+          label: "Create New Chain",
+          child: IconButton(
+            onPressed: () {
+              Navigator.of(context)
+                  .pushReplacementNamed(AddChainScreen.routename);
+            },
+            icon: const Icon(
+              Icons.add_box_outlined,
+              size: 30,
+            ),
           ),
         ),
-        IconButton(
-          onPressed: () async {
-            NavigatorState nav = Navigator.of(context);
-            ChainList chainList =
-                Provider.of<ChainList>(context, listen: false);
-            FilePickerResult? result = await FilePicker.platform.pickFiles();
+        Semantics(
+          label: "Upload a chain in json format.",
+          child: IconButton(
+            onPressed: () async {
+              NavigatorState nav = Navigator.of(context);
+              ChainList chainList =
+                  Provider.of<ChainList>(context, listen: false);
+              FilePickerResult? result = await FilePicker.platform.pickFiles();
 
-            if (result != null) {
-              Chain? chain =
-                  await chainList.uploadChain(result.files.single.path!);
-              nav.pushNamed(
-                ViewChain.routename,
-                arguments: {
-                  "chain": chain ?? Chain(),
-                  "savedInDb": false,
-                  "invalidChain": chain == null,
-                },
-              );
-            } else {
-              // User canceled the picker
-            }
-          },
-          icon: const Icon(
-            Icons.upload_outlined,
-            size: 30,
+              if (result != null) {
+                Chain? chain =
+                    await chainList.uploadChain(result.files.single.path!);
+                nav.pushNamed(
+                  ViewChain.routename,
+                  arguments: {
+                    "chain": chain ?? Chain(),
+                    "savedInDb": false,
+                    "invalidChain": chain == null,
+                  },
+                );
+              } else {
+                // User canceled the picker
+              }
+            },
+            icon: const Icon(
+              Icons.upload_outlined,
+              size: 30,
+            ),
           ),
         ),
       ],
