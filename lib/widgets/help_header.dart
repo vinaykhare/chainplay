@@ -69,19 +69,23 @@ class _HelpHeaderState extends State<HelpHeader> {
   void incrementPage() async {
     if (page < (headerSlideContent.length - 1)) {
       page++;
+      await speak();
     } else {
-      page = 0;
+      // page = 0;
+      chainList.dontShowHelpOnNextLoad();
+      Navigator.of(context).pushReplacementNamed(ChainListScreen.routename);
     }
-    await speak();
   }
 
   void decrementPage() async {
     if (page > 0) {
       page--;
+      await speak();
     } else {
-      page = headerSlideContent.length - 1;
+      // page = headerSlideContent.length - 1;
+      chainList.dontShowHelpOnNextLoad();
+      Navigator.of(context).pushReplacementNamed(ChainListScreen.routename);
     }
-    await speak();
   }
 
   Future<void> speak() async {
@@ -182,11 +186,7 @@ class _HelpHeaderState extends State<HelpHeader> {
               height: appHeight - 65,
               child: InkWell(
                 onTap: () {
-                  if (page == (headerSlideContent.length - 1)) {
-                    Navigator.of(context).pushNamed(ChainListScreen.routename);
-                  } else {
-                    incrementPage();
-                  }
+                  incrementPage();
                 },
                 // child: FadeInImage.assetNetwork(
                 //   placeholder: assetMap["logoImage"]!,
@@ -213,25 +213,18 @@ class _HelpHeaderState extends State<HelpHeader> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     IconButton(
-                      onPressed: () => page > 0
-                          ? setState(() {
-                              decrementPage();
-                              // resetTimer();
-                            })
-                          : Navigator.of(context)
-                              .pushNamed(ChainListScreen.routename),
+                      onPressed: () => setState(() {
+                        decrementPage();
+                      }),
                       icon: const Icon(
                         Icons.skip_previous,
                       ),
                     ),
                     TextButton(
-                      onPressed: () => page > 0
-                          ? setState(() {
-                              decrementPage();
-                              // resetTimer();
-                            })
-                          : Navigator.of(context)
-                              .pushNamed(ChainListScreen.routename),
+                      onPressed: () => setState(() {
+                        decrementPage();
+                        // resetTimer();
+                      }),
                       child: Text(page > 0 ? "Previous" : "CAT Home"),
                     ),
                   ],
@@ -249,13 +242,10 @@ class _HelpHeaderState extends State<HelpHeader> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     TextButton(
-                      onPressed: () => page < (headerSlideContent.length - 1)
-                          ? setState(() {
-                              incrementPage();
-                              // resetTimer();
-                            })
-                          : Navigator.of(context)
-                              .pushNamed(ChainListScreen.routename),
+                      onPressed: () => setState(() {
+                        incrementPage();
+                        // resetTimer();
+                      }),
                       child: Text(
                         page < (headerSlideContent.length - 1)
                             ? "Next"
@@ -264,13 +254,10 @@ class _HelpHeaderState extends State<HelpHeader> {
                       ),
                     ),
                     IconButton(
-                      onPressed: () => page < (headerSlideContent.length - 1)
-                          ? setState(() {
-                              incrementPage();
-                              // resetTimer();
-                            })
-                          : Navigator.of(context)
-                              .pushNamed(ChainListScreen.routename),
+                      onPressed: () => setState(() {
+                        incrementPage();
+                        // resetTimer();
+                      }),
                       icon: const Icon(
                         Icons.skip_next,
                       ),
