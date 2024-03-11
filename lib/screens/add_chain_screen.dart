@@ -534,17 +534,16 @@ class _AddChainScreenState extends State<AddChainScreen> {
                       key: ValueKey(
                         "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_image",
                       ),
-                      keyboardType: TextInputType.number,
+                      keyboardType: TextInputType.url,
                       textAlign: TextAlign.center,
                       controller: activityImageController,
                       // onSaved: (_) => chainActivityInEditMode!
                       //         .activity.specification![activitySpecImagePath] =
                       //     activityImageController.text,
-                      decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        label: const Text("Paste HTTP or Local Path or Image."),
-                        hintText:
-                            activityDurationSecond.toString().padLeft(2, '0'),
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        label: Text("Paste HTTP or Local Path or Image."),
+                        hintText: "https://",
                         alignLabelWithHint: true,
                         floatingLabelBehavior: FloatingLabelBehavior.never,
                       ),
