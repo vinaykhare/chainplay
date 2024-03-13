@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.chain_activities">
+    package="com.promaxbiz.chain_activities">
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.com.google.android.gms.permission.AD_ID"/>
    <application
         android:label="CAT"
         android:name="${applicationName}"
@@ -69,7 +69,7 @@
         <!-- Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713 -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3219363933680144~9797413713"/>
+            android:value="ca-app-pub-3219363933680144~4833348686"/>
         <service
             android:name="com.dexterous.flutterlocalnotifications.ForegroundService"        
             android:exported="false"

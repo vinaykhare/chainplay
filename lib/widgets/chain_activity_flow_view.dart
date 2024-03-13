@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:chain_activities/helpers/constants.dart';
-import 'package:chain_activities/widgets/card_help_text.dart';
 import 'package:flutter/material.dart';
 import 'package:chain_activities/helpers/helper_functions.dart';
 import 'package:chain_activities/models/chain.dart';
@@ -59,95 +58,111 @@ class ChainActivityFlowView extends StatelessWidget {
               await chainList.removeActivityFromChain(tempChain, chainActivity);
             },
             child: editActivity != null
-                ? Column(
-                    children: [
-                      const CardHelpText(
-                        title: "Tap this Card to edit",
-                      ),
-                      ListTile(
-                        onTap: () async {
-                          if (!chainActivity.edit) {
-                            editActivity!(chainActivity);
-                          } else {
-                            undoEdit!(chainActivity);
-                          }
-                        },
-                        title: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                chainActivity.activity.title,
-                                style:
-                                    Theme.of(context).textTheme.headlineSmall,
-                              ),
-                            ),
-                            Expanded(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(50),
-                                child: Container(
-                                  height: 100,
-                                  margin: const EdgeInsets.all(5),
-                                  child: chainActivity
-                                                  .activity.specification !=
-                                              null &&
-                                          chainActivity.activity.specification![
-                                                  activitySpecImagePath] !=
-                                              null &&
-                                          chainActivity.activity.specification![
-                                                  activitySpecImagePath] !=
-                                              ""
-                                      ? chainActivity
-                                              .activity
-                                              .specification![
-                                                  activitySpecImagePath]
-                                              .toString()
-                                              .startsWith("http")
-                                          ? FadeInImage.assetNetwork(
-                                              placeholder:
-                                                  assetMap["logoImage"]!,
-                                              image: chainActivity
-                                                      .activity.specification![
-                                                  activitySpecImagePath],
-                                              fit: BoxFit.cover,
-                                            )
-                                          : Image.file(
-                                              File(
-                                                chainActivity.activity
-                                                        .specification![
-                                                    activitySpecImagePath],
-                                              ),
-                                              fit: BoxFit.cover,
-                                            )
-                                      : Image.asset(
-                                          assetMap['logoImage']!,
+                ? ListTile(
+                    onTap: () async {
+                      if (!chainActivity.edit) {
+                        editActivity!(chainActivity);
+                      } else {
+                        undoEdit!(chainActivity);
+                      }
+                    },
+                    title: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            chainActivity.activity.title,
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
+                        ),
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child: Container(
+                              height: 100,
+                              margin: const EdgeInsets.all(5),
+                              child: chainActivity.activity.specification !=
+                                          null &&
+                                      chainActivity.activity.specification![
+                                              activitySpecImagePath] !=
+                                          null &&
+                                      chainActivity.activity.specification![
+                                              activitySpecImagePath] !=
+                                          ""
+                                  ? chainActivity.activity
+                                          .specification![activitySpecImagePath]
+                                          .toString()
+                                          .startsWith("http")
+                                      ? FadeInImage.assetNetwork(
+                                          placeholder: assetMap["logoImage"]!,
+                                          image: chainActivity
+                                                  .activity.specification![
+                                              activitySpecImagePath],
                                           fit: BoxFit.cover,
-                                        ),
-                                ),
-                              ),
+                                        )
+                                      : Image.file(
+                                          File(
+                                            chainActivity
+                                                    .activity.specification![
+                                                activitySpecImagePath],
+                                          ),
+                                          fit: BoxFit.cover,
+                                        )
+                                  : Image.asset(
+                                      assetMap['logoImage']!,
+                                      fit: BoxFit.cover,
+                                    ),
                             ),
-                          ],
+                          ),
                         ),
-                        subtitle: Text(
-                          "${chainActivity.endedAt != null ? 'Completed' : 'will Complete'} ${activities[index].isInterrupted ? ' before scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDuration)}.",
-                        ),
-                        trailing: (chainActivity.endedAt != null ||
-                                editActivity == null)
+                      ],
+                    ),
+                    subtitle: Text(
+                      "${chainActivity.endedAt != null ? 'Completed' : 'will Complete'} ${activities[index].isInterrupted ? ' before scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDuration)}.",
+                    ),
+                    leading:
+                        (chainActivity.endedAt != null || editActivity == null)
                             ? null
                             : ReorderableDragStartListener(
                                 index: index,
                                 child: const Icon(Icons.drag_handle),
                               ),
-                        leading: Checkbox(
-                          key: ValueKey(
-                              'activities_checkbox_${chainActivity.activity.title}'),
-                          value: chainActivity.endedAt != null,
-                          onChanged: (value) async {
-                            await chainList.flipDoneActivity(
+                    trailing: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                          onPressed: () async {
+                            await chainList.removeActivityFromChain(
                                 tempChain, chainActivity);
                           },
+                          icon: const Icon(
+                            Icons.delete_forever_rounded,
+                          ),
                         ),
-                      ),
-                    ],
+                        Expanded(
+                          child: IconButton(
+                            icon: Icon(
+                              chainActivity.edit ? Icons.undo : Icons.edit,
+                            ),
+                            onPressed: () async {
+                              if (!chainActivity.edit) {
+                                editActivity!(chainActivity);
+                              } else {
+                                undoEdit!(chainActivity);
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    // leading: Checkbox(
+                    //   key: ValueKey(
+                    //       'activities_checkbox_${chainActivity.activity.title}'),
+                    //   value: chainActivity.endedAt != null,
+                    //   onChanged: (value) async {
+                    //     await chainList.flipDoneActivity(
+                    //         tempChain, chainActivity);
+                    //   },
+                    // ),
                   )
                 : Column(
                     children: [
@@ -214,10 +229,11 @@ class ChainActivityFlowView extends StatelessWidget {
                           key: ValueKey(
                               'activities_checkbox_${chainActivity.activity.title}'),
                           value: chainActivity.endedAt != null,
-                          onChanged: (value) async {
-                            await chainList.flipDoneActivity(
-                                tempChain, chainActivity);
-                          },
+                          onChanged: null,
+                          // onChanged: (value) async {
+                          //   await chainList.flipDoneActivity(
+                          //       tempChain, chainActivity);
+                          // },
                         ),
                       ),
                       if (chainActivity.at != null)

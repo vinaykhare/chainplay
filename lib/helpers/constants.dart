@@ -75,10 +75,9 @@ const Map<String, String> assetMap = {
   'receive_chain': 'assets/WhatIsCAT/receive_chain.jpeg',
   'upload_chain': 'assets/WhatIsCAT/upload_chain.jpeg',
   'create_chain': 'assets/WhatIsCAT/create_chain.jpeg',
-  'create_chain_1': 'assets/WhatIsCAT/create_chain-1.jpeg',
-  'create_chain_2': 'assets/WhatIsCAT/create_chain-2.jpeg',
-  'create_chain_3': 'assets/WhatIsCAT/create_chain-3.jpeg',
   'zero_duration': 'assets/WhatIsCAT/zero_duration.jpeg',
+  'settings': 'assets/WhatIsCAT/settings.jpeg',
+  'appdrawer': 'assets/WhatIsCAT/appdrawer.jpeg',
   'sample_diet_routine_chain':
       'assets/SampleChains/Sample_Diet_Routine_Chain.json',
   'sample_medicine_routine_chain':

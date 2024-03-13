@@ -122,80 +122,126 @@ const sqlInitScript = [
 List<Map<String, String>> headerSlideContent = [
   {
     "imageAsset": assetMap["cat_intro"]!,
-    //"https://raw.githubusercontent.com/vinaykhare/cat_help_content/main/help_images/0.png",
+    "imageNetwork":
+        "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/cat_intro.png?raw=true",
     "title": "Thanks for choosing CAT",
     "speech":
         "Thanks for choosing CAT. CAT is a tool to Chain the activities with the help of Timers.",
   },
   {
     "imageAsset": assetMap["chains"]!,
-    //"https://raw.githubusercontent.com/vinaykhare/cat_help_content/main/help_images/0.png",
+    "imageNetwork":
+        "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/chains.jpeg?raw=true",
     "title": "Sample Chains",
     "speech":
-        "Chains looks like this. CAT comes with these sample chains to start with. You can play it, stop it, make it favorite, remove it by swiping it right and also share and receive it in json format.",
+        "Chains looks like this. CAT comes with these sample chains to start with. You can play it, stop it, make it favorite, remove it by swiping it right and also share and receive it in file format.",
   },
   {
     "imageAsset": assetMap["individual_chain"]!,
-    //"https://github.com/vinaykhare/cat_help_content/raw/main/help_images/Chain%20Categories.png",
+    "imageNetwork":
+        "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/individual_chain.jpeg?raw=true",
     "title": "Chain with Timer Activities",
     "speech":
         "This is how a Chain looks when we open it, just by tapping on it."
   },
   {
     "imageAsset": assetMap["play_chain"]!,
-    // "https://github.com/vinaykhare/cat_help_content/raw/main/help_images/gif/Play%20Chain.gif",
+    "imageNetwork":
+        "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/gif/play_chain.gif?raw=true",
     "title": "Play Chain",
     "speech":
-        "Chain plays interactively. This is a sample screenshot of Play Chain screen. Timer keeps ticking every second, but you can pause it too.",
+        "Chain plays interactively. Timer keeps ticking every second, but you can pause it too. Activities without timer can be completed by pressing done button on screen.",
   },
   {
     "imageAsset": assetMap["share_chain"]!,
-    //"https://github.com/vinaykhare/cat_help_content/raw/main/help_images/gif/CAT%20Settings.gif",
+    "imageNetwork":
+        "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/gif/share_chain.gif?raw=true",
     "title": "Share the Chain.",
-    "speech": "You can share the Chain in json format.",
+    "speech": "You can share the Chain as a file using your favorite medium.",
   },
   {
     "imageAsset": assetMap["receive_chain"]!,
-    //"https://github.com/vinaykhare/cat_help_content/raw/main/help_images/gif/CAT%20Settings.gif",
+    "imageNetwork":
+        "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/gif/receive_chain.gif?raw=true",
     "title": "Receive the Chain.",
-    "speech": "And you can receive the Chain in json format too.",
+    "speech": "And you can receive the Chain in a file.",
   },
   {
     "imageAsset": assetMap["upload_chain"]!,
-    //"https://github.com/vinaykhare/cat_help_content/raw/main/help_images/gif/CAT%20Settings.gif",
-    "title": "Upload the Chain JSON.",
+    "imageNetwork":
+        "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/gif/upload_chain.gif?raw=true",
+    "title": "Upload the Chain File.",
     "speech":
-        "CAT also allows to recieve the Chain by uploading the json using Upload Button on Home Screen.",
+        "CAT also allows to recieve the Chain by uploading the file using Upload Button on Home Screen.",
   },
   {
     "imageAsset": assetMap["create_chain"]!,
-    //"https://github.com/vinaykhare/cat_help_content/raw/main/help_images/gif/CAT%20Settings.gif",
+    "imageNetwork":
+        "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/create_chain.jpeg?raw=true",
     "title": "Create the Chain",
     "speech":
-        "CAT provides a Simple UI to Create your own Chain of Timer Activities.",
+        "CAT provides a Simple User Interface to Create your own Chain of Timer Activities.",
   },
   {
-    "imageAsset": assetMap["create_chain_1"]!,
-    //"https://github.com/vinaykhare/cat_help_content/raw/main/help_images/gif/CAT%20Settings.gif",
+    "imageAsset": assetMap["create_chain"]!,
+    "imageNetwork":
+        "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/gif/create_chain-1.gif?raw=true",
     "title": "Create the Chain",
     "speech":
         "It starts with Create chain form where we need to give a unique name to our chain first and then we can add activities to it.",
   },
   {
-    "imageAsset": assetMap["create_chain_2"]!,
-    //"https://github.com/vinaykhare/cat_help_content/raw/main/help_images/gif/CAT%20Settings.gif",
+    "imageAsset": assetMap["create_chain"]!,
+    "imageNetwork":
+        "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/gif/create_chain-2.gif?raw=true",
     "title": "Create the Chain",
     "speech":
-        "Chain keeps forming as we add activities to it using below form.",
+        "Chain keeps forming as we add activities to it using form at the bottom of screen. We can add activity with any name, and set timer to it. If we are not setting any timer, then it becomes a manual activity, which will complete on pressing done.",
   },
   {
-    "imageAsset": assetMap["create_chain_3"]!,
-    //"https://github.com/vinaykhare/cat_help_content/raw/main/help_images/gif/CAT%20Settings.gif",
+    "imageAsset": assetMap["create_chain"]!,
+    "imageNetwork":
+        "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/gif/create_chain-3.gif?raw=true",
     "title": "Create the Chain",
-    "speech": "Activity with Hours, Minutes or ",
+    "speech":
+        "We can add a timer to take rest between the two activities in a chain too.",
+  },
+  {
+    "imageAsset": assetMap["create_chain"]!,
+    "imageNetwork":
+        "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/gif/create_chain-4.gif?raw=true",
+    "title": "Create the Chain",
+    "speech":
+        "While creating the chain, we can edit the already added activity or remove it too.",
+  },
+  {
+    "imageAsset": assetMap["create_chain"]!,
+    "imageNetwork":
+        "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/gif/create_chain-5.gif?raw=true",
+    "title": "Create the Chain",
+    "speech":
+        "Rearranging the activities after adding it to the chain is also possible.",
+  },
+  {
+    "imageAsset": assetMap["settings"]!,
+    "imageNetwork":
+        "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/gif/app_settings.gif?raw=true",
+    "title": "Create the Chain",
+    "speech":
+        "App Settings can be accessed from app drawer at the bottom left. You can switch to Dark Theme here.",
+  },
+  {
+    "imageAsset": assetMap["appdrawer"]!,
+    "imageNetwork":
+        "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/appdrawer.jpeg?raw=true",
+    "title": "Create the Chain",
+    "speech":
+        "You can play this CAT's introduction again from the app drawer. Just tap on What is Cat?",
   },
   {
     "imageAsset": assetMap["go_home"]!,
+    "imageNetwork":
+        "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/go_home.png?raw=true",
     "title": "Now just Explore CAT",
     "speech": "Now just explore the CAT yourself. I believe that it will help.",
   },

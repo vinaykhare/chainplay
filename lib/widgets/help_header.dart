@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/helpers/system_configuration.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/screens/chain_list_screen.dart';
@@ -198,8 +197,10 @@ class _HelpHeaderState extends State<HelpHeader> {
                 //   fit: BoxFit.contain,
                 // ),
                 child: FadeInImage(
-                  placeholder: AssetImage(assetMap["logoImage"]!),
-                  image: AssetImage(headerSlideContent[page]["imageAsset"]!),
+                  placeholder:
+                      AssetImage(headerSlideContent[page]["imageAsset"]!),
+                  image:
+                      NetworkImage(headerSlideContent[page]["imageNetwork"]!),
                   //fit: BoxFit.fill,
                 ),
               ),

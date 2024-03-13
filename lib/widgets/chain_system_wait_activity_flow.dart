@@ -1,7 +1,7 @@
 import 'package:chain_activities/helpers/constants.dart';
+import 'package:chain_activities/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:chain_activities/helpers/helper_functions.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_activity.dart';
 import 'package:chain_activities/models/chain_list.dart';
@@ -53,20 +53,45 @@ class ChainSystemWaitActivityFlow extends StatelessWidget {
                   }
                 },
                 child: (activities[index].activityDuration.inSeconds > 0)
-                    ? Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(20),
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(20),
+                              ),
+                              color: activities[index].edit
+                                  ? Theme.of(context).focusColor
+                                  : Theme.of(context).primaryColor,
+                              border: activities[index].edit
+                                  ? Border.all(
+                                      color: Colors.red,
+                                    )
+                                  : null,
+                            ),
+                            // child: Text(
+                            //         "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? 'before scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDuration)}${activities[index].activityDurationLeft != null ? '\nafter resuming.' : '.'}",
+                            //         textAlign: TextAlign.center,
+                            //       )
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? 'before scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDuration)}${activities[index].activityDurationLeft != null ? '\nafter resuming.' : '.'}  ",
+                                  textAlign: TextAlign.center,
+                                ),
+                                if (editActivity != null)
+                                  Icon(activities[index].edit
+                                      ? Icons.undo
+                                      : Icons.edit),
+                              ],
+                            ),
                           ),
-                          color: activities[index].edit
-                              ? Theme.of(context).focusColor
-                              : Theme.of(context).primaryColor,
-                        ),
-                        child: Text(
-                          "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? 'before scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDuration)}${activities[index].activityDurationLeft != null ? '\nafter resuming.' : '.'}",
-                          textAlign: TextAlign.center,
-                        ),
+                        ],
                       )
                     : undoEdit == null || editActivity == null
                         ? Container()
@@ -82,9 +107,14 @@ class ChainSystemWaitActivityFlow extends StatelessWidget {
                                 top: Radius.circular(30),
                                 bottom: Radius.circular(30),
                               ),
+                              border: activities[index].edit
+                                  ? Border.all(color: Colors.red)
+                                  : null,
                             ),
-                            child: const Text(
-                              "Tap to add rest\nbetween two timer activities.",
+                            child: Text(
+                              chainActivity.edit
+                                  ? "Rest Duration will add here"
+                                  : "Tap to add rest\nbetween two timer activities",
                               textAlign: TextAlign.center,
                             ),
                           ),

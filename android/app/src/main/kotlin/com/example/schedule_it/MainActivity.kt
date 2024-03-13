@@ -1,4 +1,4 @@
-package com.example.chain_activities
+package com.promaxbiz.chain_activities
 
 import android.os.Bundle
 import io.flutter.embedding.android.FlutterActivity

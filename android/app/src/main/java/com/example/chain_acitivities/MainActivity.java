@@ -1,4 +1,4 @@
-package com.example.chain_acitivities;
+package com.promaxbiz.chain_acitivities;
 
 import io.flutter.embedding.android.FlutterActivity;
 
