@@ -39,6 +39,37 @@ class ChainListItem extends StatelessWidget {
       onDismissed: (direction) async {
         await chainList.removeChain(chain);
       },
+      confirmDismiss: (DismissDirection direction) async {
+        return await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text("Confirm Deletion"),
+              content: const Text("Are you sure about deleting this Chain?"),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: Text(
+                    "Yes, Delete it",
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: Text(
+                    "No, it is a mistake",
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.inverseSurface,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
       // Expanded(
       //   child: ChainActivityListView(chain: chain),
       // ),
