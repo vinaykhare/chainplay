@@ -89,6 +89,9 @@ class _AddChainScreenState extends State<AddChainScreen> {
 
   Future<void> saveAndExit() async {
     NavigatorState navigatorState = Navigator.of(context);
+    for (ChainActivity chainActivity in tempChain.activities) {
+      undoEdit(chainActivity);
+    }
     bool result = await validateForm();
     if (result) {
       navigatorState.pushReplacementNamed(ChainListScreen.routename);

@@ -76,10 +76,10 @@ class HomeButtonWidget extends StatelessWidget {
               Text(
                 buttonText,
                 //textAlign: TextAlign.left,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: Theme.of(context).unselectedWidgetColor,
                 ),
               ),
               const SizedBox(

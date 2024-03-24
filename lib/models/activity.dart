@@ -31,13 +31,22 @@ class Activity {
   }
 
   Map<String, dynamic> toJson() {
+    Map<String, dynamic>? specificationWithoutLocalRef = specification != null
+        ? Map<String, dynamic>.from(specification!)
+        : null;
+    if (specificationWithoutLocalRef != null &&
+        specificationWithoutLocalRef[activitySpecImagePath]
+            .toString()
+            .startsWith("/data")) {
+      specificationWithoutLocalRef[activitySpecImagePath] = "";
+    }
     return {
       "title": title,
       "activityId": activityId,
       "type": type,
       "createdAt": createdAt.toIso8601String(),
       "lastUpdatedAt": lastUpdatedAt.toIso8601String(),
-      "specification": specification,
+      "specification": specificationWithoutLocalRef,
     };
   }
 }

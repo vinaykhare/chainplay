@@ -50,7 +50,7 @@ class ChainListItem extends StatelessWidget {
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(true),
                   child: Text(
-                    "Yes, Delete it",
+                    "Yes, Delete the Chain!",
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.error,
                     ),
@@ -59,7 +59,7 @@ class ChainListItem extends StatelessWidget {
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(false),
                   child: Text(
-                    "No, it is a mistake",
+                    "No, chose this option by mistake.",
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.inverseSurface,
                     ),

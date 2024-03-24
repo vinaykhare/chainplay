@@ -131,7 +131,7 @@ class ChainTileView extends StatelessWidget {
                       icon: const Icon(Icons.share),
                       onPressed: () async {
                         await Provider.of<ChainList>(context, listen: false)
-                            .downloadChain(chain);
+                            .checkAndShareChain(context, chain);
                       },
                     ),
                   if (allowFlag)

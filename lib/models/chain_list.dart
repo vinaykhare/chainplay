@@ -1573,7 +1573,38 @@ class ChainList with ChangeNotifier {
     return activities;
   }
 
-  Future<void> downloadChain(Chain chain) async {
+  bool chainHasLocalReferences(Chain chain) {
+    for (ChainActivity chainActivity in chain.activities) {
+      if (chainActivity.activity.specification != null) {
+        dynamic image =
+            chainActivity.activity.specification![activitySpecImagePath];
+        if (image != null) {
+          if (image.toString().startsWith("/data")) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  Future<String> downloadChain(Chain chain) async {
+    try {
+      final directory = Directory(
+          "/storage/emulated/0/Download"); // await getExternalStorageDirectory(); // only for android
+
+      //if (directory != null) {
+      final path = directory.path;
+      //const String path = '/storage/emulated/0/Download/';
+      File chainFile = File('$path/${chain.title}.json');
+      await chainFile.writeAsString(jsonEncode(chain));
+      return "${chain.title}.json is saved under Downloads";
+    } on Exception {
+      return "Cannot download the Chain on this Platform. Try sharing the chain instead.";
+    }
+  }
+
+  Future<void> shareChain(Chain chain) async {
     final directory = await getApplicationDocumentsDirectory();
     final path = directory.path;
     //const String path = '/storage/emulated/0/Download/';
@@ -1582,6 +1613,65 @@ class ChainList with ChangeNotifier {
     await Share.shareXFiles([XFile('$path/${chain.title}.json')],
         text: chain.title);
     await chainFile.delete();
+  }
+
+  Future<bool> okToDownloadWithoutLocalImageRef(BuildContext ctx) async {
+    return await showDialog(
+      context: ctx,
+      builder: (context) {
+        return AlertDialog(
+          content: const Text(
+              "This Chain is referring to local Images/GIFs which cannot be shared."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(
+                "It's Fine, share without Local Images/GIFs.",
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(
+                "Ok, don't share!",
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.inverseSurface,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<String> checkAndDownloadChain(BuildContext ctx, Chain chain) async {
+    bool doChainHasLocalReferences = chainHasLocalReferences(chain);
+    String downloadResponse = "";
+    if (doChainHasLocalReferences) {
+      bool proceedToDownloadChain = await okToDownloadWithoutLocalImageRef(ctx);
+      if (proceedToDownloadChain) {
+        downloadResponse = await downloadChain(chain);
+      }
+    } else {
+      downloadResponse = await downloadChain(chain);
+    }
+    return downloadResponse;
+  }
+
+  Future<void> checkAndShareChain(BuildContext ctx, Chain chain) async {
+    bool doChainHasLocalReferences = chainHasLocalReferences(chain);
+
+    if (doChainHasLocalReferences) {
+      bool proceedToShareChain = await okToDownloadWithoutLocalImageRef(ctx);
+      if (proceedToShareChain) {
+        await shareChain(chain);
+      }
+    } else {
+      await shareChain(chain);
+    }
   }
 
   Future<Chain?> uploadChain(String path) async {

@@ -188,8 +188,47 @@ class _ViewChainState extends State<ViewChain> {
                             child: IconButton(
                               onPressed: () async {
                                 NavigatorState nav = Navigator.of(context);
-                                await chainList.removeChain(chain);
-                                nav.pop();
+                                bool? dialogResponse = await showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: const Text("Confirm Deletion"),
+                                      content: const Text(
+                                          "Are you sure about deleting this Chain?"),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(true),
+                                          child: Text(
+                                            "Yes, Delete the Chain!",
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .error,
+                                            ),
+                                          ),
+                                        ),
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(false),
+                                          child: Text(
+                                            "No, chose this option by mistake.",
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .inverseSurface,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+
+                                if (dialogResponse == true) {
+                                  await chainList.removeChain(chain);
+                                  nav.pop();
+                                }
                               },
                               icon: const Icon(Icons.delete_forever_outlined),
                             ),
@@ -197,9 +236,31 @@ class _ViewChainState extends State<ViewChain> {
                           CircleAvatar(
                             child: IconButton(
                               onPressed: () async {
+                                ScaffoldMessengerState scm =
+                                    ScaffoldMessenger.of(context);
+                                String downloadResponse =
+                                    await Provider.of<ChainList>(context,
+                                            listen: false)
+                                        .checkAndDownloadChain(context, chain);
+
+                                scm.showSnackBar(SnackBar(
+                                  content: Text(downloadResponse),
+                                  duration: const Duration(seconds: 5),
+                                  action: SnackBarAction(
+                                    label: 'OK',
+                                    onPressed: () {},
+                                  ),
+                                ));
+                              },
+                              icon: const Icon(Icons.download),
+                            ),
+                          ),
+                          CircleAvatar(
+                            child: IconButton(
+                              onPressed: () async {
                                 await Provider.of<ChainList>(context,
                                         listen: false)
-                                    .downloadChain(chain);
+                                    .checkAndShareChain(context, chain);
                               },
                               icon: const Icon(Icons.share_outlined),
                             ),
