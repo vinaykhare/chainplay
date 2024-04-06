@@ -1,5 +1,4 @@
 import 'package:chain_activities/widgets/home_button_widget.dart';
-import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
 
 class NoChainsView extends StatelessWidget {
@@ -30,15 +29,6 @@ class NoChainsView extends StatelessWidget {
             ),
           ),
           HomeButtonWidget(
-            chainListFunction: "loadSampleChains",
-            buttonText: "Add \n'Sample Chain of Timers'",
-            logo: Icon(
-              Icons.web_stories,
-              size: 50,
-              color: Theme.of(context).primaryColorDark,
-            ),
-          ),
-          HomeButtonWidget(
             chainListFunction: "navigateToAddChainScreen",
             buttonText: "Create\nYour Own Chain of Timers.",
             logo: Icon(
@@ -57,6 +47,15 @@ class NoChainsView extends StatelessWidget {
             ),
           ),
           HomeButtonWidget(
+            chainListFunction: "loadSampleChains",
+            buttonText: "Add \n'Sample Chain of Timers'",
+            logo: Icon(
+              Icons.web_stories,
+              size: 50,
+              color: Theme.of(context).primaryColorDark,
+            ),
+          ),
+          HomeButtonWidget(
             chainListFunction: "navigateToHelpScreen",
             buttonText: "Know\nmore about Chains (CAT).",
             logo: Icon(
@@ -64,15 +63,6 @@ class NoChainsView extends StatelessWidget {
               size: 50,
               color: Theme.of(context).primaryColorDark,
             ),
-          ),
-          Container(
-            margin: const EdgeInsets.all(5),
-            padding: const EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: Theme.of(context).cardColor.withOpacity(0.7),
-            ),
-            child: const ShowBannerAd(),
           ),
         ],
       ),

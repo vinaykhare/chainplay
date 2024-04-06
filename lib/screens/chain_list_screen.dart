@@ -2,6 +2,7 @@ import 'package:chain_activities/screens/search_chain_screen.dart';
 import 'package:chain_activities/widgets/chain_list_header.dart';
 import 'package:chain_activities/widgets/list_of_chains.dart';
 import 'package:chain_activities/widgets/no_chains_view.dart';
+import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/models/chain.dart';
@@ -79,9 +80,22 @@ class _ChainListScreenState extends State<ChainListScreen> {
                         topLeft: Radius.circular(30),
                         topRight: Radius.circular(30)),
                   ),
-                  child: (chains.isNotEmpty)
-                      ? const ListOfChains()
-                      : const NoChainsView(),
+                  child: Column(
+                    children: [
+                      (chains.isNotEmpty)
+                          ? const Expanded(child: ListOfChains())
+                          : const Expanded(child: NoChainsView()),
+                      Container(
+                        margin: const EdgeInsets.all(5),
+                        //padding: const EdgeInsets.only(bottom: 5),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Theme.of(context).cardColor,
+                        ),
+                        child: const ShowBannerAd(),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               appBarWidget,

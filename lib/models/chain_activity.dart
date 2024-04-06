@@ -31,6 +31,7 @@ class ChainActivity {
       activityDuration:
           Duration(milliseconds: int.parse(jsonMap['activityDuration'])),
       activity: Activity.fromJson(jsonMap['activity']),
+      index: jsonMap['index'],
     );
     //chainActivity.edit = jsonMap['edit'];
     return chainActivity;
@@ -41,6 +42,7 @@ class ChainActivity {
       "activityDuration": activityDuration.inMilliseconds.toString(),
       "edit": false,
       "activity": activity,
+      "index": index,
     };
   }
 }

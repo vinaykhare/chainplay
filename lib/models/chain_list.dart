@@ -261,7 +261,9 @@ class ChainList with ChangeNotifier {
     int activityIndex = activities
         .indexWhere((act) => act.title == chainActivity.activity.title);
 
-    chainActivity.index = chain.activities.length;
+    if (chainActivity.index == -1) {
+      chainActivity.index = chain.activities.length;
+    }
 
     if (activityIndex == -1) {
       activities.add(chainActivity.activity);

@@ -33,12 +33,14 @@ class ChainActivities extends StatelessWidget {
     return MaterialApp(
       title: 'CAT',
       builder: (context, widget) {
-        Widget error = const MyErrorWidget();
-        // if (widget is Scaffold || widget is Navigator) {
-        error = Scaffold(body: Center(child: error));
-        // }
+        Widget error = const Scaffold(body: Center(child: MyErrorWidget()));
         ErrorWidget.builder = (errorDetails) => error;
-        if (widget != null) return widget;
+        if (widget != null) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+            child: widget,
+          );
+        }
         throw ('widget is null');
       },
       //darkTheme: darkTheme ? ThemeData.dark() : null,
