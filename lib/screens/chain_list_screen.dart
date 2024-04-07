@@ -44,12 +44,14 @@ class _ChainListScreenState extends State<ChainListScreen> {
           label: const Text("Search Chains"),
           border: const OutlineInputBorder(
             borderSide: BorderSide.none,
+            //borderRadius: BorderRadius.all(Radius.circular(50)),
           ),
           filled: true,
           prefixIcon: Icon(
             Icons.search,
             color: Theme.of(context).iconTheme.color,
           ),
+          //fillColor: Theme.of(context).primaryColor.withGreen(200),
         ),
       ),
     );
@@ -64,9 +66,9 @@ class _ChainListScreenState extends State<ChainListScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                // margin: const EdgeInsets.symmetric(
-                //   vertical: 10,
-                // ),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                ),
                 margin: const EdgeInsets.all(10),
                 child: const ChainListHeader(),
               ),

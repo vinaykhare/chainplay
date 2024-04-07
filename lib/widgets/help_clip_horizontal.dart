@@ -30,8 +30,8 @@ class HelpClipHorizontal extends StatelessWidget {
                 ),
                 color: Theme.of(context).primaryColorLight,
               ),
-              child: Row(
-                children: const [
+              child: const Row(
+                children: [
                   Text("Click"),
                   Icon(Icons.watch),
                   Text(" to view and edit Timer Properties.")
@@ -51,8 +51,8 @@ class HelpClipHorizontal extends StatelessWidget {
                 ),
                 color: Theme.of(context).primaryColorLight,
               ),
-              child: Row(
-                children: const [
+              child: const Row(
+                children: [
                   Text("Click"),
                   Icon(Icons.add_task_outlined),
                   Text(" to submit and add timer to this Chain.")

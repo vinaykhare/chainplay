@@ -120,7 +120,7 @@ class ChainExecutionScreen extends StatelessWidget {
                       children: [
                         if (index == executedChains.length - 1)
                           Text(
-                            "Executed Chain",
+                            "Executed Chains",
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                         InkWell(
@@ -218,14 +218,24 @@ class ChainExecutionScreen extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                   if (executingChains.isNotEmpty)
-                    ChainView(
-                      chain: chain,
-                      showHistory: false,
-                      allowFlag: false,
-                      key: Key(
-                        executingChains.first.index.toString(),
+                    Container(
+                      padding: const EdgeInsets.all(5),
+                      margin: const EdgeInsets.fromLTRB(8, 5, 8, 0),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor,
+                        borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(30),
+                            topRight: Radius.circular(30)),
                       ),
-                      index: executingChains.first.index,
+                      child: ChainView(
+                        chain: chain,
+                        showHistory: false,
+                        allowFlag: false,
+                        key: Key(
+                          executingChains.first.index.toString(),
+                        ),
+                        index: executingChains.first.index,
+                      ),
                     ),
                 ],
               ),

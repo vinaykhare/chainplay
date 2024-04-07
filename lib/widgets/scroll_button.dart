@@ -30,7 +30,7 @@ class ScrollButton extends StatelessWidget {
           );
         }
       },
-      child: Row(children: const [
+      child: const Row(children: [
         Icon(Icons.arrow_upward),
         Text(
           "Scroll",

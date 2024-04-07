@@ -9,7 +9,7 @@ import 'package:chain_activities/widgets/start_end_time_chain_widget.dart';
 
 class ChainActivityFlowView extends StatelessWidget {
   const ChainActivityFlowView({
-    Key? key,
+    super.key,
     required this.activities,
     required this.arrowWidget,
     required this.chainActivity,
@@ -19,7 +19,7 @@ class ChainActivityFlowView extends StatelessWidget {
     required this.undoEdit,
     required this.lineWidget,
     required this.index,
-  }) : super(key: key);
+  });
 
   final List<ChainActivity> activities;
   final Widget arrowWidget;
@@ -59,6 +59,7 @@ class ChainActivityFlowView extends StatelessWidget {
             },
             child: editActivity != null
                 ? ListTile(
+                    tileColor: Theme.of(context).cardColor,
                     onTap: () async {
                       if (!chainActivity.edit) {
                         editActivity!(chainActivity);
@@ -167,6 +168,7 @@ class ChainActivityFlowView extends StatelessWidget {
                 : Column(
                     children: [
                       ListTile(
+                        tileColor: Theme.of(context).cardColor,
                         title: Row(
                           children: [
                             Expanded(
@@ -237,7 +239,10 @@ class ChainActivityFlowView extends StatelessWidget {
                         ),
                       ),
                       if (chainActivity.at != null)
-                        Padding(
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).cardColor,
+                          ),
                           padding: const EdgeInsets.all(8.0),
                           child: StartEndTimeChainWidget(
                             cardTitle: null,

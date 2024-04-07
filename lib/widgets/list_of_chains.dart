@@ -41,27 +41,25 @@ class _ListOfChainsState extends State<ListOfChains> {
             ),
             label: Text(
               "Summary of Chain Controls",
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontSize: 15,
-                  ),
+              style: Theme.of(context).textTheme.titleMedium,
               textAlign: TextAlign.center,
             ),
           ),
         ),
-        if (showChainControlSummary)
-          Container(
-            width: double.infinity,
-            margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-            padding: const EdgeInsets.only(bottom: 8),
-            // decoration: BoxDecoration(
-            //   color: Theme.of(context).primaryColor,
-            //   border: Border.all(
-            //     width: 1,
-            //     color: Theme.of(context).scaffoldBackgroundColor,
-            //   ),
-            // ),
-            child: const ChainTileHelp(),
-          ),
+        if (showChainControlSummary) const ChainTileHelp(),
+        // Container(
+        //   width: double.infinity,
+        //   margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+        //   padding: const EdgeInsets.only(bottom: 8),
+        //   // decoration: BoxDecoration(
+        //   //   color: Theme.of(context).primaryColor,
+        //   //   border: Border.all(
+        //   //     width: 1,
+        //   //     color: Theme.of(context).scaffoldBackgroundColor,
+        //   //   ),
+        //   // ),
+        //   child: const ChainTileHelp(),
+        // ),
         const Divider(),
         Expanded(
           child: ReorderableListView.builder(

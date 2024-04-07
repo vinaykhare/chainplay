@@ -644,161 +644,158 @@ class _AddChainScreenState extends State<AddChainScreen> {
       ],
     );
 
-    return WillPopScope(
-      onWillPop: validateForm,
-      child: Scaffold(
-        //appBar: appBarWidget,
-        body: SafeArea(
-          child: Column(
-            //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
+    return Scaffold(
+      //appBar: appBarWidget,
+      body: SafeArea(
+        child: Column(
+          //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Semantics(
+              label: tempChain.title.isEmpty
+                  ? "Chain Input Form"
+                  : "Chain Input Form for : ${tempChain.title}",
+              child: chainInputForm,
+            ),
+            if (errorString != "")
               Semantics(
-                label: tempChain.title.isEmpty
-                    ? "Chain Input Form"
-                    : "Chain Input Form for : ${tempChain.title}",
-                child: chainInputForm,
-              ),
-              if (errorString != "")
-                Semantics(
-                  label: "Error Message",
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      errorString,
-                      style:
-                          TextStyle(color: Theme.of(context).colorScheme.error),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-              if (errorString != "")
-                Divider(
-                  thickness: 0,
-                  color: Theme.of(context).dividerTheme.color,
-                ),
-              Expanded(
+                label: "Error Message",
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Stack(
-                    children: [
-                      Semantics(
-                        label: "Editable Chain of Activities",
-                        child: ChainActivitiesWidget(
-                          tempChain: tempChain,
-                          editActivity: editActivity,
-                          undoEdit: undoEdit,
-                        ),
-                      ),
-                    ],
+                  child: Text(
+                    errorString,
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.error),
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ),
-              Container(
-                margin: const EdgeInsets.all(5),
-                padding: const EdgeInsets.only(bottom: 5),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Theme.of(context).cardColor,
-                ),
-                child: const ShowBannerAd(),
+            if (errorString != "")
+              Divider(
+                thickness: 1,
+                color: Theme.of(context).dividerTheme.color,
               ),
-              if (addingDurationToActivity && tempChain.title.isNotEmpty)
-                duraitonInputForm,
-              if (tempChain.activities.length <= 1 &&
-                  tempChain.title.isNotEmpty &&
-                  !addingDurationToActivity)
-                const HelpClipHorizontal(),
-              AppBar(
-                automaticallyImplyLeading: !updatingSystemWaitActivityInDB &&
-                    MediaQuery.of(context).viewInsets.bottom == 0,
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Stack(
                   children: [
-                    if (showSaveAndExit &&
-                        (MediaQuery.of(context).viewInsets.bottom == 0 ||
-                            tempChain.title.isEmpty ||
-                            tempChain.title == ""))
-                      IconButton(
-                        onPressed: saveAndExit,
-                        icon: const Icon(Icons.arrow_back),
+                    Semantics(
+                      label: "Editable Chain of Activities",
+                      child: ChainActivitiesWidget(
+                        tempChain: tempChain,
+                        editActivity: editActivity,
+                        undoEdit: undoEdit,
                       ),
-                    if (!updatingSystemWaitActivityInDB &&
-                        tempChain.title.isNotEmpty)
-                      Expanded(
-                        child: TextField(
-                          cursorColor: Theme.of(context).shadowColor,
-                          focusNode: addActivityFocus,
-                          decoration: InputDecoration(
-                            floatingLabelBehavior: FloatingLabelBehavior.never,
-                            label: const Text(
-                              'Add Timer Activity to this Chain',
-                            ),
-                            border: const OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                            ),
-                            filled: true,
-                            prefixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  addingDurationToActivity =
-                                      !addingDurationToActivity;
-                                });
-                              },
-                              icon: Icon(
-                                addingDurationToActivity
-                                    ? Icons.watch_off
-                                    : Icons.watch_outlined,
-                                color: Theme.of(context).iconTheme.color,
-                              ),
-                            ),
-                          ),
-                          controller: addActivityController,
-                          onSubmitted: (_) {
-                            onSubmitText();
-                          },
-                        ),
-                      ),
-                    if (updatingSystemWaitActivityInDB)
-                      IconButton(
-                        onPressed: () {
-                          undoEdit(chainActivityInEditMode!);
-                          // tempChain.at = null;
-                          // tempChain.repeatType = repeatTypeDoesNotRepeat;
-                          // tempChain.repeatCount = repeatTypeDefaultCount;
-                        },
-                        icon: const Icon(Icons.cancel_outlined),
-                      ),
-                    if (tempChain.at != null)
-                      TextButton(
-                        onPressed: () {
-                          undoEdit(chainActivityInEditMode!);
-                          tempChain.at = null;
-                          tempChain.repeatType = repeatTypeDoesNotRepeat;
-                          tempChain.repeatCount = repeatTypeDefaultCount;
-                        },
-                        child: CircleAvatar(
-                          radius: 50,
-                          child: Text(
-                            "Remove\nAlarm",
-                            style: Theme.of(context).textTheme.labelSmall,
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                    if (tempChain.title.isNotEmpty)
-                      IconButton(
-                        onPressed: onSubmitText,
-                        icon: chainActivityInEditMode != null
-                            ? const Icon(Icons.done_outline)
-                            : updatingSystemWaitActivityInDB
-                                ? const Icon(Icons.done)
-                                : const Icon(Icons.add_task_outlined),
-                      ),
+                    ),
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+            Container(
+              margin: const EdgeInsets.all(5),
+              padding: const EdgeInsets.only(bottom: 5),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: Theme.of(context).cardColor,
+              ),
+              child: const ShowBannerAd(),
+            ),
+            if (addingDurationToActivity && tempChain.title.isNotEmpty)
+              duraitonInputForm,
+            if (tempChain.activities.length <= 1 &&
+                tempChain.title.isNotEmpty &&
+                !addingDurationToActivity)
+              const HelpClipHorizontal(),
+            AppBar(
+              automaticallyImplyLeading: !updatingSystemWaitActivityInDB &&
+                  MediaQuery.of(context).viewInsets.bottom == 0,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  if (showSaveAndExit &&
+                      (MediaQuery.of(context).viewInsets.bottom == 0 ||
+                          tempChain.title.isEmpty ||
+                          tempChain.title == ""))
+                    IconButton(
+                      onPressed: saveAndExit,
+                      icon: const Icon(Icons.arrow_back),
+                    ),
+                  if (!updatingSystemWaitActivityInDB &&
+                      tempChain.title.isNotEmpty)
+                    Expanded(
+                      child: TextField(
+                        cursorColor: Theme.of(context).shadowColor,
+                        focusNode: addActivityFocus,
+                        decoration: InputDecoration(
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          label: const Text(
+                            'Add Timer Activity to this Chain',
+                          ),
+                          border: const OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          prefixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                addingDurationToActivity =
+                                    !addingDurationToActivity;
+                              });
+                            },
+                            icon: Icon(
+                              addingDurationToActivity
+                                  ? Icons.watch_off
+                                  : Icons.watch_outlined,
+                              color: Theme.of(context).iconTheme.color,
+                            ),
+                          ),
+                        ),
+                        controller: addActivityController,
+                        onSubmitted: (_) {
+                          onSubmitText();
+                        },
+                      ),
+                    ),
+                  if (updatingSystemWaitActivityInDB)
+                    IconButton(
+                      onPressed: () {
+                        undoEdit(chainActivityInEditMode!);
+                        // tempChain.at = null;
+                        // tempChain.repeatType = repeatTypeDoesNotRepeat;
+                        // tempChain.repeatCount = repeatTypeDefaultCount;
+                      },
+                      icon: const Icon(Icons.cancel_outlined),
+                    ),
+                  if (tempChain.at != null)
+                    TextButton(
+                      onPressed: () {
+                        undoEdit(chainActivityInEditMode!);
+                        tempChain.at = null;
+                        tempChain.repeatType = repeatTypeDoesNotRepeat;
+                        tempChain.repeatCount = repeatTypeDefaultCount;
+                      },
+                      child: CircleAvatar(
+                        radius: 50,
+                        child: Text(
+                          "Remove\nAlarm",
+                          style: Theme.of(context).textTheme.labelSmall,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  if (tempChain.title.isNotEmpty)
+                    IconButton(
+                      onPressed: onSubmitText,
+                      icon: chainActivityInEditMode != null
+                          ? const Icon(Icons.done_outline)
+                          : updatingSystemWaitActivityInDB
+                              ? const Icon(Icons.done)
+                              : const Icon(Icons.add_task_outlined),
+                    ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -1274,13 +1274,14 @@ class ChainList with ChangeNotifier {
   }
 
   Future<void> loadSampleChainsFromAssets() async {
+    AssetBundle defaultAssetBundle = DefaultAssetBundle.of(context);
     for (String sampleChainFileName in [
       'sample_workout_chain',
       'sample_diet_routine_chain',
       'sample_medicine_routine_chain',
     ]) {
-      String sampleChain = await DefaultAssetBundle.of(context)
-          .loadString(assetMap[sampleChainFileName]!);
+      String sampleChain =
+          await defaultAssetBundle.loadString(assetMap[sampleChainFileName]!);
       final sampleChainJson = jsonDecode(sampleChain);
       Chain loadedChain = Chain.fromJson(sampleChainJson);
       for (var chainActivity in loadedChain.activities) {

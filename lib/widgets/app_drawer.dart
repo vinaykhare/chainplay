@@ -10,8 +10,8 @@ import 'package:provider/provider.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +70,7 @@ class AppDrawer extends StatelessWidget {
                       .pushReplacementNamed(HowItWorks.routename);
                 },
               ),
-              const Divider(),
+              //const Divider(),
               ListTile(
                 leading: const Icon(Icons.web_stories),
                 title: Text(
@@ -132,7 +132,7 @@ class AppDrawer extends StatelessWidget {
               ],
             ),
           ),
-          const Divider(),
+          //const Divider(),
         ],
       ),
     );

@@ -69,7 +69,10 @@ class _ViewChainState extends State<ViewChain> {
     return const Icon(Icons.play_arrow_outlined);
   }
 
-  Future<bool> onPopOut() async {
+  Future<bool> onPopOut(bool didPop) async {
+    if (didPop) {
+      return true;
+    }
     await chainList.cancelIntentSubscription();
     return true;
   }
@@ -119,8 +122,9 @@ class _ViewChainState extends State<ViewChain> {
         MediaQuery.of(context).viewPadding.bottom;
     return Semantics(
       label: "View Chain Screen",
-      child: WillPopScope(
-        onWillPop: onPopOut,
+      child: PopScope(
+        canPop: false,
+        onPopInvoked: onPopOut,
         child: Scaffold(
           body: SingleChildScrollView(
             child: SafeArea(
@@ -282,7 +286,7 @@ class _ViewChainState extends State<ViewChain> {
                             child: IconButton(
                               onPressed: () async {
                                 NavigatorState nav = Navigator.of(context);
-                                bool allWell = await onPopOut();
+                                bool allWell = await onPopOut(false);
                                 if (allWell) {
                                   nav.pushNamed(
                                     ChainExecutionScreen.routename,
@@ -319,7 +323,7 @@ class _ViewChainState extends State<ViewChain> {
                         IconButton(
                           onPressed: () async {
                             NavigatorState nav = Navigator.of(context);
-                            bool allWell = await onPopOut();
+                            bool allWell = await onPopOut(false);
                             allWell && nav.canPop()
                                 ? nav.pop()
                                 : nav.pushReplacementNamed(
@@ -338,7 +342,7 @@ class _ViewChainState extends State<ViewChain> {
                               return;
                             }
                             NavigatorState nav = Navigator.of(context);
-                            bool allWell = await onPopOut();
+                            bool allWell = await onPopOut(false);
                             if (allWell && savedInDb && !invalidChain) {
                               chain.edit = true;
                               await chainList.updateChain(chain, false);

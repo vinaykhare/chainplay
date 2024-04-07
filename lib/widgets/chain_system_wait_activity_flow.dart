@@ -10,7 +10,7 @@ import 'package:chain_activities/widgets/system_wait_activity_with_duration.dart
 
 class ChainSystemWaitActivityFlow extends StatelessWidget {
   const ChainSystemWaitActivityFlow({
-    Key? key,
+    super.key,
     required this.activities,
     required this.arrowWidget,
     required this.chainActivity,
@@ -20,7 +20,7 @@ class ChainSystemWaitActivityFlow extends StatelessWidget {
     required this.undoEdit,
     required this.lineWidget,
     required this.index,
-  }) : super(key: key);
+  });
 
   final List<ChainActivity> activities;
   final Widget arrowWidget;

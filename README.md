@@ -83,6 +83,6 @@ This is a utility app inspired by several workout apps where starting a workout 
 Following are the changes:
 
 1.  Home App Interface is changed:
-2.          Chains UI is updated to reflect the chain view.
+2.           Chains UI is updated to reflect the chain view.
 3.  Share and recieve chains as \*.cat file.
-4.          Alarms and schedule chain feature is removed.
+4.           Alarms and schedule chain feature is removed.

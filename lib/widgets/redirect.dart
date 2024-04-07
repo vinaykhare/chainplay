@@ -11,8 +11,8 @@ import 'package:provider/provider.dart';
 
 class Redirect extends StatelessWidget {
   const Redirect({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

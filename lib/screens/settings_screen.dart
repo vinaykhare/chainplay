@@ -36,14 +36,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
     settings = chainList.systemSettings;
     return Semantics(
       label: "App Settings Screen",
-      child: WillPopScope(
-        onWillPop: () async {
+      child: PopScope(
+        canPop: false,
+        onPopInvoked: (didPop) async {
+          if (didPop) {
+            return;
+          }
           if (chainList.getSettingByKey(showHelpOnNextBootKey).value ==
               trueSettingValue) {
             await Navigator.of(context)
                 .pushReplacementNamed(HowItWorks.routename);
           }
-          return true;
         },
         child: Scaffold(
           drawer: const AppDrawer(),
@@ -84,13 +87,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   },
                   icon: const Icon(
                     Icons.clear,
-                  ),
-                  style: ButtonStyle(
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18.0),
-                      ),
-                    ),
                   ),
                 ),
                 const ShowBannerAd(),

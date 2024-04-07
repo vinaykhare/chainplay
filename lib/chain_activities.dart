@@ -37,7 +37,8 @@ class ChainActivities extends StatelessWidget {
         ErrorWidget.builder = (errorDetails) => error;
         if (widget != null) {
           return MediaQuery(
-            data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: const TextScaler.linear(1.0)),
             child: widget,
           );
         }
@@ -130,9 +131,33 @@ class ChainActivities extends StatelessWidget {
                 onPrimary: Colors.black,
               ),
               dialogBackgroundColor: Colors.lightGreen,
+              elevatedButtonTheme: ElevatedButtonThemeData(
+                style: ButtonStyle(
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18.0),
+                    ),
+                  ),
+                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (states) => Colors.amber,
+                  ),
+                  foregroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (states) => Colors.black,
+                  ),
+                ),
+              ),
+              listTileTheme: const ListTileThemeData(
+                tileColor: Colors.amber,
+              ),
               switchTheme: SwitchThemeData(
                 thumbColor: MaterialStateProperty.resolveWith<Color>(
-                  (states) => Colors.amber,
+                  (states) {
+                    if (states.contains(MaterialState.selected)) {
+                      return Colors.amber;
+                    } else {
+                      return Colors.lightGreen;
+                    }
+                  },
                 ),
                 trackColor: MaterialStateProperty.resolveWith<Color>((states) {
                   if (states.contains(MaterialState.selected)) {
@@ -141,6 +166,18 @@ class ChainActivities extends StatelessWidget {
                     return Colors.amber;
                   }
                 }),
+              ),
+              drawerTheme: const DrawerThemeData(
+                backgroundColor: Colors.amber,
+              ),
+              dividerTheme: DividerThemeData(
+                color: Colors.amber.shade200,
+              ),
+              appBarTheme: const AppBarTheme(
+                backgroundColor: Colors.amber,
+              ),
+              inputDecorationTheme: InputDecorationTheme(
+                fillColor: Colors.amber.shade400,
               ),
               textTheme: const TextTheme(
                 titleMedium: TextStyle(
