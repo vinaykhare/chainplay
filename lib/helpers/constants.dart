@@ -30,6 +30,7 @@ const int setFailedDueToAppPermission = 2;
 //Settings
 const String appSoundSettingKey = "App Sound";
 const String darkThemeSettingKey = "DARK THEME";
+const String eventNotificationsKey = "Event Notifications";
 const String showHelpOnNextBootKey = "Need CAT Introduction?";
 const String catClockModeKey = "Cat Clock Mode";
 const String catClockModeValue = "HH:MM:SS,HH:MM,AM/PM";

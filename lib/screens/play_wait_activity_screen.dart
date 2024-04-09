@@ -5,7 +5,6 @@ import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:chain_activities/helpers/notification_helper.dart';
 import 'package:chain_activities/helpers/helper_functions.dart';
 import 'package:chain_activities/models/chain_activity.dart';
 import 'package:chain_activities/models/chain_list.dart';
@@ -33,7 +32,6 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
   //isNotPlaying = false;
   String? screenImage, title;
   // String? textToSpeak;
-  NotificationHelper notificationHelper = NotificationHelper();
   int playScreenType = waitActivityInDB;
 
   // @override
