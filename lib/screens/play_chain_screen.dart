@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:chain_activities/helpers/helper_functions.dart';
+import 'package:chain_activities/screens/view_chain_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/helpers/constants.dart';
@@ -23,7 +24,10 @@ class _PlayChainState extends State<PlayChain> {
   late Chain parentChainItem;
   late ChainList chainList;
   int invokeCounter = 0;
+  ChainActivity? chainActivityPaused;
   bool initializing = true;
+  bool allowNavigationToWaitScreen = true;
+  String? playChainAction;
   //bool buildDone = false;
 
   // @override
@@ -41,8 +45,6 @@ class _PlayChainState extends State<PlayChain> {
     for (invokeCounter = 0;
         invokeCounter < chain.activities.length;
         invokeCounter++) {
-      // Map<String, dynamic> dryRunResult =
-      //     await chainList.executeChainFurtherPossible(chain, invokeCounter);
       ChainActivity chainActivity = chain.activities[invokeCounter];
       if (chainActivity.endedAt != null ||
           chainActivity.activity.type == systemStartActivityInDB ||
@@ -61,7 +63,8 @@ class _PlayChainState extends State<PlayChain> {
       int playScreenType = invokeCounter >= chain.activities.length - 1
           ? systemEndActivityInDB
           : chainActivity.activity.type;
-      bool running = chainActivity.activityDurationLeft == null;
+      bool running = chainActivity.activityDurationLeft == null ||
+          playChainAction == playChainActionPlay;
       String screenImage =
           chainActivity.activity.specification?[activitySpecImagePath] ?? "";
 
@@ -114,6 +117,11 @@ class _PlayChainState extends State<PlayChain> {
             chain,
             chainActivity,
           );
+          if (chainActivity.activityDurationLeft != null &&
+              chainActivity.activityDurationLeft!.inMicroseconds != 0) {
+            chainActivityPaused = chainActivity;
+          }
+
           break;
         } else {
           chainActivity.activityDurationLeft = null;
@@ -165,90 +173,6 @@ class _PlayChainState extends State<PlayChain> {
     //nav.pop();
   }
 
-  Future<void> playTheScheduledChain() async {
-    dynamic popResponse;
-    NavigatorState nav = Navigator.of(context);
-    bool completeTheChain = true;
-    for (invokeCounter = 0;
-        invokeCounter < chain.activities.length;
-        invokeCounter++) {
-      Map<String, dynamic> dryRunResult =
-          await chainList.executeChainFurtherPossible(chain);
-      chain = dryRunResult["executingChain"];
-      invokeCounter = dryRunResult["invokeCounter"];
-      Duration waitDuration = dryRunResult["waitDuration"];
-      ChainActivity chainActivity = dryRunResult["chainActivity"];
-      int playScreenType = invokeCounter >= chain.activities.length - 1
-          ? systemEndActivityInDB
-          : dryRunResult["playScreenType"];
-      bool running = dryRunResult["running"];
-      String screenImage = dryRunResult["screenImage"] ?? "";
-      bool showTimer = dryRunResult["showTimer"];
-      if (!showTimer) {
-        completeTheChain = false;
-        break;
-      }
-
-      String textToSpeak = chainActivity.activity.type == systemWaitActivityInDB
-          ? invokeCounter < chain.activities.length - 1
-              ? "Take Rest. Next Activity will start ${HelperFunctions.durationToString(waitDuration)}."
-              : "Complete the chain by pressing done or go forward."
-          : chainActivity.activity.type == systemStartActivityInDB
-              ? "Complete the Alarm by pressing done or go forward."
-              : "Activity ${chainActivity.activity.title} has started. It will complete ${HelperFunctions.durationToString(waitDuration)}.";
-      if (chainActivity.activityDurationLeft != null &&
-          waitDuration.inSeconds > 0) {
-        textToSpeak += " after resuming.";
-      }
-      await chainList.speakTextWithoutWait(textToSpeak);
-      popResponse = await nav.pushNamed(
-        PlayWaitActivity.routename,
-        arguments: {
-          "waitDuration": waitDuration,
-          "chainActivity": chainActivity,
-          "playScreenType": playScreenType,
-          "running": running,
-          "screenImage": screenImage,
-          // "textToSpeak": textToSpeak,
-        },
-      );
-      await chainList.stopSpeech();
-
-      if (popResponse == null) {
-        chainActivity.activityDurationLeft = null;
-        chainActivity.isInterrupted = true;
-      } else {
-        completeTheChain = false;
-        break;
-      }
-      chainActivity.activityDone = true;
-      chainActivity.endedAt = DateTime.now();
-
-      await chainList.updateChainActivityExecutionByActivityId(
-        chain,
-        chainActivity,
-      );
-      await chainList.cancelScheduledNotificationExecution(chain);
-      await chainList.scheduleNotificationForExecution(
-          chain, chainActivity.endedAt!);
-    }
-
-    if (completeTheChain) {
-      // Chain parentChain =
-      //     chainList.chains.firstWhere((sch) => sch.title == chain.title);
-
-      chain.chainStatus = statusDone;
-      //parentChain.chainStatus = statusNotStarted;
-      chain.endedAt = DateTime.now();
-      //parentChain.endedAt = null;
-
-      //await chainList.updateChain(parentChain);
-      await chainList.updateChainExecution(chain);
-      await chainList.completeTheChain(chain);
-    }
-    //nav.pop();
-  }
-
   Future<bool> onPopOut() async {
     await chainList.loadInterstitialAd();
     if (chainList.interstitialAd != null) {
@@ -285,25 +209,33 @@ class _PlayChainState extends State<PlayChain> {
       chain = parentChainItem.chainHistory.firstWhere(
         (schEx) => schEx.chainExecutionId == chArg[payLoadChainExecId],
       );
+
+      allowNavigationToWaitScreen = chain
+              .activities[chArg[payLoadChainActivityIndex]]
+              .endActivityNotificationId ==
+          noValueInDB;
+
+      playChainAction = chArg[payLoadChainAction];
       //}
 
-      if (chain.chainStatus == statusExecuting) {
-        /* &&
-          !chain.at!.isAfter(DateTime.now()) */
-        if (chain.notificationId == trueInDB) {
-          playTheScheduledChain();
-        } else {
-          playTheChain();
-        }
-      } else {
+      if (chain.chainStatus == statusExecuting &&
+          playChainAction == playChainActionPlay) {
+        playTheChain();
+        // if (chain.notificationId == trueInDB) {
+        //   playTheScheduledChain();
+        // } else {
+        //   playTheChain();
+        // }
+      } else if (chain.chainStatus != statusExecuting) {
         invokeCounter = chain.activities.length;
-      }
+      } else {}
       initializing = false;
       chainList.notificationCameAs = null;
     }
     double appHeight = MediaQuery.of(context).size.height -
         MediaQuery.of(context).viewPadding.top -
         MediaQuery.of(context).viewPadding.bottom;
+    //double appWidth = MediaQuery.of(context).size.width - 16;
     return Semantics(
       label: "Play Chain Screen",
       child: Scaffold(
@@ -326,6 +258,80 @@ class _PlayChainState extends State<PlayChain> {
                         undoEdit: null,
                       ),
                     ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      if (invokeCounter < chain.activities.length)
+                        TextButton.icon(
+                          onPressed: () async {
+                            chainList.stopChainExecution(chain);
+                            Navigator.of(context).pushReplacementNamed(
+                              ViewChain.routename,
+                              arguments: {
+                                "chain": chain,
+                              },
+                            );
+                          },
+                          style: ButtonStyle(
+                            iconColor: MaterialStateProperty.resolveWith(
+                              (states) => Theme.of(context).colorScheme.error,
+                            ),
+                          ),
+                          icon: const Icon(Icons.stop_circle),
+                          label: FittedBox(
+                            child: Text(
+                              "Stop Chain",
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                          ),
+                        ),
+                      if (chainActivityPaused != null)
+                        Expanded(
+                          child: Container(
+                            //width: appWidth / 2,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).primaryColor,
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(50),
+                                bottomLeft: Radius.circular(50),
+                              ),
+                            ),
+                            child: TextButton.icon(
+                              onPressed: () async {
+                                if (chainActivityPaused!.activityDurationLeft ==
+                                    null) {
+                                  return;
+                                }
+                                bool? permissionGranted = await chainList
+                                    .askForNotificationPermission();
+                                if (permissionGranted != null &&
+                                    permissionGranted == true) {
+                                  // await chainList.showNotification();
+                                  await chainList
+                                      .scheduleNotificationForActivityCompletion(
+                                    chain,
+                                    chainActivityPaused!,
+                                    DateTime.now().add(chainActivityPaused!
+                                        .activityDurationLeft!),
+                                  );
+                                }
+                              },
+                              style: ButtonStyle(
+                                iconColor: MaterialStateProperty.resolveWith(
+                                  (states) =>
+                                      Theme.of(context).colorScheme.error,
+                                ),
+                              ),
+                              icon: const Icon(Icons.notification_add_outlined),
+                              label: Text(
+                                "Run '${chainActivityPaused!.activity.title}' in Background",
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                   Row(
                     children: [
@@ -354,17 +360,15 @@ class _PlayChainState extends State<PlayChain> {
                         ),
                       ),
                       IconButton(
-                        onPressed: invokeCounter >= chain.activities.length
-                            ? null
-                            : () {
+                        onPressed: invokeCounter < chain.activities.length &&
+                                allowNavigationToWaitScreen
+                            ? () {
+                                chainActivityPaused = null;
                                 invokeCounter = 0;
-                                chain.notificationId == trueInDB
-                                    ? playTheScheduledChain()
-                                    : playTheChain();
-                              },
-                        icon: chain.notificationId == trueInDB
-                            ? const Icon(Icons.refresh)
-                            : const Icon(Icons.arrow_forward),
+                                playTheChain();
+                              }
+                            : null,
+                        icon: const Icon(Icons.arrow_forward),
                       ),
                     ],
                   ),

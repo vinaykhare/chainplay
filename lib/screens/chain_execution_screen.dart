@@ -130,9 +130,11 @@ class ChainExecutionScreen extends StatelessWidget {
                               payLoadChainExecId:
                                   chainExecution.chainExecutionId,
                               payLoadChainName: chainExecution.title,
-                              payLoadChainActivityIndex: index,
+                              payLoadChainActivityIndex:
+                                  chainExecution.activities.length - 1,
                               payLoadChainActivityCount:
                                   chain.chainHistory.length,
+                              payLoadChainAction: playChainActionPause,
                             },
                           ),
                           child: Container(
@@ -200,9 +202,9 @@ class ChainExecutionScreen extends StatelessWidget {
                                 payLoadChainExecId:
                                     chainExecution.chainExecutionId,
                                 payLoadChainName: chainExecution.title,
-                                payLoadChainActivityIndex:
-                                    chainHistory.length - 1, //0
+                                payLoadChainActivityIndex: 0,
                                 payLoadChainActivityCount: chainHistory.length,
+                                payLoadChainAction: playChainActionPlay,
                               });
                             }
                           },

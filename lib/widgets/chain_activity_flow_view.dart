@@ -253,7 +253,9 @@ class ChainActivityFlowView extends StatelessWidget {
                                     chainActivity.endedAt == null &&
                                     chainActivity.activityDuration.inSeconds > 0
                                 ? "Paused"
-                                : null,
+                                : chainActivity.endedAt == null
+                                    ? "Running"
+                                    : null,
                           ),
                         ),
                     ],

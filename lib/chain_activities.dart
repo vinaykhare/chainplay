@@ -57,13 +57,19 @@ class ChainActivities extends StatelessWidget {
               ),
               switchTheme: SwitchThemeData(
                 thumbColor: MaterialStateProperty.resolveWith<Color>(
-                  (states) => Colors.grey,
+                  (states) {
+                    if (states.contains(MaterialState.selected)) {
+                      return Colors.black;
+                    } else {
+                      return Colors.grey;
+                    }
+                  },
                 ),
                 trackColor: MaterialStateProperty.resolveWith<Color>((states) {
                   if (states.contains(MaterialState.selected)) {
-                    return Colors.black;
-                  } else {
                     return Colors.grey;
+                  } else {
+                    return Colors.black;
                   }
                 }),
               ),

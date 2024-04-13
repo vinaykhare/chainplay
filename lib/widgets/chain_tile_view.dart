@@ -1,3 +1,4 @@
+import 'package:chain_activities/models/chain_activity.dart';
 import 'package:chain_activities/screens/view_chain_screen.dart';
 import 'package:chain_activities/widgets/tile_time_format.dart';
 import 'package:flutter/material.dart';
@@ -23,23 +24,27 @@ class ChainTileView extends StatelessWidget {
 
   Future<void> playTheChain(BuildContext context) async {
     NavigatorState nav = Navigator.of(context);
-    if (chain.chainStatus == statusExecuting) {
-      await Provider.of<ChainList>(context, listen: false)
-          .stopChainExecution(chain);
-    } else if (chain.activities.length <= 1) {
-      await navigateToViewChainOrPlayChain(context);
+
+    ChainList chainList = Provider.of<ChainList>(context, listen: false);
+    Chain chainExecution = await chainList.startChainExecution(chain);
+
+    if (chainExecution.notificationId == trueInDB) {
+      await chainList.stopChainExecution(chain);
     } else {
       //await Provider.of<ChainList>(context, listen: false).loadActivities(chain);
-      Chain chainExecution =
-          await Provider.of<ChainList>(context, listen: false)
-              .startChainExecution(chain);
+      ChainActivity? chainActivityExecution =
+          chainList.getRunningChainActivity(chainExecution);
+
       await nav.pushNamed(
         PlayChain.routename,
         arguments: {
           payLoadChainExecId: chainExecution.chainExecutionId,
           payLoadChainName: chainExecution.title,
-          payLoadChainActivityIndex: index, //0
+          payLoadChainActivityIndex: chainActivityExecution != null
+              ? chainActivityExecution.index
+              : chainExecution.activities.length - 1,
           payLoadChainActivityCount: chain.chainHistory.length,
+          payLoadChainAction: playChainActionPlay,
         },
       );
     }
@@ -51,26 +56,16 @@ class ChainTileView extends StatelessWidget {
         Provider.of<ChainList>(context, listen: false).getRunningChain(chain);
 
     if (chainExecution == null) {
-      //await Provider.of<ChainList>(context, listen: false).loadActivities(chain);
-      chain.edit = true;
-      await Provider.of<ChainList>(context, listen: false)
-          .updateChain(chain, false);
-      await nav.pushNamed(
-        ViewChain.routename,
-        arguments: {
-          "chain": chain,
-        },
-      );
+      await viewChain(context);
     } else {
-      await Provider.of<ChainList>(context, listen: false)
-          .executeChainFurtherPossible(chainExecution);
       await nav.pushNamed(
         PlayChain.routename,
         arguments: {
           payLoadChainExecId: chainExecution.chainExecutionId,
           payLoadChainName: chainExecution.title,
-          payLoadChainActivityIndex: index, //0
+          payLoadChainActivityIndex: 0, //0
           payLoadChainActivityCount: chain.chainHistory.length,
+          payLoadChainAction: playChainActionPause,
         },
       );
     }
@@ -86,13 +81,15 @@ class ChainTileView extends StatelessWidget {
     );
   }
 
-  Widget getIconForChain(Chain chain) {
-    if (chain.notificationId == trueInDB) {
-      return const Icon(Icons.schedule);
+  Widget getIconForChain(BuildContext context, Chain chain) {
+    Chain? chainExecution =
+        Provider.of<ChainList>(context, listen: false).getRunningChain(chain);
+    if (chainExecution != null && chainExecution.notificationId == trueInDB) {
+      return const Icon(Icons.stop);
     }
-    if (chain.chainStatus == statusExecuting) {
-      return const Icon(Icons.pause);
-    }
+    // if (chain.chainStatus == statusExecuting) {
+    //   return const Icon(Icons.pause);
+    // }
     return const Icon(Icons.play_arrow);
   }
 
@@ -120,7 +117,7 @@ class ChainTileView extends StatelessWidget {
                 backgroundColor: Theme.of(context).primaryColorLight,
                 child: IconButton(
                   onPressed: () => playTheChain(context),
-                  icon: getIconForChain(chain),
+                  icon: getIconForChain(context, chain),
                 ),
               ),
               trailing: Row(

@@ -41,6 +41,11 @@ class NotificationHelper {
     return responsePayload;
   }
 
+  Future<int> showNotification(int notificationId) async {
+    await localNotificationService.showNotification(notificationId, 1, 2, {});
+    return notificationId;
+  }
+
   Future<int> scheduleNotification(DateTime chainAt, int notificationId,
       String title, String body, Map<String, dynamic> payload) async {
     if (await localNotificationService.scheduleNotification(

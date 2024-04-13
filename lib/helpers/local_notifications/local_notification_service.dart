@@ -31,7 +31,7 @@ class LocalNotificationService with WidgetsBindingObserver {
 
   static const String portName = 'notification_send_port';
   static const MethodChannel platform =
-      MethodChannel('dexterx.dev/flutter_local_notifications_example');
+      MethodChannel('promaxbiz.com/flutter_local_notifications');
 
   /// Streams are created so that app can respond to notification-related events
   /// since the plugin is initialised in the `main` function

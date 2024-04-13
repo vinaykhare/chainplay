@@ -18,6 +18,7 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
       payLoadWidgetUrl: responsePayload[payLoadWidgetUrl],
       payLoadChainActivityIndex: responsePayload[payLoadChainActivityIndex],
       payLoadChainActivityCount: responsePayload[payLoadChainActivityCount],
+      payLoadChainAction: responsePayload[payLoadChainAction],
     });
   }
 }

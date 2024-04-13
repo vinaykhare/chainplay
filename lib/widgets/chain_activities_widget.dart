@@ -68,23 +68,12 @@ class _ChainActivitiesWidgetState extends State<ChainActivitiesWidget> {
           return Column(
             key: Key(index.toString()),
             children: [
-              GestureDetector(
-                  onLongPressMoveUpdate: (details) {},
-                  onTap: widget.undoEdit != null && widget.editActivity != null
-                      ? () async {
-                          if (!chainActivity.edit) {
-                            widget.editActivity!(chainActivity);
-                          } else {
-                            widget.undoEdit!(chainActivity);
-                          }
-                        }
-                      : null,
-                  child: widget.tempChain.at != null
-                      ? SystemWaitActivityWithDuration(
-                          taskText:
-                              "${widget.tempChain.at!.isAfter(DateTime.now()) ? 'Scheduled to Start at' : 'Started on '} \n${DateFormat.yMd().add_jms().format(widget.tempChain.at!)}",
-                        )
-                      : const SystemWaitActivity(taskText: 'Start')),
+              widget.tempChain.at != null
+                  ? SystemWaitActivityWithDuration(
+                      taskText:
+                          "${widget.tempChain.at!.isAfter(DateTime.now()) ? 'Scheduled to Start at' : 'Started on '} \n${DateFormat.yMd().add_jms().format(widget.tempChain.at!)}",
+                    )
+                  : const SystemWaitActivity(taskText: 'Start'),
               if (widget.tempChain.activities.length == 1 &&
                   widget.tempChain.repeatType != repeatTypeDoesNotRepeat &&
                   (widget.tempChain.repeatCount - 1) != 0)

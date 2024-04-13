@@ -299,7 +299,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                               });
                             },
                             icon: Icon(
-                              running ? Icons.stop : Icons.pause,
+                              running ? Icons.pause : Icons.play_arrow,
                             ),
                           ),
                         )

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:chain_activities/models/chain_activity.dart';
 import 'package:chain_activities/screens/add_chain_screen.dart';
 import 'package:chain_activities/screens/chain_execution_screen.dart';
 import 'package:chain_activities/screens/play_chain_screen.dart';
@@ -39,21 +40,27 @@ class _ViewChainState extends State<ViewChain> {
 
   Future<void> playTheChain(BuildContext context) async {
     NavigatorState nav = Navigator.of(context);
-    if (chain.chainStatus == statusExecuting) {
-      await Provider.of<ChainList>(context, listen: false)
-          .stopChainExecution(chain);
+
+    chainList = Provider.of<ChainList>(context, listen: false);
+    Chain chainExecution = await chainList.startChainExecution(chain);
+
+    if (chainExecution.notificationId == trueInDB) {
+      await chainList.stopChainExecution(chain);
     } else {
       //await Provider.of<ChainList>(context, listen: false).loadActivities(chain);
-      Chain chainExecution =
-          await Provider.of<ChainList>(context, listen: false)
-              .startChainExecution(chain);
+      ChainActivity? chainActivityExecution =
+          chainList.getRunningChainActivity(chainExecution);
+
       await nav.pushNamed(
         PlayChain.routename,
         arguments: {
           payLoadChainExecId: chainExecution.chainExecutionId,
           payLoadChainName: chainExecution.title,
-          payLoadChainActivityIndex: 0,
+          payLoadChainActivityIndex: chainActivityExecution != null
+              ? chainActivityExecution.index
+              : chainExecution.activities.length - 1,
           payLoadChainActivityCount: chain.chainHistory.length,
+          payLoadChainAction: playChainActionPlay,
         },
       );
     }

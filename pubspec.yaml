@@ -55,6 +55,7 @@ flutter:
     - assets/AppIcons/chain.png
     - assets/AppIcons/vertical_chain.png
     - assets/Sounds/chain_activity_beep.mp3
+    - assets/Sounds/chain_activity_alarm.wav
     - assets/SampleChains/Sample_Diet_Routine_Chain.json
     - assets/SampleChains/Sample_Medicine_Routine_Chain.json
     - assets/SampleChains/Sample_Workout_Chain.json

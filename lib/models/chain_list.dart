@@ -142,6 +142,11 @@ class ChainList with ChangeNotifier {
     }
   }
 
+  Future<bool?> askForNotificationPermission() async {
+    return await notificationHelper.askNotificationPermission();
+  }
+
+  /*
   Future<Map<String, dynamic>> executeChainFurtherPossible(Chain executingChain,
       [int from = 0]) async {
     List<ChainActivity> chainActivities = executingChain.activities;
@@ -153,25 +158,25 @@ class ChainList with ChangeNotifier {
         chainActivityIndex++) {
       ChainActivity chainActivity = chainActivities[chainActivityIndex];
       if (chainActivity.endedAt != null) {
-        lastActivityEndedAt = chainActivity.endedAt ?? DateTime.now();
+        lastActivityEndedAt = chainActivity.endedAt!;
         continue;
       }
 
       chainActivity.at = chainActivity.at ?? lastActivityEndedAt;
 
-      if (chainActivity.activityDurationLeft != null) {
-        return {
-          "executingChain": executingChain,
-          "invokeCounter": chainActivityIndex,
-          "waitDuration": chainActivity.activityDurationLeft,
-          "chainActivity": chainActivity,
-          "playScreenType": chainActivity.activity.type,
-          "running": chainActivity.activityDurationLeft == null,
-          "screenImage":
-              chainActivity.activity.specification?[activitySpecImagePath],
-          "showTimer": false,
-        };
-      }
+      // if (chainActivity.activityDurationLeft != null) {
+      //   return {
+      //     "executingChain": executingChain,
+      //     "invokeCounter": chainActivityIndex,
+      //     "waitDuration": chainActivity.activityDurationLeft,
+      //     "chainActivity": chainActivity,
+      //     "playScreenType": chainActivity.activity.type,
+      //     "running": chainActivity.activityDurationLeft == null,
+      //     "screenImage":
+      //         chainActivity.activity.specification?[activitySpecImagePath],
+      //     "showTimer": false,
+      //   };
+      // }
 
       if (chainActivity.activityDuration.inSeconds == 0 &&
           chainActivity.activity.type == waitActivityInDB) {
@@ -243,6 +248,7 @@ class ChainList with ChangeNotifier {
       "showTimer": false,
     };
   }
+  */
 
   BannerAd addBannerAd() {
     BannerAd adBanner = BannerAd(
@@ -627,7 +633,7 @@ class ChainList with ChangeNotifier {
       return chainExecution;
     }
     //End: Workaround to avoid addition of unwanted chains under execution.
-
+    chainExecution.activities[0].activityDone = true;
     await addChainToHistory(chainExecution);
     int chainIndex = chains.indexWhere((sch) => sch.title == chain.title);
 
@@ -695,15 +701,17 @@ class ChainList with ChangeNotifier {
               : statusExecuting;
     }
 
-    if (chains[chainIndex].at != null) {
-      Chain chainInExecution = await startChainExecution(chains[chainIndex]);
-      await scheduleNotificationForExecution(
-          chainInExecution, chainInExecution.at!);
+    // if (chains[chainIndex].at != null) {
+    //   Chain chainInExecution = await startChainExecution(chains[chainIndex]);
+    //   await scheduleNotificationForExecution(
+    //       chainInExecution, chainInExecution.at!);
 
-      chains[chainIndex].notificationId = trueInDB;
-    } else {
-      chains[chainIndex].notificationId = noValueInDB;
-    }
+    //   chains[chainIndex].notificationId = trueInDB;
+    // } else {
+    //   chains[chainIndex].notificationId = noValueInDB;
+    // }
+
+    chains[chainIndex].notificationId = noValueInDB;
 
     await updateChain(chains[chainIndex]);
     notifyListeners();
@@ -1457,6 +1465,16 @@ class ChainList with ChangeNotifier {
     return null;
   }
 
+  ChainActivity? getRunningChainActivity(Chain chainExecution) {
+    for (int i = 0; i < chainExecution.activities.length; i++) {
+      if (chainExecution.activities[i].activityDone == true) {
+        continue;
+      }
+      return chainExecution.activities[i];
+    }
+    return null;
+  }
+
   List<Chain> getChainsByFilters(
       String filter, bool showFavorites, bool showRunning) {
     List<Chain> result = showFavorites ||
@@ -1644,7 +1662,53 @@ class ChainList with ChangeNotifier {
     return nextNotificationId;
   }
 
-  Future<DateTime?> scheduleNotificationForExecution(
+  Future<int> showNotification() async {
+    int nextNotificationId = getNextNotificationId();
+    return notificationHelper.showNotification(nextNotificationId);
+  }
+
+  Future<void> scheduleNotificationForActivityCompletion(
+    Chain chain,
+    ChainActivity chainActivity,
+    DateTime fromDateTime,
+  ) async {
+    chain.notificationId = trueInDB;
+    await updateChainExecution(chain);
+
+    int nextNotificationId = getNextNotificationId();
+    String activityTitle = chainActivity.activity.title;
+
+    if (chainActivity.startActivityNotificationId != noValueInDB) {
+      notificationHelper
+          .cancelNotificationById(chainActivity.startActivityNotificationId);
+    }
+    chainActivity.endActivityNotificationId =
+        await notificationHelper.scheduleNotification(
+      fromDateTime,
+      nextNotificationId,
+      chain.title,
+      chainActivity.activity.type == systemWaitActivityInDB
+          ? "Rest is Over, lets start your next Activity."
+          : "$activityTitle is Completed.",
+      {
+        payLoadChainName: chain.title,
+        payLoadChainExecId: chain.chainExecutionId,
+        payLoadWidgetUrl: PlayChain.routename,
+        payLoadChainActivityIndex: chainActivity.index,
+        payLoadChainActivityCount: chain.activities.length,
+        payLoadChainAction: playChainActionPlay,
+      },
+    );
+
+    await updateChainActivityExecutionByActivityId(
+      chain,
+      chainActivity,
+    );
+
+    notifyListeners();
+  }
+
+  /* Future<DateTime?> scheduleNotificationForExecution(
     Chain chain,
     DateTime fromDateTime,
   ) async {
@@ -1688,6 +1752,7 @@ class ChainList with ChangeNotifier {
           payLoadWidgetUrl: PlayChain.routename,
           payLoadChainActivityIndex: i + 1,
           payLoadChainActivityCount: chain.activities.length,
+          payLoadChainAction: playChainActionPlay,
         },
       );
 
@@ -1735,6 +1800,7 @@ class ChainList with ChangeNotifier {
           payLoadWidgetUrl: PlayChain.routename,
           payLoadChainActivityIndex: i + 2,
           payLoadChainActivityCount: chain.activities.length,
+          payLoadChainAction: playChainActionPlay,
         },
       );
 
@@ -1746,7 +1812,7 @@ class ChainList with ChangeNotifier {
     }
     notifyListeners();
     return noBreakChain ? fromDateTime : null;
-  }
+  } */
 
   Future<void> cancelScheduledNotificationExecution(Chain chain) async {
     //Cancel Notifications
