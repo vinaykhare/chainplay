@@ -1,4 +1,4 @@
-import 'package:chain_activities/widgets/chain_list_item.dart';
+import 'package:chain_activities/widgets/list_of_chains.dart';
 import 'package:flutter/material.dart';
 //import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
@@ -51,100 +51,12 @@ class _SearchChainScreenState extends State<SearchChainScreen> {
                         topLeft: Radius.circular(30),
                         topRight: Radius.circular(30)),
                   ),
-                  child: ListView.builder(
-                    reverse: true,
-                    itemCount: displayChains.length,
-                    itemBuilder: (context, index) {
-                      Chain chain = displayChains[index];
-                      //BannerAd? adChain = chain.adBanner;
-                      return ChainListItem(
-                        //adChain: adChain,
-                        chain: chain,
-                        showHistory: true,
-                        allowFlag: true,
-                        key: Key(
-                          index.toString(),
-                        ),
-                        index: index,
-                      );
-                    },
+                  child: ListOfChains(
+                    textFilter: textFilter,
+                    showAd: false,
+                    showChainControlSummary: false,
+                    showChainInReverse: true,
                   ),
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Card(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Theme.of(context).cardColor,
-                                Theme.of(context).primaryColor,
-                              ],
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                            ),
-                          ),
-                          child: TextButton.icon(
-                            icon: Icon(
-                              Icons.favorite,
-                              color: showFavorites
-                                  ? Theme.of(context).secondaryHeaderColor
-                                  : Theme.of(context).disabledColor,
-                            ),
-                            label: Text(
-                              "Favorites",
-                              style: Theme.of(context).textTheme.labelLarge,
-                            ),
-                            onPressed: () async {
-                              setState(() {
-                                showFavorites = !showFavorites;
-                              });
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Card(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Theme.of(context).cardColor,
-                                Theme.of(context).primaryColor,
-                              ],
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                            ),
-                          ),
-                          child: TextButton.icon(
-                            icon: Icon(
-                              Icons.run_circle,
-                              color: showRunning
-                                  ? Theme.of(context).secondaryHeaderColor
-                                  : Theme.of(context).disabledColor,
-                            ),
-                            label: Text(
-                              "Active",
-                              style: Theme.of(context).textTheme.labelLarge,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                showRunning = !showRunning;
-                              });
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
               ),
               AppBar(

@@ -1,4 +1,3 @@
-import 'package:chain_activities/models/chain_activity.dart';
 import 'package:chain_activities/screens/view_chain_screen.dart';
 import 'package:chain_activities/widgets/tile_time_format.dart';
 import 'package:flutter/material.dart';
@@ -32,17 +31,19 @@ class ChainTileView extends StatelessWidget {
       await chainList.stopChainExecution(chain);
     } else {
       //await Provider.of<ChainList>(context, listen: false).loadActivities(chain);
-      ChainActivity? chainActivityExecution =
-          chainList.getRunningChainActivity(chainExecution);
+      int runningChainActivityIndex =
+          chainList.getRunningChainActivityIndex(chainExecution);
+      // ChainActivity? chainActivityExecution = runningChainActivityIndex != -1
+      //     ? chainExecution.activities[runningChainActivityIndex]
+      //     : null;
 
       await nav.pushNamed(
         PlayChain.routename,
         arguments: {
           payLoadChainExecId: chainExecution.chainExecutionId,
           payLoadChainName: chainExecution.title,
-          payLoadChainActivityIndex: chainActivityExecution != null
-              ? chainActivityExecution.index
-              : chainExecution.activities.length - 1,
+          payLoadChainActivityIndex:
+              runningChainActivityIndex != -1 ? runningChainActivityIndex : 0,
           payLoadChainActivityCount: chain.chainHistory.length,
           payLoadChainAction: playChainActionPlay,
         },
@@ -58,12 +59,19 @@ class ChainTileView extends StatelessWidget {
     if (chainExecution == null) {
       await viewChain(context);
     } else {
+      ChainList chainList = Provider.of<ChainList>(context, listen: false);
+      int runningChainActivityIndex =
+          chainList.getRunningChainActivityIndex(chainExecution);
+      // ChainActivity? chainActivityExecution = runningChainActivityIndex != -1
+      //     ? chainExecution.activities[runningChainActivityIndex]
+      //     : null;
       await nav.pushNamed(
         PlayChain.routename,
         arguments: {
           payLoadChainExecId: chainExecution.chainExecutionId,
           payLoadChainName: chainExecution.title,
-          payLoadChainActivityIndex: 0, //0
+          payLoadChainActivityIndex:
+              runningChainActivityIndex != -1 ? runningChainActivityIndex : 0,
           payLoadChainActivityCount: chain.chainHistory.length,
           payLoadChainAction: playChainActionPause,
         },

@@ -1,8 +1,11 @@
 import 'package:chain_activities/helpers/constants.dart';
+import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/screens/add_chain_screen.dart';
 import 'package:chain_activities/screens/settings_screen.dart';
+import 'package:chain_activities/screens/view_chain_screen.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:chain_activities/screens/how_it_works.dart';
 import 'package:chain_activities/screens/chain_list_screen.dart';
@@ -90,7 +93,7 @@ class AppDrawer extends StatelessWidget {
               ),
               ListTile(
                 leading: const Icon(
-                  Icons.create_outlined,
+                  Icons.add_box_outlined,
                   size: 30,
                 ),
                 title: Text(
@@ -104,6 +107,39 @@ class AppDrawer extends StatelessWidget {
                   }
                   Navigator.of(context)
                       .pushReplacementNamed(AddChainScreen.routename);
+                },
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.upload_outlined,
+                  size: 30,
+                ),
+                title: Text(
+                  'Upload a Chain',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                subtitle: const Text("shared or downloaded from CAT"),
+                onTap: () async {
+                  NavigatorState nav = Navigator.of(context);
+                  ChainList chainList =
+                      Provider.of<ChainList>(context, listen: false);
+                  FilePickerResult? result =
+                      await FilePicker.platform.pickFiles();
+
+                  if (result != null) {
+                    Chain? chain =
+                        await chainList.uploadChain(result.files.single.path!);
+                    nav.pushNamed(
+                      ViewChain.routename,
+                      arguments: {
+                        "chain": chain ?? Chain(),
+                        "savedInDb": false,
+                        "invalidChain": chain == null,
+                      },
+                    );
+                  } else {
+                    // User canceled the picker
+                  }
                 },
               ),
             ],

@@ -196,13 +196,22 @@ class ChainExecutionScreen extends StatelessWidget {
                                           listen: false)
                                       .startChainExecution(chain);
                               //await chainList.loadActivities(chain);
-
+                              int runningChainActivityIndex = chainList
+                                  .getRunningChainActivityIndex(chainExecution);
+                              // ChainActivity? chainActivityExecution =
+                              //     runningChainActivityIndex != -1
+                              //         ? chainExecution
+                              //             .activities[runningChainActivityIndex]
+                              //         : null;
                               await nav
                                   .pushNamed(PlayChain.routename, arguments: {
                                 payLoadChainExecId:
                                     chainExecution.chainExecutionId,
                                 payLoadChainName: chainExecution.title,
-                                payLoadChainActivityIndex: 0,
+                                payLoadChainActivityIndex:
+                                    runningChainActivityIndex != -1
+                                        ? runningChainActivityIndex
+                                        : 0,
                                 payLoadChainActivityCount: chainHistory.length,
                                 payLoadChainAction: playChainActionPlay,
                               });

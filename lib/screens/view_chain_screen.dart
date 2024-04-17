@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:chain_activities/models/chain_activity.dart';
 import 'package:chain_activities/screens/add_chain_screen.dart';
 import 'package:chain_activities/screens/chain_execution_screen.dart';
 import 'package:chain_activities/screens/play_chain_screen.dart';
@@ -48,17 +47,19 @@ class _ViewChainState extends State<ViewChain> {
       await chainList.stopChainExecution(chain);
     } else {
       //await Provider.of<ChainList>(context, listen: false).loadActivities(chain);
-      ChainActivity? chainActivityExecution =
-          chainList.getRunningChainActivity(chainExecution);
+      int runningChainActivityIndex =
+          chainList.getRunningChainActivityIndex(chainExecution);
+      // ChainActivity? chainActivityExecution = runningChainActivityIndex != -1
+      //     ? chainExecution.activities[runningChainActivityIndex]
+      //     : null;
 
-      await nav.pushNamed(
+      await nav.pushReplacementNamed(
         PlayChain.routename,
         arguments: {
           payLoadChainExecId: chainExecution.chainExecutionId,
           payLoadChainName: chainExecution.title,
-          payLoadChainActivityIndex: chainActivityExecution != null
-              ? chainActivityExecution.index
-              : chainExecution.activities.length - 1,
+          payLoadChainActivityIndex:
+              runningChainActivityIndex != -1 ? runningChainActivityIndex : 0,
           payLoadChainActivityCount: chain.chainHistory.length,
           payLoadChainAction: playChainActionPlay,
         },

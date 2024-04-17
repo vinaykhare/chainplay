@@ -1465,14 +1465,14 @@ class ChainList with ChangeNotifier {
     return null;
   }
 
-  ChainActivity? getRunningChainActivity(Chain chainExecution) {
+  int getRunningChainActivityIndex(Chain chainExecution) {
     for (int i = 0; i < chainExecution.activities.length; i++) {
       if (chainExecution.activities[i].activityDone == true) {
         continue;
       }
-      return chainExecution.activities[i];
+      return i;
     }
-    return null;
+    return -1;
   }
 
   List<Chain> getChainsByFilters(
@@ -1682,6 +1682,11 @@ class ChainList with ChangeNotifier {
       notificationHelper
           .cancelNotificationById(chainActivity.startActivityNotificationId);
     }
+    if (chainActivity.endActivityNotificationId != noValueInDB) {
+      notificationHelper
+          .cancelNotificationById(chainActivity.endActivityNotificationId);
+    }
+
     chainActivity.endActivityNotificationId =
         await notificationHelper.scheduleNotification(
       fromDateTime,
@@ -1700,6 +1705,8 @@ class ChainList with ChangeNotifier {
       },
     );
 
+    chainActivity.endedAt =
+        DateTime.now().add(chainActivity.activityDurationLeft!);
     await updateChainActivityExecutionByActivityId(
       chain,
       chainActivity,

@@ -5,6 +5,7 @@ import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:chain_activities/screens/how_it_works.dart';
 import 'package:chain_activities/screens/load_screen.dart';
+import 'package:chain_activities/screens/play_chain_screen.dart';
 import 'package:chain_activities/screens/view_chain_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -34,6 +35,8 @@ class Redirect extends StatelessWidget {
           } else if (chainList.getSettingByKey(showHelpOnNextBootKey).value ==
               trueSettingValue) {
             return const HowItWorks();
+          } else if (chainList.notificationCameAs != null) {
+            return const PlayChain();
           } else {
             return const ChainListScreen();
           }
