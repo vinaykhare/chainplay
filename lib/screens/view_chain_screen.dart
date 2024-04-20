@@ -77,6 +77,14 @@ class _ViewChainState extends State<ViewChain> {
     return const Icon(Icons.play_arrow_outlined);
   }
 
+  Future<void> exitScreen() async {
+    NavigatorState nav = Navigator.of(context);
+    bool allWell = await onPopOut(false);
+    allWell && nav.canPop()
+        ? nav.pop()
+        : nav.pushReplacementNamed(ChainListScreen.routename);
+  }
+
   Future<bool> onPopOut(bool didPop) async {
     if (didPop) {
       return true;
@@ -145,16 +153,29 @@ class _ViewChainState extends State<ViewChain> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     if (invalidChain == false)
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ChainActivitiesWidget(
-                            tempChain: chain,
-                            editActivity: null,
-                            undoEdit: null,
+                      if (chain.activities.length >= 3)
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ChainActivitiesWidget(
+                              tempChain: chain,
+                              editActivity: null,
+                              undoEdit: null,
+                            ),
                           ),
-                        ),
-                      )
+                        )
+                      else
+                        Expanded(
+                          child: CircleAvatar(
+                            child: Center(
+                              child: Text(
+                                "An Empty Chain\n'${chain.title}'\n will be discarded\n\nEdit the Chain\nto add the activities",
+                                style: Theme.of(context).textTheme.displaySmall,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        )
                     else
                       Container(
                         padding: const EdgeInsets.all(50),
@@ -192,7 +213,9 @@ class _ViewChainState extends State<ViewChain> {
                             ]),
                       ),
                     const ShowBannerAd(),
-                    if (savedInDb == true && invalidChain == false)
+                    if (savedInDb == true &&
+                        invalidChain == false &&
+                        chain.activities.length >= 3)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
@@ -314,29 +337,77 @@ class _ViewChainState extends State<ViewChain> {
                         ],
                       ),
                     if (savedInDb == false && invalidChain == false)
-                      ElevatedButton(
-                        child: const Text("SAVE"),
-                        onPressed: () async {
-                          for (var chainActivity in chain.activities) {
-                            await chainList.addChain(chain, chainActivity);
-                          }
-                          setState(() {
-                            savedInDb = true;
-                          });
-                        },
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 5),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Theme.of(context).cardColor,
+                                    Theme.of(context).primaryColorDark,
+                                  ],
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: TextButton.icon(
+                                label: Text(
+                                  "Not OK! Discard this Chain",
+                                  style: Theme.of(context).textTheme.labelLarge,
+                                ),
+                                onPressed: exitScreen,
+                                icon: Icon(
+                                  Icons.delete_sharp,
+                                  color: Theme.of(context).colorScheme.shadow,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 5),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Theme.of(context).cardColor,
+                                    Theme.of(context).primaryColor,
+                                  ],
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: TextButton.icon(
+                                label: Text(
+                                  "Looks OK! Save this Chain",
+                                  style: Theme.of(context).textTheme.labelLarge,
+                                ),
+                                onPressed: () async {
+                                  for (var chainActivity in chain.activities) {
+                                    await chainList.addChain(
+                                        chain, chainActivity);
+                                  }
+                                  setState(() {
+                                    savedInDb = true;
+                                  });
+                                },
+                                icon: Icon(
+                                  Icons.save,
+                                  color: Theme.of(context).colorScheme.shadow,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         IconButton(
-                          onPressed: () async {
-                            NavigatorState nav = Navigator.of(context);
-                            bool allWell = await onPopOut(false);
-                            allWell && nav.canPop()
-                                ? nav.pop()
-                                : nav.pushReplacementNamed(
-                                    ChainListScreen.routename);
-                          },
+                          onPressed: exitScreen,
                           icon: const Icon(Icons.arrow_back),
                         ),
                         Text(

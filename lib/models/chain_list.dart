@@ -985,6 +985,7 @@ class ChainList with ChangeNotifier {
         ],
       );
       chain.activities = [];
+      await removeChain(chain);
     }
 
     updateActivityIndex(chain);
@@ -1079,7 +1080,9 @@ class ChainList with ChangeNotifier {
       newIndex += 1;
     }
 
-    if (chain.activities[newIndex].activity.title == systemWaitActivityTitle) {
+    if (chain.activities[newIndex].activity.title == systemWaitActivityTitle ||
+        chain.activities[newIndex].activity.title ==
+            systemStartActivityInTitle) {
       if (oldIndex > newIndex) {
         newIndex += 1;
       } else {

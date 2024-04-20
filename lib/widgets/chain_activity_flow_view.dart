@@ -99,6 +99,12 @@ class ChainActivityFlowView extends StatelessWidget {
                                                   .activity.specification![
                                               activitySpecImagePath],
                                           fit: BoxFit.cover,
+                                          imageErrorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  Image.asset(
+                                            assetMap['logoImage']!,
+                                            fit: BoxFit.cover,
+                                          ),
                                         )
                                       : Image.file(
                                           File(
@@ -206,6 +212,12 @@ class ChainActivityFlowView extends StatelessWidget {
                                                       .activity.specification![
                                                   activitySpecImagePath],
                                               fit: BoxFit.cover,
+                                              imageErrorBuilder: (context,
+                                                      error, stackTrace) =>
+                                                  Image.asset(
+                                                assetMap['logoImage']!,
+                                                fit: BoxFit.cover,
+                                              ),
                                             )
                                           : Image.file(
                                               File(

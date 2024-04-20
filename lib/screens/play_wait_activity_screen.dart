@@ -214,6 +214,12 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                                   image: screenImage!,
                                   height: appHeight * 0.45,
                                   fit: BoxFit.cover,
+                                  imageErrorBuilder:
+                                      (context, error, stackTrace) =>
+                                          Image.asset(
+                                    assetMap['logoImage']!,
+                                    fit: BoxFit.cover,
+                                  ),
                                 )
                               : Image.file(
                                   File(screenImage!),

@@ -190,11 +190,16 @@ class _HelpHeaderState extends State<HelpHeader> {
                 // child: FadeInImage.assetNetwork(
                 //   placeholder: assetMap["logoImage"]!,
                 //   image: headerSlideContent[page]["imageAsset"]!,
-                //   // image: headerSlideContent[page]["imageAsset"] != "" &&
-                //   //         headerSlideContent[page]["imageAsset"] != null
-                //   //     ? headerSlideContent[page]["imageAsset"]!
-                //   //     : assetMap["go_home"]!,
+                //   image: headerSlideContent[page]["imageAsset"] != "" &&
+                //            headerSlideContent[page]["imageAsset"] != null
+                //        ? headerSlideContent[page]["imageAsset"]!
+                //        : assetMap["go_home"]!,
                 //   fit: BoxFit.contain,
+                //   imageErrorBuilder: (context, error, stackTrace) =>
+                //       Image.asset(
+                //     assetMap['logoImage']!,
+                //     fit: BoxFit.cover,
+                //   ),
                 // ),
                 child: FadeInImage(
                   placeholder:

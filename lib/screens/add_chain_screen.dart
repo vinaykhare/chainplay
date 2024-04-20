@@ -62,6 +62,11 @@ class _AddChainScreenState extends State<AddChainScreen> {
   final TextEditingController addActivityController = TextEditingController();
   final TextEditingController activityImageController = TextEditingController();
 
+  final TextEditingController durationHourController = TextEditingController();
+  final TextEditingController durationMinuteController =
+      TextEditingController();
+  final TextEditingController durationSecondController =
+      TextEditingController();
   //String durHour = "", durMin = "", durSec = "";
   GlobalKey<FormState> chainFormKey = GlobalKey<FormState>();
   GlobalKey<FormState> durationFormKey = GlobalKey<FormState>();
@@ -123,11 +128,12 @@ class _AddChainScreenState extends State<AddChainScreen> {
     if (tempChain.activities.isEmpty &&
         tempChain.title != "" &&
         existingScreen) {
-      setState(() {
-        errorString =
-            "Add atleast one Timer Activity to this Chain.\n Or Remove the Chain Name and go back to Discard the Chain.";
-      });
-      return false;
+      // setState(() {
+      //   errorString =
+      //       "Add atleast one Timer Activity to this Chain.\n Or Remove the Chain Name and go back to Discard the Chain.";
+      // });
+      // return false;
+      await chainList.removeChain(tempChain);
     }
 
     if (tempChain.activities.isEmpty && tempChain.title == "") {
@@ -258,11 +264,11 @@ class _AddChainScreenState extends State<AddChainScreen> {
         minutes: activityDurationMinute,
         seconds: activityDurationSecond,
       );
-      if (activityImageController.text.isNotEmpty) {
-        chainActivityInEditMode!.activity.specification = {
-          activitySpecImagePath: activityImageController.text,
-        };
-      }
+      //if (activityImageController.text.isNotEmpty) {
+      chainActivityInEditMode!.activity.specification = {
+        activitySpecImagePath: activityImageController.text,
+      };
+      //}
 
       updateActivity(chainActivityInEditMode!);
       // if (chainActivityInEditMode?.activity.type ==
@@ -395,6 +401,15 @@ class _AddChainScreenState extends State<AddChainScreen> {
                 .activity.specification?[activitySpecImagePath] ??
             "";
       });
+      durationHourController.text = activityDurationHour == 0
+          ? ""
+          : activityDurationHour.toString().padLeft(2, '0');
+      durationMinuteController.text = activityDurationMinute == 0
+          ? ""
+          : activityDurationMinute.toString().padLeft(2, '0');
+      durationSecondController.text = activityDurationSecond == 0
+          ? ""
+          : activityDurationSecond.toString().padLeft(2, '0');
     }
     addActivityController.text = chainActivity.activity.title;
     // if (!updatingSystemWaitActivityInDB && !addingScheduleToChain) {
@@ -410,10 +425,6 @@ class _AddChainScreenState extends State<AddChainScreen> {
         pageTitle = tempChain.title;
         chainNameOnPageLoad = tempChain.title;
         //tempChain.loadActivities();
-
-        if (tempChain.activities.length == 1) {
-          editActivity(tempChain.activities[0]);
-        }
       } else {
         showSaveAndExit = true;
       }
@@ -442,7 +453,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
     //   },
     // );
 
-    final duraitonInputForm = Form(
+    final durationInputForm = Form(
       key: durationFormKey,
       child: Container(
         decoration: BoxDecoration(
@@ -450,8 +461,28 @@ class _AddChainScreenState extends State<AddChainScreen> {
         ),
         child: Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+              child: Text(
+                "Chain Activity Specifications",
+                style: Theme.of(context).textTheme.titleSmall,
+                //textAlign: TextAlign.left,
+              ),
+            ),
             Row(
               children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  child: IconButton(
+                    onPressed: null,
+                    icon: Icon(
+                      Icons.watch_later,
+                      color: Theme.of(context).shadowColor,
+                    ),
+                  ),
+                ),
                 Expanded(
                   child: TextFormField(
                     key: ValueKey(
@@ -460,9 +491,9 @@ class _AddChainScreenState extends State<AddChainScreen> {
                     keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.none,
                     textAlign: TextAlign.center,
-                    initialValue: activityDurationHour == 0
-                        ? null
-                        : activityDurationHour.toString().padLeft(2, '0'),
+                    // initialValue: activityDurationHour == 0
+                    //     ? null
+                    //     : activityDurationHour.toString().padLeft(2, '0'),
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
                       label: const Text("Hour"),
@@ -473,6 +504,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
                             ? int.parse(newValue)
                             : 0,
                     validator: (value) => validateHour(value),
+                    controller: durationHourController,
                   ),
                 ),
                 Expanded(
@@ -482,9 +514,9 @@ class _AddChainScreenState extends State<AddChainScreen> {
                     ),
                     keyboardType: TextInputType.number,
                     textAlign: TextAlign.center,
-                    initialValue: activityDurationMinute == 0
-                        ? null
-                        : activityDurationMinute.toString().padLeft(2, '0'),
+                    // initialValue: activityDurationMinute == 0
+                    //     ? null
+                    //     : activityDurationMinute.toString().padLeft(2, '0'),
                     onSaved: (newValue) => activityDurationMinute =
                         newValue != "" && newValue != null
                             ? int.parse(newValue)
@@ -498,6 +530,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
                           activityDurationMinute.toString().padLeft(2, '0'),
                     ),
                     validator: (value) => validateMinuteOrSecond(value),
+                    controller: durationMinuteController,
                   ),
                 ),
                 Expanded(
@@ -507,13 +540,14 @@ class _AddChainScreenState extends State<AddChainScreen> {
                     ),
                     keyboardType: TextInputType.number,
                     textAlign: TextAlign.center,
-                    initialValue: activityDurationSecond == 0
-                        ? null
-                        : activityDurationSecond.toString().padLeft(2, '0'),
+                    // initialValue: activityDurationSecond == 0
+                    //     ? null
+                    //     : activityDurationSecond.toString().padLeft(2, '0'),
                     onSaved: (newValue) => activityDurationSecond =
                         newValue != "" && newValue != null
                             ? int.parse(newValue)
                             : 0,
+                    onChanged: (value) {},
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
                       label: const Text("Second"),
@@ -522,6 +556,27 @@ class _AddChainScreenState extends State<AddChainScreen> {
                       alignLabelWithHint: true,
                     ),
                     validator: (value) => validateMinuteOrSecond(value),
+                    controller: durationSecondController,
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  child: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        durationHourController.clear();
+                        durationMinuteController.clear();
+                        durationSecondController.clear();
+                        activityDurationHour = 0;
+                        activityDurationMinute = 0;
+                        activityDurationSecond = 0;
+                      });
+                    },
+                    icon: const Icon(
+                      Icons.clear_all,
+                    ),
                   ),
                 ),
               ],
@@ -532,6 +587,33 @@ class _AddChainScreenState extends State<AddChainScreen> {
                     systemWaitActivityInDB)
               Row(
                 children: [
+                  Column(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.photo,
+                          ),
+                          onPressed: () async {
+                            XFile? pickedImage = await ImagePicker()
+                                .pickImage(source: ImageSource.gallery);
+                            if (pickedImage != null) {
+                              activityImageController.text = pickedImage.path;
+                            }
+                          },
+                        ),
+                      ),
+                      // const Padding(
+                      //   padding: EdgeInsets.symmetric(horizontal: 10),
+                      //   child: Text(
+                      //     "Select Local",
+                      //   ),
+                      // ),
+                    ],
+                  ),
                   Expanded(
                     child: TextFormField(
                       key: ValueKey(
@@ -552,30 +634,18 @@ class _AddChainScreenState extends State<AddChainScreen> {
                       ),
                     ),
                   ),
-                  Column(
-                    children: [
-                      TextButton.icon(
-                        label: Text("Select Image",
-                            style: Theme.of(context).textTheme.labelLarge),
-                        icon: Icon(
-                          Icons.photo,
-                          color: Theme.of(context).primaryColorDark,
-                        ),
-                        onPressed: () async {
-                          XFile? pickedImage = await ImagePicker()
-                              .pickImage(source: ImageSource.gallery);
-                          if (pickedImage != null) {
-                            activityImageController.text = pickedImage.path;
-                          }
-                        },
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    child: IconButton(
+                      onPressed: () {
+                        activityImageController.clear();
+                      },
+                      icon: const Icon(
+                        Icons.clear_all,
                       ),
-                      // const Padding(
-                      //   padding: EdgeInsets.symmetric(horizontal: 10),
-                      //   child: Text(
-                      //     "Select Local",
-                      //   ),
-                      // ),
-                    ],
+                    ),
                   ),
                 ],
               )
@@ -701,7 +771,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
               child: const ShowBannerAd(),
             ),
             if (addingDurationToActivity && tempChain.title.isNotEmpty)
-              duraitonInputForm,
+              durationInputForm,
             if (tempChain.activities.length <= 1 &&
                 tempChain.title.isNotEmpty &&
                 !addingDurationToActivity)
@@ -744,8 +814,8 @@ class _AddChainScreenState extends State<AddChainScreen> {
                             },
                             icon: Icon(
                               addingDurationToActivity
-                                  ? Icons.watch_off
-                                  : Icons.watch_outlined,
+                                  ? Icons.settings_suggest_outlined
+                                  : Icons.settings_suggest,
                               color: Theme.of(context).iconTheme.color,
                             ),
                           ),

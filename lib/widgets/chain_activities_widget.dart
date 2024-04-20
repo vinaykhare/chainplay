@@ -82,8 +82,9 @@ class _ChainActivitiesWidgetState extends State<ChainActivitiesWidget> {
                   widget.tempChain.repeatType != repeatTypeDoesNotRepeat &&
                   (widget.tempChain.repeatCount - 1) != 0)
                 SystemWaitActivityWithDuration(
-                    taskText:
-                        "And Repeats every ${widget.tempChain.repeatTypeGap} ${widget.tempChain.repeatType}.\n${(widget.tempChain.repeatCount - 1) > -1 ? 'Chain will repeat ${widget.tempChain.repeatCount - 1} more time${(widget.tempChain.repeatCount - 1) > 1 ? "s" : ""}.' : 'Repeat ends Never.'}")
+                  taskText:
+                      "And Repeats every ${widget.tempChain.repeatTypeGap} ${widget.tempChain.repeatType}.\n${(widget.tempChain.repeatCount - 1) > -1 ? 'Chain will repeat ${widget.tempChain.repeatCount - 1} more time${(widget.tempChain.repeatCount - 1) > 1 ? "s" : ""}.' : 'Repeat ends Never.'}",
+                )
             ],
           );
         case systemWaitActivityInDB:
