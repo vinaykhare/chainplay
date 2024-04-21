@@ -202,6 +202,11 @@ class _HelpHeaderState extends State<HelpHeader> {
                 //   ),
                 // ),
                 child: FadeInImage(
+                  imageErrorBuilder: (context, error, stackTrace) =>
+                      Image.asset(
+                    headerSlideContent[page]["imageAsset"]!,
+                    //fit: BoxFit.cover,
+                  ),
                   placeholder:
                       AssetImage(headerSlideContent[page]["imageAsset"]!),
                   image:

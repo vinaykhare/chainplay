@@ -36,7 +36,9 @@ const String catClockModeValue = "HH:MM:SS,HH:MM,AM/PM";
 const String trueSettingValue = "TRUE";
 const String falseSettingValue = "FALSE";
 const String settingDataTypeBool = "BOOL";
+const String settingDataTypeHiddenBool = "HIDDENBOOL";
 const String settingDataTypeList = "LIST";
+const String settingDataTypeHiddenList = "HIDDENLIST";
 
 //Notification Payload fields
 

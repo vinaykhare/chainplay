@@ -112,7 +112,7 @@ const sqlInitScript = [
   '''INSERT INTO settings(key, value, type) VALUES (
       '$showHelpOnNextBootKey', 
       '$trueSettingValue',
-      '$settingDataTypeBool'
+      '$settingDataTypeHiddenBool'
     )
   ''',
 ];
