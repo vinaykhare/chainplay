@@ -80,9 +80,11 @@ class ChainSystemWaitActivityFlow extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(
-                                  "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? 'before scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDuration)}${activities[index].activityDurationLeft != null ? '\nafter resuming.' : '.'}  ",
-                                  textAlign: TextAlign.center,
+                                Expanded(
+                                  child: Text(
+                                    "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? 'before scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDuration)}${activities[index].activityDurationLeft != null ? '\nafter resuming.' : '.'}  ",
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ),
                                 if (editActivity != null)
                                   Icon(activities[index].edit
@@ -111,11 +113,22 @@ class ChainSystemWaitActivityFlow extends StatelessWidget {
                                   ? Border.all(color: Colors.red)
                                   : null,
                             ),
-                            child: Text(
-                              chainActivity.edit
-                                  ? "Rest Duration will add here"
-                                  : "Tap to add rest\nbetween two timer activities",
-                              textAlign: TextAlign.center,
+                            child: Row(
+                              // mainAxisAlignment: MainAxisAlignment.center,
+                              // crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  chainActivity.edit
+                                      ? "Rest Duration will add here"
+                                      : "Tap to add rest\nbetween two timer activities",
+                                  textAlign: TextAlign.center,
+                                ),
+                                if (editActivity != null)
+                                  Icon(activities[index].edit
+                                      ? Icons.undo
+                                      : Icons.edit),
+                              ],
                             ),
                           ),
                 // : Icon(

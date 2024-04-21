@@ -15,14 +15,13 @@ import 'package:chain_activities/widgets/chain_activity_flow_view.dart';
 
 class ChainActivitiesWidget extends StatefulWidget {
   final Chain tempChain;
-  final Function? editActivity, undoEdit, addStartDateToChain;
+  final Function? editActivity, undoEdit;
 
   const ChainActivitiesWidget({
     super.key,
     required this.tempChain,
     required this.editActivity,
     required this.undoEdit,
-    this.addStartDateToChain,
   });
 
   @override
