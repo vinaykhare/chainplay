@@ -1033,7 +1033,6 @@ class ChainList with ChangeNotifier {
     setSetting(darkThemeSettingKey, falseSettingValue);
     setSetting(appSoundSettingKey, trueSettingValue);
     setSetting(showHelpOnNextBootKey, trueSettingValue);
-    setSetting(showHomeScreenTutorialKey, trueSettingValue);
     // setSetting(showHelpOnNextBootKey, trueSettingValue);
     // await DBHelper.insert("settings", {
     //   "key": "DARK THEME",

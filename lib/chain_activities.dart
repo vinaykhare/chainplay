@@ -1,6 +1,11 @@
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/screens/view_chain_screen.dart';
+import 'package:chain_activities/tutorial/screens/add_chain_screen_tutorial.dart';
+import 'package:chain_activities/tutorial/screens/chain_list_screen_tutorial.dart';
+import 'package:chain_activities/tutorial/screens/play_chain_screen_tutorial.dart';
+import 'package:chain_activities/tutorial/screens/play_wait_activity_screen_tutorial.dart';
+import 'package:chain_activities/tutorial/screens/view_chain_screen_tutorial.dart';
 import 'package:chain_activities/widgets/my_error_widget.dart';
 import 'package:chain_activities/widgets/redirect.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +13,7 @@ import 'package:provider/provider.dart';
 
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/screens/add_chain_screen.dart';
-import 'package:chain_activities/screens/how_it_works.dart';
+import 'package:chain_activities/tutorial/screens/how_it_works.dart';
 import 'package:chain_activities/screens/load_screen.dart';
 import 'package:chain_activities/screens/play_chain_screen.dart';
 import 'package:chain_activities/screens/play_wait_activity_screen.dart';
@@ -247,16 +252,24 @@ class ChainActivities extends StatelessWidget {
       navigatorKey: KeyHelper.navigatorKey,
       routes: {
         ChainListScreen.routename: (context) => const ChainListScreen(),
+        ChainListScreenTutorial.routename: (context) =>
+            const ChainListScreenTutorial(),
         AddChainScreen.routename: (context) => const AddChainScreen(),
+        AddChainScreenTutorial.routename: (context) =>
+            const AddChainScreenTutorial(),
         PlayChain.routename: (context) => const PlayChain(),
+        PlayChainTutorial.routename: (context) => const PlayChainTutorial(),
         SearchChainScreen.routename: (context) => const SearchChainScreen(),
         SettingsScreen.routename: (context) => const SettingsScreen(),
         PlayWaitActivity.routename: (context) => const PlayWaitActivity(),
+        PlayWaitActivityTutorial.routename: (context) =>
+            const PlayWaitActivityTutorial(),
         LoadScreen.routename: (context) => const LoadScreen(),
         HowItWorks.routename: (context) => const HowItWorks(),
         ChainExecutionScreen.routename: (context) =>
             const ChainExecutionScreen(),
         ViewChain.routename: (context) => const ViewChain(),
+        ViewChainTutorial.routename: (context) => const ViewChainTutorial(),
       },
     );
   }

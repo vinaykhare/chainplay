@@ -1,5 +1,4 @@
 import 'package:chain_activities/helpers/constants.dart';
-import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/screens/add_chain_screen.dart';
@@ -20,7 +19,6 @@ class ChainListHeader extends StatelessWidget {
       children: [
         Expanded(
           child: ListTile(
-            key: KeyHelper.homeCatKey,
             leading: Image.asset(assetMap["logoImage"]!),
             title: const Text(
               "C A T",
@@ -36,7 +34,6 @@ class ChainListHeader extends StatelessWidget {
         Semantics(
           label: "Create New Chain",
           child: IconButton(
-            key: KeyHelper.createNewChainButtonKey,
             onPressed: () {
               Navigator.of(context)
                   .pushReplacementNamed(AddChainScreen.routename);
@@ -50,7 +47,6 @@ class ChainListHeader extends StatelessWidget {
         Semantics(
           label: "Upload a chain in json format.",
           child: IconButton(
-            key: KeyHelper.uploadChainButtonKey,
             onPressed: () async {
               NavigatorState nav = Navigator.of(context);
               ChainList chainList =

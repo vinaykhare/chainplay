@@ -1,11 +1,8 @@
-import 'package:chain_activities/helpers/constants.dart';
-import 'package:chain_activities/helpers/key_helper.dart';
-import 'package:chain_activities/helpers/tutorial_coach.dart';
-import 'package:chain_activities/models/system_setting.dart';
 import 'package:chain_activities/screens/search_chain_screen.dart';
 import 'package:chain_activities/widgets/chain_list_header.dart';
 import 'package:chain_activities/widgets/list_of_chains.dart';
 import 'package:chain_activities/widgets/no_chains_view.dart';
+import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/models/chain.dart';
@@ -24,39 +21,16 @@ class ChainListScreen extends StatefulWidget {
 
 class _ChainListScreenState extends State<ChainListScreen> {
   late ChainList chainList;
-  late TutorialCoach tutorialCoach;
-  bool pageInit = true;
-
-  // void showTutorial() {
-  //   tutorialCoach.showTutorial(context);
-  // }
 
   // late ChainList chainList;
   @override
   Widget build(BuildContext context) {
-    if (pageInit) {
-      chainList = Provider.of<ChainList>(context, listen: true);
-      SystemSetting showHomeScreenTutorialSetting =
-          chainList.getSettingByKey(showHomeScreenTutorialKey);
-      if (showHomeScreenTutorialSetting.value.isEmpty ||
-          showHomeScreenTutorialSetting.value == trueSettingValue) {
-        TutorialCoach tutorialCoach = TutorialCoach(
-          chainList: chainList,
-          tutorialType: showHomeScreenTutorialKey,
-        );
-        tutorialCoach.createTutorial(context);
-        chainList.speakText(
-            "Header of CAT App contains its Logo with Couple of most frequently used buttons.");
-        tutorialCoach.showTutorial(context);
-      }
-      pageInit = false;
-    }
+    ChainList chainList = Provider.of<ChainList>(context, listen: true);
     List<Chain> chains = chainList.chains;
 
     final appBarWidget = AppBar(
       centerTitle: true,
       title: TextField(
-        key: KeyHelper.searchChainKey,
         keyboardType: TextInputType.none,
         cursorColor: Theme.of(context).cardColor,
         showCursor: false,
@@ -110,6 +84,15 @@ class _ChainListScreenState extends State<ChainListScreen> {
                       (chains.isNotEmpty)
                           ? const Expanded(child: ListOfChains())
                           : const Expanded(child: NoChainsView()),
+                      Container(
+                        margin: const EdgeInsets.all(5),
+                        //padding: const EdgeInsets.only(bottom: 5),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Theme.of(context).cardColor,
+                        ),
+                        child: const ShowBannerAd(),
+                      ),
                     ],
                   ),
                 ),

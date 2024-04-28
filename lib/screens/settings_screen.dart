@@ -1,5 +1,5 @@
 import 'package:chain_activities/helpers/constants.dart';
-import 'package:chain_activities/screens/how_it_works.dart';
+import 'package:chain_activities/tutorial/screens/how_it_works.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

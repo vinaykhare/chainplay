@@ -1,0 +1,475 @@
+import 'dart:async';
+
+import 'package:chain_activities/helpers/helper_functions.dart';
+import 'package:chain_activities/helpers/key_helper.dart';
+import 'package:chain_activities/tutorial/screens/chain_list_screen_tutorial.dart';
+import 'package:chain_activities/tutorial/screens/play_wait_activity_screen_tutorial.dart';
+import 'package:chain_activities/tutorial/screens/view_chain_screen_tutorial.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:chain_activities/helpers/constants.dart';
+import 'package:chain_activities/models/chain.dart';
+import 'package:chain_activities/models/chain_activity.dart';
+import 'package:chain_activities/models/chain_list.dart';
+import 'package:chain_activities/widgets/chain_activities_widget.dart';
+
+class PlayChainTutorial extends StatefulWidget {
+  static String routename = "play_chain";
+  const PlayChainTutorial({super.key});
+  @override
+  State<PlayChainTutorial> createState() => _PlayChainTutorialState();
+}
+
+class _PlayChainTutorialState extends State<PlayChainTutorial> {
+  late Chain chain;
+  late Chain parentChain;
+  late ChainList chainList;
+  int invokeCounter = 0;
+  ChainActivity? chainActivityPaused;
+  bool initializing = true;
+  String? playChainAction;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+  //     buildDone = true;
+  //   });
+  // }
+
+  Future<void> playTheChain() async {
+    dynamic popResponse;
+    NavigatorState nav = Navigator.of(context);
+    await chainList.loadInterstitialAd();
+    for (invokeCounter = 0;
+        invokeCounter < chain.activities.length;
+        invokeCounter++) {
+      ChainActivity chainActivity = chain.activities[invokeCounter];
+      if ((chainActivity.endedAt != null &&
+              chainActivity.activityDone == true) ||
+          chainActivity.activity.type == systemStartActivityInDB ||
+          (chainActivity.activity.type == systemWaitActivityInDB &&
+              chainActivity.activityDuration.inSeconds <= 0 &&
+              invokeCounter < chain.activities.length - 1)) {
+        chainActivity.endedAt = chainActivity.endedAt ?? DateTime.now();
+        continue;
+      }
+
+      if (chainActivity.endedAt != null &&
+          chainActivity.activityDone == false &&
+          chainActivity.endedAt!.isBefore(DateTime.now())) {
+        await cancelNotificationAndCompleteActivity(chain, chainActivity);
+        chainActivityPaused = null;
+        continue;
+      }
+
+      chainActivity.at = chainActivity.at ?? DateTime.now();
+
+      Duration waitDuration = chainActivity.activityDurationLeft != null
+          ? chainActivity.activityDurationLeft!
+          : chainActivity.activityDuration;
+      int playScreenType = invokeCounter >= chain.activities.length - 1
+          ? systemEndActivityInDB
+          : chainActivity.activity.type;
+      bool running = chainActivity.activityDurationLeft == null ||
+          playChainAction == playChainActionPlay;
+      String screenImage =
+          chainActivity.activity.specification?[activitySpecImagePath] ?? "";
+
+      // if (invokeCounter >= chain.activities.length) {
+      //   break;
+      // }
+
+      // if (parentChain.notificationId == trueInDB &&
+      //     waitDuration.inSeconds > 0) {
+      //   break;
+      // }
+
+      String textToSpeak = chainActivity.activity.type == systemWaitActivityInDB
+          ? invokeCounter < chain.activities.length - 1
+              ? "Take Rest. Next Activity will start ${HelperFunctions.durationToString(waitDuration)}."
+              : "Complete the chain by pressing done or go forward."
+          : "Activity ${chainActivity.activity.title} has started. It will complete ${HelperFunctions.durationToString(waitDuration)}.";
+      if (chainActivity.activityDurationLeft != null &&
+          waitDuration.inSeconds > 0 &&
+          playChainAction == playChainActionPause) {
+        textToSpeak += " after resuming.";
+      }
+      await chainList.speakTextWithoutWait(textToSpeak);
+      // while (!buildDone) {
+      //   Future.delayed(
+      //     const Duration(microseconds: 1),
+      //   );
+      // }
+      popResponse = await nav.pushNamed(
+        PlayWaitActivityTutorial.routename,
+        arguments: {
+          "waitDuration": waitDuration,
+          "chainActivity": chainActivity,
+          "playScreenType": playScreenType,
+          "running": running,
+          "screenImage": screenImage,
+          // "textToSpeak": textToSpeak,
+        },
+      );
+      await chainList.stopSpeech();
+
+      if (popResponse != null) {
+        if (popResponse["interruptAndCompleted"] == false) {
+          chainActivity.activityDurationLeft = popResponse["running"] == false
+              ? popResponse["waitDuration"]
+              : null;
+          // if (popResponse["resumedAt"] != null) {
+          //   chain.pivotDate = popResponse["resumedAt"];
+          // }
+          await chainList.updateChainActivityExecutionByActivityId(
+            chain,
+            chainActivity,
+          );
+          if (chainActivity.activityDurationLeft != null &&
+              chainActivity.activityDurationLeft!.inMicroseconds != 0) {
+            chainActivityPaused = chainActivity;
+            playChainAction = playChainActionPause;
+          }
+
+          break;
+        } else {
+          chainActivity.activityDurationLeft = null;
+          chainActivity.isInterrupted = true;
+        }
+      }
+
+      chainActivity.activityDone = true;
+      // chainActivity.endedAt = chainActivity.at!
+      //     .add(Duration(seconds: chainActivity.activityDuration.inSeconds));
+      chainActivity.endedAt = DateTime.now();
+      // if (chainActivity.activityDuration.inSeconds <= 0 &&
+      //     chainActivity.activity.type != systemStartActivityInDB &&
+      //     chainActivity.activity.type != systemWaitActivityInDB) {
+      //   chainActivity.endedAt = DateTime.now();
+      //   chain.pivotDate = chainActivity.endedAt!;
+      // }
+      // await chainList.updateChainExecution(chain);
+      await chainList.updateChainActivityExecutionByActivityId(
+        chain,
+        chainActivity,
+      );
+    }
+
+    if (popResponse != null && popResponse["interruptAndCompleted"] == false) {
+      // await chainList.scheduleNotification(
+      //     chain, DateTime.now(), invokeCounter);
+      if (popResponse["running"] == false &&
+          popResponse["waitDuration"] != null) {
+        chain.pivotDate = chain.pivotDate!.add(popResponse["waitDuration"]);
+        await chainList.updateChainExecution(chain);
+      }
+    } else {
+      // Chain parentChain =
+      //     chainList.chains.firstWhere((sch) => sch.title == chain.title);
+
+      chain.chainStatus = statusDone;
+      //parentChain.chainStatus = statusNotStarted;
+      chain.endedAt = DateTime.now();
+      //parentChain.endedAt = null;
+
+      //await chainList.updateChain(parentChain);
+      await chainList.updateChainExecution(chain);
+      if (chainList.interstitialAd != null) {
+        await chainList.interstitialAd!.show();
+      }
+      await chainList.completeTheChain(chain);
+    }
+    //nav.pop();
+  }
+
+  Future<void> cancelNotificationAndCompleteActivity(
+      Chain chain, ChainActivity chainActivity) async {
+    await chainList.cancelScheduledNotification(chain);
+    await chainList.cancelScheduledNotificationExecution(chain);
+    chainActivity.activityDurationLeft = null;
+    chainActivity.activityDone = true;
+    await chainList.updateChainActivityExecutionByActivityId(
+      chain,
+      chainActivity,
+    );
+  }
+
+  Future<bool> onPopOut() async {
+    await chainList.loadInterstitialAd();
+    if (chainList.interstitialAd != null) {
+      await chainList.interstitialAd!.show();
+      await chainList.interstitialAd!.dispose();
+    }
+    chainList.interstitialAd = null;
+    return true;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    chainList.disposeAds();
+  }
+
+  //Build Function
+
+  @override
+  Widget build(BuildContext context) {
+    if (initializing) {
+      chainList = Provider.of<ChainList>(context, listen: false);
+
+      // if (chainList.notificationCameForChain != null) {
+      //   chain = chainList.notificationCameForChain!;
+      //   chainList.notificationCameForChain = null;
+      // } else {
+      Map<String, dynamic> chArg;
+      if (chainList.notificationCameAs != null &&
+          chainList.notificationCameAs!.isNotEmpty) {
+        chArg = chainList.notificationCameAs!;
+      } else {
+        chArg =
+            ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+      }
+
+      playChainAction = chArg[payLoadChainAction];
+      invokeCounter = chArg[payLoadChainActivityIndex];
+
+      parentChain = chainList.chains
+          .firstWhere((ch) => ch.title == chArg[payLoadChainName]);
+      chain = parentChain.chainHistory.firstWhere(
+        (schEx) => schEx.chainExecutionId == chArg[payLoadChainExecId],
+      );
+
+      if (chain.activities[invokeCounter].activityDurationLeft != null &&
+          chain.activities[invokeCounter].activityDuration.inSeconds > 0) {
+        chainActivityPaused = chain.activities[invokeCounter];
+        if (chainActivityPaused!.endedAt != null &&
+            chainActivityPaused!.endedAt!.isBefore(DateTime.now())) {
+          cancelNotificationAndCompleteActivity(chain, chainActivityPaused!);
+          chainActivityPaused = null;
+        }
+      }
+
+      if (chain.chainStatus == statusExecuting &&
+          playChainAction == playChainActionPlay) {
+        playTheChain();
+      } else if (chain.chainStatus != statusExecuting) {
+        invokeCounter = chain.activities.length;
+      } else {
+        //
+      }
+
+      initializing = false;
+      chainList.notificationCameAs = null;
+    }
+    double appHeight = MediaQuery.of(context).size.height -
+        MediaQuery.of(context).viewPadding.top -
+        MediaQuery.of(context).viewPadding.bottom;
+    //double appWidth = MediaQuery.of(context).size.width - 16;
+    return Semantics(
+      label: "Play Chain Screen",
+      child: Scaffold(
+        body: SingleChildScrollView(
+          child: SafeArea(
+            child: SizedBox(
+              // margin: const EdgeInsets.only(top: 50),
+              // padding: const EdgeInsets.all(10),
+              height: appHeight,
+              child: Column(
+                key: KeyHelper.playChainKey,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ChainActivitiesWidget(
+                        tempChain: chain,
+                        editActivity: null,
+                        undoEdit: null,
+                      ),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      if (invokeCounter < chain.activities.length)
+                        TextButton.icon(
+                          onPressed: () async {
+                            chainList.stopChainExecution(parentChain);
+                            Navigator.of(context).pushReplacementNamed(
+                              ViewChainTutorial.routename,
+                              arguments: {
+                                "chain": parentChain,
+                              },
+                            );
+                          },
+                          style: ButtonStyle(
+                            iconColor: MaterialStateProperty.resolveWith(
+                              (states) => Theme.of(context).colorScheme.error,
+                            ),
+                          ),
+                          icon: Icon(
+                            key: KeyHelper.playChainStopChainKey,
+                            Icons.stop_circle,
+                          ),
+                          label: FittedBox(
+                            child: Text(
+                              "Stop Chain",
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                          ),
+                        ),
+                      if (chainActivityPaused != null &&
+                          chainActivityPaused!.endedAt == null &&
+                          chain.notificationId == noValueInDB)
+                        Expanded(
+                          child: Container(
+                            //width: appWidth / 2,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: Theme.of(context).primaryColor,
+                                  width: 5,
+                                ),
+                              ),
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(50),
+                                bottomLeft: Radius.circular(50),
+                              ),
+                            ),
+                            child: TextButton.icon(
+                              onPressed: () async {
+                                ScaffoldMessengerState scms =
+                                    ScaffoldMessenger.of(context);
+                                bool? permissionGranted = await chainList
+                                    .askForNotificationPermission();
+
+                                if (!(permissionGranted != null &&
+                                    permissionGranted == true)) {
+                                  scms.showSnackBar(const SnackBar(
+                                    content: Text(
+                                        "CAT do not have permission to send Notification."),
+                                  ));
+                                }
+
+                                // await chainList.showNotification();
+                                await chainList
+                                    .scheduleNotificationForActivityCompletion(
+                                  chain,
+                                  chainActivityPaused!,
+                                  DateTime.now().add(chainActivityPaused!
+                                      .activityDurationLeft!),
+                                );
+                              },
+                              style: ButtonStyle(
+                                iconColor: MaterialStateProperty.resolveWith(
+                                  (states) =>
+                                      Theme.of(context).colorScheme.error,
+                                ),
+                              ),
+                              icon: Icon(
+                                key: KeyHelper.playChainRunInBackgroundKey,
+                                Icons.notification_add_outlined,
+                              ),
+                              label: Text(
+                                chainActivityPaused!.activity.type !=
+                                            systemWaitActivityInDB &&
+                                        chainActivityPaused!.activity.type !=
+                                            systemStartActivityInDB
+                                    ? "Resume '${chainActivityPaused!.activity.title}' in Background"
+                                    : "Resume Chain & Notify when Rest is Over",
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () async {
+                          NavigatorState nav = Navigator.of(context);
+                          bool allWell = await onPopOut();
+                          allWell && nav.canPop()
+                              ? nav.pop()
+                              : nav
+                                  .pushNamed(ChainListScreenTutorial.routename);
+                        },
+                        icon: Icon(
+                          key: KeyHelper.playChainBackwardButtonKey,
+                          Icons.arrow_back,
+                        ),
+                      ),
+                      Expanded(
+                        child: TextFormField(
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.titleLarge,
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            floatingLabelAlignment:
+                                FloatingLabelAlignment.center,
+                            floatingLabelBehavior: FloatingLabelBehavior.never,
+                          ),
+                          initialValue: chain.title,
+                          enabled: false,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: invokeCounter < chain.activities.length
+                            ? (chainActivityPaused == null ||
+                                    chainActivityPaused!.endedAt == null)
+                                ? () {
+                                    chainActivityPaused = null;
+                                    //invokeCounter = 0;
+                                    playTheChain();
+                                  }
+                                : () async {
+                                    ScaffoldMessengerState scms =
+                                        ScaffoldMessenger.of(context);
+                                    if (chainActivityPaused!.endedAt!.isBefore(
+                                      DateTime.now(),
+                                    )) {
+                                      await cancelNotificationAndCompleteActivity(
+                                          chain, chainActivityPaused!);
+
+                                      chainActivityPaused = null;
+                                      invokeCounter++;
+                                    } else {
+                                      scms.showSnackBar(
+                                        SnackBar(
+                                          content: Text(chainActivityPaused!
+                                                          .activity.type ==
+                                                      systemWaitActivityInDB ||
+                                                  chainActivityPaused!
+                                                          .activity.type ==
+                                                      systemStartActivityInDB
+                                              ? "Take rest, CAT will notify when it is time to act"
+                                              : "Activity ${chainActivityPaused!.activity.title} is still running. CAT will notify on its completion."),
+                                        ),
+                                      );
+                                    }
+                                  }
+                            : null,
+                        icon: chainActivityPaused != null &&
+                                chainActivityPaused!.endedAt != null &&
+                                chainActivityPaused!.activityDone == false
+                            ? const Icon(Icons.refresh)
+                            : Icon(
+                                key: KeyHelper.playChainForwardButtonKey,
+                                Icons.arrow_forward,
+                              ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

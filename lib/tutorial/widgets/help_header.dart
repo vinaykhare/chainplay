@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:chain_activities/helpers/system_configuration.dart';
 import 'package:chain_activities/models/chain_list.dart';
-import 'package:chain_activities/screens/chain_list_screen.dart';
+import 'package:chain_activities/tutorial/screens/chain_list_screen_tutorial.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -72,7 +72,8 @@ class _HelpHeaderState extends State<HelpHeader> {
     } else {
       // page = 0;
       chainList.dontShowHelpOnNextLoad();
-      Navigator.of(context).pushReplacementNamed(ChainListScreen.routename);
+      Navigator.of(context)
+          .pushReplacementNamed(ChainListScreenTutorial.routename);
     }
   }
 
@@ -83,7 +84,8 @@ class _HelpHeaderState extends State<HelpHeader> {
     } else {
       // page = headerSlideContent.length - 1;
       chainList.dontShowHelpOnNextLoad();
-      Navigator.of(context).pushReplacementNamed(ChainListScreen.routename);
+      Navigator.of(context)
+          .pushReplacementNamed(ChainListScreenTutorial.routename);
     }
   }
 

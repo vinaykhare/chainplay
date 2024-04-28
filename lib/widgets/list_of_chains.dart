@@ -1,4 +1,3 @@
-import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/widgets/chain_list_item.dart';
@@ -45,41 +44,35 @@ class _ListOfChainsState extends State<ListOfChains> {
       children: [
         if (widget.showChainControlSummary == null ||
             widget.showChainControlSummary == true)
-          Column(
-            key: KeyHelper.chainControlSummaryKey,
-            children: [
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(30)),
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                ),
-                child: TextButton.icon(
-                  onPressed: () {
-                    setState(() {
-                      showChainControlSummary = !showChainControlSummary;
-                    });
-                  },
-                  icon: Icon(
-                    key: KeyHelper.minmaxChainControlSummaryKey,
-                    showChainControlSummary
-                        ? Icons.expand_more_rounded
-                        : Icons.expand_less_rounded,
-                    color: Colors.black,
-                  ),
-                  label: Text(
-                    "Summary of Chain Controls",
-                    style: Theme.of(context).textTheme.titleMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(Radius.circular(30)),
+              color: Theme.of(context).scaffoldBackgroundColor,
+            ),
+            child: TextButton.icon(
+              onPressed: () {
+                setState(() {
+                  showChainControlSummary = !showChainControlSummary;
+                });
+              },
+              icon: Icon(
+                showChainControlSummary
+                    ? Icons.expand_more_rounded
+                    : Icons.expand_less_rounded,
+                color: Colors.black,
               ),
-              if (showChainControlSummary &&
-                  (widget.showChainControlSummary == null ||
-                      widget.showChainControlSummary == true))
-                const ChainTileHelp(),
-            ],
+              label: Text(
+                "Summary of Chain Controls",
+                style: Theme.of(context).textTheme.titleMedium,
+                textAlign: TextAlign.center,
+              ),
+            ),
           ),
+        if (showChainControlSummary &&
+            (widget.showChainControlSummary == null ||
+                widget.showChainControlSummary == true))
+          const ChainTileHelp(),
 
         // Container(
         //   width: double.infinity,
@@ -100,7 +93,6 @@ class _ListOfChainsState extends State<ListOfChains> {
           const Divider(),
         Expanded(
           child: ReorderableListView.builder(
-            key: KeyHelper.chainListKey,
             //reverse: true,
             onReorder: (oldIndex, newIndex) =>
                 Provider.of<ChainList>(context, listen: false)

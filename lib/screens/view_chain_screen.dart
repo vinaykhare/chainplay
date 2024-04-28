@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/screens/add_chain_screen.dart';
 import 'package:chain_activities/screens/chain_execution_screen.dart';
 import 'package:chain_activities/screens/play_chain_screen.dart';
@@ -149,8 +148,6 @@ class _ViewChainState extends State<ViewChain> {
                 // margin: const EdgeInsets.only(top: 50),
                 // padding: const EdgeInsets.all(10),
                 height: appHeight,
-
-                key: KeyHelper.viewChainKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -3,7 +3,7 @@
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/screens/chain_list_screen.dart';
-import 'package:chain_activities/screens/how_it_works.dart';
+import 'package:chain_activities/tutorial/screens/how_it_works.dart';
 import 'package:chain_activities/screens/load_screen.dart';
 import 'package:chain_activities/screens/play_chain_screen.dart';
 import 'package:chain_activities/screens/view_chain_screen.dart';

@@ -307,7 +307,9 @@ class _PlayChainState extends State<PlayChain> {
                               (states) => Theme.of(context).colorScheme.error,
                             ),
                           ),
-                          icon: const Icon(Icons.stop_circle),
+                          icon: const Icon(
+                            Icons.stop_circle,
+                          ),
                           label: FittedBox(
                             child: Text(
                               "Stop Chain",
@@ -364,7 +366,9 @@ class _PlayChainState extends State<PlayChain> {
                                       Theme.of(context).colorScheme.error,
                                 ),
                               ),
-                              icon: const Icon(Icons.notification_add_outlined),
+                              icon: const Icon(
+                                Icons.notification_add_outlined,
+                              ),
                               label: Text(
                                 chainActivityPaused!.activity.type !=
                                             systemWaitActivityInDB &&
@@ -389,7 +393,9 @@ class _PlayChainState extends State<PlayChain> {
                               ? nav.pop()
                               : nav.pushNamed(ChainListScreen.routename);
                         },
-                        icon: const Icon(Icons.arrow_back),
+                        icon: const Icon(
+                          Icons.arrow_back,
+                        ),
                       ),
                       Expanded(
                         child: TextFormField(
@@ -445,7 +451,9 @@ class _PlayChainState extends State<PlayChain> {
                                 chainActivityPaused!.endedAt != null &&
                                 chainActivityPaused!.activityDone == false
                             ? const Icon(Icons.refresh)
-                            : const Icon(Icons.arrow_forward),
+                            : const Icon(
+                                Icons.arrow_forward,
+                              ),
                       ),
                     ],
                   ),

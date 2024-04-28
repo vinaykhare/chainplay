@@ -1,6 +1,6 @@
 import 'package:chain_activities/models/chain_list.dart';
-import 'package:chain_activities/screens/chain_list_screen.dart';
-import 'package:chain_activities/widgets/help_header.dart';
+import 'package:chain_activities/tutorial/screens/chain_list_screen_tutorial.dart';
+import 'package:chain_activities/tutorial/widgets/help_header.dart';
 import 'package:flutter/material.dart';
 import 'package:chain_activities/widgets/app_drawer.dart';
 // import 'package:pdf_render/pdf_render_widgets.dart';
@@ -24,7 +24,6 @@ class _HowItWorksState extends State<HowItWorks> {
     super.initState();
     chainList = Provider.of<ChainList>(context, listen: false);
     chainList.showHelpOnNextLoad();
-    chainList.loadSampleChainsFromAssets();
   }
 
   @override
@@ -147,7 +146,8 @@ class _HowItWorksState extends State<HowItWorks> {
                       NavigatorState nav = Navigator.of(context);
                       //await chainList.dontShowHelpOnNextLoad();
                       await chainList.stopSpeech();
-                      nav.pushReplacementNamed(ChainListScreen.routename);
+                      nav.pushReplacementNamed(
+                          ChainListScreenTutorial.routename);
                     },
                   ),
                 ), //appBarWidget,

@@ -7,7 +7,7 @@ import 'package:chain_activities/screens/view_chain_screen.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:chain_activities/screens/how_it_works.dart';
+import 'package:chain_activities/tutorial/screens/how_it_works.dart';
 import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:provider/provider.dart';
 

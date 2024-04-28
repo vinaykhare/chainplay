@@ -2,8 +2,22 @@ const int noValueInDB = -1;
 const int trueInDB = 1;
 const int falseInDB = 0;
 
-// Sample Chains
+// For Tutorial
 const String sampleWorkoutChainTitle = "Sample Workout Chain";
+const String idToStartViewChain =
+    "Now Lets take this Sample Workout Chain as an example to understand, what is chain?";
+const String idToStartAddChain =
+    "Now Lets press this edit button and check how add or edit chain screen looks.";
+const String idToGoBackToViewChain =
+    "Just press this back button when you are done with Chain Editing. It will automatically save the changes and exit from this screen.";
+const String idToPlayChain =
+    "Now we will see that how a chain can be played. We can play by pressing this button. This button is avialable on the Chain tile at Home screen too.";
+const String idToPauseTheChain =
+    "We can pause the chain activity and resume it back with this button and hence the chain.";
+const String idToGoToChainExecutionStatusScreen =
+    "Press the back button to pause the Chain (if running) and go to the Screen where we can see the Chain Execution Status and take actions on the Chain.";
+const String idToComeBackToHome =
+    "This quick tutorial has covered the major features of the app. Now explore yourself and reach out to us for any help. We hope that you will make the most out of this App. Lets press the back button to end this tutorial and go back to the home screen.";
 
 // Activity Specifications
 const String activitySpecImagePath = "imagePath";
@@ -34,8 +48,6 @@ const int setFailedDueToAppPermission = 2;
 const String appSoundSettingKey = "App Sound";
 const String darkThemeSettingKey = "DARK THEME";
 const String showHelpOnNextBootKey = "Need CAT Introduction?";
-const String showHomeScreenTutorialKey = "Show Home Screen Tutorial";
-const String showAddChainScreenTutorialKey = "Show Add Chain Screen Tutorial";
 const String catClockModeKey = "Cat Clock Mode";
 const String catClockModeValue = "HH:MM:SS,HH:MM,AM/PM";
 const String trueSettingValue = "TRUE";

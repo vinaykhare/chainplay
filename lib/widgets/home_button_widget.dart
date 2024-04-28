@@ -1,7 +1,7 @@
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/screens/add_chain_screen.dart';
-import 'package:chain_activities/screens/how_it_works.dart';
+import 'package:chain_activities/tutorial/screens/how_it_works.dart';
 import 'package:chain_activities/screens/view_chain_screen.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';

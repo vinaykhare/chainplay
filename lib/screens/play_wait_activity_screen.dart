@@ -191,8 +191,6 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
         body: SingleChildScrollView(
           child: SafeArea(
             child: SizedBox(
-              // margin: const EdgeInsets.only(top: 50),
-              // padding: const EdgeInsets.all(10),
               height: appHeight,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -287,7 +285,9 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                             "resumedAt": resumedAt,
                           });
                         },
-                        icon: const Icon(Icons.arrow_back),
+                        icon: const Icon(
+                          Icons.arrow_back,
+                        ),
                       ),
                       if (showPlayPause)
                         Expanded(
@@ -315,7 +315,9 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                         ),
                       IconButton(
                         onPressed: interruptAndCompleteActivity,
-                        icon: const Icon(Icons.arrow_forward),
+                        icon: const Icon(
+                          Icons.arrow_forward,
+                        ),
                       ),
                     ],
                   ),
