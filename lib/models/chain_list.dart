@@ -1033,6 +1033,7 @@ class ChainList with ChangeNotifier {
     setSetting(darkThemeSettingKey, falseSettingValue);
     setSetting(appSoundSettingKey, trueSettingValue);
     setSetting(showHelpOnNextBootKey, trueSettingValue);
+    setSetting(showHomeScreenTutorialKey, trueSettingValue);
     // setSetting(showHelpOnNextBootKey, trueSettingValue);
     // await DBHelper.insert("settings", {
     //   "key": "DARK THEME",
@@ -1186,7 +1187,10 @@ class ChainList with ChangeNotifier {
 
   //helper function
   SystemSetting getSettingByKey(String key) {
-    return systemSettings.firstWhere((set) => set.key == key);
+    return systemSettings.firstWhere(
+      (set) => set.key == key,
+      orElse: () => SystemSetting(),
+    );
   }
 
   //helper function
@@ -1308,21 +1312,34 @@ class ChainList with ChangeNotifier {
     }
   }
 
-  Future<int> setSetting(String key, String value) async {
+  Future<int> setSetting(String key, String value,
+      [String type = settingDataTypeHiddenBool]) async {
     //Notification specific check Start
     int setResponse = setSuccessful;
 
     //Notification specific check End
     int keyIndex = systemSettings.indexWhere((set) => set.key == key);
-    systemSettings[keyIndex].value = value;
-    await DBHelper.update(
-      'settings',
-      {
-        'value': value,
-      },
-      'key = ?',
-      [key],
-    );
+    if (keyIndex == -1) {
+      SystemSetting newSetting = SystemSetting();
+      newSetting.key = key;
+      newSetting.value = newSetting.value;
+      newSetting.type = type;
+      systemSettings.add(newSetting);
+      await DBHelper.insert(
+        'settings',
+        newSetting.toJson(),
+      );
+    } else {
+      systemSettings[keyIndex].value = value;
+      await DBHelper.update(
+        'settings',
+        {
+          'value': value,
+        },
+        'key = ?',
+        [key],
+      );
+    }
     notificationHelper.systemSetting = systemSettings;
     notifyListeners();
     return setResponse;
@@ -1354,6 +1371,12 @@ class ChainList with ChangeNotifier {
           await defaultAssetBundle.loadString(assetMap[sampleChainFileName]!);
       final sampleChainJson = jsonDecode(sampleChain);
       Chain loadedChain = Chain.fromJson(sampleChainJson);
+
+      int chainIndex = chains.indexWhere(
+          (chainElement) => chainElement.title == loadedChain.title);
+      if (chainIndex != -1) {
+        await removeChain(loadedChain);
+      }
       for (var chainActivity in loadedChain.activities) {
         await addChain(loadedChain, chainActivity);
       }

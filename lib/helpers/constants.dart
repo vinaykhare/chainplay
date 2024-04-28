@@ -2,6 +2,9 @@ const int noValueInDB = -1;
 const int trueInDB = 1;
 const int falseInDB = 0;
 
+// Sample Chains
+const String sampleWorkoutChainTitle = "Sample Workout Chain";
+
 // Activity Specifications
 const String activitySpecImagePath = "imagePath";
 
@@ -31,6 +34,8 @@ const int setFailedDueToAppPermission = 2;
 const String appSoundSettingKey = "App Sound";
 const String darkThemeSettingKey = "DARK THEME";
 const String showHelpOnNextBootKey = "Need CAT Introduction?";
+const String showHomeScreenTutorialKey = "Show Home Screen Tutorial";
+const String showAddChainScreenTutorialKey = "Show Add Chain Screen Tutorial";
 const String catClockModeKey = "Cat Clock Mode";
 const String catClockModeValue = "HH:MM:SS,HH:MM,AM/PM";
 const String trueSettingValue = "TRUE";

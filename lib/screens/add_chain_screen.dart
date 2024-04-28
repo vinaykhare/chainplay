@@ -1,3 +1,5 @@
+import 'package:chain_activities/helpers/tutorial_coach.dart';
+import 'package:chain_activities/models/system_setting.dart';
 import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:chain_activities/widgets/help_clip_horizontal.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
@@ -419,8 +421,20 @@ class _AddChainScreenState extends State<AddChainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ChainList chainList = Provider.of<ChainList>(context, listen: false);
     if (pageInit) {
       if (ModalRoute.of(context)?.settings.arguments != null) {
+        SystemSetting showAddChainScreenTutorialSetting =
+            chainList.getSettingByKey(showAddChainScreenTutorialKey);
+        if (showAddChainScreenTutorialSetting.value.isEmpty ||
+            showAddChainScreenTutorialSetting.value == trueSettingValue) {
+          TutorialCoach tutorialCoach = TutorialCoach(
+            chainList: chainList,
+            tutorialType: showAddChainScreenTutorialKey,
+          );
+          tutorialCoach.createTutorial(context);
+          tutorialCoach.showTutorial(context);
+        }
         tempChain = ModalRoute.of(context)?.settings.arguments as Chain;
         pageTitle = tempChain.title;
         chainNameOnPageLoad = tempChain.title;

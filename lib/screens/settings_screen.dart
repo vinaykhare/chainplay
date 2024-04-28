@@ -118,69 +118,68 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           dropdownValue = listOfValues.first;
                         }
 
-                        return (!settings[index].type.startsWith("HIDDEN"))
-                            ? Column(
-                                children: [
-                                  Row(
-                                    key: ValueKey(settings[index].key),
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                          child: Text(settings[index].key)),
-                                      if (settings[index].type ==
-                                          settingDataTypeBool)
-                                        Switch(
-                                          value: settings[index].value ==
-                                              trueSettingValue,
-                                          onChanged: (value) async {
-                                            await chainList.setSetting(
-                                              settings[index].key,
-                                              value == true
-                                                  ? trueSettingValue
-                                                  : falseSettingValue,
-                                            );
-                                          },
-                                        )
-                                      else if (settings[index].type == "LIST")
-                                        DropdownButton<String>(
-                                          value: dropdownValue,
-                                          onChanged: (String? value) async {
-                                            if (value == null || value == "") {
-                                              return;
-                                            }
+                        return Column(
+                          children: [
+                            Row(
+                              key: ValueKey(settings[index].key),
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(child: Text(settings[index].key)),
+                                if (settings[index].type ==
+                                        settingDataTypeBool ||
+                                    settings[index].type ==
+                                        settingDataTypeHiddenBool)
+                                  Switch(
+                                    value: settings[index].value ==
+                                        trueSettingValue,
+                                    onChanged: (value) async {
+                                      await chainList.setSetting(
+                                        settings[index].key,
+                                        value == true
+                                            ? trueSettingValue
+                                            : falseSettingValue,
+                                      );
+                                    },
+                                  )
+                                else if (settings[index].type ==
+                                    settingDataTypeList)
+                                  DropdownButton<String>(
+                                    value: dropdownValue,
+                                    onChanged: (String? value) async {
+                                      if (value == null || value == "") {
+                                        return;
+                                      }
 
-                                            listOfValues.remove(value);
-                                            listOfValues.insert(0, value);
-                                            String result = "";
-                                            for (String value in listOfValues) {
-                                              result += '$value,';
-                                            }
-                                            await chainList.setSetting(
-                                              settings[index].key,
-                                              result.substring(
-                                                  0, result.length - 1),
-                                            );
-                                          },
-                                          items: listOfValues
-                                              .map<DropdownMenuItem<String>>(
-                                                  (String value) {
-                                            return DropdownMenuItem<String>(
-                                              value: value,
-                                              child: Text(value),
-                                            );
-                                          }).toList(),
-                                        ),
-                                    ],
-                                  ),
-                                  Divider(
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                ],
-                              )
-                            : Container();
+                                      listOfValues.remove(value);
+                                      listOfValues.insert(0, value);
+                                      String result = "";
+                                      for (String value in listOfValues) {
+                                        result += '$value,';
+                                      }
+                                      await chainList.setSetting(
+                                        settings[index].key,
+                                        result.substring(0, result.length - 1),
+                                      );
+                                    },
+                                    items: listOfValues
+                                        .map<DropdownMenuItem<String>>(
+                                            (String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value),
+                                      );
+                                    }).toList(),
+                                  )
+                                else
+                                  Container(),
+                              ],
+                            ),
+                            Divider(
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ],
+                        );
                       },
                     ),
                   ),

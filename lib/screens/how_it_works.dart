@@ -24,6 +24,7 @@ class _HowItWorksState extends State<HowItWorks> {
     super.initState();
     chainList = Provider.of<ChainList>(context, listen: false);
     chainList.showHelpOnNextLoad();
+    chainList.loadSampleChainsFromAssets();
   }
 
   @override
