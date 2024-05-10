@@ -1,7 +1,6 @@
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/tutorial/tutorial_coach.dart';
-import 'package:chain_activities/models/system_setting.dart';
 import 'package:chain_activities/screens/search_chain_screen.dart';
 import 'package:chain_activities/tutorial/widgets/chain_list_header_tutorial.dart';
 import 'package:chain_activities/tutorial/widgets/list_of_chains_tutorial.dart';
@@ -14,7 +13,7 @@ import 'package:chain_activities/widgets/app_drawer.dart';
 //import 'package:chain_activities/widgets/app_drawer.dart';
 
 class ChainListScreenTutorial extends StatefulWidget {
-  static String routename = "/chains";
+  static String routename = "/chains_tutorial";
 
   const ChainListScreenTutorial({super.key});
 
@@ -37,27 +36,23 @@ class _ChainListScreenTutorialState extends State<ChainListScreenTutorial> {
   Widget build(BuildContext context) {
     if (pageInit) {
       chainList = Provider.of<ChainList>(context, listen: true);
-      SystemSetting showHomeScreenTutorialSetting =
-          chainList.getSettingByKey(showHelpOnNextBootKey);
-      if (showHomeScreenTutorialSetting.value.isEmpty ||
-          showHomeScreenTutorialSetting.value == trueSettingValue) {
-        TutorialCoach tutorialCoach = TutorialCoach(
-          chainList: chainList,
-          tutorialType: showHelpOnNextBootKey,
-        );
-        tutorialCoach.createTutorial(context);
-        chainList.speakText(
-            "Header of CAT App contains its Logo with Couple of most frequently used buttons.");
-        tutorialCoach.showTutorial(context);
-      }
+      TutorialCoach tutorialCoach = TutorialCoach(
+        chainList: chainList,
+        tutorialType: showHelpOnNextBootKey,
+      );
+      tutorialCoach.createTutorial(context);
+      chainList.speakText(
+          "Lets undestand the major functions of CAT App with this on screen tutorial. You have the option to skip this tutorial by pressing the Skip button, and you can tap anywhere on the screen to move to the next slide. This is the App's header with a couple of Buttons.");
+      tutorialCoach.showTutorial(context);
       pageInit = false;
     }
     List<Chain> chains = chainList.chains;
 
     final appBarWidget = AppBar(
-      key: KeyHelper.searchChainKey,
+      key: KeyHelper.chianListScreenAppBarkey,
       centerTitle: true,
       title: TextField(
+        key: KeyHelper.chianListSearchkey,
         keyboardType: TextInputType.none,
         cursorColor: Theme.of(context).cardColor,
         showCursor: false,

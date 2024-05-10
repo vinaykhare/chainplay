@@ -2,8 +2,8 @@ import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/tutorial/screens/chain_list_screen_tutorial.dart';
 import 'package:chain_activities/widgets/help_clip_horizontal.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 //import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/helpers/constants.dart';
@@ -17,7 +17,7 @@ import 'package:chain_activities/widgets/chain_activities_widget.dart';
 import 'package:uuid/uuid.dart';
 
 class AddChainScreenTutorial extends StatefulWidget {
-  static String routename = "/add_chains";
+  static String routename = "/add_chains_tutorial";
 
   const AddChainScreenTutorial({super.key});
 
@@ -601,10 +601,42 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
                             Icons.photo,
                           ),
                           onPressed: () async {
-                            XFile? pickedImage = await ImagePicker()
-                                .pickImage(source: ImageSource.gallery);
-                            if (pickedImage != null) {
-                              activityImageController.text = pickedImage.path;
+                            // XFile? pickedImage = await ImagePicker()
+                            //     .pickImage(source: ImageSource.gallery);
+                            // if (pickedImage != null) {
+                            //   // activityImageController.text = pickedImage.path;
+                            //   setState(() {
+                            //     localImagePath = pickedImage.path;
+                            //   });
+                            // }
+                            FilePickerResult? result =
+                                await FilePicker.platform.pickFiles(
+                              type: FileType.custom,
+                              allowedExtensions: [
+                                'jpg',
+                                'jpeg',
+                                'gif',
+                                'png',
+                                'webp',
+                                'svg',
+                                'jfif',
+                                'pjpeg',
+                                'pjp',
+                                'apng',
+                                'avif',
+                                'bmp',
+                                'tif',
+                                'tiff',
+                                'ico',
+                                'cur'
+                              ],
+                            );
+                            if (result != null) {
+                              activityImageController.text =
+                                  result.files.single.path!;
+                              setState(() {});
+                            } else {
+                              // User cancelled the picker
                             }
                           },
                         ),
@@ -722,7 +754,6 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
       //appBar: appBarWidget,
       body: SafeArea(
         child: Column(
-          key: KeyHelper.addChainKey,
           children: [
             Semantics(
               label: tempChain.title.isEmpty
@@ -749,6 +780,7 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
                 color: Theme.of(context).dividerTheme.color,
               ),
             Expanded(
+              key: KeyHelper.addChainKey,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Stack(

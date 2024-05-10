@@ -1,8 +1,8 @@
 import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:chain_activities/widgets/help_clip_horizontal.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 //import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/helpers/constants.dart';
@@ -93,13 +93,17 @@ class _AddChainScreenState extends State<AddChainScreen> {
   }
 
   Future<void> saveAndExit() async {
-    NavigatorState navigatorState = Navigator.of(context);
+    NavigatorState nav = Navigator.of(context);
     for (ChainActivity chainActivity in tempChain.activities) {
       undoEdit(chainActivity);
     }
     bool result = await validateForm();
     if (result) {
-      navigatorState.pushReplacementNamed(ChainListScreen.routename);
+      if (nav.canPop()) {
+        nav.pop();
+      } else {
+        nav.pushReplacementNamed(ChainListScreen.routename);
+      }
     }
   }
 
@@ -251,6 +255,18 @@ class _AddChainScreenState extends State<AddChainScreen> {
       });
       return;
     }
+
+    if (addActivityController.text.isEmpty &&
+        (activityImageController.text.isNotEmpty ||
+            activityDurationHour > 0 ||
+            activityDurationMinute > 0 ||
+            activityDurationSecond > 0)) {
+      setState(() {
+        errorString = "Add activity name";
+      });
+      return;
+    }
+
     if (addActivityController.text.isEmpty) {
       return;
     }
@@ -356,9 +372,10 @@ class _AddChainScreenState extends State<AddChainScreen> {
 
     setState(() {
       chainActivityInEditMode = null;
-      addingDurationToActivity = false;
+      // addingDurationToActivity = false;
       activityDurationHour = 0;
       activityDurationMinute = 0;
+      activityDurationSecond = 0;
       updatingSystemWaitActivityInDB = false;
     });
     focusScope.unfocus();
@@ -599,10 +616,42 @@ class _AddChainScreenState extends State<AddChainScreen> {
                             Icons.photo,
                           ),
                           onPressed: () async {
-                            XFile? pickedImage = await ImagePicker()
-                                .pickImage(source: ImageSource.gallery);
-                            if (pickedImage != null) {
-                              activityImageController.text = pickedImage.path;
+                            // XFile? pickedImage = await ImagePicker()
+                            //     .pickImage(source: ImageSource.gallery);
+                            // if (pickedImage != null) {
+                            //   // activityImageController.text = pickedImage.path;
+                            //   setState(() {
+                            //     localImagePath = pickedImage.path;
+                            //   });
+                            // }
+                            FilePickerResult? result =
+                                await FilePicker.platform.pickFiles(
+                              type: FileType.custom,
+                              allowedExtensions: [
+                                'jpg',
+                                'jpeg',
+                                'gif',
+                                'png',
+                                'webp',
+                                'svg',
+                                'jfif',
+                                'pjpeg',
+                                'pjp',
+                                'apng',
+                                'avif',
+                                'bmp',
+                                'tif',
+                                'tiff',
+                                'ico',
+                                'cur'
+                              ],
+                            );
+                            if (result != null) {
+                              activityImageController.text =
+                                  result.files.single.path!;
+                              setState(() {});
+                            } else {
+                              // User cancelled the picker
                             }
                           },
                         ),
@@ -616,24 +665,30 @@ class _AddChainScreenState extends State<AddChainScreen> {
                     ],
                   ),
                   Expanded(
-                    child: TextFormField(
-                      key: ValueKey(
-                        "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_image",
-                      ),
-                      keyboardType: TextInputType.url,
-                      textAlign: TextAlign.center,
-                      controller: activityImageController,
-                      // onSaved: (_) => chainActivityInEditMode!
-                      //         .activity.specification![activitySpecImagePath] =
-                      //     activityImageController.text,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        label: Text("Paste HTTP or Local Path or Image."),
-                        hintText: "https://",
-                        alignLabelWithHint: true,
-                        floatingLabelBehavior: FloatingLabelBehavior.never,
-                      ),
-                    ),
+                    child: activityImageController.text.startsWith("/")
+                        ? const Text(
+                            "Local Image is Set for this Activity",
+                            textAlign: TextAlign.center,
+                          )
+                        : TextFormField(
+                            key: ValueKey(
+                              "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_image",
+                            ),
+                            keyboardType: TextInputType.url,
+                            textAlign: TextAlign.center,
+                            controller: activityImageController,
+                            // onSaved: (_) => chainActivityInEditMode!
+                            //         .activity.specification![activitySpecImagePath] =
+                            //     activityImageController.text,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              label: Text("HTTP URL to an Image or a GIF"),
+                              hintText: "https://",
+                              alignLabelWithHint: true,
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.never,
+                            ),
+                          ),
                   ),
                   Container(
                     decoration: BoxDecoration(
@@ -642,6 +697,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
                     child: IconButton(
                       onPressed: () {
                         activityImageController.clear();
+                        setState(() {});
                       },
                       icon: const Icon(
                         Icons.clear_all,
@@ -675,13 +731,13 @@ class _AddChainScreenState extends State<AddChainScreen> {
                   ),
                 ),
                 initialValue: tempChain.title,
-                validator: (value) {
-                  if ((value == null || value == "") &&
-                      tempChain.activities.isNotEmpty) {
-                    return "Inesrt valid Chain Name";
-                  }
-                  return null;
-                },
+                // validator: (value) {
+                //   if ((value == null || value == "") &&
+                //       tempChain.activities.isNotEmpty) {
+                //     return "\tInsert a valid Chain Name";
+                //   }
+                //   return null;
+                // },
                 onSaved: (value) {
                   tempChain.title = value ?? "";
                 },
@@ -776,94 +832,86 @@ class _AddChainScreenState extends State<AddChainScreen> {
                 tempChain.title.isNotEmpty &&
                 !addingDurationToActivity)
               const HelpClipHorizontal(),
-            AppBar(
-              automaticallyImplyLeading: !updatingSystemWaitActivityInDB &&
-                  MediaQuery.of(context).viewInsets.bottom == 0,
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  if (showSaveAndExit &&
-                      (MediaQuery.of(context).viewInsets.bottom == 0 ||
-                          tempChain.title.isEmpty ||
-                          tempChain.title == ""))
-                    IconButton(
-                      onPressed: saveAndExit,
-                      icon: const Icon(Icons.arrow_back),
-                    ),
-                  if (!updatingSystemWaitActivityInDB &&
-                      tempChain.title.isNotEmpty)
-                    Expanded(
-                      child: TextField(
-                        cursorColor: Theme.of(context).shadowColor,
-                        focusNode: addActivityFocus,
-                        decoration: InputDecoration(
-                          floatingLabelBehavior: FloatingLabelBehavior.never,
-                          label: const Text(
-                            'Add Timer Activity to this Chain',
-                          ),
-                          border: const OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                          filled: true,
-                          prefixIcon: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                addingDurationToActivity =
-                                    !addingDurationToActivity;
-                              });
-                            },
-                            icon: Icon(
-                              addingDurationToActivity
-                                  ? Icons.settings_suggest_outlined
-                                  : Icons.settings_suggest,
-                              color: Theme.of(context).iconTheme.color,
-                            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                IconButton(
+                  onPressed: saveAndExit,
+                  icon: const Icon(Icons.arrow_back),
+                ),
+                if (!updatingSystemWaitActivityInDB &&
+                    tempChain.title.isNotEmpty)
+                  Expanded(
+                    child: TextField(
+                      cursorColor: Theme.of(context).shadowColor,
+                      focusNode: addActivityFocus,
+                      decoration: InputDecoration(
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
+                        label: const Text(
+                          'Chain Activity Name',
+                        ),
+                        border: const OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                        ),
+                        filled: true,
+                        prefixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              addingDurationToActivity =
+                                  !addingDurationToActivity;
+                            });
+                          },
+                          icon: Icon(
+                            addingDurationToActivity
+                                ? Icons.settings_suggest_outlined
+                                : Icons.settings_suggest,
+                            color: Theme.of(context).iconTheme.color,
                           ),
                         ),
-                        controller: addActivityController,
-                        onSubmitted: (_) {
-                          onSubmitText();
-                        },
+                      ),
+                      controller: addActivityController,
+                      onSubmitted: (_) {
+                        onSubmitText();
+                      },
+                    ),
+                  ),
+                if (updatingSystemWaitActivityInDB)
+                  IconButton(
+                    onPressed: () {
+                      undoEdit(chainActivityInEditMode!);
+                      // tempChain.at = null;
+                      // tempChain.repeatType = repeatTypeDoesNotRepeat;
+                      // tempChain.repeatCount = repeatTypeDefaultCount;
+                    },
+                    icon: const Icon(Icons.cancel_outlined),
+                  ),
+                if (tempChain.at != null)
+                  TextButton(
+                    onPressed: () {
+                      undoEdit(chainActivityInEditMode!);
+                      tempChain.at = null;
+                      tempChain.repeatType = repeatTypeDoesNotRepeat;
+                      tempChain.repeatCount = repeatTypeDefaultCount;
+                    },
+                    child: CircleAvatar(
+                      radius: 50,
+                      child: Text(
+                        "Remove\nAlarm",
+                        style: Theme.of(context).textTheme.labelSmall,
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                  if (updatingSystemWaitActivityInDB)
-                    IconButton(
-                      onPressed: () {
-                        undoEdit(chainActivityInEditMode!);
-                        // tempChain.at = null;
-                        // tempChain.repeatType = repeatTypeDoesNotRepeat;
-                        // tempChain.repeatCount = repeatTypeDefaultCount;
-                      },
-                      icon: const Icon(Icons.cancel_outlined),
-                    ),
-                  if (tempChain.at != null)
-                    TextButton(
-                      onPressed: () {
-                        undoEdit(chainActivityInEditMode!);
-                        tempChain.at = null;
-                        tempChain.repeatType = repeatTypeDoesNotRepeat;
-                        tempChain.repeatCount = repeatTypeDefaultCount;
-                      },
-                      child: CircleAvatar(
-                        radius: 50,
-                        child: Text(
-                          "Remove\nAlarm",
-                          style: Theme.of(context).textTheme.labelSmall,
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                  if (tempChain.title.isNotEmpty)
-                    IconButton(
-                      onPressed: onSubmitText,
-                      icon: chainActivityInEditMode != null
-                          ? const Icon(Icons.done_outline)
-                          : updatingSystemWaitActivityInDB
-                              ? const Icon(Icons.done)
-                              : const Icon(Icons.add_task_outlined),
-                    ),
-                ],
-              ),
+                  ),
+                if (tempChain.title.isNotEmpty)
+                  IconButton(
+                    onPressed: onSubmitText,
+                    icon: chainActivityInEditMode != null
+                        ? const Icon(Icons.done_outline)
+                        : updatingSystemWaitActivityInDB
+                            ? const Icon(Icons.done)
+                            : const Icon(Icons.add_task_outlined),
+                  ),
+              ],
             ),
           ],
         ),

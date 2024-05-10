@@ -85,6 +85,22 @@ class _ViewChainState extends State<ViewChain> {
         : nav.pushReplacementNamed(ChainListScreen.routename);
   }
 
+  Future<void> editChain() async {
+    if (chain.chainStatus == statusExecuting || invalidChain) {
+      return;
+    }
+    NavigatorState nav = Navigator.of(context);
+    bool allWell = await onPopOut(false);
+    if (allWell && savedInDb && !invalidChain) {
+      chain.edit = true;
+      await chainList.updateChain(chain, false);
+      await nav.pushNamed(
+        AddChainScreen.routename,
+        arguments: chain,
+      );
+    }
+  }
+
   Future<bool> onPopOut(bool didPop) async {
     if (didPop) {
       return true;
@@ -166,14 +182,61 @@ class _ViewChainState extends State<ViewChain> {
                         )
                       else
                         Expanded(
-                          child: CircleAvatar(
-                            child: Center(
-                              child: Text(
-                                "An Empty Chain\n'${chain.title}'\n will be discarded\n\nEdit the Chain\nto add the activities",
-                                style: Theme.of(context).textTheme.displaySmall,
-                                textAlign: TextAlign.center,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CircleAvatar(
+                                radius: appHeight * 0.2,
+                                child: Text(
+                                  "No use of a chain without a single activity in it",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .displaySmall
+                                      ?.copyWith(
+                                        color:
+                                            Theme.of(context).colorScheme.error,
+                                      ),
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
-                            ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: TextButton.icon(
+                                      onPressed: exitScreen,
+                                      icon: Icon(
+                                        Icons.arrow_back,
+                                        color:
+                                            Theme.of(context).colorScheme.error,
+                                      ),
+                                      label: Text(
+                                        "Discard the Chain",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: TextButton.icon(
+                                      onPressed: editChain,
+                                      icon: Icon(
+                                        Icons.edit,
+                                        color: Theme.of(context).cardColor,
+                                      ),
+                                      label: Text(
+                                        "Add activities",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         )
                     else
@@ -410,27 +473,15 @@ class _ViewChainState extends State<ViewChain> {
                           onPressed: exitScreen,
                           icon: const Icon(Icons.arrow_back),
                         ),
-                        Text(
-                          chain.title,
-                          style: Theme.of(context).textTheme.titleLarge,
+                        Expanded(
+                          child: Text(
+                            chain.title,
+                            style: Theme.of(context).textTheme.titleLarge,
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                         IconButton(
-                          onPressed: () async {
-                            if (chain.chainStatus == statusExecuting ||
-                                invalidChain) {
-                              return;
-                            }
-                            NavigatorState nav = Navigator.of(context);
-                            bool allWell = await onPopOut(false);
-                            if (allWell && savedInDb && !invalidChain) {
-                              chain.edit = true;
-                              await chainList.updateChain(chain, false);
-                              await nav.pushNamed(
-                                AddChainScreen.routename,
-                                arguments: chain,
-                              );
-                            }
-                          },
+                          onPressed: editChain,
                           icon: Icon(
                             Icons.edit,
                             color: invalidChain ||

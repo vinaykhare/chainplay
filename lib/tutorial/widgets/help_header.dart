@@ -70,10 +70,9 @@ class _HelpHeaderState extends State<HelpHeader> {
       page++;
       await speak();
     } else {
-      // page = 0;
-      chainList.dontShowHelpOnNextLoad();
-      Navigator.of(context)
-          .pushReplacementNamed(ChainListScreenTutorial.routename);
+      NavigatorState nav = Navigator.of(context);
+      await chainList.stopSpeech();
+      nav.pushReplacementNamed(ChainListScreenTutorial.routename);
     }
   }
 
@@ -82,10 +81,9 @@ class _HelpHeaderState extends State<HelpHeader> {
       page--;
       await speak();
     } else {
-      // page = headerSlideContent.length - 1;
-      chainList.dontShowHelpOnNextLoad();
-      Navigator.of(context)
-          .pushReplacementNamed(ChainListScreenTutorial.routename);
+      NavigatorState nav = Navigator.of(context);
+      await chainList.stopSpeech();
+      nav.pushReplacementNamed(ChainListScreenTutorial.routename);
     }
   }
 
@@ -203,18 +201,23 @@ class _HelpHeaderState extends State<HelpHeader> {
                 //     fit: BoxFit.cover,
                 //   ),
                 // ),
-                child: FadeInImage(
-                  imageErrorBuilder: (context, error, stackTrace) =>
-                      Image.asset(
-                    headerSlideContent[page]["imageAsset"]!,
-                    //fit: BoxFit.cover,
-                  ),
-                  placeholder:
-                      AssetImage(headerSlideContent[page]["imageAsset"]!),
-                  image:
-                      NetworkImage(headerSlideContent[page]["imageNetwork"]!),
-                  //fit: BoxFit.fill,
-                ),
+                child: headerSlideContent[page]["imageNetwork"] == ""
+                    ? Image.asset(
+                        headerSlideContent[page]["imageAsset"]!,
+                        //fit: BoxFit.cover,
+                      )
+                    : FadeInImage(
+                        imageErrorBuilder: (context, error, stackTrace) =>
+                            Image.asset(
+                          headerSlideContent[page]["imageAsset"]!,
+                          //fit: BoxFit.cover,
+                        ),
+                        placeholder:
+                            AssetImage(headerSlideContent[page]["imageAsset"]!),
+                        image: NetworkImage(
+                            headerSlideContent[page]["imageNetwork"]!),
+                        //fit: BoxFit.fill,
+                      ),
               ),
             ),
           ),
@@ -259,10 +262,11 @@ class _HelpHeaderState extends State<HelpHeader> {
                         incrementPage();
                         // resetTimer();
                       }),
-                      child: Text(
-                        page < (headerSlideContent.length - 1)
-                            ? "Next"
-                            : "Done",
+                      child: const Text(
+                        // page < (headerSlideContent.length - 1)
+                        //     ? "Next"
+                        //     : "Done",
+                        "Next",
                         textAlign: TextAlign.right,
                       ),
                     ),

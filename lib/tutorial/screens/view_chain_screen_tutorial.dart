@@ -16,7 +16,7 @@ import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/widgets/chain_activities_widget.dart';
 
 class ViewChainTutorial extends StatefulWidget {
-  static String routename = "view_chain";
+  static String routename = "view_chain_tutorial";
   const ViewChainTutorial({super.key});
   @override
   State<ViewChainTutorial> createState() => _ViewChainTutorialState();
@@ -149,8 +149,6 @@ class _ViewChainTutorialState extends State<ViewChainTutorial> {
                 // margin: const EdgeInsets.only(top: 50),
                 // padding: const EdgeInsets.all(10),
                 height: appHeight,
-
-                key: KeyHelper.viewChainKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -158,6 +156,7 @@ class _ViewChainTutorialState extends State<ViewChainTutorial> {
                     if (invalidChain == false)
                       if (chain.activities.length >= 3)
                         Expanded(
+                          key: KeyHelper.viewChainKey,
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: ChainActivitiesWidget(

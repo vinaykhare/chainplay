@@ -59,7 +59,7 @@ class ChainActivityFlowView extends StatelessWidget {
             },
             child: editActivity != null
                 ? ListTile(
-                    tileColor: Theme.of(context).cardColor,
+                    tileColor: Theme.of(context).cardColor.withOpacity(0.1),
                     onTap: () async {
                       if (!chainActivity.edit) {
                         editActivity!(chainActivity);

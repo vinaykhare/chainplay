@@ -38,8 +38,8 @@ class _ListOfChainsTutorialState extends State<ListOfChainsTutorial> {
   Widget build(BuildContext context) {
     // ChainList chainList = Provider.of<ChainList>(context, listen: true);
     // List<Chain> chains = chainList.chains;
-    displayChains = chainList.getChainsByFilters(
-        widget.textFilter ?? '', showFavorites, showRunning);
+    displayChains =
+        chainList.getChainsByFilters("Sample", showFavorites, showRunning);
     return Column(
       //crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -136,6 +136,7 @@ class _ListOfChainsTutorialState extends State<ListOfChainsTutorial> {
           ),
 
         Container(
+          key: KeyHelper.chainFiltersKey,
           decoration: BoxDecoration(
             color: Theme.of(context).primaryColor,
           ),
@@ -143,6 +144,7 @@ class _ListOfChainsTutorialState extends State<ListOfChainsTutorial> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
+                key: KeyHelper.favoriteChainFilterKey,
                 child: Card(
                   child: Container(
                     decoration: BoxDecoration(
@@ -176,6 +178,7 @@ class _ListOfChainsTutorialState extends State<ListOfChainsTutorial> {
                 ),
               ),
               Expanded(
+                key: KeyHelper.activeChainFilterKey,
                 child: Card(
                   child: Container(
                     decoration: BoxDecoration(

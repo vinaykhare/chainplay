@@ -1209,21 +1209,21 @@ class ChainList with ChangeNotifier {
     return time;
   }
 
-  Future<bool> dontShowHelpOnNextLoad() async {
-    int showHelpEntryIndex = systemSettings.indexWhere(
-      (set) => set.key == showHelpOnNextBootKey,
-    );
+  // Future<bool> dontShowHelpOnNextLoad() async {
+  //   int showHelpEntryIndex = systemSettings.indexWhere(
+  //     (set) => set.key == showHelpOnNextBootKey,
+  //   );
 
-    if (showHelpEntryIndex != -1 &&
-        systemSettings[showHelpEntryIndex].value == trueSettingValue) {
-      systemSettings[showHelpEntryIndex].value == falseSettingValue;
-      await setSetting(
-        showHelpOnNextBootKey,
-        falseSettingValue,
-      );
-    }
-    return true;
-  }
+  //   if (showHelpEntryIndex != -1 &&
+  //       systemSettings[showHelpEntryIndex].value == trueSettingValue) {
+  //     systemSettings[showHelpEntryIndex].value == falseSettingValue;
+  //     await setSetting(
+  //       showHelpOnNextBootKey,
+  //       falseSettingValue,
+  //     );
+  //   }
+  //   return true;
+  // }
 
   Future<bool> showHelpOnNextLoad() async {
     int showHelpEntryIndex = systemSettings.indexWhere(
@@ -1357,6 +1357,35 @@ class ChainList with ChangeNotifier {
     }
 
     return systemSettings;
+  }
+
+  Future<void> removeSampleChainsNotNeededForTutorial() async {
+    //Remove Sample Chains if already exists
+    for (String chainTitle in [
+      sampleMedicineRoutineChainTitle,
+      // sampleWorkoutChainTitle,
+      sampleDietRoutineChainTitle
+    ]) {
+      int chainIndex =
+          chains.indexWhere((chainElement) => chainElement.title == chainTitle);
+      if (chainIndex != -1) {
+        await removeChain(chains[chainIndex]);
+      }
+    }
+
+    // String sampleChain =
+    //     await defaultAssetBundle.loadString(assetMap['sample_workout_chain']!);
+    // final sampleChainJson = jsonDecode(sampleChain);
+    // Chain loadedChain = Chain.fromJson(sampleChainJson);
+
+    // int chainIndex = chains
+    //     .indexWhere((chainElement) => chainElement.title == loadedChain.title);
+    // if (chainIndex != -1) {
+    //   await removeChain(loadedChain);
+    // }
+    // for (var chainActivity in loadedChain.activities) {
+    //   await addChain(loadedChain, chainActivity);
+    // }
   }
 
   Future<void> loadSampleChainsFromAssets() async {

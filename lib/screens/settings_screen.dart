@@ -54,53 +54,55 @@ class _SettingsScreenState extends State<SettingsScreen> {
               //mainAxisAlignment: MainAxisAlignment.end,
               //crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                  ),
-                  child: TextButton.icon(
-                    label: Text(
-                      "Reset App to Factory Settings!",
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    onPressed: () async {
-                      await showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            content: Text(
-                              "Are you sure?",
-                              style: Theme.of(context).textTheme.titleLarge,
-                            ),
-                            actions: [
-                              IconButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                icon: const Icon(
-                                  Icons.close,
-                                ),
-                              ),
-                              IconButton(
-                                onPressed: () {
-                                  Provider.of<ChainList>(context, listen: false)
-                                      .clearDataBase();
-                                  Navigator.of(context).pop();
-                                },
-                                icon: const Icon(
-                                  Icons.check,
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                    icon: Icon(
-                      Icons.clear,
-                      color: Theme.of(context).shadowColor,
-                    ),
-                  ),
-                ),
+                // Container(
+                //   width: double.infinity,
+                //   decoration: BoxDecoration(
+                //     color: Theme.of(context).cardColor,
+                //   ),
+                //   child: TextButton.icon(
+                //     label: Text(
+                //       "Reset App to Factory Settings!",
+                //       style: Theme.of(context).textTheme.titleMedium,
+                //     ),
+                //     onPressed: () async {
+                //       await showDialog(
+                //         context: context,
+                //         builder: (context) {
+                //           return AlertDialog(
+                //             content: Text(
+                //               "Are you sure?",
+                //               style: Theme.of(context).textTheme.titleLarge,
+                //             ),
+                //             actions: [
+                //               IconButton(
+                //                 onPressed: () => Navigator.of(context).pop(),
+                //                 icon: const Icon(
+                //                   Icons.close,
+                //                 ),
+                //               ),
+                //               IconButton(
+                //                 onPressed: () async {
+                //                   NavigatorState nav = Navigator.of(context);
+                //                   await Provider.of<ChainList>(context,
+                //                           listen: false)
+                //                       .clearDataBase();
+                //                   nav.pop();
+                //                 },
+                //                 icon: const Icon(
+                //                   Icons.check,
+                //                 ),
+                //               ),
+                //             ],
+                //           );
+                //         },
+                //       );
+                //     },
+                //     icon: Icon(
+                //       Icons.clear,
+                //       color: Theme.of(context).shadowColor,
+                //     ),
+                //   ),
+                // ),
 
                 //const ShowBannerAd(),
                 Expanded(
@@ -125,11 +127,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Expanded(child: Text(settings[index].key)),
-                                if (settings[index].type ==
-                                        settingDataTypeBool ||
-                                    settings[index].type ==
-                                        settingDataTypeHiddenBool)
+                                if (!settings[index].type.startsWith("HIDDEN"))
+                                  Expanded(child: Text(settings[index].key)),
+                                if (settings[index].type == settingDataTypeBool)
                                   Switch(
                                     value: settings[index].value ==
                                         trueSettingValue,
@@ -175,9 +175,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   Container(),
                               ],
                             ),
-                            Divider(
-                              color: Theme.of(context).primaryColor,
-                            ),
+                            if (!settings[index].type.startsWith("HIDDEN"))
+                              Divider(
+                                color: Theme.of(context).primaryColor,
+                              ),
                           ],
                         );
                       },

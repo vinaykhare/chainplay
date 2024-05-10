@@ -14,7 +14,7 @@ import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/widgets/chain_activities_widget.dart';
 
 class PlayChainTutorial extends StatefulWidget {
-  static String routename = "play_chain";
+  static String routename = "play_chain_tutorial";
   const PlayChainTutorial({super.key});
   @override
   State<PlayChainTutorial> createState() => _PlayChainTutorialState();
@@ -112,7 +112,7 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
           // "textToSpeak": textToSpeak,
         },
       );
-      await chainList.stopSpeech();
+      // await chainList.stopSpeech();
 
       if (popResponse != null) {
         if (popResponse["interruptAndCompleted"] == false) {
@@ -276,11 +276,11 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
               // padding: const EdgeInsets.all(10),
               height: appHeight,
               child: Column(
-                key: KeyHelper.playChainKey,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
+                    key: KeyHelper.playChainKey,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: ChainActivitiesWidget(
@@ -295,6 +295,7 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
                     children: [
                       if (invokeCounter < chain.activities.length)
                         TextButton.icon(
+                          key: KeyHelper.playChainStopChainKey,
                           onPressed: () async {
                             chainList.stopChainExecution(parentChain);
                             Navigator.of(context).pushReplacementNamed(
@@ -309,8 +310,7 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
                               (states) => Theme.of(context).colorScheme.error,
                             ),
                           ),
-                          icon: Icon(
-                            key: KeyHelper.playChainStopChainKey,
+                          icon: const Icon(
                             Icons.stop_circle,
                           ),
                           label: FittedBox(
@@ -340,6 +340,7 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
                               ),
                             ),
                             child: TextButton.icon(
+                              key: KeyHelper.playChainRunInBackgroundKey,
                               onPressed: () async {
                                 ScaffoldMessengerState scms =
                                     ScaffoldMessenger.of(context);
@@ -369,8 +370,7 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
                                       Theme.of(context).colorScheme.error,
                                 ),
                               ),
-                              icon: Icon(
-                                key: KeyHelper.playChainRunInBackgroundKey,
+                              icon: const Icon(
                                 Icons.notification_add_outlined,
                               ),
                               label: Text(

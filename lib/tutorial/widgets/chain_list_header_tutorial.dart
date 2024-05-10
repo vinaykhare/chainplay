@@ -16,11 +16,11 @@ class ChainListHeaderTutorial extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      key: KeyHelper.homeCatKey,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
           child: ListTile(
-            key: KeyHelper.homeCatKey,
             leading: Image.asset(assetMap["logoImage"]!),
             title: const Text(
               "C A T",

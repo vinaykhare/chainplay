@@ -12,7 +12,7 @@ import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/models/system_setting.dart';
 
 class PlayWaitActivityTutorial extends StatefulWidget {
-  static String routename = "run_activity";
+  static String routename = "run_activity_tutorial";
   const PlayWaitActivityTutorial({super.key});
   @override
   State<PlayWaitActivityTutorial> createState() =>
@@ -75,9 +75,8 @@ class _PlayWaitActivityTutorialState extends State<PlayWaitActivityTutorial> {
           .playNotificationSound();
     }
 
-    if (seconds < 10) {
+    if (seconds < 1) {
       stopTimer();
-      // nav.pop();
     } else {
       setState(() {
         waitDuration = Duration(seconds: seconds);

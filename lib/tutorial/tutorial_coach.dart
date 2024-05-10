@@ -9,6 +9,7 @@ import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:chain_activities/tutorial/screens/add_chain_screen_tutorial.dart';
 import 'package:chain_activities/tutorial/screens/play_chain_screen_tutorial.dart';
 import 'package:chain_activities/tutorial/screens/view_chain_screen_tutorial.dart';
+import 'package:chain_activities/tutorial/widgets/skip_button.dart';
 import 'package:flutter/material.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
@@ -30,6 +31,13 @@ class TutorialCoach {
       navToComeBackToHome = false;
 
   TutorialCoachMark createTutorial(BuildContext context) {
+    // Start Load Sample Chains
+
+    sampleWorkoutChain = chainList.chains.firstWhere(
+        (chainElement) => chainElement.title == sampleWorkoutChainTitle,
+        orElse: () => Chain());
+    // End Load Sample Chains
+
     List<Map<String, dynamic>> tutorialItems =
         sysconfig.getTutorialItemsByType(context, tutorialType, chainList);
     for (Map<String, dynamic> tutorialItem in tutorialItems) {
@@ -80,17 +88,18 @@ class TutorialCoach {
     tutorialCoachMark = TutorialCoachMark(
       targets: targets,
       colorShadow: Colors.amber,
-      textSkip: "Skip the Tutorial",
+      skipWidget: const SkipButton(
+        onPressed: null,
+      ),
       paddingFocus: 10,
-      opacityShadow: 0.5,
+      opacityShadow: 0.1,
       imageFilter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
       onSkip: () {
-        chainList.stopSpeech();
-        chainList.setSetting(tutorialType, falseSettingValue);
+        endTutorial(context);
         return true;
       },
       onFinish: () {
-        chainList.setSetting(tutorialType, falseSettingValue);
+        endTutorial(context);
       },
       onClickTarget: (target) {
         speakNext(context, target);
@@ -107,8 +116,19 @@ class TutorialCoach {
     return tutorialCoachMark;
   }
 
-  void showTutorial(BuildContext context) {
+  void endTutorial(BuildContext context) {
+    chainList.stopSpeech();
+    chainList.setSetting(tutorialType, falseSettingValue);
+    // chainList.dontShowHelpOnNextLoad();
+    // chainList.showHelpOnNextLoad();
     chainList.loadSampleChainsFromAssets();
+    while (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    }
+    Navigator.of(context).pushReplacementNamed(ChainListScreen.routename);
+  }
+
+  void showTutorial(BuildContext context) {
     tutorialCoachMark.show(context: context);
   }
 
@@ -127,13 +147,20 @@ class TutorialCoach {
   Future<void> navigateToNexScreen(
       BuildContext context, TargetFocus target) async {
     switch (target.identify) {
+      // case idToShowHideAppDrawer:
+      //   ScaffoldState ss = Scaffold.of(context);
+      //   ss.openDrawer();
+      //   await Future.delayed(const Duration(seconds: 5));
+      //   ss.closeDrawer();
+      //   break;
+      case idToLoadSampleChainForTutorial:
+        chainList.removeSampleChainsNotNeededForTutorial();
+        break;
       case idToStartViewChain:
         if (navToViewChainCompleted == true) {
           break;
         }
-        sampleWorkoutChain = chainList.chains.firstWhere(
-            (chainElement) => chainElement.title == sampleWorkoutChainTitle,
-            orElse: () => Chain());
+
         Navigator.of(context)
             .pushNamed(ViewChainTutorial.routename, arguments: {
           "chain": sampleWorkoutChain,
@@ -144,9 +171,6 @@ class TutorialCoach {
         if (navToAddChainCompleted == true) {
           break;
         }
-        // Chain sampleWorkoutChain = chainList.chains.firstWhere(
-        //     (chainElement) => chainElement.title == sampleWorkoutChainTitle,
-        //     orElse: () => Chain());
         NavigatorState nav = Navigator.of(context);
         sampleWorkoutChain.edit = true;
         await chainList.updateChain(sampleWorkoutChain, false);
@@ -160,9 +184,6 @@ class TutorialCoach {
         if (navBackToViewChainCompleted == true) {
           break;
         }
-        // Chain sampleWorkoutChain = chainList.chains.firstWhere(
-        //     (chainElement) => chainElement.title == sampleWorkoutChainTitle,
-        //     orElse: () => Chain());
         NavigatorState nav = Navigator.of(context);
         sampleWorkoutChain.edit = false;
         await chainList.updateChain(sampleWorkoutChain, false);
@@ -173,9 +194,6 @@ class TutorialCoach {
         if (navToPlayChainCompleted == true) {
           break;
         }
-        // Chain sampleWorkoutChain = chainList.chains.firstWhere(
-        //     (chainElement) => chainElement.title == sampleWorkoutChainTitle,
-        //     orElse: () => Chain());
         NavigatorState nav = Navigator.of(context);
         Chain chainExecution =
             await chainList.startChainExecution(sampleWorkoutChain);
@@ -227,9 +245,6 @@ class TutorialCoach {
         if (navToChainExecutionStatusScreen == true) {
           break;
         }
-        // Chain sampleWorkoutChain = chainList.chains.firstWhere(
-        //     (chainElement) => chainElement.title == sampleWorkoutChainTitle,
-        //     orElse: () => Chain());
         NavigatorState nav = Navigator.of(context);
 
         nav.pop({
@@ -245,16 +260,7 @@ class TutorialCoach {
         if (navToComeBackToHome == true) {
           break;
         }
-        NavigatorState nav = Navigator.of(context);
-        // Chain sampleWorkoutChain = chainList.chains.firstWhere(
-        //     (chainElement) => chainElement.title == sampleWorkoutChainTitle,
-        //     orElse: () => Chain());
         await chainList.stopChainExecution(sampleWorkoutChain);
-
-        if (nav.canPop()) {
-          nav.pop();
-        }
-        await nav.pushReplacementNamed(ChainListScreen.routename);
         navToComeBackToHome = true;
         break;
       default:

@@ -2,8 +2,16 @@ const int noValueInDB = -1;
 const int trueInDB = 1;
 const int falseInDB = 0;
 
-// For Tutorial
 const String sampleWorkoutChainTitle = "Sample Workout Chain";
+const String sampleDietRoutineChainTitle = "Sample Diet Routine Chain";
+const String sampleMedicineRoutineChainTitle = "Sample Medicine Routine Chain";
+
+// For Tutorial
+
+// const String idToShowHideAppDrawer =
+//     "You can hide it or keep it, just by clicking this expand shrink button";
+const String idToLoadSampleChainForTutorial =
+    "If both the filters are selected then CAT will display both active and favorite chains. For example, if one chain is Favorite but not active and other chain is active but not favorite, then selecting both filters will disply both the chains.";
 const String idToStartViewChain =
     "Now Lets take this Sample Workout Chain as an example to understand, what is chain?";
 const String idToStartAddChain =
@@ -91,18 +99,12 @@ const Map<String, String> assetMap = {
   'chainImage': 'assets/AppIcons/chain.png',
   'verticalChainImage': 'assets/AppIcons/vertical_chain.png',
   'beepAudio': 'assets/Sounds/chain_activity_beep.mp3',
-  'go_home': 'assets/WhatIsCAT/go_home.png',
   'cat_intro': 'assets/WhatIsCAT/cat_intro.png',
-  'individual_chain': 'assets/WhatIsCAT/individual_chain.jpeg',
   'chains': 'assets/WhatIsCAT/chains.jpeg',
   'play_chain': 'assets/WhatIsCAT/play_chain.jpeg',
   'share_chain': 'assets/WhatIsCAT/share_chain.jpeg',
   'receive_chain': 'assets/WhatIsCAT/receive_chain.jpeg',
-  'upload_chain': 'assets/WhatIsCAT/upload_chain.jpeg',
   'create_chain': 'assets/WhatIsCAT/create_chain.jpeg',
-  'zero_duration': 'assets/WhatIsCAT/zero_duration.jpeg',
-  'settings': 'assets/WhatIsCAT/settings.jpeg',
-  'appdrawer': 'assets/WhatIsCAT/appdrawer.jpeg',
   'sample_diet_routine_chain':
       'assets/SampleChains/Sample_Diet_Routine_Chain.json',
   'sample_medicine_routine_chain':
