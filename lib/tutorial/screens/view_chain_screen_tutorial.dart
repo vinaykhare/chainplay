@@ -138,7 +138,7 @@ class _ViewChainTutorialState extends State<ViewChainTutorial> {
         MediaQuery.of(context).viewPadding.top -
         MediaQuery.of(context).viewPadding.bottom;
     return Semantics(
-      label: "View Chain Screen",
+      label: "View Chain Screen Tutorial",
       child: PopScope(
         canPop: false,
         onPopInvoked: onPopOut,

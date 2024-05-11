@@ -138,7 +138,7 @@ class ChainTileHelp extends StatelessWidget {
         //     ),
         //   ],
         // ),
-        // const Divider(),
+        const Divider(),
       ],
     );
   }

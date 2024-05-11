@@ -34,7 +34,7 @@ class ChainListHeaderTutorial extends StatelessWidget {
           ),
         ),
         Semantics(
-          label: "Create New Chain",
+          label: "Create New Chain Tutorial",
           child: IconButton(
             key: KeyHelper.createNewChainButtonKey,
             onPressed: () {
@@ -48,7 +48,7 @@ class ChainListHeaderTutorial extends StatelessWidget {
           ),
         ),
         Semantics(
-          label: "Upload a chain in json format.",
+          label: "Upload a chain in json format tutorial.",
           child: IconButton(
             key: KeyHelper.uploadChainButtonKey,
             onPressed: () async {

@@ -77,7 +77,7 @@ class _ChainListScreenTutorialState extends State<ChainListScreenTutorial> {
     // double appHeight =
     //     MediaQuery.of(context).size.height - appBarWidget.preferredSize.height;
     return Semantics(
-      label: "Home Screen with list of chains and other options.",
+      label: "Home Screen Tutorial with list of chains and other options.",
       child: Scaffold(
         drawer: const AppDrawer(),
         body: SafeArea(

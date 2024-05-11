@@ -267,7 +267,7 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
         MediaQuery.of(context).viewPadding.bottom;
     //double appWidth = MediaQuery.of(context).size.width - 16;
     return Semantics(
-      label: "Play Chain Screen",
+      label: "Play Chain Screen Tutorial",
       child: Scaffold(
         body: SingleChildScrollView(
           child: SafeArea(

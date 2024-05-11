@@ -187,7 +187,7 @@ class _PlayWaitActivityTutorialState extends State<PlayWaitActivityTutorial> {
         MediaQuery.of(context).viewPadding.bottom;
 
     return Semantics(
-      label: "Play Timer Screen",
+      label: "Play Timer Screen Tutorial",
       child: Scaffold(
         body: SingleChildScrollView(
           child: SafeArea(

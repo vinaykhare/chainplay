@@ -87,10 +87,10 @@ class _ListOfChainsState extends State<ListOfChains> {
         //   // ),
         //   child: const ChainTileHelp(),
         // ),
-        if (showChainControlSummary &&
-            (widget.showChainControlSummary == null ||
-                widget.showChainControlSummary == true))
-          const Divider(),
+        // if (showChainControlSummary &&
+        //     (widget.showChainControlSummary == null ||
+        //         widget.showChainControlSummary == true))
+        //   const Divider(),
         Expanded(
           child: ReorderableListView.builder(
             //reverse: true,

@@ -757,8 +757,8 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
           children: [
             Semantics(
               label: tempChain.title.isEmpty
-                  ? "Chain Input Form"
-                  : "Chain Input Form for : ${tempChain.title}",
+                  ? "Chain Input Form for Tutorial"
+                  : "Chain Input Form of : ${tempChain.title} for Tutorial",
               child: chainInputForm,
             ),
             if (errorString != "")
