@@ -42,7 +42,7 @@ class _ChainListScreenTutorialState extends State<ChainListScreenTutorial> {
       );
       tutorialCoach.createTutorial(context);
       chainList.speakText(
-          "Lets undestand the major functions of CAT App with this on screen tutorial. You have the option to skip this tutorial by pressing the Skip button, and you can tap anywhere on the screen to move to the next slide. This is the App's header with a couple of Buttons.");
+          "Lets undestand the major functions of CAT App with this on screen tutorial. You have the option to skip this tutorial by pressing the Close button, and you can tap anywhere on the screen to move to the next slide. This is the App's header with a couple of Buttons.");
       tutorialCoach.showTutorial(context);
       pageInit = false;
     }

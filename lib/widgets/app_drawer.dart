@@ -124,7 +124,10 @@ class AppDrawer extends StatelessWidget {
                   ChainList chainList =
                       Provider.of<ChainList>(context, listen: false);
                   FilePickerResult? result =
-                      await FilePicker.platform.pickFiles();
+                      await FilePicker.platform.pickFiles(
+                    type: FileType.custom,
+                    allowedExtensions: ["json"],
+                  );
 
                   if (result != null) {
                     Chain? chain =

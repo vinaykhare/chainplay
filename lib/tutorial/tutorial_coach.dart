@@ -88,8 +88,15 @@ class TutorialCoach {
     tutorialCoachMark = TutorialCoachMark(
       targets: targets,
       colorShadow: Colors.amber,
-      skipWidget: const SkipButton(
-        onPressed: null,
+      skipWidget: ListTile(
+        title: const SkipButton(
+          onPressed: null,
+        ),
+        subtitle: Text(
+          "Note: Tap anywhere on the screen to move to next Slide.",
+          style: Theme.of(context).textTheme.labelLarge,
+          textAlign: TextAlign.center,
+        ),
       ),
       paddingFocus: 10,
       opacityShadow: 0.1,
@@ -103,6 +110,7 @@ class TutorialCoach {
       },
       onClickTarget: (target) {
         speakNext(context, target);
+        navigateToNexScreen(context, target);
       },
       onClickTargetWithTapPosition: (target, tapDetails) async {
         speakNext(context, target);
@@ -160,17 +168,18 @@ class TutorialCoach {
         if (navToViewChainCompleted == true) {
           break;
         }
-
+        navToViewChainCompleted = true;
         Navigator.of(context)
             .pushNamed(ViewChainTutorial.routename, arguments: {
           "chain": sampleWorkoutChain,
         });
-        navToViewChainCompleted = true;
+
         break;
       case idToStartAddChain:
         if (navToAddChainCompleted == true) {
           break;
         }
+        navToAddChainCompleted = true;
         NavigatorState nav = Navigator.of(context);
         sampleWorkoutChain.edit = true;
         await chainList.updateChain(sampleWorkoutChain, false);
@@ -178,22 +187,22 @@ class TutorialCoach {
           AddChainScreenTutorial.routename,
           arguments: sampleWorkoutChain,
         );
-        navToAddChainCompleted = true;
         break;
       case idToGoBackToViewChain:
         if (navBackToViewChainCompleted == true) {
           break;
         }
+        navBackToViewChainCompleted = true;
         NavigatorState nav = Navigator.of(context);
         sampleWorkoutChain.edit = false;
         await chainList.updateChain(sampleWorkoutChain, false);
         nav.pop();
-        navBackToViewChainCompleted = true;
         break;
       case idToPlayChain:
         if (navToPlayChainCompleted == true) {
           break;
         }
+        navToPlayChainCompleted = true;
         NavigatorState nav = Navigator.of(context);
         Chain chainExecution =
             await chainList.startChainExecution(sampleWorkoutChain);
@@ -210,12 +219,12 @@ class TutorialCoach {
             payLoadChainAction: playChainActionPlay,
           },
         );
-        navToPlayChainCompleted = true;
         break;
       case idToPauseTheChain:
         if (navToPausedChainCompleted == true) {
           break;
         }
+        navToPausedChainCompleted = true;
 
         // NavigatorState nav = Navigator.of(context);
         // Chain chainExecution =
@@ -239,12 +248,12 @@ class TutorialCoach {
         //     payLoadChainAction: playChainActionPause,
         //   },
         // );
-        navToPausedChainCompleted = true;
         break;
       case idToGoToChainExecutionStatusScreen:
         if (navToChainExecutionStatusScreen == true) {
           break;
         }
+        navToChainExecutionStatusScreen = true;
         NavigatorState nav = Navigator.of(context);
 
         nav.pop({
@@ -253,15 +262,13 @@ class TutorialCoach {
           "interruptAndCompleted": false,
           "resumedAt": DateTime.now(),
         });
-
-        navToChainExecutionStatusScreen = true;
         break;
       case idToComeBackToHome:
         if (navToComeBackToHome == true) {
           break;
         }
-        await chainList.stopChainExecution(sampleWorkoutChain);
         navToComeBackToHome = true;
+        await chainList.stopChainExecution(sampleWorkoutChain);
         break;
       default:
       // NavigatorState nav = Navigator.of(context);
