@@ -1209,6 +1209,23 @@ class ChainList with ChangeNotifier {
     return time;
   }
 
+  bool nameExistInMemory(String title) {
+    int foundChainAtIndex = chains.indexWhere((chain) => chain.title == title);
+    return foundChainAtIndex != -1;
+  }
+
+  String getValidTitle(String titleProposed) {
+    String validTitle = titleProposed;
+    int suffixNumber = 0;
+    bool nameExist = nameExistInMemory(validTitle);
+    while (nameExist) {
+      suffixNumber++;
+      validTitle = "${titleProposed}_$suffixNumber";
+      nameExist = nameExistInMemory(validTitle);
+    }
+    return validTitle;
+  }
+
   // Future<bool> dontShowHelpOnNextLoad() async {
   //   int showHelpEntryIndex = systemSettings.indexWhere(
   //     (set) => set.key == showHelpOnNextBootKey,

@@ -147,6 +147,9 @@ class _ViewChainState extends State<ViewChain> {
         savedInDb = viewArgs['savedInDb'] ?? true;
         invalidChain = viewArgs['invalidChain'] ?? false;
       }
+      if (!savedInDb) {
+        chain.title = chainList.getValidTitle(chain.title);
+      }
       initializing = false;
     }
     double appHeight = MediaQuery.of(context).size.height -
