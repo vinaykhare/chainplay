@@ -1,3 +1,5 @@
+import 'package:chain_activities/helpers/constants.dart';
+import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:flutter/material.dart';
 //import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -12,6 +14,8 @@ class ChainListItem extends StatelessWidget {
   //final BannerAd? adChain;
   final Chain chain;
   final bool showHistory, allowFlag;
+  final String? tutorialChain;
+
   final int index;
 
   const ChainListItem({
@@ -21,11 +25,26 @@ class ChainListItem extends StatelessWidget {
     required this.showHistory,
     required this.allowFlag,
     required this.index,
+    this.tutorialChain,
   });
+
+  Key getGlobaleKey(String tutorialChain, Key defaultKey) {
+    switch (tutorialChain) {
+      case sampleWorkoutChainTitle:
+        return KeyHelper.sampleWorkoutChainViewKey;
+      case sampleDietRoutineChainTitle:
+        return KeyHelper.sampleDietChainViewKey;
+      case sampleMedicineRoutineChainTitle:
+        return KeyHelper.sampleMedicineChainViewKey;
+      default:
+        return defaultKey;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     ChainList chainList = Provider.of<ChainList>(context);
+
     return Dismissible(
       direction: DismissDirection.startToEnd,
       background: Container(
@@ -77,8 +96,9 @@ class ChainListItem extends StatelessWidget {
         chain: chain,
         showHistory: showHistory,
         allowFlag: allowFlag,
-        key: key,
+        key: tutorialChain != null ? getGlobaleKey(tutorialChain!, key!) : key,
         index: index,
+        tutorialChain: tutorialChain,
       ),
     );
   }

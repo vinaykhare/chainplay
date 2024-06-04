@@ -4,6 +4,7 @@ import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 const int sqfLiteDBVersion = 1;
@@ -129,7 +130,7 @@ List<Map<String, String>> headerSlideContent = [
     "imageNetwork": "",
     "title": "Thanks for choosing CAT",
     "speech":
-        "Thanks for choosing CAT. CAT is a tool to Chain your activities and Play it.",
+        "Thanks for choosing CAT. CAT is a tool to Chain your activities and Play it. Lets undestand the major functions of CAT App with a quick tutorial. You have the option to skip this tutorial by pressing the Close button, and you can tap anywhere on the screen to move to the next slide of this tutorial.",
   },
   {
     "imageAsset": assetMap["chains"]!,
@@ -146,37 +147,37 @@ List<Map<String, String>> headerSlideContent = [
   //   "speech":
   //       "This is how a Chain looks when we open it, just by tapping on it."
   // },
-  {
-    "imageAsset": assetMap["create_chain"]!,
-    "imageNetwork": "",
-    "title": "Create or Edit the Chain",
-    "speech":
-        "CAT provides a Simple User Interface to Create the Chain of Activities or Edit one.",
-  },
-  {
-    "imageAsset": assetMap["play_chain"]!,
-    "imageNetwork":
-        "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/gif/play_chain.gif?raw=true",
-    "title": "Play the Chain",
-    "speech":
-        "Chain plays interactively. If a timer is associated with the activity then activity ends on timer completion, else user will get the option to complete the activity manually.",
-  },
-  {
-    "imageAsset": assetMap["share_chain"]!,
-    "imageNetwork":
-        "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/gif/share_chain.gif?raw=true",
-    "title": "Share the Chain.",
-    "speech":
-        "You can share the Chain as a file using your favorite medium, or download it to the Downloads Folder of your device.",
-  },
-  {
-    "imageAsset": assetMap["receive_chain"]!,
-    "imageNetwork":
-        "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/gif/receive_chain.gif?raw=true",
-    "title": "Receive the Chain.",
-    "speech":
-        "And you can receive the Chain in a file. Open the Chain file using by sharing it with this App, or upload it using Upload button at home screen of the app.",
-  },
+  // {
+  //   "imageAsset": assetMap["create_chain"]!,
+  //   "imageNetwork": "",
+  //   "title": "Create or Edit the Chain",
+  //   "speech":
+  //       "CAT provides a Simple User Interface to Create the Chain of Activities or Edit one.",
+  // },
+  // {
+  //   "imageAsset": assetMap["play_chain"]!,
+  //   "imageNetwork":
+  //       "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/gif/play_chain.gif?raw=true",
+  //   "title": "Play the Chain",
+  //   "speech":
+  //       "Chain plays interactively. If a timer is associated with the activity then activity ends on timer completion, else user will get the option to complete the activity manually.",
+  // },
+  // {
+  //   "imageAsset": assetMap["share_chain"]!,
+  //   "imageNetwork":
+  //       "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/gif/share_chain.gif?raw=true",
+  //   "title": "Share the Chain.",
+  //   "speech":
+  //       "You can share the Chain as a file using your favorite medium, or download it to the Downloads Folder of your device.",
+  // },
+  // {
+  //   "imageAsset": assetMap["receive_chain"]!,
+  //   "imageNetwork":
+  //       "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/gif/receive_chain.gif?raw=true",
+  //   "title": "Receive the Chain.",
+  //   "speech":
+  //       "And you can receive the Chain in a file. Open the Chain file using by sharing it with this App, or upload it using Upload button at home screen of the app.",
+  // },
   // {
   //   "imageAsset": assetMap["upload_chain"]!,
   //   "imageNetwork":
@@ -264,11 +265,11 @@ List<Map<String, dynamic>> getTutorialItemsByType(
             shrinkWrap: true,
             children: [
               Text(
-                "CAT (Chain the Activities & Play it)",
+                "CAT Header",
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               Text(
-                "This is to help you with the major functions of this app to create and play the Chain of Activities.\nThis is the App's header with a couple of Buttons.",
+                "This is the App's header with a couple of Buttons.",
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ],
@@ -308,6 +309,14 @@ List<Map<String, dynamic>> getTutorialItemsByType(
               Text(
                 "This app allows us to Share the Chain or download the Chain in file format.\nThis button allows us to upload that file and create the Chain as per file configuration.",
                 style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              Image.asset(
+                assetMap["chain_file_view"]!,
+                fit: BoxFit.scaleDown,
+                height: (MediaQuery.of(context).size.height -
+                        MediaQuery.of(context).viewPadding.top -
+                        MediaQuery.of(context).viewPadding.bottom) *
+                    0.50,
               ),
             ],
           ),
@@ -355,26 +364,25 @@ List<Map<String, dynamic>> getTutorialItemsByType(
           "focusAlign": Alignment.bottomCenter,
           "contentAlign": ContentAlign.bottom,
         },
-        {
-          "title":
-              "You can hide it or keep it, just by clicking this expand shrink button",
-          "widgetToShow": ListView(
-            shrinkWrap: true,
-            children: [
-              Text(
-                "Hide Sumary of Chain Contorls",
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              Text(
-                "Click this button to shrink this banner or expand it back, as you like.",
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-            ],
-          ),
-          "globalKey": KeyHelper.minmaxChainControlSummaryKey,
-          "focusAlign": Alignment.bottomCenter,
-          "contentAlign": ContentAlign.bottom,
-        },
+        // {
+        //   "title": "You can hide it too",
+        //   "widgetToShow": ListView(
+        //     shrinkWrap: true,
+        //     children: [
+        //       Text(
+        //         "Hide Sumary of Chain Contorls",
+        //         style: Theme.of(context).textTheme.headlineSmall,
+        //       ),
+        //       Text(
+        //         "Click this button to shrink this banner or expand it back, as you like.",
+        //         style: Theme.of(context).textTheme.bodyLarge,
+        //       ),
+        //     ],
+        //   ),
+        //   "globalKey": KeyHelper.minmaxChainControlSummaryKey,
+        //   "focusAlign": Alignment.bottomCenter,
+        //   "contentAlign": ContentAlign.bottom,
+        // },
         {
           "title":
               "Bottom Bar of the App has a drawer at the left and a Search Text Box at the right. Pressing the App Drawer will open a Side Menu bar with all options like What is CAT which will Run this tutorial again, App Settings where you can switch to Dark Theme etcitra.",
@@ -386,8 +394,20 @@ List<Map<String, dynamic>> getTutorialItemsByType(
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               Text(
-                "Bottom Bar of the App has a drawer at the left and a Search Text Box at the right. Pressing the App Drawer will open a Side Menu bar with all options like What is CAT which will Run this tutorial again, App Settings where you can switch to Dark Theme etc.",
+                "Bottom Bar of the App has a drawer at the left and a Search Text Box at the right.\n",
                 style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              Text(
+                " Pressing the App Drawer will open a Side Menu bar with all options like What is CAT which will Run this tutorial again, App Settings where you can switch to Dark Theme etc.",
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              Image.asset(
+                assetMap["app_drawer"]!,
+                fit: BoxFit.scaleDown,
+                height: (MediaQuery.of(context).size.height -
+                        MediaQuery.of(context).viewPadding.top -
+                        MediaQuery.of(context).viewPadding.bottom) *
+                    0.50,
               ),
             ],
           ),
@@ -436,7 +456,8 @@ List<Map<String, dynamic>> getTutorialItemsByType(
           "contentAlign": ContentAlign.top,
         },
         {
-          "title": "Tap here to the chains that are marked Favorite by you.",
+          "title":
+              "Tap here to filter the chains that are marked Favorite by you.",
           "widgetToShow": ListView(
             shrinkWrap: true,
             children: [
@@ -445,8 +466,16 @@ List<Map<String, dynamic>> getTutorialItemsByType(
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               Text(
-                "On pressing this filter, home screen will show only the Favorite Chains. Tap this button back, if you wan to remove this filter.",
+                "On pressing this filter, home screen will show only the Favorite Chains. Tap this button back, if you want to remove this filter.",
                 style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              Image.asset(
+                assetMap["favorite_chain"]!,
+                fit: BoxFit.scaleDown,
+                height: (MediaQuery.of(context).size.height -
+                        MediaQuery.of(context).viewPadding.top -
+                        MediaQuery.of(context).viewPadding.bottom) *
+                    0.50,
               ),
             ],
           ),
@@ -456,7 +485,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
         },
         {
           "title":
-              "Tap here to the chains that has its instance active. Basically will filter the chains that are either running in backgroud or paused. And stopped chins will disappear. Similar to Favroite Chain Filter, we can press button again to remove the filter.",
+              "Tap here to filter the chains that has its instance active. This includes the chains running in background with activities scheduled to start.",
           "widgetToShow": ListView(
             shrinkWrap: true,
             children: [
@@ -465,8 +494,16 @@ List<Map<String, dynamic>> getTutorialItemsByType(
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               Text(
-                "On pressing this filter, home screen will show only the Favorite Chains. Tap this button back, if you wan to remove this filter.",
+                "On pressing this filter, home screen will show only the chains with Active Instances i.e. Running Chains. Tap this button back, if you wan to remove this filter.",
                 style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              Image.asset(
+                assetMap["running_chain"]!,
+                fit: BoxFit.scaleDown,
+                height: (MediaQuery.of(context).size.height -
+                        MediaQuery.of(context).viewPadding.top -
+                        MediaQuery.of(context).viewPadding.bottom) *
+                    0.50,
               ),
             ],
           ),
@@ -474,25 +511,25 @@ List<Map<String, dynamic>> getTutorialItemsByType(
           "focusAlign": Alignment.topCenter,
           "contentAlign": ContentAlign.top,
         },
-        {
-          "title": idToLoadSampleChainForTutorial,
-          "widgetToShow": ListView(
-            shrinkWrap: true,
-            children: [
-              Text(
-                "Filter Chain (Press Both)",
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              Text(
-                idToLoadSampleChainForTutorial,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-            ],
-          ),
-          "globalKey": KeyHelper.chainFiltersKey,
-          "focusAlign": Alignment.topCenter,
-          "contentAlign": ContentAlign.top,
-        },
+        // {
+        //   "title": idToLoadSampleChainForTutorial,
+        //   "widgetToShow": ListView(
+        //     shrinkWrap: true,
+        //     children: [
+        //       Text(
+        //         "Filter Chain (Press Both)",
+        //         style: Theme.of(context).textTheme.headlineSmall,
+        //       ),
+        //       Text(
+        //         idToLoadSampleChainForTutorial,
+        //         style: Theme.of(context).textTheme.bodyLarge,
+        //       ),
+        //     ],
+        //   ),
+        //   "globalKey": KeyHelper.chainFiltersKey,
+        //   "focusAlign": Alignment.topCenter,
+        //   "contentAlign": ContentAlign.top,
+        // },
         {
           "title": idToStartViewChain,
           "widgetToShow": ListView(
@@ -503,12 +540,12 @@ List<Map<String, dynamic>> getTutorialItemsByType(
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               Text(
-                "Lets take this Sample Workout Chain as an example to understand, what is chain?",
+                "Lets take this Sample Workout Chain as an example to understand a Chain and its features.",
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ],
           ),
-          "globalKey": KeyHelper.chainListKey,
+          "globalKey": KeyHelper.sampleWorkoutChainListItemKey,
           "focusAlign": Alignment.bottomCenter,
           "contentAlign": ContentAlign.top,
         },
@@ -529,7 +566,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
             ],
           ),
           "globalKey": KeyHelper.viewChainKey,
-          "focusAlign": Alignment.topLeft,
+          "focusAlign": Alignment.bottomCenter,
           "contentAlign": ContentAlign.bottom,
         },
         {
@@ -608,7 +645,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
             ],
           ),
           "globalKey": KeyHelper.addChainKey,
-          "focusAlign": Alignment.centerLeft,
+          "focusAlign": Alignment.topCenter,
           "contentAlign": ContentAlign.bottom,
         },
         {

@@ -13,7 +13,7 @@ const String sampleMedicineRoutineChainTitle = "Sample Medicine Routine Chain";
 const String idToLoadSampleChainForTutorial =
     "If both the filters are selected then CAT will display both active and favorite chains. For example, if one chain is Favorite but not active and other chain is active but not favorite, then selecting both filters will disply both the chains.";
 const String idToStartViewChain =
-    "Now Lets take this Sample Workout Chain as an example to understand, what is chain?";
+    "Now Lets take this Sample Workout Chain as an example to understand a Chain and its features";
 const String idToStartAddChain =
     "Now Lets press this edit button and check how add or edit chain screen looks.";
 const String idToGoBackToViewChain =
@@ -101,10 +101,10 @@ const Map<String, String> assetMap = {
   'beepAudio': 'assets/Sounds/chain_activity_beep.mp3',
   'cat_intro': 'assets/WhatIsCAT/cat_intro.png',
   'chains': 'assets/WhatIsCAT/chains.jpeg',
-  'play_chain': 'assets/WhatIsCAT/play_chain.jpeg',
-  'share_chain': 'assets/WhatIsCAT/share_chain.jpeg',
-  'receive_chain': 'assets/WhatIsCAT/receive_chain.jpeg',
-  'create_chain': 'assets/WhatIsCAT/create_chain.jpeg',
+  'app_drawer': 'assets/WhatIsCAT/app_drawer.jpeg',
+  'favorite_chain': 'assets/WhatIsCAT/favorite_chain.jpeg',
+  'running_chain': 'assets/WhatIsCAT/running_chain.jpeg',
+  'chain_file_view': 'assets/WhatIsCAT/chain_file_view.jpeg',
   'sample_diet_routine_chain':
       'assets/SampleChains/Sample_Diet_Routine_Chain.json',
   'sample_medicine_routine_chain':

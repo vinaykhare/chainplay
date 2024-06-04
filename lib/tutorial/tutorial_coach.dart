@@ -77,7 +77,10 @@ class TutorialCoach {
             TargetContent(
               align: contentAlign!,
               builder: (context, controller) {
-                return widgetToShow;
+                return Semantics(
+                  label: "Tutorial Widget to show.",
+                  child: widgetToShow,
+                );
               },
             ),
           ],
@@ -88,15 +91,16 @@ class TutorialCoach {
     tutorialCoachMark = TutorialCoachMark(
       targets: targets,
       colorShadow: Colors.amber,
-      skipWidget: ListTile(
-        title: const SkipButton(
+      skipWidget: const ListTile(
+        tileColor: Colors.transparent,
+        title: SkipButton(
           onPressed: null,
         ),
-        subtitle: Text(
-          "Note: Tap anywhere on the screen to move to next Slide.",
-          style: Theme.of(context).textTheme.labelLarge,
-          textAlign: TextAlign.center,
-        ),
+        // subtitle: Text(
+        //   "You can Tap Anywhere on the screen to move to the Next Slide",
+        //   textAlign: TextAlign.center,
+        //   style: Theme.of(context).textTheme.titleSmall,
+        // ),
       ),
       paddingFocus: 10,
       opacityShadow: 0.1,
@@ -161,9 +165,9 @@ class TutorialCoach {
       //   await Future.delayed(const Duration(seconds: 5));
       //   ss.closeDrawer();
       //   break;
-      case idToLoadSampleChainForTutorial:
-        chainList.removeSampleChainsNotNeededForTutorial();
-        break;
+      // case idToLoadSampleChainForTutorial:
+      //   chainList.removeSampleChainsNotNeededForTutorial();
+      //   break;
       case idToStartViewChain:
         if (navToViewChainCompleted == true) {
           break;

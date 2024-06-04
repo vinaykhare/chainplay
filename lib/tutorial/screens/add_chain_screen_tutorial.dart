@@ -812,25 +812,22 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
                 tempChain.title.isNotEmpty &&
                 !addingDurationToActivity)
               const HelpClipHorizontal(),
-            AppBar(
-              key: KeyHelper.addChainSaveAndExitKey,
-              automaticallyImplyLeading: !updatingSystemWaitActivityInDB &&
-                  MediaQuery.of(context).viewInsets.bottom == 0,
-              title: Row(
-                key: KeyHelper.addChainAddActivityBarKey,
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor,
+              ),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  if (showSaveAndExit &&
-                      (MediaQuery.of(context).viewInsets.bottom == 0 ||
-                          tempChain.title.isEmpty ||
-                          tempChain.title == ""))
-                    IconButton(
-                      onPressed: saveAndExit,
-                      icon: const Icon(Icons.arrow_back),
-                    ),
+                  IconButton(
+                    key: KeyHelper.addChainSaveAndExitKey,
+                    onPressed: saveAndExit,
+                    icon: const Icon(Icons.arrow_back),
+                  ),
                   if (!updatingSystemWaitActivityInDB &&
                       tempChain.title.isNotEmpty)
                     Expanded(
+                      key: KeyHelper.addChainAddActivityBarKey,
                       child: TextField(
                         cursorColor: Theme.of(context).shadowColor,
                         focusNode: addActivityFocus,

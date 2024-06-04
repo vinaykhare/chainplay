@@ -5,7 +5,20 @@ class KeyHelper {
       GlobalKey<NavigatorState>(debugLabel: "Chain_Activities_Debug_NavState");
 
   static GlobalKey homeCatKey = GlobalKey();
+
   static GlobalKey chainListKey = GlobalKey();
+  static GlobalKey sampleWorkoutChainListItemKey = GlobalKey();
+  static GlobalKey sampleDietChainListItemKey = GlobalKey();
+  static GlobalKey sampleMedicineChainListItemKey = GlobalKey();
+
+  static GlobalKey sampleWorkoutChainViewKey = GlobalKey();
+  static GlobalKey sampleDietChainViewKey = GlobalKey();
+  static GlobalKey sampleMedicineChainViewKey = GlobalKey();
+
+  static GlobalKey sampleWorkoutChainTileKey = GlobalKey();
+  static GlobalKey sampleDietChainTileKey = GlobalKey();
+  static GlobalKey sampleMedicineChainTileKey = GlobalKey();
+
   static GlobalKey chainControlSummaryKey = GlobalKey();
   static GlobalKey minmaxChainControlSummaryKey = GlobalKey();
   static GlobalKey chianListScreenAppBarkey = GlobalKey();

@@ -24,7 +24,6 @@ class ListOfChainsTutorial extends StatefulWidget {
 
 class _ListOfChainsTutorialState extends State<ListOfChainsTutorial> {
   bool showChainControlSummary = true;
-  List<Chain> displayChains = [];
   late ChainList chainList;
   bool showFavorites = false, showRunning = false;
 
@@ -38,8 +37,12 @@ class _ListOfChainsTutorialState extends State<ListOfChainsTutorial> {
   Widget build(BuildContext context) {
     // ChainList chainList = Provider.of<ChainList>(context, listen: true);
     // List<Chain> chains = chainList.chains;
-    displayChains =
-        chainList.getChainsByFilters("Sample", showFavorites, showRunning);
+    Chain sampleWorkoutChain = chainList.getChainsByFilters(
+        "Sample Workout Chain", showFavorites, showRunning)[0];
+    Chain sampleDietChain = chainList.getChainsByFilters(
+        "Sample Diet Routine Chain", showFavorites, showRunning)[0];
+    Chain sampleMedicineChain = chainList.getChainsByFilters(
+        "Sample Medicine Routine Chain", showFavorites, showRunning)[0];
     return Column(
       //crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -80,48 +83,38 @@ class _ListOfChainsTutorialState extends State<ListOfChainsTutorial> {
                 const ChainTileHelp(),
             ],
           ),
-
-        // Container(
-        //   width: double.infinity,
-        //   margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-        //   padding: const EdgeInsets.only(bottom: 8),
-        //   // decoration: BoxDecoration(
-        //   //   color: Theme.of(context).primaryColor,
-        //   //   border: Border.all(
-        //   //     width: 1,
-        //   //     color: Theme.of(context).scaffoldBackgroundColor,
-        //   //   ),
-        //   // ),
-        //   child: const ChainTileHelp(),
-        // ),
-        if (showChainControlSummary &&
-            (widget.showChainControlSummary == null ||
-                widget.showChainControlSummary == true))
-          const Divider(),
         Expanded(
-          child: ReorderableListView.builder(
-            key: KeyHelper.chainListKey,
-            //reverse: true,
-            onReorder: (oldIndex, newIndex) =>
-                Provider.of<ChainList>(context, listen: false)
-                    .rearrangeChains(oldIndex, newIndex),
-            itemCount: displayChains.length,
-            reverse: widget.showChainInReverse != null &&
-                widget.showChainInReverse == true,
-            itemBuilder: (context, index) {
-              Chain chain = displayChains[index];
-              //BannerAd? adChain = chain.adBanner;
-              return ChainListItem(
+          key: KeyHelper.chainListKey,
+          child: Column(
+            children: [
+              ChainListItem(
+                tutorialChain: sampleWorkoutChain.title,
                 //adChain: adChain,
-                chain: chain,
+                chain: sampleWorkoutChain,
                 showHistory: true,
                 allowFlag: true,
-                key: Key(
-                  index.toString(),
-                ),
-                index: index,
-              );
-            },
+                key: KeyHelper.sampleWorkoutChainListItemKey,
+                index: sampleWorkoutChain.index,
+              ),
+              ChainListItem(
+                tutorialChain: sampleDietChain.title,
+                //adChain: adChain,
+                chain: sampleDietChain,
+                showHistory: true,
+                allowFlag: true,
+                key: KeyHelper.sampleDietChainListItemKey,
+                index: sampleDietChain.index,
+              ),
+              ChainListItem(
+                tutorialChain: sampleMedicineChain.title,
+                //adChain: adChain,
+                chain: sampleMedicineChain,
+                showHistory: true,
+                allowFlag: true,
+                key: KeyHelper.sampleMedicineChainListItemKey,
+                index: sampleMedicineChain.index,
+              ),
+            ],
           ),
         ),
         if (widget.showAd == null || widget.showAd == true)
@@ -134,7 +127,6 @@ class _ListOfChainsTutorialState extends State<ListOfChainsTutorial> {
             ),
             child: const ShowBannerAd(),
           ),
-
         Container(
           key: KeyHelper.chainFiltersKey,
           decoration: BoxDecoration(

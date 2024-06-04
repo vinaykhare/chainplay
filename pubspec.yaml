@@ -62,7 +62,7 @@ flutter:
     - assets/SampleChains/Sample_Workout_Chain.json
     - assets/WhatIsCAT/cat_intro.png
     - assets/WhatIsCAT/chains.jpeg
-    - assets/WhatIsCAT/play_chain.jpeg
-    - assets/WhatIsCAT/share_chain.jpeg
-    - assets/WhatIsCAT/receive_chain.jpeg
-    - assets/WhatIsCAT/create_chain.jpeg
+    - assets/WhatIsCAT/app_drawer.jpeg
+    - assets/WhatIsCAT/chain_file_view.jpeg
+    - assets/WhatIsCAT/favorite_chain.jpeg
+    - assets/WhatIsCAT/running_chain.jpeg
