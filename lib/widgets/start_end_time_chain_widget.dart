@@ -56,9 +56,11 @@ class StartEndTimeChainWidget extends StatelessWidget {
               CircleAvatar(
                 radius: 30,
                 backgroundColor: Theme.of(context).disabledColor,
-                child: Text(
-                  textInBetween!,
-                  textAlign: TextAlign.center,
+                child: FittedBox(
+                  child: Text(
+                    textInBetween!,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
             if (textInBetween != null)

@@ -62,7 +62,12 @@ class ChainSystemWaitActivityFlow extends StatelessWidget {
                               borderRadius: const BorderRadius.all(
                                 Radius.circular(20),
                               ),
-                              color: activities[index].edit
+                              color: activities[index].edit ||
+                                      (activities[index].at != null &&
+                                          activities[index].endedAt == null) ||
+                                      activities[index]
+                                              .endActivityNotificationId !=
+                                          noValueInDB
                                   ? Theme.of(context).focusColor
                                   : Theme.of(context).primaryColor,
                               border: activities[index].edit
@@ -80,12 +85,29 @@ class ChainSystemWaitActivityFlow extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Expanded(
-                                  child: Text(
-                                    "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? 'before scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDuration)}${activities[index].activityDurationLeft != null ? '\nafter resuming.' : '.'}  ",
-                                    textAlign: TextAlign.center,
+                                if (activities[index]
+                                        .endActivityNotificationId ==
+                                    noValueInDB)
+                                  Expanded(
+                                    child: Text(
+                                      "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? 'before scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDuration)}${activities[index].activityDurationLeft != null ? '\nafter resuming.' : '.'}  ",
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  )
+                                else if (activities[index].endedAt != null)
+                                  Expanded(
+                                    child: Text(
+                                      "You will be notified for the next activity on ${DateFormat.yMMMEd().format(activities[index].endedAt!)} at ${DateFormat.jms().format(activities[index].endedAt!)}.",
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  )
+                                else
+                                  const Expanded(
+                                    child: Text(
+                                      "You will be notified for the next activity.",
+                                      textAlign: TextAlign.center,
+                                    ),
                                   ),
-                                ),
                                 if (editActivity != null)
                                   Icon(activities[index].edit
                                       ? Icons.undo

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:chain_activities/helpers/helper_functions.dart';
 import 'package:chain_activities/screens/view_chain_screen.dart';
+import 'package:chain_activities/widgets/chain_side_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/helpers/constants.dart';
@@ -194,6 +195,32 @@ class _PlayChainState extends State<PlayChain> {
     );
   }
 
+  Future<void> scheduleActivity() async {
+    ScaffoldMessengerState scms = ScaffoldMessenger.of(context);
+    bool? permissionGranted = await chainList.askForNotificationPermission();
+
+    if (permissionGranted != null && permissionGranted == true) {
+      // await chainList.showNotification();
+      await chainList.scheduleNotificationForActivityCompletion(
+        chain,
+        chainActivityPaused!,
+        DateTime.now().add(chainActivityPaused!.activityDurationLeft!),
+      );
+    } else {
+      scms.showSnackBar(
+        SnackBar(
+          content: const Text(
+            "CAT do not have permission to send Notification.",
+          ),
+          action: SnackBarAction(
+            label: 'OK',
+            onPressed: () {},
+          ),
+        ),
+      );
+    }
+  }
+
   Future<bool> onPopOut() async {
     await chainList.loadInterstitialAd();
     if (chainList.interstitialAd != null) {
@@ -321,65 +348,33 @@ class _PlayChainState extends State<PlayChain> {
                           chainActivityPaused!.endedAt == null &&
                           chain.notificationId == noValueInDB)
                         Expanded(
-                          child: Container(
-                            //width: appWidth / 2,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).cardColor,
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: Theme.of(context).primaryColor,
-                                  width: 5,
-                                ),
-                              ),
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(50),
-                                bottomLeft: Radius.circular(50),
-                              ),
-                            ),
-                            child: TextButton.icon(
-                              onPressed: () async {
-                                ScaffoldMessengerState scms =
-                                    ScaffoldMessenger.of(context);
-                                bool? permissionGranted = await chainList
-                                    .askForNotificationPermission();
-
-                                if (!(permissionGranted != null &&
-                                    permissionGranted == true)) {
-                                  scms.showSnackBar(const SnackBar(
-                                    content: Text(
-                                        "CAT do not have permission to send Notification."),
-                                  ));
-                                }
-
-                                // await chainList.showNotification();
-                                await chainList
-                                    .scheduleNotificationForActivityCompletion(
-                                  chain,
-                                  chainActivityPaused!,
-                                  DateTime.now().add(chainActivityPaused!
-                                      .activityDurationLeft!),
-                                );
-                              },
-                              style: ButtonStyle(
-                                iconColor: MaterialStateProperty.resolveWith(
-                                  (states) =>
-                                      Theme.of(context).colorScheme.error,
-                                ),
-                              ),
-                              icon: const Icon(
-                                Icons.notification_add_outlined,
-                              ),
-                              label: Text(
-                                chainActivityPaused!.activity.type !=
-                                            systemWaitActivityInDB &&
-                                        chainActivityPaused!.activity.type !=
-                                            systemStartActivityInDB
-                                    ? "Resume '${chainActivityPaused!.activity.title}' in Background"
-                                    : "Resume Chain & Notify when Rest is Over",
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                            ),
+                          child: ChainSideButton(
+                            chainList: chainList,
+                            chain: chain,
+                            chainActivityPaused: chainActivityPaused,
+                            buttonLabel:
+                                "Resume Chain &\nNotify Activity Completion",
+                            buttonAction: scheduleActivity,
+                            buttonIcon: Icons.notification_add_outlined,
                           ),
+                        )
+                      else if (chain.notificationId != noValueInDB)
+                        ChainSideButton(
+                          chainList: chainList,
+                          chain: chain,
+                          chainActivityPaused: chainActivityPaused,
+                          buttonLabel:
+                              "Complete Current Activity &\nCancel Notification",
+                          buttonAction: () async {
+                            await cancelNotificationAndCompleteActivity(
+                                chain, chainActivityPaused!);
+
+                            setState(() {
+                              chainActivityPaused = null;
+                              invokeCounter++;
+                            });
+                          },
+                          buttonIcon: Icons.notifications_off_outlined,
                         ),
                     ],
                   ),
@@ -421,8 +416,6 @@ class _PlayChainState extends State<PlayChain> {
                                     playTheChain();
                                   }
                                 : () async {
-                                    ScaffoldMessengerState scms =
-                                        ScaffoldMessenger.of(context);
                                     if (chainActivityPaused!.endedAt!.isBefore(
                                       DateTime.now(),
                                     )) {
@@ -432,18 +425,7 @@ class _PlayChainState extends State<PlayChain> {
                                       chainActivityPaused = null;
                                       invokeCounter++;
                                     } else {
-                                      scms.showSnackBar(
-                                        SnackBar(
-                                          content: Text(chainActivityPaused!
-                                                          .activity.type ==
-                                                      systemWaitActivityInDB ||
-                                                  chainActivityPaused!
-                                                          .activity.type ==
-                                                      systemStartActivityInDB
-                                              ? "Take rest, CAT will notify when it is time to act"
-                                              : "Activity ${chainActivityPaused!.activity.title} is still running. CAT will notify on its completion."),
-                                        ),
-                                      );
+                                      setState(() {});
                                     }
                                   }
                             : null,

@@ -514,7 +514,12 @@ class _AddChainScreenState extends State<AddChainScreen> {
                     //     : activityDurationHour.toString().padLeft(2, '0'),
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
-                      label: const Text("Hour"),
+                      label: Text(
+                        "Hour",
+                        style: TextStyle(
+                          color: Theme.of(context).disabledColor,
+                        ),
+                      ),
                       hintText: activityDurationHour.toString().padLeft(2, '0'),
                     ),
                     onSaved: (newValue) => activityDurationHour =
@@ -541,8 +546,11 @@ class _AddChainScreenState extends State<AddChainScreen> {
                             : 0,
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
-                      label: const Text(
+                      label: Text(
                         "Minute",
+                        style: TextStyle(
+                          color: Theme.of(context).disabledColor,
+                        ),
                       ),
                       hintText:
                           activityDurationMinute.toString().padLeft(2, '0'),
@@ -568,7 +576,12 @@ class _AddChainScreenState extends State<AddChainScreen> {
                     onChanged: (value) {},
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
-                      label: const Text("Second"),
+                      label: Text(
+                        "Second",
+                        style: TextStyle(
+                          color: Theme.of(context).disabledColor,
+                        ),
+                      ),
                       hintText:
                           activityDurationSecond.toString().padLeft(2, '0'),
                       alignLabelWithHint: true,
@@ -672,8 +685,15 @@ class _AddChainScreenState extends State<AddChainScreen> {
                               //readOnly: true,
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
-                                label: Text(
-                                  "Local Image is Set for this Activity",
+                                filled: true,
+                                label: Center(
+                                  child: Text(
+                                    "A Local Image is Set for this Activity",
+                                  ),
+                                ),
+                                labelStyle: TextStyle(
+                                  //color: Theme.of(context).secondaryHeaderColor,
+                                  fontWeight: FontWeight.bold,
                                 ),
                                 hintText: "https://",
                                 alignLabelWithHint: true,
@@ -692,9 +712,14 @@ class _AddChainScreenState extends State<AddChainScreen> {
                             // onSaved: (_) => chainActivityInEditMode!
                             //         .activity.specification![activitySpecImagePath] =
                             //     activityImageController.text,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              label: Text("HTTP URL to an Image or a GIF"),
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              label: Text(
+                                "HTTP URL to an Image or a GIF",
+                                style: TextStyle(
+                                  color: Theme.of(context).disabledColor,
+                                ),
+                              ),
                               hintText: "https://",
                               alignLabelWithHint: true,
                               floatingLabelBehavior:
@@ -863,8 +888,11 @@ class _AddChainScreenState extends State<AddChainScreen> {
                         focusNode: addActivityFocus,
                         decoration: InputDecoration(
                           floatingLabelBehavior: FloatingLabelBehavior.never,
-                          label: const Text(
+                          label: Text(
                             'Chain Activity Name',
+                            style: TextStyle(
+                              color: Theme.of(context).disabledColor,
+                            ),
                           ),
                           border: const OutlineInputBorder(
                             borderSide: BorderSide.none,
