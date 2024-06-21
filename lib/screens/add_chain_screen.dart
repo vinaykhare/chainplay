@@ -1,5 +1,4 @@
 import 'package:chain_activities/screens/chain_list_screen.dart';
-import 'package:chain_activities/widgets/help_clip_horizontal.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -865,10 +864,6 @@ class _AddChainScreenState extends State<AddChainScreen> {
             ),
             if (addingDurationToActivity && tempChain.title.isNotEmpty)
               durationInputForm,
-            if (tempChain.activities.length <= 1 &&
-                tempChain.title.isNotEmpty &&
-                !addingDurationToActivity)
-              const HelpClipHorizontal(),
             Container(
               decoration: BoxDecoration(
                 color: Theme.of(context).primaryColor,
