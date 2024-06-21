@@ -190,6 +190,11 @@ class ChainActivities extends StatelessWidget {
               inputDecorationTheme: InputDecorationTheme(
                 fillColor: Colors.amber.shade400,
               ),
+              textSelectionTheme: TextSelectionThemeData(
+                selectionColor: Colors.lightGreen.withOpacity(0.5),
+                cursorColor: Colors.black,
+                selectionHandleColor: Colors.lightGreen,
+              ),
               textTheme: const TextTheme(
                 titleMedium: TextStyle(
                   color: Colors.black,

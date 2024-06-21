@@ -101,6 +101,52 @@ class ChainTileView extends StatelessWidget {
     return const Icon(Icons.play_arrow);
   }
 
+  Widget getChainTileTitle(BuildContext context, Chain chain) {
+    Chain? chainExecution =
+        Provider.of<ChainList>(context, listen: false).getRunningChain(chain);
+    if (chainExecution == null) {
+      return TileTimeView(
+        at: chain.lastUpdatedAt,
+        tileTimeHeading: 'Last Updated on',
+        textStyleForDate: Theme.of(context).textTheme.bodyLarge,
+        textStyleForTime: Theme.of(context).textTheme.bodyLarge,
+      );
+    } else {
+      int numberOfAcitivities = chainExecution.activities
+          .where((activity) => activity.activity.type == waitActivityInDB)
+          .length;
+      int numberOfCompletedActivites = chainExecution.activities
+          .where((activity) =>
+              activity.activity.type == waitActivityInDB &&
+              activity.activityDone == true)
+          .length;
+      String percentageCompletion =
+          "${((numberOfCompletedActivites / numberOfAcitivities) * 100).toStringAsFixed(1)}%";
+      return Row(
+        children: [
+          const Icon(Icons.run_circle),
+          Text(
+            "Active",
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const VerticalDivider(),
+          Column(
+            children: [
+              Text(
+                percentageCompletion,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              Text(
+                "Done",
+                style: Theme.of(context).textTheme.labelSmall,
+              ),
+            ],
+          ),
+        ],
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Semantics(
@@ -114,11 +160,9 @@ class ChainTileView extends StatelessWidget {
               //     ? Theme.of(context).disabledColor
               //     : Theme.of(context).cardColor,
               // subtitle: Text(chain.title),
-              title: TileTimeView(
-                at: chain.lastUpdatedAt,
-                tileTimeHeading: 'Last Updated on',
-                textStyleForDate: Theme.of(context).textTheme.bodyLarge,
-                textStyleForTime: Theme.of(context).textTheme.bodyLarge,
+              title: getChainTileTitle(
+                context,
+                chain,
               ),
 
               leading: CircleAvatar(
@@ -175,12 +219,14 @@ class ChainTileView extends StatelessWidget {
                     fit: BoxFit.cover,
                   ),
                 ),
-                Text(
-                  chain.title,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).hintColor,
-                      ),
+                FittedBox(
+                  child: Text(
+                    chain.title,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).hintColor,
+                        ),
+                  ),
                 ),
                 Expanded(
                   child: Image.asset(

@@ -80,8 +80,18 @@ class _AddChainScreenState extends State<AddChainScreen> {
   }
 
   Future<bool> isNameValid() async {
+    setState(() {
+      errorString = "";
+    });
     ChainList chainList = Provider.of<ChainList>(context, listen: false);
     bool nameExist = await chainList.nameExistInDB(tempChain.title);
+    if (tempChain.title.length > 35) {
+      setState(() {
+        errorString =
+            "Length of Chain name ${tempChain.title} is too long. It should not be more than 35 letters long.";
+      });
+      return false;
+    }
     if (nameExist) {
       setState(() {
         errorString = "Chain name ${tempChain.title} is taken.";
@@ -261,12 +271,20 @@ class _AddChainScreenState extends State<AddChainScreen> {
             activityDurationMinute > 0 ||
             activityDurationSecond > 0)) {
       setState(() {
-        errorString = "Add activity name";
+        errorString = "Add Chain Activity Name";
       });
       return;
     }
 
     if (addActivityController.text.isEmpty) {
+      return;
+    }
+
+    if (addActivityController.text.length > 35) {
+      setState(() {
+        errorString =
+            "Length of Acitivity Name is too long. It should not be more than 35 letters long.";
+      });
       return;
     }
 

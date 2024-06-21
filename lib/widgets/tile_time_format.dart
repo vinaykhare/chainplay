@@ -26,22 +26,16 @@ class TileTimeView extends StatelessWidget {
                 tileTimeHeading,
                 style: Theme.of(context).textTheme.labelMedium,
               ),
-              InkWell(
-                onTap: () async {},
-                child: Text(
-                  DateFormat.yMd().format(at),
-                  style: textStyleForDate,
-                ),
+              Text(
+                DateFormat.yMd().format(at),
+                style: textStyleForDate,
               ),
             ],
           ),
         ),
-        InkWell(
-          onTap: () async {},
-          child: Text(
-            "at ${at.hour.toString().padLeft(2, '0')}:${at.minute.toString().padLeft(2, '0')}",
-            style: textStyleForTime,
-          ),
+        Text(
+          "at ${at.hour.toString().padLeft(2, '0')}:${at.minute.toString().padLeft(2, '0')}",
+          style: textStyleForTime,
         ),
       ],
     );
