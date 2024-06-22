@@ -1,5 +1,5 @@
 import 'package:chain_activities/helpers/key_helper.dart';
-import 'package:chain_activities/tutorial/screens/chain_list_screen_tutorial.dart';
+import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -81,8 +81,18 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
   }
 
   Future<bool> isNameValid() async {
+    setState(() {
+      errorString = "";
+    });
     ChainList chainList = Provider.of<ChainList>(context, listen: false);
     bool nameExist = await chainList.nameExistInDB(tempChain.title);
+    if (tempChain.title.length > 35) {
+      setState(() {
+        errorString =
+            "Length of Chain name ${tempChain.title} is too long. It should not be more than 35 letters long.";
+      });
+      return false;
+    }
     if (nameExist) {
       setState(() {
         errorString = "Chain name ${tempChain.title} is taken.";
@@ -93,13 +103,17 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
   }
 
   Future<void> saveAndExit() async {
-    NavigatorState navigatorState = Navigator.of(context);
+    NavigatorState nav = Navigator.of(context);
     for (ChainActivity chainActivity in tempChain.activities) {
       undoEdit(chainActivity);
     }
     bool result = await validateForm();
     if (result) {
-      navigatorState.pushReplacementNamed(ChainListScreenTutorial.routename);
+      if (nav.canPop()) {
+        nav.pop();
+      } else {
+        nav.pushReplacementNamed(ChainListScreen.routename);
+      }
     }
   }
 
@@ -251,7 +265,27 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
       });
       return;
     }
+
+    if (addActivityController.text.isEmpty &&
+        (activityImageController.text.isNotEmpty ||
+            activityDurationHour > 0 ||
+            activityDurationMinute > 0 ||
+            activityDurationSecond > 0)) {
+      setState(() {
+        errorString = "Add Chain Activity Name";
+      });
+      return;
+    }
+
     if (addActivityController.text.isEmpty) {
+      return;
+    }
+
+    if (addActivityController.text.length > 35) {
+      setState(() {
+        errorString =
+            "Length of Acitivity Name is too long. It should not be more than 35 letters long.";
+      });
       return;
     }
 
@@ -356,9 +390,10 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
 
     setState(() {
       chainActivityInEditMode = null;
-      addingDurationToActivity = false;
+      // addingDurationToActivity = false;
       activityDurationHour = 0;
       activityDurationMinute = 0;
+      activityDurationSecond = 0;
       updatingSystemWaitActivityInDB = false;
     });
     focusScope.unfocus();
@@ -498,7 +533,12 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
                     //     : activityDurationHour.toString().padLeft(2, '0'),
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
-                      label: const Text("Hour"),
+                      label: Text(
+                        "Hour",
+                        style: TextStyle(
+                          color: Theme.of(context).disabledColor,
+                        ),
+                      ),
                       hintText: activityDurationHour.toString().padLeft(2, '0'),
                     ),
                     onSaved: (newValue) => activityDurationHour =
@@ -525,8 +565,11 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
                             : 0,
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
-                      label: const Text(
+                      label: Text(
                         "Minute",
+                        style: TextStyle(
+                          color: Theme.of(context).disabledColor,
+                        ),
                       ),
                       hintText:
                           activityDurationMinute.toString().padLeft(2, '0'),
@@ -552,7 +595,12 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
                     onChanged: (value) {},
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
-                      label: const Text("Second"),
+                      label: Text(
+                        "Second",
+                        style: TextStyle(
+                          color: Theme.of(context).disabledColor,
+                        ),
+                      ),
                       hintText:
                           activityDurationSecond.toString().padLeft(2, '0'),
                       alignLabelWithHint: true,
@@ -649,24 +697,54 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
                     ],
                   ),
                   Expanded(
-                    child: TextFormField(
-                      key: ValueKey(
-                        "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_image",
-                      ),
-                      keyboardType: TextInputType.url,
-                      textAlign: TextAlign.center,
-                      controller: activityImageController,
-                      // onSaved: (_) => chainActivityInEditMode!
-                      //         .activity.specification![activitySpecImagePath] =
-                      //     activityImageController.text,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        label: Text("Paste HTTP or Local Path or Image."),
-                        hintText: "https://",
-                        alignLabelWithHint: true,
-                        floatingLabelBehavior: FloatingLabelBehavior.never,
-                      ),
-                    ),
+                    child: activityImageController.text.startsWith("/")
+                        ? IgnorePointer(
+                            ignoring: true,
+                            child: TextFormField(
+                              //readOnly: true,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                filled: true,
+                                label: Center(
+                                  child: Text(
+                                    "A Local Image is Set for this Activity",
+                                  ),
+                                ),
+                                labelStyle: TextStyle(
+                                  //color: Theme.of(context).secondaryHeaderColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                hintText: "https://",
+                                alignLabelWithHint: true,
+                                floatingLabelBehavior:
+                                    FloatingLabelBehavior.never,
+                              ),
+                            ),
+                          )
+                        : TextFormField(
+                            key: ValueKey(
+                              "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_image",
+                            ),
+                            keyboardType: TextInputType.url,
+                            textAlign: TextAlign.center,
+                            controller: activityImageController,
+                            // onSaved: (_) => chainActivityInEditMode!
+                            //         .activity.specification![activitySpecImagePath] =
+                            //     activityImageController.text,
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              label: Text(
+                                "HTTP URL to an Image or a GIF",
+                                style: TextStyle(
+                                  color: Theme.of(context).disabledColor,
+                                ),
+                              ),
+                              hintText: "https://",
+                              alignLabelWithHint: true,
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.never,
+                            ),
+                          ),
                   ),
                   Container(
                     decoration: BoxDecoration(
@@ -675,6 +753,7 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
                     child: IconButton(
                       onPressed: () {
                         activityImageController.clear();
+                        setState(() {});
                       },
                       icon: const Icon(
                         Icons.clear_all,
@@ -709,13 +788,13 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
                   ),
                 ),
                 initialValue: tempChain.title,
-                validator: (value) {
-                  if ((value == null || value == "") &&
-                      tempChain.activities.isNotEmpty) {
-                    return "Inesrt valid Chain Name";
-                  }
-                  return null;
-                },
+                // validator: (value) {
+                //   if ((value == null || value == "") &&
+                //       tempChain.activities.isNotEmpty) {
+                //     return "\tInsert a valid Chain Name";
+                //   }
+                //   return null;
+                // },
                 onSaved: (value) {
                   tempChain.title = value ?? "";
                 },
@@ -756,8 +835,8 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
           children: [
             Semantics(
               label: tempChain.title.isEmpty
-                  ? "Chain Input Form for Tutorial"
-                  : "Chain Input Form of : ${tempChain.title} for Tutorial",
+                  ? "Chain Input Form"
+                  : "Chain Input Form for : ${tempChain.title}",
               child: chainInputForm,
             ),
             if (errorString != "")
@@ -828,8 +907,11 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
                         focusNode: addActivityFocus,
                         decoration: InputDecoration(
                           floatingLabelBehavior: FloatingLabelBehavior.never,
-                          label: const Text(
-                            'Add Timer Activity to this Chain',
+                          label: Text(
+                            'Chain Activity Name',
+                            style: TextStyle(
+                              color: Theme.of(context).disabledColor,
+                            ),
                           ),
                           border: const OutlineInputBorder(
                             borderSide: BorderSide.none,

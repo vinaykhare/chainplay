@@ -29,14 +29,6 @@ class _PlayChainState extends State<PlayChain> {
   bool initializing = true;
   String? playChainAction;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-  //     buildDone = true;
-  //   });
-  // }
-
   Future<void> playTheChain() async {
     dynamic popResponse;
     NavigatorState nav = Navigator.of(context);
@@ -88,7 +80,7 @@ class _PlayChainState extends State<PlayChain> {
       String textToSpeak = chainActivity.activity.type == systemWaitActivityInDB
           ? invokeCounter < chain.activities.length - 1
               ? "Take Rest. Next Activity will start ${HelperFunctions.durationToString(waitDuration)}."
-              : "Complete the chain by pressing done or go forward."
+              : "Congratulations, all the chain activities are executed. Please choose, if you want to restart this chain, or, just mark it complete."
           : "Activity ${chainActivity.activity.title} has started. It will complete ${HelperFunctions.durationToString(waitDuration)}.";
       if (chainActivity.activityDurationLeft != null &&
           waitDuration.inSeconds > 0 &&
@@ -140,16 +132,7 @@ class _PlayChainState extends State<PlayChain> {
       }
 
       chainActivity.activityDone = true;
-      // chainActivity.endedAt = chainActivity.at!
-      //     .add(Duration(seconds: chainActivity.activityDuration.inSeconds));
       chainActivity.endedAt = DateTime.now();
-      // if (chainActivity.activityDuration.inSeconds <= 0 &&
-      //     chainActivity.activity.type != systemStartActivityInDB &&
-      //     chainActivity.activity.type != systemWaitActivityInDB) {
-      //   chainActivity.endedAt = DateTime.now();
-      //   chain.pivotDate = chainActivity.endedAt!;
-      // }
-      // await chainList.updateChainExecution(chain);
       await chainList.updateChainActivityExecutionByActivityId(
         chain,
         chainActivity,
@@ -175,10 +158,21 @@ class _PlayChainState extends State<PlayChain> {
 
       //await chainList.updateChain(parentChain);
       await chainList.updateChainExecution(chain);
-      if (chainList.interstitialAd != null) {
-        await chainList.interstitialAd!.show();
-      }
+
       await chainList.completeTheChain(chain);
+
+      if (popResponse != null &&
+          popResponse["completionMessage"] == chainCompletionMessageRestart) {
+        popResponse = null;
+        chain = await chainList.startChainExecution(chain);
+        invokeCounter = 0;
+        playChainAction = playChainActionPlay;
+        playTheChain();
+      } else {
+        if (chainList.interstitialAd != null) {
+          await chainList.interstitialAd!.show();
+        }
+      }
     }
     //nav.pop();
   }

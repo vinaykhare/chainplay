@@ -78,6 +78,7 @@ const String payLoadChainAction = "action";
 const String playChainActionPlay = "play";
 const String playChainActionPause = "pause";
 const String playChainActionStop = "stop";
+const String chainCompletionMessageRestart = "restart";
 
 //Schedule Repeat Types
 const int repeatTypeDefaultGap = 1;
@@ -102,8 +103,6 @@ const Map<String, String> assetMap = {
   'cat_intro': 'assets/WhatIsCAT/cat_intro.png',
   'chains': 'assets/WhatIsCAT/chains.jpeg',
   'app_drawer': 'assets/WhatIsCAT/app_drawer.jpeg',
-  'favorite_chain': 'assets/WhatIsCAT/favorite_chain.jpeg',
-  'running_chain': 'assets/WhatIsCAT/running_chain.jpeg',
   'chain_file_view': 'assets/WhatIsCAT/chain_file_view.jpeg',
   'sample_diet_routine_chain':
       'assets/SampleChains/Sample_Diet_Routine_Chain.json',

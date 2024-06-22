@@ -36,7 +36,7 @@ class ChainTileHelp extends StatelessWidget {
               TextButton.icon(
                 onPressed: null,
                 icon: Icon(
-                  Icons.pause_circle,
+                  Icons.stop,
                   color: Theme.of(context).primaryColorLight,
                 ),
                 label: const Text(

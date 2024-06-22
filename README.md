@@ -78,11 +78,8 @@ Add, Chain, Execute, Custom, Run, Sequence, Clock, Timer, Schedule, Activities, 
 
 # Release Notes:
 
-Renamed Chain Activities to CAT as Chain the Activities with Timers.
-This is a utility app inspired by several workout apps where starting a workout gives us a predefined chain of events which are either timer based or manual.
-Following are the changes:
-
-1.  Home App Interface is changed:
-2.           Chains UI is updated to reflect the chain view.
-3.  Share and recieve chains as \*.cat file.
-4.           Alarms and schedule chain feature is removed.
+1. Bug Fixes.
+2. Feature to restart the chain on chain completion
+3. Removed swipe to delete for activity in add/edit chain screen.
+4. Chain tile is updated for active and inactive chains.
+5. Updated the tutorial accordingly.

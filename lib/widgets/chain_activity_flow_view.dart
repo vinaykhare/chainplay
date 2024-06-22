@@ -221,15 +221,9 @@ class ChainActivityFlowView extends StatelessWidget {
                       subtitle: Text(
                         "${chainActivity.endedAt != null ? 'Completed' : 'will Complete'} ${activities[index].isInterrupted ? ' before scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDuration)}.",
                       ),
-                      leading: Checkbox(
-                        key: ValueKey(
-                            'activities_checkbox_${chainActivity.activity.title}'),
-                        value: chainActivity.endedAt != null,
-                        onChanged: null,
-                        // onChanged: (value) async {
-                        //   await chainList.flipDoneActivity(
-                        //       tempChain, chainActivity);
-                        // },
+                      leading: ReorderableDragStartListener(
+                        index: index,
+                        child: const Icon(Icons.drag_handle),
                       ),
                     ),
                     if (chainActivity.at != null)

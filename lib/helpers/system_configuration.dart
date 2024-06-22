@@ -454,62 +454,62 @@ List<Map<String, dynamic>> getTutorialItemsByType(
           "focusAlign": Alignment.topCenter,
           "contentAlign": ContentAlign.top,
         },
-        {
-          "title":
-              "Tap here to filter the chains that are marked Favorite by you.",
-          "widgetToShow": ListView(
-            shrinkWrap: true,
-            children: [
-              Text(
-                "Favorite Chains",
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              Text(
-                "On pressing this filter, home screen will show only the Favorite Chains. Tap this button back, if you want to remove this filter.",
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              Image.asset(
-                assetMap["favorite_chain"]!,
-                fit: BoxFit.scaleDown,
-                height: (MediaQuery.of(context).size.height -
-                        MediaQuery.of(context).viewPadding.top -
-                        MediaQuery.of(context).viewPadding.bottom) *
-                    0.50,
-              ),
-            ],
-          ),
-          "globalKey": KeyHelper.favoriteChainFilterKey,
-          "focusAlign": Alignment.topCenter,
-          "contentAlign": ContentAlign.top,
-        },
-        {
-          "title":
-              "Tap here to filter the chains that has its instance active. This includes the chains running in background with activities scheduled to start.",
-          "widgetToShow": ListView(
-            shrinkWrap: true,
-            children: [
-              Text(
-                "Running Chains",
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              Text(
-                "On pressing this filter, home screen will show only the chains with Active Instances i.e. Running Chains. Tap this button back, if you wan to remove this filter.",
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              Image.asset(
-                assetMap["running_chain"]!,
-                fit: BoxFit.scaleDown,
-                height: (MediaQuery.of(context).size.height -
-                        MediaQuery.of(context).viewPadding.top -
-                        MediaQuery.of(context).viewPadding.bottom) *
-                    0.50,
-              ),
-            ],
-          ),
-          "globalKey": KeyHelper.activeChainFilterKey,
-          "focusAlign": Alignment.topCenter,
-          "contentAlign": ContentAlign.top,
-        },
+        // {
+        //   "title":
+        //       "Tap here to filter the chains that are marked Favorite by you.",
+        //   "widgetToShow": ListView(
+        //     shrinkWrap: true,
+        //     children: [
+        //       Text(
+        //         "Favorite Chains",
+        //         style: Theme.of(context).textTheme.headlineSmall,
+        //       ),
+        //       Text(
+        //         "On pressing this filter, home screen will show only the Favorite Chains. Tap this button back, if you want to remove this filter.",
+        //         style: Theme.of(context).textTheme.bodyLarge,
+        //       ),
+        //       Image.asset(
+        //         assetMap["favorite_chain"]!,
+        //         fit: BoxFit.scaleDown,
+        //         height: (MediaQuery.of(context).size.height -
+        //                 MediaQuery.of(context).viewPadding.top -
+        //                 MediaQuery.of(context).viewPadding.bottom) *
+        //             0.50,
+        //       ),
+        //     ],
+        //   ),
+        //   "globalKey": KeyHelper.favoriteChainFilterKey,
+        //   "focusAlign": Alignment.topCenter,
+        //   "contentAlign": ContentAlign.top,
+        // },
+        // {
+        //   "title":
+        //       "Tap here to filter the chains that has its instance active. This includes the chains running in background with activities scheduled to start.",
+        //   "widgetToShow": ListView(
+        //     shrinkWrap: true,
+        //     children: [
+        //       Text(
+        //         "Running Chains",
+        //         style: Theme.of(context).textTheme.headlineSmall,
+        //       ),
+        //       Text(
+        //         "On pressing this filter, home screen will show only the chains with Active Instances i.e. Running Chains. Tap this button back, if you wan to remove this filter.",
+        //         style: Theme.of(context).textTheme.bodyLarge,
+        //       ),
+        //       Image.asset(
+        //         assetMap["running_chain"]!,
+        //         fit: BoxFit.scaleDown,
+        //         height: (MediaQuery.of(context).size.height -
+        //                 MediaQuery.of(context).viewPadding.top -
+        //                 MediaQuery.of(context).viewPadding.bottom) *
+        //             0.50,
+        //       ),
+        //     ],
+        //   ),
+        //   "globalKey": KeyHelper.activeChainFilterKey,
+        //   "focusAlign": Alignment.topCenter,
+        //   "contentAlign": ContentAlign.top,
+        // },
         // {
         //   "title": idToLoadSampleChainForTutorial,
         //   "widgetToShow": ListView(

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:chain_activities/helpers/helper_functions.dart';
 import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/tutorial/screens/chain_list_screen_tutorial.dart';
 import 'package:chain_activities/tutorial/screens/play_wait_activity_screen_tutorial.dart';
@@ -76,31 +75,6 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
       String screenImage =
           chainActivity.activity.specification?[activitySpecImagePath] ?? "";
 
-      // if (invokeCounter >= chain.activities.length) {
-      //   break;
-      // }
-
-      // if (parentChain.notificationId == trueInDB &&
-      //     waitDuration.inSeconds > 0) {
-      //   break;
-      // }
-
-      String textToSpeak = chainActivity.activity.type == systemWaitActivityInDB
-          ? invokeCounter < chain.activities.length - 1
-              ? "Take Rest. Next Activity will start ${HelperFunctions.durationToString(waitDuration)}."
-              : "Complete the chain by pressing done or go forward."
-          : "Activity ${chainActivity.activity.title} has started. It will complete ${HelperFunctions.durationToString(waitDuration)}.";
-      if (chainActivity.activityDurationLeft != null &&
-          waitDuration.inSeconds > 0 &&
-          playChainAction == playChainActionPause) {
-        textToSpeak += " after resuming.";
-      }
-      await chainList.speakTextWithoutWait(textToSpeak);
-      // while (!buildDone) {
-      //   Future.delayed(
-      //     const Duration(microseconds: 1),
-      //   );
-      // }
       popResponse = await nav.pushNamed(
         PlayWaitActivityTutorial.routename,
         arguments: {
@@ -223,13 +197,8 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
       //   chainList.notificationCameForChain = null;
       // } else {
       Map<String, dynamic> chArg;
-      if (chainList.notificationCameAs != null &&
-          chainList.notificationCameAs!.isNotEmpty) {
-        chArg = chainList.notificationCameAs!;
-      } else {
-        chArg =
-            ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-      }
+      chArg =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
 
       playChainAction = chArg[payLoadChainAction];
       invokeCounter = chArg[payLoadChainActivityIndex];
@@ -240,27 +209,9 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
         (schEx) => schEx.chainExecutionId == chArg[payLoadChainExecId],
       );
 
-      if (chain.activities[invokeCounter].activityDurationLeft != null &&
-          chain.activities[invokeCounter].activityDuration.inSeconds > 0) {
-        chainActivityPaused = chain.activities[invokeCounter];
-        if (chainActivityPaused!.endedAt != null &&
-            chainActivityPaused!.endedAt!.isBefore(DateTime.now())) {
-          cancelNotificationAndCompleteActivity(chain, chainActivityPaused!);
-          chainActivityPaused = null;
-        }
-      }
-
-      if (chain.chainStatus == statusExecuting &&
-          playChainAction == playChainActionPlay) {
-        playTheChain();
-      } else if (chain.chainStatus != statusExecuting) {
-        invokeCounter = chain.activities.length;
-      } else {
-        //
-      }
+      playTheChain();
 
       initializing = false;
-      chainList.notificationCameAs = null;
     }
     double appHeight = MediaQuery.of(context).size.height -
         MediaQuery.of(context).viewPadding.top -

@@ -1,6 +1,7 @@
+import 'package:chain_activities/models/chain_activity.dart';
 import 'package:chain_activities/screens/view_chain_screen.dart';
-import 'package:chain_activities/widgets/tile_time_format.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
@@ -105,43 +106,94 @@ class ChainTileView extends StatelessWidget {
     Chain? chainExecution =
         Provider.of<ChainList>(context, listen: false).getRunningChain(chain);
     if (chainExecution == null) {
-      return TileTimeView(
-        at: chain.lastUpdatedAt,
-        tileTimeHeading: 'Last Updated on',
-        textStyleForDate: Theme.of(context).textTheme.bodyLarge,
-        textStyleForTime: Theme.of(context).textTheme.bodyLarge,
-      );
-    } else {
-      int numberOfAcitivities = chainExecution.activities
-          .where((activity) => activity.activity.type == waitActivityInDB)
-          .length;
-      int numberOfCompletedActivites = chainExecution.activities
-          .where((activity) =>
-              activity.activity.type == waitActivityInDB &&
-              activity.activityDone == true)
-          .length;
-      String percentageCompletion =
-          "${((numberOfCompletedActivites / numberOfAcitivities) * 100).toStringAsFixed(1)}%";
       return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Icon(Icons.run_circle),
-          Text(
-            "Active",
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const VerticalDivider(),
           Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                percentageCompletion,
-                style: Theme.of(context).textTheme.titleLarge,
+                "Last Updated",
+                style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).secondaryHeaderColor,
+                    ),
               ),
               Text(
-                "Done",
-                style: Theme.of(context).textTheme.labelSmall,
+                "on ${DateFormat.yMMMd().format(chain.lastUpdatedAt)}",
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
+              Text(
+                "at ${DateFormat.Hms().format(chain.lastUpdatedAt)}",
+                style: Theme.of(context).textTheme.labelMedium,
               ),
             ],
           ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "with",
+                style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).secondaryHeaderColor,
+                    ),
+              ),
+              Text(
+                "${chain.activities.where((activity) => activity.activity.type == waitActivityInDB).length} Activity",
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
+              Text(
+                "${chain.chainHistory.length.toString()} Execs",
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
+            ],
+          ),
+        ],
+      );
+    } else {
+      ChainActivity currentActivity = chainExecution.activities
+          .firstWhere((activity) => activity.activityDone == false);
+      String currentActivityTitle = "";
+      bool restTask = false;
+      if (currentActivity.activity.type != waitActivityInDB) {
+        currentActivity = chainExecution.activities.firstWhere((activity) =>
+            activity.activityDone == false &&
+            activity.activity.type == waitActivityInDB);
+        restTask = true;
+      }
+      currentActivityTitle = currentActivity.activity.title;
+      String status = chainExecution.notificationId == trueInDB
+          ? "Active in Backgroud"
+          : "Paused";
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Text(
+              "$status at",
+              style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                    color: Theme.of(context).secondaryHeaderColor,
+                  ),
+            ),
+          ),
+          if (restTask)
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Text(
+                "Rest before $currentActivityTitle",
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            )
+          else
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Text(
+                currentActivityTitle,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
         ],
       );
     }

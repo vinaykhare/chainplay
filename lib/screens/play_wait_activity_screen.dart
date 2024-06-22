@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:chain_activities/helpers/constants.dart';
+import 'package:chain_activities/widgets/cat_button.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -118,7 +119,17 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
             "waitDuration": waitDuration,
             "interruptAndCompleted": true,
             "resumedAt": resumedAt,
+            "completionMessage": null,
           });
+  }
+
+  Future<void> completeTheChain(String completionMessage) async {
+    NavigatorState nav = Navigator.of(context);
+    await Provider.of<ChainList>(context, listen: false)
+        .playNotificationSound();
+    nav.pop({
+      "completionMessage": completionMessage,
+    });
   }
 
   //Build Function
@@ -148,7 +159,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
           title = "Rest";
           break;
         case systemEndActivityInDB:
-          title = "Complete this Chain";
+          title = "Congratulations";
           break;
         default:
           title = chainActivity.activity.title;
@@ -236,29 +247,65 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                       "will compelte\n$timeLeft\n${(hours != 0 || minutes != 0) && seconds != 0 ? 'and' : ''}",
                       style: Theme.of(context).textTheme.headlineSmall,
                       textAlign: TextAlign.center,
-                    )
-                  else
-                    Text(
-                      "by pressing done.",
-                      style: Theme.of(context).textTheme.headlineSmall,
-                      textAlign: TextAlign.center,
                     ),
-                  InkWell(
-                    onTap: interruptAndCompleteActivity,
-                    child: CircleAvatar(
-                      radius: 50,
-                      backgroundColor: playScreenType == systemWaitActivityInDB
-                          ? Theme.of(context).focusColor
-                          : Theme.of(context).canvasColor,
-                      child: FittedBox(
-                        child: Text(
-                          displaySeconds,
-                          style: Theme.of(context).textTheme.headlineMedium,
-                          textAlign: TextAlign.center,
+                  if (playScreenType != systemEndActivityInDB)
+                    InkWell(
+                      onTap: interruptAndCompleteActivity,
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundColor:
+                            playScreenType == systemWaitActivityInDB
+                                ? Theme.of(context).focusColor
+                                : Theme.of(context).canvasColor,
+                        child: FittedBox(
+                          child: Text(
+                            displaySeconds,
+                            style: Theme.of(context).textTheme.headlineMedium,
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ),
+                    )
+                  else
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        //mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              CatButton(
+                                title: "Restart this Chian",
+                                iconWidget: Icon(
+                                  Icons.restart_alt,
+                                  color: Theme.of(context).secondaryHeaderColor,
+                                ),
+                                onPressedAction: () async {
+                                  await completeTheChain(
+                                    chainCompletionMessageRestart,
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              CatButton(
+                                title: "Just Mark it Complete",
+                                iconWidget: Icon(
+                                  Icons.done,
+                                  color: Theme.of(context).secondaryHeaderColor,
+                                ),
+                                onPressedAction: interruptAndCompleteActivity,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
                   if (waitDuration.inSeconds != 0)
                     Text(
                       "Seconds.",
@@ -315,8 +362,10 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                         ),
                       IconButton(
                         onPressed: interruptAndCompleteActivity,
-                        icon: const Icon(
-                          Icons.arrow_forward,
+                        icon: Icon(
+                          playScreenType == systemEndActivityInDB
+                              ? Icons.done
+                              : Icons.arrow_forward,
                         ),
                       ),
                     ],
