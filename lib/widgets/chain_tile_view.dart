@@ -1,4 +1,3 @@
-import 'package:chain_activities/models/chain_activity.dart';
 import 'package:chain_activities/screens/view_chain_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
