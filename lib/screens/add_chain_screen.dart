@@ -106,7 +106,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
     for (ChainActivity chainActivity in tempChain.activities) {
       undoEdit(chainActivity);
     }
-    bool result = await validateForm();
+    bool result = await validateForm(context);
     if (result) {
       if (nav.canPop()) {
         nav.pop();
@@ -116,8 +116,10 @@ class _AddChainScreenState extends State<AddChainScreen> {
     }
   }
 
-  Future<bool> validateForm([bool existingScreen = true]) async {
+  Future<bool> validateForm(BuildContext context,
+      [bool existingScreen = true]) async {
     ChainList chainList = Provider.of<ChainList>(context, listen: false);
+    FocusScopeNode fsn = FocusScope.of(context);
     if (chainFormKey.currentState == null) {
       return true;
     }
@@ -172,6 +174,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
       await chainList.updateChain(tempChain, false);
       await chainList.updatChainActivityByChainName(tempChain);
     }
+    fsn.requestFocus(addActivityFocus);
     return true;
   }
 
@@ -796,7 +799,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
                   tempChain.title = value ?? "";
                 },
                 onFieldSubmitted: (value) {
-                  validateForm(false);
+                  validateForm(context, false);
                 },
               ),
             ],
@@ -964,7 +967,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
                     onPressed: tempChain.title.isNotEmpty
                         ? onSubmitText
                         : () {
-                            validateForm(false);
+                            validateForm(context, false);
                           },
                     icon: chainActivityInEditMode != null
                         ? const Icon(Icons.done_outline)

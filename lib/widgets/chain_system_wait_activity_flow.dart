@@ -86,25 +86,37 @@ class ChainSystemWaitActivityFlow extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 if (activities[index]
-                                        .endActivityNotificationId ==
+                                        .endActivityNotificationId !=
                                     noValueInDB)
+                                  if (activities[index].endedAt != null &&
+                                      activities[index]
+                                              .endedAt!
+                                              .difference(
+                                                DateTime.now(),
+                                              )
+                                              .inSeconds >
+                                          0)
+                                    Expanded(
+                                      child: Text(
+                                        "You will be notified for the next activity on ${DateFormat.yMMMEd().format(activities[index].endedAt!)} at ${DateFormat.jms().format(activities[index].endedAt!)}\ni.e. after ${HelperFunctions.durationToString(
+                                          chainActivity.endedAt!.difference(
+                                            DateTime.now(),
+                                          ),
+                                        )}.",
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    )
+                                  else
+                                    const Expanded(
+                                      child: Text(
+                                        "Rest Ended. Notification should have been received by now. Please refresh.",
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    )
+                                else
                                   Expanded(
                                     child: Text(
                                       "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? 'before scheduled duration' : HelperFunctions.durationToString(activities[index].activityDurationLeft ?? chainActivity.activityDuration)}${activities[index].activityDurationLeft != null ? '\nafter resuming.' : '.'}  ",
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  )
-                                else if (activities[index].endedAt != null)
-                                  Expanded(
-                                    child: Text(
-                                      "You will be notified for the next activity on ${DateFormat.yMMMEd().format(activities[index].endedAt!)} at ${DateFormat.jms().format(activities[index].endedAt!)}.",
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  )
-                                else
-                                  const Expanded(
-                                    child: Text(
-                                      "You will be notified for the next activity.",
                                       textAlign: TextAlign.center,
                                     ),
                                   ),

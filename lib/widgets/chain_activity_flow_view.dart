@@ -218,8 +218,43 @@ class ChainActivityFlowView extends StatelessWidget {
                           ),
                         ],
                       ),
-                      subtitle: Text(
-                        "${chainActivity.endedAt != null ? 'Completed' : 'will Complete'} ${activities[index].isInterrupted ? ' before scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDurationLeft != null ? chainActivity.activityDurationLeft! : chainActivity.activityDuration)} ${chainActivity.activityDurationLeft != null ? "after resuming." : ""}",
+                      subtitle: Row(
+                        children: [
+                          if (chainActivity.endActivityNotificationId !=
+                                  noValueInDB &&
+                              chainActivity.endedAt != null)
+                            if (chainActivity.endedAt != null &&
+                                chainActivity.endedAt!
+                                        .difference(
+                                          DateTime.now(),
+                                        )
+                                        .inSeconds >
+                                    0)
+                              Expanded(
+                                child: Text(
+                                  "You will be notified for activity completion\n${HelperFunctions.durationToString(
+                                    chainActivity.endedAt!.difference(
+                                      DateTime.now(),
+                                    ),
+                                  )}\nfrom now.",
+                                  textAlign: TextAlign.center,
+                                ),
+                              )
+                            else
+                              const Expanded(
+                                child: Text(
+                                  "Acitivity completed. Notification should have been received by now. Please refresh.",
+                                  textAlign: TextAlign.center,
+                                ),
+                              )
+                          else
+                            Expanded(
+                              child: Text(
+                                "${chainActivity.endedAt != null ? 'Completed ' : 'It will Complete'}${activities[index].isInterrupted ? ' before the scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDurationLeft != null ? chainActivity.activityDurationLeft! : chainActivity.activityDuration)} ${chainActivity.activityDurationLeft != null ? "after resuming." : ""}",
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                        ],
                       ),
                       leading: ReorderableDragStartListener(
                         index: index,

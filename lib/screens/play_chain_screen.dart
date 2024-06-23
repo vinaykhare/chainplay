@@ -164,7 +164,7 @@ class _PlayChainState extends State<PlayChain> {
       if (popResponse != null &&
           popResponse["completionMessage"] == chainCompletionMessageRestart) {
         popResponse = null;
-        chain = await chainList.startChainExecution(chain);
+        chain = await chainList.startChainExecution(parentChain);
         invokeCounter = 0;
         playChainAction = playChainActionPlay;
         playTheChain();
@@ -360,6 +360,8 @@ class _PlayChainState extends State<PlayChain> {
                           buttonLabel:
                               "Complete Current Activity &\nCancel Notification",
                           buttonAction: () async {
+                            chainActivityPaused!.isInterrupted = true;
+                            chainActivityPaused!.endedAt = DateTime.now();
                             await cancelNotificationAndCompleteActivity(
                                 chain, chainActivityPaused!);
 

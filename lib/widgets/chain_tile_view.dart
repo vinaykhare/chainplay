@@ -104,7 +104,7 @@ class ChainTileView extends StatelessWidget {
 
   Widget getChainTileTitle(BuildContext context, Chain chain) {
     Chain? chainExecution =
-        Provider.of<ChainList>(context, listen: false).getRunningChain(chain);
+        Provider.of<ChainList>(context, listen: true).getRunningChain(chain);
     if (chainExecution == null) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -152,17 +152,26 @@ class ChainTileView extends StatelessWidget {
         ],
       );
     } else {
-      ChainActivity currentActivity = chainExecution.activities
-          .firstWhere((activity) => activity.activityDone == false);
       String currentActivityTitle = "";
-      bool restTask = false;
-      if (currentActivity.activity.type != waitActivityInDB) {
-        currentActivity = chainExecution.activities.firstWhere((activity) =>
+      int currentActivityIndex = chainExecution.activities.indexWhere(
+        (activity) => activity.activityDone == false,
+      );
+      int currentWaitActivityIndex = chainExecution.activities.indexWhere(
+        (activity) =>
             activity.activityDone == false &&
-            activity.activity.type == waitActivityInDB);
-        restTask = true;
+            activity.activity.type == waitActivityInDB,
+      );
+
+      if (currentWaitActivityIndex != -1) {
+        currentActivityTitle =
+            chainExecution.activities[currentWaitActivityIndex].activity.title;
+        if (currentActivityIndex < currentWaitActivityIndex) {
+          currentActivityTitle = "Rest before $currentActivityTitle";
+        }
+      } else {
+        currentActivityTitle = "Last activity to complete the chain";
       }
-      currentActivityTitle = currentActivity.activity.title;
+
       String status = chainExecution.notificationId == trueInDB
           ? "Active in Backgroud"
           : "Paused";
@@ -178,22 +187,13 @@ class ChainTileView extends StatelessWidget {
                   ),
             ),
           ),
-          if (restTask)
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Text(
-                "Rest before $currentActivityTitle",
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            )
-          else
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Text(
-                currentActivityTitle,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Text(
+              currentActivityTitle,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
+          ),
         ],
       );
     }

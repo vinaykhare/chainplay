@@ -58,57 +58,39 @@ class _ChainListScreenState extends State<ChainListScreen> {
       child: Scaffold(
         drawer: const AppDrawer(),
         body: SafeArea(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                ),
-                margin: const EdgeInsets.all(10),
-                child: const ChainListHeader(),
-              ),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(5),
-                  margin: const EdgeInsets.fromLTRB(8, 5, 8, 0),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
-                    borderRadius: const BorderRadius.only(
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).scaffoldBackgroundColor,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const ChainListHeader(),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    margin: const EdgeInsets.symmetric(horizontal: 8),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
+                      borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(30),
-                        topRight: Radius.circular(30)),
-                  ),
-                  child: Column(
-                    children: [
-                      (chains.isNotEmpty)
-                          ? const Expanded(child: ListOfChains())
-                          : const Expanded(child: NoChainsView()),
-                      // Container(
-                      //   margin: const EdgeInsets.all(5),
-                      //   //padding: const EdgeInsets.only(bottom: 5),
-                      //   decoration: BoxDecoration(
-                      //     borderRadius: BorderRadius.circular(20),
-                      //     color: Theme.of(context).cardColor,
-                      //   ),
-                      //   child: const ShowBannerAd(),
-                      // ),
-                    ],
+                        topRight: Radius.circular(30),
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        (chains.isNotEmpty)
+                            ? const Expanded(child: ListOfChains())
+                            : const Expanded(child: NoChainsView()),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              appBarWidget,
-            ],
+                appBarWidget,
+              ],
+            ),
           ),
         ),
-
-        // floatingActionButton: FloatingActionButton(
-        //   onPressed: () {
-        //     Navigator.of(context).pushNamed(AddChainScreen.routename);
-        //   },
-        //   child: const Icon(
-        //     Icons.add,
-        //   ),
-        // ),
       ),
     );
   }

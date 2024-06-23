@@ -36,21 +36,18 @@ class _SearchChainScreenState extends State<SearchChainScreen> {
       label: "Search Chains Screen",
       child: Scaffold(
         body: SafeArea(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            //mainAxisSize: MainAxisSize.min,
-            children: [
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(5),
-                  margin: const EdgeInsets.fromLTRB(8, 5, 8, 0),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
-                    borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(30),
-                        topRight: Radius.circular(30)),
-                  ),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            //margin: const EdgeInsets.fromLTRB(8, 5, 8, 0),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              //mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
                   child: ListOfChains(
                     textFilter: textFilter,
                     showAd: false,
@@ -58,30 +55,30 @@ class _SearchChainScreenState extends State<SearchChainScreen> {
                     showChainInReverse: true,
                   ),
                 ),
-              ),
-              AppBar(
-                title: TextField(
-                  autofocus: true,
-                  textInputAction: TextInputAction.search,
-                  keyboardType: TextInputType.text,
-                  cursorColor: Theme.of(context).iconTheme.color,
-                  onChanged: (value) {
-                    setState(() {
-                      textFilter = value;
-                    });
-                  },
-                  decoration: InputDecoration(
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
-                    label: const Text("Search Chains"),
-                    border: const OutlineInputBorder(
-                      borderSide: BorderSide.none,
+                AppBar(
+                  title: TextField(
+                    autofocus: true,
+                    textInputAction: TextInputAction.search,
+                    keyboardType: TextInputType.text,
+                    cursorColor: Theme.of(context).iconTheme.color,
+                    onChanged: (value) {
+                      setState(() {
+                        textFilter = value;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      floatingLabelBehavior: FloatingLabelBehavior.never,
+                      label: const Text("Search Chains"),
+                      border: const OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: Theme.of(context).primaryColor,
                     ),
-                    filled: true,
-                    fillColor: Theme.of(context).primaryColor,
                   ),
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
         ),
       ),

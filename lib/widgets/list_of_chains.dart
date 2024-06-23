@@ -30,7 +30,7 @@ class _ListOfChainsState extends State<ListOfChains> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    chainList = Provider.of<ChainList>(context, listen: false);
+    chainList = Provider.of<ChainList>(context, listen: true);
   }
 
   @override
