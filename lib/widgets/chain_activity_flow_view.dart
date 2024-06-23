@@ -109,7 +109,7 @@ class ChainActivityFlowView extends StatelessWidget {
                     ],
                   ),
                   subtitle: Text(
-                    "${chainActivity.endedAt != null ? 'Completed' : 'will Complete'} ${activities[index].isInterrupted ? ' before scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDuration)}.",
+                    "${chainActivity.endedAt != null ? 'Completed' : 'will Complete'} ${activities[index].isInterrupted ? ' before scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDurationLeft ?? chainActivity.activityDuration)}.",
                   ),
                   leading:
                       (chainActivity.endedAt != null || editActivity == null)
@@ -219,7 +219,7 @@ class ChainActivityFlowView extends StatelessWidget {
                         ],
                       ),
                       subtitle: Text(
-                        "${chainActivity.endedAt != null ? 'Completed' : 'will Complete'} ${activities[index].isInterrupted ? ' before scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDuration)}.",
+                        "${chainActivity.endedAt != null ? 'Completed' : 'will Complete'} ${activities[index].isInterrupted ? ' before scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDurationLeft != null ? chainActivity.activityDurationLeft! : chainActivity.activityDuration)} ${chainActivity.activityDurationLeft != null ? "after resuming." : ""}",
                       ),
                       leading: ReorderableDragStartListener(
                         index: index,

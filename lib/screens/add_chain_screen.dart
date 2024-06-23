@@ -959,15 +959,19 @@ class _AddChainScreenState extends State<AddChainScreen> {
                         ),
                       ),
                     ),
-                  if (tempChain.title.isNotEmpty)
-                    IconButton(
-                      onPressed: onSubmitText,
-                      icon: chainActivityInEditMode != null
-                          ? const Icon(Icons.done_outline)
-                          : updatingSystemWaitActivityInDB
-                              ? const Icon(Icons.done)
-                              : const Icon(Icons.add_task_outlined),
-                    ),
+                  //if (tempChain.title.isNotEmpty)
+                  IconButton(
+                    onPressed: tempChain.title.isNotEmpty
+                        ? onSubmitText
+                        : () {
+                            validateForm(false);
+                          },
+                    icon: chainActivityInEditMode != null
+                        ? const Icon(Icons.done_outline)
+                        : updatingSystemWaitActivityInDB
+                            ? const Icon(Icons.done)
+                            : const Icon(Icons.add_task_outlined),
+                  ),
                 ],
               ),
             ),

@@ -90,7 +90,7 @@ class ChainSystemWaitActivityFlow extends StatelessWidget {
                                     noValueInDB)
                                   Expanded(
                                     child: Text(
-                                      "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? 'before scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDuration)}${activities[index].activityDurationLeft != null ? '\nafter resuming.' : '.'}  ",
+                                      "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? 'before scheduled duration' : HelperFunctions.durationToString(activities[index].activityDurationLeft ?? chainActivity.activityDuration)}${activities[index].activityDurationLeft != null ? '\nafter resuming.' : '.'}  ",
                                       textAlign: TextAlign.center,
                                     ),
                                   )
