@@ -57,7 +57,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
   int activityDurationHour = 0,
       activityDurationMinute = 0,
       activityDurationSecond = 0;
-  final ScrollController scrollController = ScrollController();
+
   final TextEditingController addActivityController = TextEditingController();
   final TextEditingController activityImageController = TextEditingController();
 

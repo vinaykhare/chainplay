@@ -146,26 +146,14 @@ class _ChainActivitiesWidgetState extends State<ChainActivitiesWidget> {
             child: getChainActivitySequence(context, index),
           ),
         ),
-        if (scrollController.hasClients &&
-            scrollController.position.pixels == 0 &&
-            widget.tempChain.activities.length > 4)
+        if (widget.tempChain.activities.length > 4)
           Positioned(
             right: 0,
             bottom: 0,
             child: ScrollButton(
               scrollController: scrollController,
             ),
-          ),
-        if (scrollController.hasClients &&
-            scrollController.position.pixels > 0 &&
-            widget.tempChain.activities.length > 4)
-          Positioned(
-            right: 0,
-            top: 0,
-            child: ScrollButton(
-              scrollController: scrollController,
-            ),
-          ),
+          )
       ],
     );
     //);

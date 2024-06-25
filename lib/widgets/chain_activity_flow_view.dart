@@ -250,7 +250,7 @@ class ChainActivityFlowView extends StatelessWidget {
                           else
                             Expanded(
                               child: Text(
-                                "${chainActivity.endedAt != null ? 'Completed ' : 'It will Complete'}${activities[index].isInterrupted ? ' before the scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDurationLeft != null ? chainActivity.activityDurationLeft! : chainActivity.activityDuration)} ${chainActivity.activityDurationLeft != null ? "after resuming." : ""}",
+                                "${chainActivity.endedAt != null ? 'Completed ' : 'It will Complete '}${activities[index].isInterrupted ? ' before the scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDurationLeft != null ? chainActivity.activityDurationLeft! : chainActivity.activityDuration)} ${chainActivity.activityDurationLeft != null ? "after resuming." : ""}",
                                 textAlign: TextAlign.center,
                               ),
                             ),
