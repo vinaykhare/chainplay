@@ -15,32 +15,32 @@ class ChainTileHelp extends StatelessWidget {
             children: [
               TextButton.icon(
                 onPressed: null,
-                icon: Icon(
+                icon: const Icon(
                   Icons.play_circle,
-                  color: Theme.of(context).primaryColorLight,
                 ),
-                label: const Text(
+                label: Text(
                   "Play Chain",
+                  style: Theme.of(context).textTheme.labelLarge,
                 ),
               ),
               TextButton.icon(
                 onPressed: null,
-                icon: Icon(
+                icon: const Icon(
                   Icons.touch_app_rounded,
-                  color: Theme.of(context).primaryColorLight,
                 ),
-                label: const Text(
+                label: Text(
                   "View Chain",
+                  style: Theme.of(context).textTheme.labelLarge,
                 ),
               ),
               TextButton.icon(
                 onPressed: null,
-                icon: Icon(
+                icon: const Icon(
                   Icons.stop,
-                  color: Theme.of(context).primaryColorLight,
                 ),
-                label: const Text(
+                label: Text(
                   "Stop Chain",
+                  style: Theme.of(context).textTheme.labelLarge,
                 ),
               ),
             ],
@@ -72,32 +72,32 @@ class ChainTileHelp extends StatelessWidget {
             children: [
               TextButton.icon(
                 onPressed: null,
-                icon: Icon(
+                icon: const Icon(
                   Icons.share_rounded,
-                  color: Theme.of(context).primaryColorLight,
                 ),
-                label: const Text(
+                label: Text(
                   "Share Chain",
+                  style: Theme.of(context).textTheme.labelLarge,
                 ),
               ),
               TextButton.icon(
                 onPressed: null,
-                icon: Icon(
+                icon: const Icon(
                   Icons.favorite_outline_outlined,
-                  color: Theme.of(context).primaryColorLight,
                 ),
-                label: const Text(
+                label: Text(
                   "Favorite",
+                  style: Theme.of(context).textTheme.labelLarge,
                 ),
               ),
               TextButton.icon(
                 onPressed: null,
-                icon: Icon(
+                icon: const Icon(
                   Icons.swipe_right_sharp,
-                  color: Theme.of(context).primaryColorLight,
                 ),
-                label: const Text(
+                label: Text(
                   "Delete Chain",
+                  style: Theme.of(context).textTheme.labelLarge,
                 ),
               ),
             ],

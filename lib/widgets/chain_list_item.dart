@@ -1,5 +1,6 @@
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/helpers/key_helper.dart';
+import 'package:chain_activities/widgets/chain_tile_view.dart';
 import 'package:flutter/material.dart';
 //import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -8,7 +9,6 @@ import 'package:provider/provider.dart';
 //import 'package:chain_activities/models/activity.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
-import 'package:chain_activities/widgets/chain_view.dart';
 
 class ChainListItem extends StatelessWidget {
   //final BannerAd? adChain;
@@ -89,16 +89,12 @@ class ChainListItem extends StatelessWidget {
           },
         );
       },
-      // Expanded(
-      //   child: ChainActivityListView(chain: chain),
-      // ),
-      child: ChainView(
+      child: ChainTileView(
         chain: chain,
         showHistory: showHistory,
         allowFlag: allowFlag,
         key: tutorialChain != null ? getGlobaleKey(tutorialChain!, key!) : key,
         index: index,
-        tutorialChain: tutorialChain,
       ),
     );
   }

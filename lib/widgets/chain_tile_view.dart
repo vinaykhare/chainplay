@@ -105,50 +105,56 @@ class ChainTileView extends StatelessWidget {
     Chain? chainExecution =
         Provider.of<ChainList>(context, listen: true).getRunningChain(chain);
     if (chainExecution == null) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Last Updated",
-                style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).secondaryHeaderColor,
-                    ),
-              ),
-              Text(
-                "on ${DateFormat.yMMMd().format(chain.lastUpdatedAt)}",
-                style: Theme.of(context).textTheme.labelMedium,
-              ),
-              Text(
-                "at ${DateFormat.Hms().format(chain.lastUpdatedAt)}",
-                style: Theme.of(context).textTheme.labelMedium,
-              ),
-            ],
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "with",
-                style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).secondaryHeaderColor,
-                    ),
-              ),
-              Text(
-                "${chain.activities.where((activity) => activity.activity.type == waitActivityInDB).length} Activity",
-                style: Theme.of(context).textTheme.labelMedium,
-              ),
-              Text(
-                "${chain.chainHistory.length.toString()} Execs",
-                style: Theme.of(context).textTheme.labelMedium,
-              ),
-            ],
-          ),
-        ],
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "with",
+                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).secondaryHeaderColor,
+                      ),
+                ),
+                Text(
+                  "${chain.activities.where((activity) => activity.activity.type == waitActivityInDB).length} Activity",
+                  style: Theme.of(context).textTheme.labelMedium,
+                ),
+                Text(
+                  "${chain.chainHistory.length.toString()} Execs",
+                  style: Theme.of(context).textTheme.labelMedium,
+                ),
+              ],
+            ),
+            const VerticalDivider(
+              width: 10,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Last Updated",
+                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).secondaryHeaderColor,
+                      ),
+                ),
+                Text(
+                  "on ${DateFormat.yMMMd().format(chain.lastUpdatedAt)}",
+                  style: Theme.of(context).textTheme.labelMedium,
+                ),
+                Text(
+                  "at ${DateFormat.Hms().format(chain.lastUpdatedAt)}",
+                  style: Theme.of(context).textTheme.labelMedium,
+                ),
+              ],
+            ),
+          ],
+        ),
       );
     } else {
       String currentActivityTitle = "";
@@ -204,91 +210,100 @@ class ChainTileView extends StatelessWidget {
       label: "Chain Name: ${chain.title}",
       child: InkWell(
         onTap: () => navigateToViewChainOrPlayChain(context),
-        child: Column(
-          children: [
-            ListTile(
-              // tileColor: chain.chainStatus == statusDone
-              //     ? Theme.of(context).disabledColor
-              //     : Theme.of(context).cardColor,
-              // subtitle: Text(chain.title),
-              title: getChainTileTitle(
-                context,
-                chain,
-              ),
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 2),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: chain.at != null
+                ? Theme.of(context).cardColor.withOpacity(0.7)
+                : Theme.of(context).cardColor,
+          ),
+          child: Column(
+            children: [
+              ListTile(
+                // tileColor: chain.chainStatus == statusDone
+                //     ? Theme.of(context).disabledColor
+                //     : Theme.of(context).cardColor,
+                // subtitle: Text(chain.title),
+                title: getChainTileTitle(
+                  context,
+                  chain,
+                ),
 
-              leading: CircleAvatar(
-                backgroundColor: Theme.of(context).primaryColorLight,
-                child: IconButton(
-                  onPressed: () => playTheChain(context),
-                  icon: getIconForChain(context, chain),
+                leading: CircleAvatar(
+                  backgroundColor: Theme.of(context).primaryColorLight,
+                  child: IconButton(
+                    onPressed: () => playTheChain(context),
+                    icon: getIconForChain(context, chain),
+                  ),
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (showHistory)
+                      IconButton(
+                        icon: const Icon(Icons.share),
+                        onPressed: () async {
+                          await Provider.of<ChainList>(context, listen: false)
+                              .checkAndShareChain(context, chain);
+                        },
+                      ),
+                    if (allowFlag)
+                      IconButton(
+                        icon: chain.pinned
+                            ? const Icon(Icons.favorite)
+                            : const Icon(Icons.favorite_border_outlined),
+                        onPressed: () async {
+                          chain.pinned = !chain.pinned;
+                          await Provider.of<ChainList>(context, listen: false)
+                              .updateChain(chain, false);
+                        },
+                      ),
+                    // if (showHistory)
+                    //   IconButton(
+                    //     onPressed: () async {
+                    //       NavigatorState navState = Navigator.of(context);
+
+                    //       navState.pushNamed(
+                    //         ChainExecutionScreen.routename,
+                    //         arguments: chain,
+                    //       );
+                    //     },
+                    //     icon: const Icon(Icons.arrow_forward),
+                    //   ),
+                  ],
                 ),
               ),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (showHistory)
-                    IconButton(
-                      icon: const Icon(Icons.share),
-                      onPressed: () async {
-                        await Provider.of<ChainList>(context, listen: false)
-                            .checkAndShareChain(context, chain);
-                      },
+                  Expanded(
+                    child: Image.asset(
+                      assetMap["chainImage"]!,
+                      height: 20,
+                      fit: BoxFit.cover,
                     ),
-                  if (allowFlag)
-                    IconButton(
-                      icon: chain.pinned
-                          ? const Icon(Icons.favorite)
-                          : const Icon(Icons.favorite_border_outlined),
-                      onPressed: () async {
-                        chain.pinned = !chain.pinned;
-                        await Provider.of<ChainList>(context, listen: false)
-                            .updateChain(chain, false);
-                      },
+                  ),
+                  FittedBox(
+                    child: Text(
+                      chain.title,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).hintColor,
+                          ),
                     ),
-                  // if (showHistory)
-                  //   IconButton(
-                  //     onPressed: () async {
-                  //       NavigatorState navState = Navigator.of(context);
-
-                  //       navState.pushNamed(
-                  //         ChainExecutionScreen.routename,
-                  //         arguments: chain,
-                  //       );
-                  //     },
-                  //     icon: const Icon(Icons.arrow_forward),
-                  //   ),
+                  ),
+                  Expanded(
+                    child: Image.asset(
+                      assetMap["chainImage"]!,
+                      height: 20,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ],
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Image.asset(
-                    assetMap["chainImage"]!,
-                    height: 20,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                FittedBox(
-                  child: Text(
-                    chain.title,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).hintColor,
-                        ),
-                  ),
-                ),
-                Expanded(
-                  child: Image.asset(
-                    assetMap["chainImage"]!,
-                    height: 20,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

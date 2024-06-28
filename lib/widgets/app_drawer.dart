@@ -32,14 +32,19 @@ class AppDrawer extends StatelessWidget {
                     .pushReplacementNamed(ChainListScreen.routename);
               },
               leading: Image.asset(assetMap["logoImage"]!),
-              title: const Text(
+              title: Text(
                 "C A T",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                // style: TextStyle(
+                //   fontWeight: FontWeight.bold,
+                //   color: Theme.of(context).textTheme.titleLarge!.color,
+                // ),
               ),
-              subtitle: const Text(
+              subtitle: Text(
                 "CHAIN THE ACTIVITIES \nWITH TIMERS",
+                style: Theme.of(context).textTheme.titleSmall,
               ),
             ),
             automaticallyImplyLeading: false,
@@ -80,7 +85,10 @@ class AppDrawer extends StatelessWidget {
                   'Add Sample Chains',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                subtitle: const Text("made of Timer & Manual Tasks"),
+                subtitle: Text(
+                  "made of Timer & Manual Tasks",
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
                 onTap: () async {
                   NavigatorState nav = Navigator.of(context);
                   while (Navigator.of(context).canPop()) {
@@ -100,7 +108,10 @@ class AppDrawer extends StatelessWidget {
                   'Create Your Own Chain',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                subtitle: const Text("of Timer & Manual Tasks"),
+                subtitle: Text(
+                  "of Timer & Manual Tasks",
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
                 onTap: () {
                   while (Navigator.of(context).canPop()) {
                     Navigator.of(context).pop();
@@ -118,7 +129,10 @@ class AppDrawer extends StatelessWidget {
                   'Upload a Chain',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                subtitle: const Text("shared or downloaded from CAT"),
+                subtitle: Text(
+                  "shared or downloaded from CAT",
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
                 onTap: () async {
                   NavigatorState nav = Navigator.of(context);
                   ChainList chainList =

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:chain_activities/helpers/helper_functions.dart';
 import 'package:chain_activities/screens/view_chain_screen.dart';
-import 'package:chain_activities/widgets/chain_side_button.dart';
+import 'package:chain_activities/widgets/cat_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/helpers/constants.dart';
@@ -285,133 +285,124 @@ class _PlayChainState extends State<PlayChain> {
     double appHeight = MediaQuery.of(context).size.height -
         MediaQuery.of(context).viewPadding.top -
         MediaQuery.of(context).viewPadding.bottom;
-    //double appWidth = MediaQuery.of(context).size.width - 16;
+    double appWidth = MediaQuery.of(context).size.width - 16;
     return Semantics(
       label: "Play Chain Screen",
       child: Scaffold(
-        body: SingleChildScrollView(
-          child: SafeArea(
-            child: SizedBox(
-              // margin: const EdgeInsets.only(top: 50),
-              // padding: const EdgeInsets.all(10),
-              height: appHeight,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ChainActivitiesWidget(
-                        tempChain: chain,
-                        editActivity: null,
-                        undoEdit: null,
-                      ),
+        body: SafeArea(
+          child: SizedBox(
+            // margin: const EdgeInsets.only(top: 50),
+            // padding: const EdgeInsets.all(10),
+            height: appHeight,
+            // width: appWidth,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ChainActivitiesWidget(
+                      tempChain: chain,
+                      editActivity: null,
+                      undoEdit: null,
                     ),
                   ),
+                ),
+                if (invokeCounter < chain.activities.length)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      if (invokeCounter < chain.activities.length)
-                        TextButton.icon(
-                          onPressed: () async {
+                      CatTextButton(
+                        buttonLabel: "Stop",
+                        buttonAction: () async {
+                          NavigatorState nav = Navigator.of(context);
+                          bool? dialogResponse = await showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text("Confirm to Stop"),
+                                content: const Text(
+                                    "Are you sure about stopping this chain execution?"),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(true),
+                                    child: Text(
+                                      "Yes, I am Sure!",
+                                      style: TextStyle(
+                                        color:
+                                            Theme.of(context).colorScheme.error,
+                                      ),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(false),
+                                    child: Text(
+                                      "No, my bad!",
+                                      style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+
+                          if (dialogResponse == true) {
                             chainList.stopChainExecution(parentChain);
-                            Navigator.of(context).pushReplacementNamed(
+                            nav.pushReplacementNamed(
                               ViewChain.routename,
                               arguments: {
                                 "chain": parentChain,
                               },
                             );
-                          },
-                          style: ButtonStyle(
-                            iconColor: MaterialStateProperty.resolveWith(
-                              (states) => Theme.of(context).colorScheme.error,
-                            ),
-                          ),
-                          icon: const Icon(
-                            Icons.stop_circle,
-                          ),
-                          label: FittedBox(
-                            child: Text(
-                              "Stop Chain",
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                          ),
-                        ),
-                      if (chainActivityPaused != null &&
-                          chainActivityPaused!.endedAt == null &&
-                          chain.notificationId == noValueInDB)
-                        Expanded(
-                          child: ChainSideButton(
-                            chainList: chainList,
-                            chain: chain,
-                            chainActivityPaused: chainActivityPaused,
-                            buttonLabel:
-                                "Resume Chain &\nNotify Activity Completion",
-                            buttonAction: scheduleActivity,
-                            buttonIcon: Icons.notification_add_outlined,
-                          ),
-                        )
-                      else if (chain.notificationId != noValueInDB)
-                        ChainSideButton(
-                          chainList: chainList,
-                          chain: chain,
-                          chainActivityPaused: chainActivityPaused,
-                          buttonLabel:
-                              "Complete Current Activity &\nCancel Notification",
-                          buttonAction: () async {
-                            chainActivityPaused!.isInterrupted = true;
-                            chainActivityPaused!.endedAt = DateTime.now();
-                            await cancelNotificationAndCompleteActivity(
-                                chain, chainActivityPaused!);
-
-                            setState(() {
-                              chainActivityPaused = null;
-                              invokeCounter++;
-                            });
-                          },
-                          buttonIcon: Icons.notifications_off_outlined,
-                        ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () async {
-                          NavigatorState nav = Navigator.of(context);
-                          bool allWell = await onPopOut();
-                          allWell && nav.canPop()
-                              ? nav.pop()
-                              : nav.pushNamed(ChainListScreen.routename);
+                          }
                         },
-                        icon: const Icon(
-                          Icons.arrow_back,
-                        ),
+                        buttonIcon: Icons.stop_circle,
                       ),
-                      Expanded(
-                        child: TextFormField(
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.titleLarge,
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            floatingLabelAlignment:
-                                FloatingLabelAlignment.center,
-                            floatingLabelBehavior: FloatingLabelBehavior.never,
+                      Container(
+                        width: appWidth * 0.75,
+                        height: appHeight * 0.06,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          color:
+                              Theme.of(context).primaryColor.withOpacity(0.3),
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(
+                              30,
+                            ),
+                            bottomLeft: Radius.circular(
+                              30,
+                            ),
                           ),
-                          initialValue: chain.title,
-                          enabled: false,
                         ),
-                      ),
-                      IconButton(
-                        onPressed: invokeCounter < chain.activities.length
-                            ? (chainActivityPaused == null ||
-                                    chainActivityPaused!.endedAt == null)
-                                ? () {
-                                    chainActivityPaused = null;
-                                    //invokeCounter = 0;
-                                    playTheChain();
-                                  }
-                                : () async {
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              if (chainActivityPaused != null &&
+                                  chainActivityPaused!.endedAt == null &&
+                                  chain.notificationId == noValueInDB)
+                                CatTextButton(
+                                  buttonLabel: "Play the Chain, in Background",
+                                  buttonAction: scheduleActivity,
+                                  buttonIcon: Icons.play_circle,
+                                )
+                              else if (chain.notificationId != noValueInDB)
+                                CatTextButton(
+                                  buttonLabel: "Refresh, for the latest status",
+                                  buttonAction: () async {
                                     if (chainActivityPaused!.endedAt!.isBefore(
                                       DateTime.now(),
                                     )) {
@@ -423,22 +414,126 @@ class _PlayChainState extends State<PlayChain> {
                                     } else {
                                       setState(() {});
                                     }
-                                  }
-                            : null,
-                        icon: chainActivityPaused != null &&
-                                chainActivityPaused!.endedAt != null &&
-                                chainActivityPaused!.activityDone == false
-                            ? const Icon(Icons.refresh)
-                            : const Icon(
-                                Icons.arrow_forward,
-                              ),
-                      ),
+                                  },
+                                  buttonIcon: Icons.refresh_outlined,
+                                )
+                              else
+                                CatTextButton(
+                                  buttonLabel: "Play the Chain, Interactively",
+                                  buttonAction: () {
+                                    chainActivityPaused = null;
+                                    playTheChain();
+                                  },
+                                  buttonIcon: Icons.arrow_forward_outlined,
+                                ),
+                            ],
+                          ),
+                        ),
+                      )
                     ],
                   ),
-                ],
-              ),
+              ],
             ),
           ),
+        ),
+        bottomNavigationBar: Row(
+          children: [
+            IconButton(
+              onPressed: () async {
+                NavigatorState nav = Navigator.of(context);
+                bool allWell = await onPopOut();
+                allWell && nav.canPop()
+                    ? nav.pop()
+                    : nav.pushNamed(ChainListScreen.routename);
+              },
+              icon: const Icon(
+                Icons.arrow_back,
+              ),
+            ),
+            Expanded(
+              child: TextFormField(
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleLarge,
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  floatingLabelAlignment: FloatingLabelAlignment.center,
+                  floatingLabelBehavior: FloatingLabelBehavior.never,
+                ),
+                initialValue: chain.title,
+                enabled: false,
+              ),
+            ),
+            IconButton(
+              onPressed: invokeCounter < chain.activities.length
+                  ? (chain.notificationId == noValueInDB &&
+                          (chainActivityPaused == null ||
+                              chainActivityPaused!.endedAt == null))
+                      ? () {
+                          chainActivityPaused = null;
+                          playTheChain();
+                        }
+                      : () async {
+                          bool? dialogResponse = await showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title:
+                                    const Text("Chain is running in bacground"),
+                                content: const Text(
+                                    "Are you sure about force completing the current activity and go to the next one?"),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(true),
+                                    child: Text(
+                                      "Yes, Do it!",
+                                      style: TextStyle(
+                                        color:
+                                            Theme.of(context).colorScheme.error,
+                                      ),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(false),
+                                    child: Text(
+                                      "No, my bad!",
+                                      style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+
+                          if (dialogResponse == false) {
+                            // nav.pop();
+                            return;
+                          } else {
+                            chainActivityPaused!.isInterrupted = true;
+                            chainActivityPaused!.endedAt = DateTime.now();
+                            await cancelNotificationAndCompleteActivity(
+                              chain,
+                              chainActivityPaused!,
+                            );
+
+                            setState(() {
+                              chainActivityPaused = null;
+                              invokeCounter++;
+                            });
+                            playTheChain();
+                          }
+                        }
+                  : null,
+              icon: const Icon(
+                Icons.arrow_forward,
+              ),
+            ),
+          ],
         ),
       ),
     );

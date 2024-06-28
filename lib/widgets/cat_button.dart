@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 class CatButton extends StatelessWidget {
-  final Function() onPressedAction;
-  final Widget iconWidget;
-  final String title;
+  final Function() buttonAction;
+  final IconData buttonIcon;
+  final String buttonLabel;
   const CatButton({
     super.key,
-    required this.onPressedAction,
-    required this.iconWidget,
-    required this.title,
+    required this.buttonAction,
+    required this.buttonIcon,
+    required this.buttonLabel,
   });
 
   @override
@@ -17,7 +17,7 @@ class CatButton extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
-          BoxShadow(color: Theme.of(context).primaryColor, spreadRadius: 5),
+          //BoxShadow(color: Theme.of(context).primaryColor, spreadRadius: 5),
           BoxShadow(
             color: Theme.of(context).cardColor,
             spreadRadius: 5,
@@ -27,20 +27,23 @@ class CatButton extends StatelessWidget {
         ],
         gradient: LinearGradient(
           colors: [
-            Theme.of(context).primaryColor,
             Theme.of(context).cardColor,
+            Theme.of(context).primaryColor,
           ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
       ),
       child: TextButton.icon(
-        icon: iconWidget,
+        icon: Icon(
+          buttonIcon,
+          color: Theme.of(context).shadowColor,
+        ),
         label: Text(
-          title,
+          buttonLabel,
           style: Theme.of(context).textTheme.labelLarge,
         ),
-        onPressed: onPressedAction,
+        onPressed: buttonAction,
       ),
     );
   }

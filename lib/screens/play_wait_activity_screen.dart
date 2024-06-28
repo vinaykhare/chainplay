@@ -192,22 +192,22 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
             ),
           );
     //}
-    double appHeight = MediaQuery.of(context).size.height -
-        MediaQuery.of(context).viewPadding.top -
-        MediaQuery.of(context).viewPadding.bottom;
+    // double appHeight = MediaQuery.of(context).size.height -
+    //     MediaQuery.of(context).viewPadding.top -
+    //     MediaQuery.of(context).viewPadding.bottom;
 
-    return Semantics(
-      label: "Play Timer Screen",
-      child: Scaffold(
-        body: SingleChildScrollView(
-          child: SafeArea(
-            child: SizedBox(
-              height: appHeight,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ClipRRect(
+    return PopScope(
+      canPop: false,
+      child: Semantics(
+        label: "Play Timer Screen",
+        child: Scaffold(
+          body: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: ClipRRect(
                     borderRadius: BorderRadius.circular(50),
                     child: Container(
                       margin: const EdgeInsets.all(5),
@@ -215,13 +215,13 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                           ? Image.asset(
                               assetMap['logoImage']!,
                               fit: BoxFit.fitHeight,
-                              height: appHeight * 0.45,
+                              //height: appHeight * 0.45,
                             )
                           : screenImage!.startsWith("http")
                               ? FadeInImage.assetNetwork(
                                   placeholder: assetMap["logoImage"]!,
                                   image: screenImage!,
-                                  height: appHeight * 0.45,
+                                  // height: appHeight * 0.45,
                                   fit: BoxFit.cover,
                                   imageErrorBuilder:
                                       (context, error, stackTrace) =>
@@ -232,147 +232,140 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                                 )
                               : Image.file(
                                   File(screenImage!),
-                                  height: appHeight * 0.45,
+                                  // height: appHeight * 0.45,
                                   fit: BoxFit.cover,
                                 ),
                     ),
                   ),
+                ),
+                Text(
+                  title ?? "Generic Activity",
+                  style: Theme.of(context).textTheme.headlineMedium,
+                  textAlign: TextAlign.center,
+                ),
+                if (playScreenType != systemEndActivityInDB)
                   Text(
-                    title ?? "Generic Activity",
-                    style: Theme.of(context).textTheme.headlineMedium,
+                    "will compelte\n$timeLeft\n${(hours != 0 || minutes != 0) && seconds != 0 ? 'and' : ''}",
+                    style: Theme.of(context).textTheme.headlineSmall,
                     textAlign: TextAlign.center,
                   ),
-                  if (playScreenType != systemEndActivityInDB)
-                    Text(
-                      "will compelte\n$timeLeft\n${(hours != 0 || minutes != 0) && seconds != 0 ? 'and' : ''}",
-                      style: Theme.of(context).textTheme.headlineSmall,
-                      textAlign: TextAlign.center,
-                    ),
-                  if (playScreenType != systemEndActivityInDB)
-                    InkWell(
-                      onTap: interruptAndCompleteActivity,
-                      child: CircleAvatar(
-                        radius: 50,
-                        backgroundColor:
-                            playScreenType == systemWaitActivityInDB
-                                ? Theme.of(context).focusColor
-                                : Theme.of(context).canvasColor,
-                        child: FittedBox(
-                          child: Text(
-                            displaySeconds,
-                            style: Theme.of(context).textTheme.headlineMedium,
-                            textAlign: TextAlign.center,
-                          ),
+                if (playScreenType != systemEndActivityInDB)
+                  InkWell(
+                    onTap: interruptAndCompleteActivity,
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundColor: playScreenType == systemWaitActivityInDB
+                          ? Theme.of(context).focusColor
+                          : Theme.of(context).canvasColor,
+                      child: FittedBox(
+                        child: Text(
+                          displaySeconds,
+                          style: Theme.of(context).textTheme.headlineMedium,
+                          textAlign: TextAlign.center,
                         ),
                       ),
-                    )
-                  else
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        //mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              CatButton(
-                                title: "Restart this Chian",
-                                iconWidget: Icon(
-                                  Icons.restart_alt,
-                                  color: Theme.of(context).secondaryHeaderColor,
-                                ),
-                                onPressedAction: () async {
-                                  await completeTheChain(
-                                    chainCompletionMessageRestart,
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              CatButton(
-                                title: "Just Mark it Complete",
-                                iconWidget: Icon(
-                                  Icons.done,
-                                  color: Theme.of(context).secondaryHeaderColor,
-                                ),
-                                onPressedAction: interruptAndCompleteActivity,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
                     ),
-                  if (waitDuration.inSeconds != 0)
-                    Text(
-                      "Seconds.",
-                      style: Theme.of(context).textTheme.headlineSmall,
-                      textAlign: TextAlign.center,
-                    ),
-                  Container(
-                    margin: const EdgeInsets.all(5),
-                    padding: const EdgeInsets.only(bottom: 5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Theme.of(context).cardColor,
-                    ),
-                    child: const ShowBannerAd(),
-                  ),
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          Navigator.of(context).pop({
-                            "running": false, //running,
-                            "waitDuration": waitDuration,
-                            "interruptAndCompleted": false,
-                            "resumedAt": resumedAt,
-                          });
-                        },
-                        icon: const Icon(
-                          Icons.arrow_back,
-                        ),
-                      ),
-                      if (showPlayPause)
-                        Expanded(
-                          child: IconButton(
-                            onPressed: () {
-                              if (running) {
-                                stopTimer();
-                              } else {
-                                startTimer();
-                                resumedAt = DateTime.now();
-                              }
-
-                              setState(() {
-                                running = !running;
-                              });
-                            },
-                            icon: Icon(
-                              running ? Icons.pause : Icons.play_arrow,
+                  )
+                else
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      //mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            CatButton(
+                              buttonLabel: "Restart this Chian",
+                              buttonIcon: Icons.restart_alt,
+                              buttonAction: () async {
+                                await completeTheChain(
+                                  chainCompletionMessageRestart,
+                                );
+                              },
                             ),
-                          ),
-                        )
-                      else
-                        const Expanded(
-                          child: SizedBox(),
+                          ],
                         ),
-                      IconButton(
-                        onPressed: interruptAndCompleteActivity,
-                        icon: Icon(
-                          playScreenType == systemEndActivityInDB
-                              ? Icons.done
-                              : Icons.arrow_forward,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            CatButton(
+                              buttonLabel: "Just Mark it Complete",
+                              buttonIcon: Icons.done,
+                              buttonAction: interruptAndCompleteActivity,
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ],
-              ),
+                if (waitDuration.inSeconds != 0)
+                  Text(
+                    "Seconds.",
+                    style: Theme.of(context).textTheme.headlineSmall,
+                    textAlign: TextAlign.center,
+                  ),
+                Container(
+                  margin: const EdgeInsets.all(5),
+                  padding: const EdgeInsets.only(bottom: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Theme.of(context).cardColor,
+                  ),
+                  child: const ShowBannerAd(),
+                ),
+              ],
             ),
+          ),
+          bottomNavigationBar: Row(
+            children: [
+              IconButton(
+                onPressed: () {
+                  Navigator.of(context).pop({
+                    "running": false, //running,
+                    "waitDuration": waitDuration,
+                    "interruptAndCompleted": false,
+                    "resumedAt": resumedAt,
+                  });
+                },
+                icon: const Icon(
+                  Icons.arrow_back,
+                ),
+              ),
+              if (showPlayPause)
+                Expanded(
+                  child: IconButton(
+                    onPressed: () {
+                      if (running) {
+                        stopTimer();
+                      } else {
+                        startTimer();
+                        resumedAt = DateTime.now();
+                      }
+
+                      setState(() {
+                        running = !running;
+                      });
+                    },
+                    icon: Icon(
+                      running ? Icons.pause : Icons.play_arrow,
+                    ),
+                  ),
+                )
+              else
+                const Expanded(
+                  child: SizedBox(),
+                ),
+              IconButton(
+                onPressed: interruptAndCompleteActivity,
+                icon: Icon(
+                  playScreenType == systemEndActivityInDB
+                      ? Icons.done
+                      : Icons.arrow_forward,
+                ),
+              ),
+            ],
           ),
         ),
       ),

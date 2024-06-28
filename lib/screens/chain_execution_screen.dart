@@ -1,3 +1,4 @@
+import 'package:chain_activities/widgets/chain_tile_view.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -7,7 +8,6 @@ import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/screens/play_chain_screen.dart';
-import 'package:chain_activities/widgets/chain_view.dart';
 import 'package:chain_activities/widgets/start_end_time_chain_widget.dart';
 
 //import 'package:chain_activities/widgets/app_drawer.dart';
@@ -184,7 +184,7 @@ class ChainExecutionScreen extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: CircleAvatar(
-                        backgroundColor: Theme.of(context).primaryColorLight,
+                        backgroundColor: Theme.of(context).primaryColor,
                         child: IconButton(
                           onPressed: () async {
                             if (chain.chainStatus == statusExecuting) {
@@ -238,7 +238,7 @@ class ChainExecutionScreen extends StatelessWidget {
                             topLeft: Radius.circular(30),
                             topRight: Radius.circular(30)),
                       ),
-                      child: ChainView(
+                      child: ChainTileView(
                         chain: chain,
                         showHistory: false,
                         allowFlag: false,

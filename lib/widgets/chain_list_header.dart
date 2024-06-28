@@ -20,14 +20,15 @@ class ChainListHeader extends StatelessWidget {
         Expanded(
           child: ListTile(
             leading: Image.asset(assetMap["logoImage"]!),
-            title: const Text(
+            title: Text(
               "C A T",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
-            subtitle: const Text(
+            subtitle: Text(
               "CHAIN THE ACTIVITIES \nWITH TIMERS",
+              style: Theme.of(context).textTheme.titleSmall,
             ),
           ),
         ),
