@@ -1,17 +1,10 @@
 import 'package:chain_activities/helpers/key_helper.dart';
-import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-//import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/models/activity.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_activity.dart';
-import 'package:chain_activities/models/chain_list.dart';
-//import 'package:chain_activities/screens/add_activity_screen.dart';
-//import 'package:chain_activities/widgets/activities_timeline.dart';
 import 'package:chain_activities/widgets/chain_activities_widget.dart';
 import 'package:uuid/uuid.dart';
 
@@ -58,398 +51,10 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
   int activityDurationHour = 0,
       activityDurationMinute = 0,
       activityDurationSecond = 0;
-  final ScrollController scrollController = ScrollController();
-  final TextEditingController addActivityController = TextEditingController();
-  final TextEditingController activityImageController = TextEditingController();
-
-  final TextEditingController durationHourController = TextEditingController();
-  final TextEditingController durationMinuteController =
-      TextEditingController();
-  final TextEditingController durationSecondController =
-      TextEditingController();
-  //String durHour = "", durMin = "", durSec = "";
-  GlobalKey<FormState> chainFormKey = GlobalKey<FormState>();
-  GlobalKey<FormState> durationFormKey = GlobalKey<FormState>();
-  GlobalKey<FormState> startDateTimeInputKey = GlobalKey<FormState>();
-  FocusNode addActivityFocus = FocusNode();
 
   @override
   void dispose() {
-    addActivityFocus.dispose();
-    addActivityController.dispose();
     super.dispose();
-  }
-
-  Future<bool> isNameValid() async {
-    setState(() {
-      errorString = "";
-    });
-    ChainList chainList = Provider.of<ChainList>(context, listen: false);
-    bool nameExist = await chainList.nameExistInDB(tempChain.title);
-    if (tempChain.title.length > 35) {
-      setState(() {
-        errorString =
-            "Length of Chain name ${tempChain.title} is too long. It should not be more than 35 letters long.";
-      });
-      return false;
-    }
-    if (nameExist) {
-      setState(() {
-        errorString = "Chain name ${tempChain.title} is taken.";
-      });
-      return false;
-    }
-    return true;
-  }
-
-  Future<void> saveAndExit() async {
-    NavigatorState nav = Navigator.of(context);
-    for (ChainActivity chainActivity in tempChain.activities) {
-      undoEdit(chainActivity);
-    }
-    bool result = await validateForm();
-    if (result) {
-      if (nav.canPop()) {
-        nav.pop();
-      } else {
-        nav.pushReplacementNamed(ChainListScreen.routename);
-      }
-    }
-  }
-
-  Future<bool> validateForm([bool existingScreen = true]) async {
-    ChainList chainList = Provider.of<ChainList>(context, listen: false);
-    if (chainFormKey.currentState == null) {
-      return true;
-    }
-    bool valid = chainFormKey.currentState!.validate();
-
-    chainFormKey.currentState?.save();
-
-    bool validName = await isNameValid();
-    if (!valid || !validName) {
-      return false;
-    }
-
-    if (tempChain.activities.isNotEmpty && tempChain.title == "") {
-      setState(() {
-        errorString =
-            "Give a valid name to this Chain!\n OR\n Remove all Activites to delete the Chain.";
-      });
-      return false;
-    }
-
-    if (tempChain.activities.isEmpty &&
-        tempChain.title != "" &&
-        existingScreen) {
-      // setState(() {
-      //   errorString =
-      //       "Add atleast one Timer Activity to this Chain.\n Or Remove the Chain Name and go back to Discard the Chain.";
-      // });
-      // return false;
-      await chainList.removeChain(tempChain);
-    }
-
-    if (tempChain.activities.isEmpty && tempChain.title == "") {
-      tempChain.title =
-          chainNameOnPageLoad != "" ? chainNameOnPageLoad : tempChain.title;
-      chainList.removeChain(tempChain);
-    }
-
-    if (tempChain.activities.isNotEmpty &&
-        tempChain.title != chainNameOnPageLoad) {
-      await chainList.renameChain(
-        chainNameOnPageLoad,
-        tempChain.title,
-      );
-      tempChain.lastUpdatedAt = DateTime.now();
-      await chainList.updateChain(tempChain);
-    }
-
-    if (!(tempChain.title == "" &&
-        tempChain.activities.isEmpty &&
-        chainNameOnPageLoad == "")) {
-      tempChain.edit = false;
-      await chainList.updateChain(tempChain, false);
-      await chainList.updatChainActivityByChainName(tempChain);
-    }
-    return true;
-  }
-
-  Future<void> addActivity(ChainActivity newActivity) async {
-    ChainList chainList = Provider.of<ChainList>(context, listen: false);
-    ChainActivity restChainActivity = ChainActivity(
-      activity: restActivity,
-    );
-    bool validName = await isNameValid();
-
-    if (!(validName)) {
-      return;
-    }
-
-    tempChain.edit = true;
-
-    if (tempChain.activities.isEmpty) {
-      ChainActivity startChainActivity = ChainActivity(
-        activity: startActivity,
-      );
-      startChainActivity.index = 0;
-      tempChain.activities.add(
-        startChainActivity,
-      );
-      await chainList.addChain(
-        tempChain,
-        startChainActivity,
-      );
-    }
-    tempChain.activities.add(
-      newActivity,
-    );
-
-    await chainList.addChain(tempChain, newActivity);
-
-    tempChain.activities.add(
-      restChainActivity,
-    );
-    await chainList.addChain(
-      tempChain,
-      restChainActivity,
-    );
-    //Navigator.of(context).pop();
-    setState(() {});
-  }
-
-  //chainActivityInEditMode should not be null before calling this function.
-  Future<void> updateActivity(ChainActivity newActivity) async {
-    ChainList chainList = Provider.of<ChainList>(context, listen: false);
-    bool validName = await isNameValid();
-
-    if (!(validName)) {
-      return;
-    }
-
-    await chainList.updateChainActivityByActivityId(
-      tempChain,
-      newActivity,
-    );
-    await chainList.updateActivity(newActivity.activity);
-    tempChain.lastUpdatedAt = DateTime.now();
-    tempChain.edit = true;
-    await chainList.updateChain(tempChain);
-    setState(() {
-      chainActivityInEditMode = null;
-      updatingSystemWaitActivityInDB = false;
-    });
-  }
-
-  void onSubmitText() {
-    setState(() {
-      errorString = "";
-    });
-
-    bool validChainForm = chainFormKey.currentState!.validate();
-    bool validDurationForm = durationFormKey.currentState?.validate() ?? true;
-    bool validStartDateTimeForm =
-        startDateTimeInputKey.currentState?.validate() ?? true;
-    if (!validChainForm || !validDurationForm || !validStartDateTimeForm) {
-      return;
-    }
-
-    chainFormKey.currentState?.save();
-    durationFormKey.currentState?.save();
-    startDateTimeInputKey.currentState?.save();
-    if (tempChain.title == "") {
-      setState(() {
-        errorString =
-            "Please insert the Chain name before adding activity to it.";
-      });
-      return;
-    }
-
-    if (addActivityController.text.isEmpty &&
-        (activityImageController.text.isNotEmpty ||
-            activityDurationHour > 0 ||
-            activityDurationMinute > 0 ||
-            activityDurationSecond > 0)) {
-      setState(() {
-        errorString = "Add Chain Activity Name";
-      });
-      return;
-    }
-
-    if (addActivityController.text.isEmpty) {
-      return;
-    }
-
-    if (addActivityController.text.length > 35) {
-      setState(() {
-        errorString =
-            "Length of Acitivity Name is too long. It should not be more than 35 letters long.";
-      });
-      return;
-    }
-
-    if (chainActivityInEditMode != null) {
-      chainActivityInEditMode!.activity.title = addActivityController.text;
-      chainActivityInEditMode!.edit = false;
-      chainActivityInEditMode!.activity.lastUpdatedAt = DateTime.now();
-      chainActivityInEditMode!.activityDuration = Duration(
-        hours: activityDurationHour,
-        minutes: activityDurationMinute,
-        seconds: activityDurationSecond,
-      );
-      //if (activityImageController.text.isNotEmpty) {
-      chainActivityInEditMode!.activity.specification = {
-        activitySpecImagePath: activityImageController.text,
-      };
-      //}
-
-      updateActivity(chainActivityInEditMode!);
-      // if (chainActivityInEditMode?.activity.type ==
-      //     systemStartActivityInDB) {
-      //   Provider.of<ChainList>(context, listen: false)
-      //       .updateChain(tempChain);
-      // }
-    } else {
-      addActivity(
-        ChainActivity(
-          activity: Activity(
-            title: addActivityController.text,
-            createdAt: DateTime.now(),
-            lastUpdatedAt: DateTime.now(),
-            activityId: const Uuid().v1(),
-            specification: activityImageController.text.isNotEmpty
-                ? {
-                    activitySpecImagePath: activityImageController.text,
-                  }
-                : {},
-          ),
-          activityDuration: Duration(
-            hours: activityDurationHour,
-            minutes: activityDurationMinute,
-            seconds: activityDurationSecond,
-          ),
-        ),
-      );
-
-      FocusScope.of(context).requestFocus(addActivityFocus);
-    }
-
-    addActivityController.clear();
-    activityImageController.clear();
-    setState(() {
-      activityDurationHour = 0;
-      activityDurationMinute = 0;
-      activityDurationSecond = 0;
-      //addingDurationToActivity = false;
-    });
-  }
-
-  String? validateMinuteOrSecond(String? value) {
-    try {
-      if (value == null || value == "") {
-        return null;
-      }
-      int intValue = int.parse(value);
-      if (intValue > 59 || intValue < 0) {
-        return "00-59";
-      }
-      return null;
-    } catch (e) {
-      return "Number 00-59";
-    }
-  }
-
-  String? validateHour(String? value) {
-    try {
-      if (value == null || value == "") {
-        return null;
-      }
-      int intValue = int.parse(value);
-      if (intValue > 23 || intValue < 0) {
-        return "00-23";
-      }
-      return null;
-    } catch (e) {
-      return "Number 00-23";
-    }
-  }
-
-  Future<void> undoEdit(ChainActivity chainActivity) async {
-    FocusScopeNode focusScope = FocusScope.of(context);
-    addActivityController.clear();
-    activityImageController.clear();
-    chainActivityInEditMode = chainActivity;
-    chainActivityInEditMode!.edit = false;
-
-    ChainList chainList = Provider.of<ChainList>(context, listen: false);
-
-    //await chainList.resetChain(tempChain);
-    await chainList.updateChainActivityByActivityId(
-        tempChain, chainActivityInEditMode!);
-
-    setState(() {
-      chainActivityInEditMode = null;
-      // addingDurationToActivity = false;
-      activityDurationHour = 0;
-      activityDurationMinute = 0;
-      activityDurationSecond = 0;
-      updatingSystemWaitActivityInDB = false;
-    });
-    focusScope.unfocus();
-  }
-
-  Future<void> editActivity(ChainActivity chainActivity) async {
-    //FocusScopeNode focusScope = FocusScope.of(context);
-
-    ChainList chainList = Provider.of<ChainList>(context, listen: false);
-    chainActivityInEditMode = chainActivity;
-    await chainList.updatChainActivityByChainName(tempChain);
-    chainActivityInEditMode!.edit = true;
-    // await chainList.resetChain(tempChain);
-    await chainList.updateChainActivityByActivityId(
-      tempChain,
-      chainActivityInEditMode!,
-    );
-
-    updatingSystemWaitActivityInDB =
-        chainActivityInEditMode!.activity.type == systemWaitActivityInDB;
-
-    Duration chainActivityDuration = chainActivityInEditMode!.activityDuration;
-
-    if (chainActivity.activity.type == systemStartActivityInDB) {
-      setState(() {
-        addingDurationToActivity = false;
-        chainStartDate = tempChain.at;
-        chainStartTime = tempChain.at;
-      });
-    } else {
-      setState(() {
-        addingDurationToActivity = true;
-        activityDurationHour = chainActivityDuration.inHours;
-        activityDurationMinute =
-            chainActivityDuration.inMinutes - (activityDurationHour * 60);
-        activityDurationSecond = chainActivityDuration.inSeconds -
-            (activityDurationHour * 3600) -
-            (activityDurationMinute * 60);
-        activityImageController.text = chainActivityInEditMode!
-                .activity.specification?[activitySpecImagePath] ??
-            "";
-      });
-      durationHourController.text = activityDurationHour == 0
-          ? ""
-          : activityDurationHour.toString().padLeft(2, '0');
-      durationMinuteController.text = activityDurationMinute == 0
-          ? ""
-          : activityDurationMinute.toString().padLeft(2, '0');
-      durationSecondController.text = activityDurationSecond == 0
-          ? ""
-          : activityDurationSecond.toString().padLeft(2, '0');
-    }
-    addActivityController.text = chainActivity.activity.title;
-    // if (!updatingSystemWaitActivityInDB && !addingScheduleToChain) {
-    //   focusScope.requestFocus(addActivityFocus);
-    // }
   }
 
   @override
@@ -467,30 +72,7 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
       pageInit = false;
       //FocusScope.of(context).requestFocus(addActivityFocus);
     }
-
-    // Autocomplete<String>(
-    //   optionsBuilder: (TextEditingValue textEditingValue) async {
-    //     if (textEditingValue.text == '') {
-    //       return const Iterable<String>.empty();
-    //     } else {
-    //       List<Activity> matches = <Activity>[];
-    //       final suggestions =
-    //           await Provider.of<ChainList>(context, listen: false)
-    //               .fetchActivities();
-    //       matches.addAll(suggestions);
-
-    //       matches.retainWhere((s) {
-    //         return s.title
-    //             .toLowerCase()
-    //             .contains(textEditingValue.text.toLowerCase());
-    //       });
-    //       return matches.map((e) => e.title);
-    //     }
-    //   },
-    // );
-
     final durationInputForm = Form(
-      key: durationFormKey,
       child: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).primaryColor.withOpacity(0.3),
@@ -513,7 +95,7 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
                     color: Theme.of(context).primaryColor,
                   ),
                   child: IconButton(
-                    onPressed: null,
+                    onPressed: () {},
                     icon: Icon(
                       Icons.watch_later,
                       color: Theme.of(context).shadowColor,
@@ -545,8 +127,9 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
                         newValue != "" && newValue != null
                             ? int.parse(newValue)
                             : 0,
-                    validator: (value) => validateHour(value),
-                    controller: durationHourController,
+                    validator: (value) {
+                      return null;
+                    },
                   ),
                 ),
                 Expanded(
@@ -574,8 +157,9 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
                       hintText:
                           activityDurationMinute.toString().padLeft(2, '0'),
                     ),
-                    validator: (value) => validateMinuteOrSecond(value),
-                    controller: durationMinuteController,
+                    validator: (value) {
+                      return null;
+                    },
                   ),
                 ),
                 Expanded(
@@ -605,8 +189,9 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
                           activityDurationSecond.toString().padLeft(2, '0'),
                       alignLabelWithHint: true,
                     ),
-                    validator: (value) => validateMinuteOrSecond(value),
-                    controller: durationSecondController,
+                    validator: (value) {
+                      return null;
+                    },
                   ),
                 ),
                 Container(
@@ -614,16 +199,7 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
                     color: Theme.of(context).primaryColor,
                   ),
                   child: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        durationHourController.clear();
-                        durationMinuteController.clear();
-                        durationSecondController.clear();
-                        activityDurationHour = 0;
-                        activityDurationMinute = 0;
-                        activityDurationSecond = 0;
-                      });
-                    },
+                    onPressed: () {},
                     icon: const Icon(
                       Icons.clear_all,
                     ),
@@ -647,45 +223,7 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
                           icon: const Icon(
                             Icons.photo,
                           ),
-                          onPressed: () async {
-                            // XFile? pickedImage = await ImagePicker()
-                            //     .pickImage(source: ImageSource.gallery);
-                            // if (pickedImage != null) {
-                            //   // activityImageController.text = pickedImage.path;
-                            //   setState(() {
-                            //     localImagePath = pickedImage.path;
-                            //   });
-                            // }
-                            FilePickerResult? result =
-                                await FilePicker.platform.pickFiles(
-                              type: FileType.custom,
-                              allowedExtensions: [
-                                'jpg',
-                                'jpeg',
-                                'gif',
-                                'png',
-                                'webp',
-                                'svg',
-                                'jfif',
-                                'pjpeg',
-                                'pjp',
-                                'apng',
-                                'avif',
-                                'bmp',
-                                'tif',
-                                'tiff',
-                                'ico',
-                                'cur'
-                              ],
-                            );
-                            if (result != null) {
-                              activityImageController.text =
-                                  result.files.single.path!;
-                              setState(() {});
-                            } else {
-                              // User cancelled the picker
-                            }
-                          },
+                          onPressed: () {},
                         ),
                       ),
                       // const Padding(
@@ -697,64 +235,35 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
                     ],
                   ),
                   Expanded(
-                    child: activityImageController.text.startsWith("/")
-                        ? IgnorePointer(
-                            ignoring: true,
-                            child: TextFormField(
-                              //readOnly: true,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                filled: true,
-                                label: Center(
-                                  child: Text(
-                                    "A Local Image is Set for this Activity",
-                                  ),
-                                ),
-                                labelStyle: TextStyle(
-                                  //color: Theme.of(context).secondaryHeaderColor,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                hintText: "https://",
-                                alignLabelWithHint: true,
-                                floatingLabelBehavior:
-                                    FloatingLabelBehavior.never,
-                              ),
-                            ),
-                          )
-                        : TextFormField(
-                            key: ValueKey(
-                              "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_image",
-                            ),
-                            keyboardType: TextInputType.url,
-                            textAlign: TextAlign.center,
-                            controller: activityImageController,
-                            // onSaved: (_) => chainActivityInEditMode!
-                            //         .activity.specification![activitySpecImagePath] =
-                            //     activityImageController.text,
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              label: Text(
-                                "HTTP URL to an Image or a GIF",
-                                style: TextStyle(
-                                  color: Theme.of(context).disabledColor,
-                                ),
-                              ),
-                              hintText: "https://",
-                              alignLabelWithHint: true,
-                              floatingLabelBehavior:
-                                  FloatingLabelBehavior.never,
-                            ),
+                    child: TextFormField(
+                      key: ValueKey(
+                        "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_image",
+                      ),
+                      keyboardType: TextInputType.url,
+                      textAlign: TextAlign.center,
+                      // onSaved: (_) => chainActivityInEditMode!
+                      //         .activity.specification![activitySpecImagePath] =
+                      //     activityImageController.text,
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        label: Text(
+                          "HTTP URL to an Image or a GIF",
+                          style: TextStyle(
+                            color: Theme.of(context).disabledColor,
                           ),
+                        ),
+                        hintText: "https://",
+                        alignLabelWithHint: true,
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
+                      ),
+                    ),
                   ),
                   Container(
                     decoration: BoxDecoration(
                       color: Theme.of(context).primaryColor,
                     ),
                     child: IconButton(
-                      onPressed: () {
-                        activityImageController.clear();
-                        setState(() {});
-                      },
+                      onPressed: () {},
                       icon: const Icon(
                         Icons.clear_all,
                       ),
@@ -771,7 +280,6 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
       key: KeyHelper.addChainTitleKey,
       children: [
         Form(
-          key: chainFormKey,
           child: Column(
             children: [
               TextFormField(
@@ -799,7 +307,7 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
                   tempChain.title = value ?? "";
                 },
                 onFieldSubmitted: (value) {
-                  validateForm(false);
+                  return;
                 },
               ),
             ],
@@ -828,156 +336,145 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
       ],
     );
 
-    return Scaffold(
-      //appBar: appBarWidget,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Semantics(
-              label: tempChain.title.isEmpty
-                  ? "Chain Input Form"
-                  : "Chain Input Form for : ${tempChain.title}",
-              child: chainInputForm,
-            ),
-            if (errorString != "")
+    return IgnorePointer(
+      ignoring: true,
+      child: Scaffold(
+        //appBar: appBarWidget,
+        body: SafeArea(
+          child: Column(
+            children: [
               Semantics(
-                label: "Error Message",
+                label: tempChain.title.isEmpty
+                    ? "Chain Input Form"
+                    : "Chain Input Form for : ${tempChain.title}",
+                child: chainInputForm,
+              ),
+              if (errorString != "")
+                Semantics(
+                  label: "Error Message",
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      errorString,
+                      style:
+                          TextStyle(color: Theme.of(context).colorScheme.error),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              if (errorString != "")
+                Divider(
+                  thickness: 1,
+                  color: Theme.of(context).dividerTheme.color,
+                ),
+              Expanded(
+                key: KeyHelper.addChainKey,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    errorString,
-                    style:
-                        TextStyle(color: Theme.of(context).colorScheme.error),
-                    textAlign: TextAlign.center,
+                  child: Stack(
+                    children: [
+                      Semantics(
+                        label: "Editable Chain of Activities",
+                        child: ChainActivitiesWidget(
+                          tempChain: tempChain,
+                          editActivity: null,
+                          undoEdit: null,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-            if (errorString != "")
-              Divider(
-                thickness: 1,
-                color: Theme.of(context).dividerTheme.color,
+              Container(
+                margin: const EdgeInsets.all(5),
+                padding: const EdgeInsets.only(bottom: 5),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Theme.of(context).cardColor,
+                ),
+                child: const ShowBannerAd(),
               ),
-            Expanded(
-              key: KeyHelper.addChainKey,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Stack(
+              if (addingDurationToActivity && tempChain.title.isNotEmpty)
+                durationInputForm,
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Semantics(
-                      label: "Editable Chain of Activities",
-                      child: ChainActivitiesWidget(
-                        tempChain: tempChain,
-                        editActivity: editActivity,
-                        undoEdit: undoEdit,
-                      ),
+                    IconButton(
+                      key: KeyHelper.addChainSaveAndExitKey,
+                      onPressed: () {},
+                      icon: const Icon(Icons.arrow_back),
                     ),
+                    if (!updatingSystemWaitActivityInDB &&
+                        tempChain.title.isNotEmpty)
+                      Expanded(
+                        key: KeyHelper.addChainAddActivityBarKey,
+                        child: TextField(
+                          cursorColor: Theme.of(context).shadowColor,
+                          decoration: InputDecoration(
+                            floatingLabelBehavior: FloatingLabelBehavior.never,
+                            label: Text(
+                              'Chain Activity Name',
+                              style: TextStyle(
+                                color: Theme.of(context).disabledColor,
+                              ),
+                            ),
+                            border: const OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                            ),
+                            filled: true,
+                            prefixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  addingDurationToActivity =
+                                      !addingDurationToActivity;
+                                });
+                              },
+                              icon: Icon(
+                                addingDurationToActivity
+                                    ? Icons.settings_suggest_outlined
+                                    : Icons.settings_suggest,
+                                color: Theme.of(context).iconTheme.color,
+                              ),
+                            ),
+                          ),
+                          onSubmitted: (_) {},
+                        ),
+                      ),
+                    if (updatingSystemWaitActivityInDB)
+                      IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.cancel_outlined),
+                      ),
+                    if (tempChain.at != null)
+                      TextButton(
+                        onPressed: () {},
+                        child: CircleAvatar(
+                          radius: 50,
+                          child: Text(
+                            "Remove\nAlarm",
+                            style: Theme.of(context).textTheme.labelSmall,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    if (tempChain.title.isNotEmpty)
+                      IconButton(
+                        onPressed: () {},
+                        icon: chainActivityInEditMode != null
+                            ? const Icon(Icons.done_outline)
+                            : updatingSystemWaitActivityInDB
+                                ? const Icon(Icons.done)
+                                : const Icon(Icons.add_task_outlined),
+                      ),
                   ],
                 ),
               ),
-            ),
-            Container(
-              margin: const EdgeInsets.all(5),
-              padding: const EdgeInsets.only(bottom: 5),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: Theme.of(context).cardColor,
-              ),
-              child: const ShowBannerAd(),
-            ),
-            if (addingDurationToActivity && tempChain.title.isNotEmpty)
-              durationInputForm,
-            Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  IconButton(
-                    key: KeyHelper.addChainSaveAndExitKey,
-                    onPressed: saveAndExit,
-                    icon: const Icon(Icons.arrow_back),
-                  ),
-                  if (!updatingSystemWaitActivityInDB &&
-                      tempChain.title.isNotEmpty)
-                    Expanded(
-                      key: KeyHelper.addChainAddActivityBarKey,
-                      child: TextField(
-                        cursorColor: Theme.of(context).shadowColor,
-                        focusNode: addActivityFocus,
-                        decoration: InputDecoration(
-                          floatingLabelBehavior: FloatingLabelBehavior.never,
-                          label: Text(
-                            'Chain Activity Name',
-                            style: TextStyle(
-                              color: Theme.of(context).disabledColor,
-                            ),
-                          ),
-                          border: const OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                          filled: true,
-                          prefixIcon: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                addingDurationToActivity =
-                                    !addingDurationToActivity;
-                              });
-                            },
-                            icon: Icon(
-                              addingDurationToActivity
-                                  ? Icons.settings_suggest_outlined
-                                  : Icons.settings_suggest,
-                              color: Theme.of(context).iconTheme.color,
-                            ),
-                          ),
-                        ),
-                        controller: addActivityController,
-                        onSubmitted: (_) {
-                          onSubmitText();
-                        },
-                      ),
-                    ),
-                  if (updatingSystemWaitActivityInDB)
-                    IconButton(
-                      onPressed: () {
-                        undoEdit(chainActivityInEditMode!);
-                        // tempChain.at = null;
-                        // tempChain.repeatType = repeatTypeDoesNotRepeat;
-                        // tempChain.repeatCount = repeatTypeDefaultCount;
-                      },
-                      icon: const Icon(Icons.cancel_outlined),
-                    ),
-                  if (tempChain.at != null)
-                    TextButton(
-                      onPressed: () {
-                        undoEdit(chainActivityInEditMode!);
-                        tempChain.at = null;
-                        tempChain.repeatType = repeatTypeDoesNotRepeat;
-                        tempChain.repeatCount = repeatTypeDefaultCount;
-                      },
-                      child: CircleAvatar(
-                        radius: 50,
-                        child: Text(
-                          "Remove\nAlarm",
-                          style: Theme.of(context).textTheme.labelSmall,
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                  if (tempChain.title.isNotEmpty)
-                    IconButton(
-                      onPressed: onSubmitText,
-                      icon: chainActivityInEditMode != null
-                          ? const Icon(Icons.done_outline)
-                          : updatingSystemWaitActivityInDB
-                              ? const Icon(Icons.done)
-                              : const Icon(Icons.add_task_outlined),
-                    ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

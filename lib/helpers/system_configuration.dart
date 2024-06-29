@@ -3,6 +3,7 @@
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/models/chain_list.dart';
+import 'package:chain_activities/widgets/cat_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
@@ -125,130 +126,21 @@ const sqlInitScript = [
 
 List<Map<String, String>> headerSlideContent = [
   {
-    "imageAsset": assetMap["cat_intro"]!,
+    "imageAsset": assetMap["logoImage"]!,
     "imageNetwork": "",
-    "title": "Thanks for choosing CAT",
+    "title": "C A T",
+    "subtitle": "Chain the Activities with Timers",
     "speech":
-        "Thanks for choosing CAT. CAT is a tool to Chain your activities and Play it. Lets undestand the major functions of CAT App with a quick tutorial. You have the option to skip this tutorial by pressing the Close button, and you can tap anywhere on the screen to move to the next slide of this tutorial.",
+        "Thanks for choosing CAT. CAT is a tool to Chain your activities and Play it. Lets undestand the major functions of CAT App with a quick tutorial. You have the option to skip this tutorial by pressing the Close button.",
   },
   {
     "imageAsset": assetMap["chains"]!,
     "imageNetwork": "",
-    "title": "Chains",
+    "title": "CHAINS",
+    "subtitle": "Runs in Background or Foreground",
     "speech":
         "Cat has multiple features to streamline your activities with chains.",
   },
-  // {
-  //   "imageAsset": assetMap["individual_chain"]!,
-  //   "imageNetwork":
-  //       "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/individual_chain.jpeg?raw=true",
-  //   "title": "Chain with Timer Activities",
-  //   "speech":
-  //       "This is how a Chain looks when we open it, just by tapping on it."
-  // },
-  // {
-  //   "imageAsset": assetMap["create_chain"]!,
-  //   "imageNetwork": "",
-  //   "title": "Create or Edit the Chain",
-  //   "speech":
-  //       "CAT provides a Simple User Interface to Create the Chain of Activities or Edit one.",
-  // },
-  // {
-  //   "imageAsset": assetMap["play_chain"]!,
-  //   "imageNetwork":
-  //       "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/gif/play_chain.gif?raw=true",
-  //   "title": "Play the Chain",
-  //   "speech":
-  //       "Chain plays interactively. If a timer is associated with the activity then activity ends on timer completion, else user will get the option to complete the activity manually.",
-  // },
-  // {
-  //   "imageAsset": assetMap["share_chain"]!,
-  //   "imageNetwork":
-  //       "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/gif/share_chain.gif?raw=true",
-  //   "title": "Share the Chain.",
-  //   "speech":
-  //       "You can share the Chain as a file using your favorite medium, or download it to the Downloads Folder of your device.",
-  // },
-  // {
-  //   "imageAsset": assetMap["receive_chain"]!,
-  //   "imageNetwork":
-  //       "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/gif/receive_chain.gif?raw=true",
-  //   "title": "Receive the Chain.",
-  //   "speech":
-  //       "And you can receive the Chain in a file. Open the Chain file using by sharing it with this App, or upload it using Upload button at home screen of the app.",
-  // },
-  // {
-  //   "imageAsset": assetMap["upload_chain"]!,
-  //   "imageNetwork":
-  //       "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/gif/upload_chain.gif?raw=true",
-  //   "title": "Upload the Chain File.",
-  //   "speech":
-  //       "CAT also allows to recieve the Chain by uploading the file using Upload Button on Home Screen.",
-  // },
-  // {
-  //   "imageAsset": assetMap["create_chain"]!,
-  //   "imageNetwork":
-  //       "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/gif/create_chain-1.gif?raw=true",
-  //   "title": "Create the Chain",
-  //   "speech":
-  //       "It starts with Create chain form where we need to give a unique name to our chain first and then we can add activities to it.",
-  // },
-  // {
-  //   "imageAsset": assetMap["create_chain"]!,
-  //   "imageNetwork":
-  //       "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/gif/create_chain-2.gif?raw=true",
-  //   "title": "Create the Chain",
-  //   "speech":
-  //       "Chain keeps forming as we add activities to it using form at the bottom of screen. We can add activity with any name, and set timer to it. If we are not setting any timer, then it becomes a manual activity, which will complete on pressing done.",
-  // },
-  // {
-  //   "imageAsset": assetMap["create_chain"]!,
-  //   "imageNetwork":
-  //       "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/gif/create_chain-3.gif?raw=true",
-  //   "title": "Create the Chain",
-  //   "speech":
-  //       "We can add a timer to take rest between the two activities in a chain too.",
-  // },
-  // {
-  //   "imageAsset": assetMap["create_chain"]!,
-  //   "imageNetwork":
-  //       "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/gif/create_chain-4.gif?raw=true",
-  //   "title": "Create the Chain",
-  //   "speech":
-  //       "While creating the chain, we can edit the already added activity or remove it too.",
-  // },
-  // {
-  //   "imageAsset": assetMap["create_chain"]!,
-  //   "imageNetwork":
-  //       "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/gif/create_chain-5.gif?raw=true",
-  //   "title": "Create the Chain",
-  //   "speech":
-  //       "Rearranging the activities after adding it to the chain is also possible.",
-  // },
-  // {
-  //   "imageAsset": assetMap["settings"]!,
-  //   "imageNetwork":
-  //       "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/gif/app_settings.gif?raw=true",
-  //   "title": "Create the Chain",
-  //   "speech":
-  //       "App Settings can be accessed from app drawer at the bottom left. You can switch to Dark Theme here.",
-  // },
-  // {
-  //   "imageAsset": assetMap["appdrawer"]!,
-  //   "imageNetwork":
-  //       "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/appdrawer.jpeg?raw=true",
-  //   "title": "Create the Chain",
-  //   "speech":
-  //       "You can play this CAT's introduction again from the app drawer. Just tap on What is Cat?",
-  // },
-  // {
-  //   "imageAsset": assetMap["go_home"]!,
-  //   "imageNetwork":
-  //       "https://github.com/vinaykhare/cat_help_content/blob/main/help_images/go_home.png?raw=true",
-  //   "title": "Start the On-Screen Tutorial",
-  //   "speech":
-  //       "Lets undestand the major functions of CAT App and then explore yourself. You have the option to skip this tutorial by pressing the Close butotn at top right of this screen.",
-  // },
 ];
 
 List<Map<String, dynamic>> getTutorialItemsByType(
@@ -268,7 +160,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               Text(
-                "This is the App's header with a couple of Buttons.",
+                "This is the App's header with a couple of Buttons. Now press on the highlighted section over this and following screens to move to the next slide of this tutorial.",
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ],
@@ -363,25 +255,6 @@ List<Map<String, dynamic>> getTutorialItemsByType(
           "focusAlign": Alignment.bottomCenter,
           "contentAlign": ContentAlign.bottom,
         },
-        // {
-        //   "title": "You can hide it too",
-        //   "widgetToShow": ListView(
-        //     shrinkWrap: true,
-        //     children: [
-        //       Text(
-        //         "Hide Sumary of Chain Contorls",
-        //         style: Theme.of(context).textTheme.headlineSmall,
-        //       ),
-        //       Text(
-        //         "Click this button to shrink this banner or expand it back, as you like.",
-        //         style: Theme.of(context).textTheme.bodyLarge,
-        //       ),
-        //     ],
-        //   ),
-        //   "globalKey": KeyHelper.minmaxChainControlSummaryKey,
-        //   "focusAlign": Alignment.bottomCenter,
-        //   "contentAlign": ContentAlign.bottom,
-        // },
         {
           "title":
               "Bottom Bar of the App has a drawer at the left and a Search Text Box at the right. Pressing the App Drawer will open a Side Menu bar with all options like What is CAT which will Run this tutorial again, App Settings where you can switch to Dark Theme etcitra.",
@@ -397,7 +270,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               Text(
-                " Pressing the App Drawer will open a Side Menu bar with all options like What is CAT which will Run this tutorial again, App Settings where you can switch to Dark Theme etc.",
+                "Pressing the App Drawer will open a Side Menu bar with all options like What is CAT which will Run this tutorial again, App Settings where you can switch to Dark Theme etc.",
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               Image.asset(
@@ -454,81 +327,6 @@ List<Map<String, dynamic>> getTutorialItemsByType(
           "focusAlign": Alignment.topCenter,
           "contentAlign": ContentAlign.top,
         },
-        // {
-        //   "title":
-        //       "Tap here to filter the chains that are marked Favorite by you.",
-        //   "widgetToShow": ListView(
-        //     shrinkWrap: true,
-        //     children: [
-        //       Text(
-        //         "Favorite Chains",
-        //         style: Theme.of(context).textTheme.headlineSmall,
-        //       ),
-        //       Text(
-        //         "On pressing this filter, home screen will show only the Favorite Chains. Tap this button back, if you want to remove this filter.",
-        //         style: Theme.of(context).textTheme.bodyLarge,
-        //       ),
-        //       Image.asset(
-        //         assetMap["favorite_chain"]!,
-        //         fit: BoxFit.scaleDown,
-        //         height: (MediaQuery.of(context).size.height -
-        //                 MediaQuery.of(context).viewPadding.top -
-        //                 MediaQuery.of(context).viewPadding.bottom) *
-        //             0.50,
-        //       ),
-        //     ],
-        //   ),
-        //   "globalKey": KeyHelper.favoriteChainFilterKey,
-        //   "focusAlign": Alignment.topCenter,
-        //   "contentAlign": ContentAlign.top,
-        // },
-        // {
-        //   "title":
-        //       "Tap here to filter the chains that has its instance active. This includes the chains running in background with activities scheduled to start.",
-        //   "widgetToShow": ListView(
-        //     shrinkWrap: true,
-        //     children: [
-        //       Text(
-        //         "Running Chains",
-        //         style: Theme.of(context).textTheme.headlineSmall,
-        //       ),
-        //       Text(
-        //         "On pressing this filter, home screen will show only the chains with Active Instances i.e. Running Chains. Tap this button back, if you wan to remove this filter.",
-        //         style: Theme.of(context).textTheme.bodyLarge,
-        //       ),
-        //       Image.asset(
-        //         assetMap["running_chain"]!,
-        //         fit: BoxFit.scaleDown,
-        //         height: (MediaQuery.of(context).size.height -
-        //                 MediaQuery.of(context).viewPadding.top -
-        //                 MediaQuery.of(context).viewPadding.bottom) *
-        //             0.50,
-        //       ),
-        //     ],
-        //   ),
-        //   "globalKey": KeyHelper.activeChainFilterKey,
-        //   "focusAlign": Alignment.topCenter,
-        //   "contentAlign": ContentAlign.top,
-        // },
-        // {
-        //   "title": idToLoadSampleChainForTutorial,
-        //   "widgetToShow": ListView(
-        //     shrinkWrap: true,
-        //     children: [
-        //       Text(
-        //         "Filter Chain (Press Both)",
-        //         style: Theme.of(context).textTheme.headlineSmall,
-        //       ),
-        //       Text(
-        //         idToLoadSampleChainForTutorial,
-        //         style: Theme.of(context).textTheme.bodyLarge,
-        //       ),
-        //     ],
-        //   ),
-        //   "globalKey": KeyHelper.chainFiltersKey,
-        //   "focusAlign": Alignment.topCenter,
-        //   "contentAlign": ContentAlign.top,
-        // },
         {
           "title": idToStartViewChain,
           "widgetToShow": ListView(
@@ -755,7 +553,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               Text(
-                "Chain Plays interactively activity by activity. Go back to pause the activity and explore chain execution status screen.",
+                "Chain Plays interactively activity by activity.",
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ],
@@ -863,17 +661,41 @@ List<Map<String, dynamic>> getTutorialItemsByType(
         },
         {
           "title":
-              "We can use this option to run the paused activity in background and get notified by the App. We can choose this option when activity takes hours to complete, and we cannot remain stuck to this app.",
+              "This section displays the relevant buttons to take action for running the chain. Button to resume the chain in background shall be displayed if the Current Activity is timer activity and it is paused. Button to refresh the page shall be displayed if the chain is running in background. And a button to go to the Interactive View to play the chain shall be displayed if neither the chain is running in backgroud nor it can be run.",
           "widgetToShow": ListView(
             shrinkWrap: true,
             children: [
               Text(
-                "Run the Current Activity in Background",
+                "Relevant Actions on Current Activity",
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               Text(
-                "We can use this option to run the paused activity in background and get notified by the App. We can choose this option when activity takes hours to complete, and we cannot remain stuck to this app.",
+                "This section displays the relevant buttons to take action for running the chain.",
                 style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              CatTextButton(
+                buttonLabel: "Play the Chain, in Background",
+                buttonAction: () {},
+                buttonIcon: Icons.play_circle,
+              ),
+              const Text(
+                "Button to resume the chain in background shall be displayed if the Current Activity is timer activity and it is paused",
+              ),
+              CatTextButton(
+                buttonLabel: "Refresh, for the latest status",
+                buttonAction: () {},
+                buttonIcon: Icons.refresh_outlined,
+              ),
+              const Text(
+                "Button to refresh the page shall be displayed if the chain is running in background.",
+              ),
+              CatTextButton(
+                buttonLabel: "Play the Chain, Interactively",
+                buttonAction: () {},
+                buttonIcon: Icons.arrow_forward_outlined,
+              ),
+              const Text(
+                "Button to go to the Interactive View to play the chain shall be displayed if neither the chain is running in backgroud nor it can be run.",
               ),
             ],
           ),
@@ -902,7 +724,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
         },
         {
           "title":
-              "Press the forward button to go back to Chain Activity Execution screen, where we can resume the Chain Activity Interactively.",
+              "Press the forward button to go back to Chain Activity Execution screen, where we can resume the Chain Activity Interactively. If the chain is running in background, and refresh button is also visible on the page then you will get the option to force complete the activity running in background and enter the interactive view of chain.",
           "widgetToShow": ListView(
             shrinkWrap: true,
             children: [
@@ -911,7 +733,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               Text(
-                "Press the forward button to go back to Chain Activity Execution screen, where we can resume the Chain Activity Interactively.",
+                "Press the forward button to go back to Chain Activity Execution screen, where we can resume the Chain Activity Interactively.\nIf the chain is running in background, and refresh button is also visible on the page then you will get the option to force complete the activity running in background and enter the interactive view of chain.",
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ],

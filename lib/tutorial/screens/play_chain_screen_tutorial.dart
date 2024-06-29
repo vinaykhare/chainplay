@@ -1,9 +1,8 @@
 import 'dart:async';
 
 import 'package:chain_activities/helpers/key_helper.dart';
-import 'package:chain_activities/tutorial/screens/chain_list_screen_tutorial.dart';
 import 'package:chain_activities/tutorial/screens/play_wait_activity_screen_tutorial.dart';
-import 'package:chain_activities/tutorial/screens/view_chain_screen_tutorial.dart';
+import 'package:chain_activities/widgets/cat_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/helpers/constants.dart';
@@ -28,21 +27,10 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
   bool initializing = true;
   String? playChainAction;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-  //     buildDone = true;
-  //   });
-  // }
-
   Future<void> playTheChain() async {
-    dynamic popResponse;
     NavigatorState nav = Navigator.of(context);
     await chainList.loadInterstitialAd();
-    for (invokeCounter = 0;
-        invokeCounter < chain.activities.length;
-        invokeCounter++) {
+    for (invokeCounter = 0; invokeCounter < 2; invokeCounter++) {
       ChainActivity chainActivity = chain.activities[invokeCounter];
       if ((chainActivity.endedAt != null &&
               chainActivity.activityDone == true) ||
@@ -51,14 +39,6 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
               chainActivity.activityDuration.inSeconds <= 0 &&
               invokeCounter < chain.activities.length - 1)) {
         chainActivity.endedAt = chainActivity.endedAt ?? DateTime.now();
-        continue;
-      }
-
-      if (chainActivity.endedAt != null &&
-          chainActivity.activityDone == false &&
-          chainActivity.endedAt!.isBefore(DateTime.now())) {
-        await cancelNotificationAndCompleteActivity(chain, chainActivity);
-        chainActivityPaused = null;
         continue;
       }
 
@@ -75,7 +55,7 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
       String screenImage =
           chainActivity.activity.specification?[activitySpecImagePath] ?? "";
 
-      popResponse = await nav.pushNamed(
+      await nav.pushNamed(
         PlayWaitActivityTutorial.routename,
         arguments: {
           "waitDuration": waitDuration,
@@ -83,78 +63,12 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
           "playScreenType": playScreenType,
           "running": running,
           "screenImage": screenImage,
-          // "textToSpeak": textToSpeak,
         },
       );
-      // await chainList.stopSpeech();
-
-      if (popResponse != null) {
-        if (popResponse["interruptAndCompleted"] == false) {
-          chainActivity.activityDurationLeft = popResponse["running"] == false
-              ? popResponse["waitDuration"]
-              : null;
-          // if (popResponse["resumedAt"] != null) {
-          //   chain.pivotDate = popResponse["resumedAt"];
-          // }
-          await chainList.updateChainActivityExecutionByActivityId(
-            chain,
-            chainActivity,
-          );
-          if (chainActivity.activityDurationLeft != null &&
-              chainActivity.activityDurationLeft!.inMicroseconds != 0) {
-            chainActivityPaused = chainActivity;
-            playChainAction = playChainActionPause;
-          }
-
-          break;
-        } else {
-          chainActivity.activityDurationLeft = null;
-          chainActivity.isInterrupted = true;
-        }
-      }
 
       chainActivity.activityDone = true;
-      // chainActivity.endedAt = chainActivity.at!
-      //     .add(Duration(seconds: chainActivity.activityDuration.inSeconds));
       chainActivity.endedAt = DateTime.now();
-      // if (chainActivity.activityDuration.inSeconds <= 0 &&
-      //     chainActivity.activity.type != systemStartActivityInDB &&
-      //     chainActivity.activity.type != systemWaitActivityInDB) {
-      //   chainActivity.endedAt = DateTime.now();
-      //   chain.pivotDate = chainActivity.endedAt!;
-      // }
-      // await chainList.updateChainExecution(chain);
-      await chainList.updateChainActivityExecutionByActivityId(
-        chain,
-        chainActivity,
-      );
     }
-
-    if (popResponse != null && popResponse["interruptAndCompleted"] == false) {
-      // await chainList.scheduleNotification(
-      //     chain, DateTime.now(), invokeCounter);
-      if (popResponse["running"] == false &&
-          popResponse["waitDuration"] != null) {
-        chain.pivotDate = chain.pivotDate!.add(popResponse["waitDuration"]);
-        await chainList.updateChainExecution(chain);
-      }
-    } else {
-      // Chain parentChain =
-      //     chainList.chains.firstWhere((sch) => sch.title == chain.title);
-
-      chain.chainStatus = statusDone;
-      //parentChain.chainStatus = statusNotStarted;
-      chain.endedAt = DateTime.now();
-      //parentChain.endedAt = null;
-
-      //await chainList.updateChain(parentChain);
-      await chainList.updateChainExecution(chain);
-      if (chainList.interstitialAd != null) {
-        await chainList.interstitialAd!.show();
-      }
-      await chainList.completeTheChain(chain);
-    }
-    //nav.pop();
   }
 
   Future<void> cancelNotificationAndCompleteActivity(
@@ -167,6 +81,32 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
       chain,
       chainActivity,
     );
+  }
+
+  Future<void> scheduleActivity() async {
+    ScaffoldMessengerState scms = ScaffoldMessenger.of(context);
+    bool? permissionGranted = await chainList.askForNotificationPermission();
+
+    if (permissionGranted != null && permissionGranted == true) {
+      // await chainList.showNotification();
+      await chainList.scheduleNotificationForActivityCompletion(
+        chain,
+        chainActivityPaused!,
+        DateTime.now().add(chainActivityPaused!.activityDurationLeft!),
+      );
+    } else {
+      scms.showSnackBar(
+        SnackBar(
+          content: const Text(
+            "CAT do not have permission to send Notification.",
+          ),
+          action: SnackBarAction(
+            label: 'OK',
+            onPressed: () {},
+          ),
+        ),
+      );
+    }
   }
 
   Future<bool> onPopOut() async {
@@ -196,8 +136,7 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
       //   chain = chainList.notificationCameForChain!;
       //   chainList.notificationCameForChain = null;
       // } else {
-      Map<String, dynamic> chArg;
-      chArg =
+      Map<String, dynamic> chArg =
           ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
 
       playChainAction = chArg[payLoadChainAction];
@@ -209,26 +148,47 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
         (schEx) => schEx.chainExecutionId == chArg[payLoadChainExecId],
       );
 
-      playTheChain();
+      if (chain.activities[invokeCounter].activityDurationLeft != null &&
+          chain.activities[invokeCounter].activityDuration.inSeconds > 0) {
+        chainActivityPaused = chain.activities[invokeCounter];
+        if (chainActivityPaused!.endedAt != null &&
+            chainActivityPaused!.endedAt!.isBefore(DateTime.now())) {
+          cancelNotificationAndCompleteActivity(chain, chainActivityPaused!);
+          chainActivityPaused = null;
+        }
+      }
+
+      if (chain.chainStatus == statusExecuting &&
+          playChainAction == playChainActionPlay) {
+        playTheChain();
+      } else if (chain.chainStatus != statusExecuting) {
+        invokeCounter = chain.activities.length;
+      } else {
+        //
+      }
 
       initializing = false;
+      chainList.notificationCameAs = null;
     }
     double appHeight = MediaQuery.of(context).size.height -
         MediaQuery.of(context).viewPadding.top -
         MediaQuery.of(context).viewPadding.bottom;
-    //double appWidth = MediaQuery.of(context).size.width - 16;
-    return Semantics(
-      label: "Play Chain Screen Tutorial",
-      child: Scaffold(
-        body: SingleChildScrollView(
-          child: SafeArea(
+    double appWidth = MediaQuery.of(context).size.width - 16;
+    return IgnorePointer(
+      ignoring: true,
+      child: Semantics(
+        label: "Play Chain Screen",
+        child: Scaffold(
+          body: SafeArea(
             child: SizedBox(
               // margin: const EdgeInsets.only(top: 50),
               // padding: const EdgeInsets.all(10),
               height: appHeight,
+              // width: appWidth,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.max,
                 children: [
                   Expanded(
                     key: KeyHelper.playChainKey,
@@ -241,183 +201,105 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
                       ),
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      if (invokeCounter < chain.activities.length)
-                        TextButton.icon(
+                  if (invokeCounter < chain.activities.length)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        CatTextButton(
                           key: KeyHelper.playChainStopChainKey,
-                          onPressed: () async {
-                            chainList.stopChainExecution(parentChain);
-                            Navigator.of(context).pushReplacementNamed(
-                              ViewChainTutorial.routename,
-                              arguments: {
-                                "chain": parentChain,
-                              },
-                            );
-                          },
-                          style: ButtonStyle(
-                            iconColor: MaterialStateProperty.resolveWith(
-                              (states) => Theme.of(context).colorScheme.error,
-                            ),
-                          ),
-                          icon: const Icon(
-                            Icons.stop_circle,
-                          ),
-                          label: FittedBox(
-                            child: Text(
-                              "Stop Chain",
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                          ),
+                          buttonLabel: "Stop",
+                          buttonAction: () {},
+                          buttonIcon: Icons.stop_circle,
                         ),
-                      if (chainActivityPaused != null &&
-                          chainActivityPaused!.endedAt == null &&
-                          chain.notificationId == noValueInDB)
-                        Expanded(
-                          child: Container(
-                            //width: appWidth / 2,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).cardColor,
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: Theme.of(context).primaryColor,
-                                  width: 5,
-                                ),
+                        Container(
+                          key: KeyHelper.playChainRunInBackgroundKey,
+                          width: appWidth * 0.75,
+                          height: appHeight * 0.06,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color:
+                                Theme.of(context).primaryColor.withOpacity(0.3),
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(
+                                30,
                               ),
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(50),
-                                bottomLeft: Radius.circular(50),
-                              ),
-                            ),
-                            child: TextButton.icon(
-                              key: KeyHelper.playChainRunInBackgroundKey,
-                              onPressed: () async {
-                                ScaffoldMessengerState scms =
-                                    ScaffoldMessenger.of(context);
-                                bool? permissionGranted = await chainList
-                                    .askForNotificationPermission();
-
-                                if (!(permissionGranted != null &&
-                                    permissionGranted == true)) {
-                                  scms.showSnackBar(const SnackBar(
-                                    content: Text(
-                                        "CAT do not have permission to send Notification."),
-                                  ));
-                                }
-
-                                // await chainList.showNotification();
-                                await chainList
-                                    .scheduleNotificationForActivityCompletion(
-                                  chain,
-                                  chainActivityPaused!,
-                                  DateTime.now().add(chainActivityPaused!
-                                      .activityDurationLeft!),
-                                );
-                              },
-                              style: ButtonStyle(
-                                iconColor: MaterialStateProperty.resolveWith(
-                                  (states) =>
-                                      Theme.of(context).colorScheme.error,
-                                ),
-                              ),
-                              icon: const Icon(
-                                Icons.notification_add_outlined,
-                              ),
-                              label: Text(
-                                chainActivityPaused!.activity.type !=
-                                            systemWaitActivityInDB &&
-                                        chainActivityPaused!.activity.type !=
-                                            systemStartActivityInDB
-                                    ? "Resume '${chainActivityPaused!.activity.title}' in Background"
-                                    : "Resume Chain & Notify when Rest is Over",
-                                style: Theme.of(context).textTheme.titleMedium,
+                              bottomLeft: Radius.circular(
+                                30,
                               ),
                             ),
                           ),
-                        ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () async {
-                          NavigatorState nav = Navigator.of(context);
-                          bool allWell = await onPopOut();
-                          allWell && nav.canPop()
-                              ? nav.pop()
-                              : nav
-                                  .pushNamed(ChainListScreenTutorial.routename);
-                        },
-                        icon: Icon(
-                          key: KeyHelper.playChainBackwardButtonKey,
-                          Icons.arrow_back,
-                        ),
-                      ),
-                      Expanded(
-                        child: TextFormField(
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.titleLarge,
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            floatingLabelAlignment:
-                                FloatingLabelAlignment.center,
-                            floatingLabelBehavior: FloatingLabelBehavior.never,
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if (chainActivityPaused != null &&
+                                    chainActivityPaused!.endedAt == null &&
+                                    chain.notificationId == noValueInDB)
+                                  CatTextButton(
+                                    buttonLabel:
+                                        "Play the Chain, in Background",
+                                    buttonAction: () {},
+                                    buttonIcon: Icons.play_circle,
+                                  )
+                                else if (chain.notificationId != noValueInDB)
+                                  CatTextButton(
+                                    buttonLabel:
+                                        "Refresh, for the latest status",
+                                    buttonAction: () {},
+                                    buttonIcon: Icons.refresh_outlined,
+                                  )
+                                else
+                                  CatTextButton(
+                                    buttonLabel:
+                                        "Play the Chain, Interactively",
+                                    buttonAction: () {},
+                                    buttonIcon: Icons.arrow_forward_outlined,
+                                  ),
+                              ],
+                            ),
                           ),
-                          initialValue: chain.title,
-                          enabled: false,
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: invokeCounter < chain.activities.length
-                            ? (chainActivityPaused == null ||
-                                    chainActivityPaused!.endedAt == null)
-                                ? () {
-                                    chainActivityPaused = null;
-                                    //invokeCounter = 0;
-                                    playTheChain();
-                                  }
-                                : () async {
-                                    ScaffoldMessengerState scms =
-                                        ScaffoldMessenger.of(context);
-                                    if (chainActivityPaused!.endedAt!.isBefore(
-                                      DateTime.now(),
-                                    )) {
-                                      await cancelNotificationAndCompleteActivity(
-                                          chain, chainActivityPaused!);
-
-                                      chainActivityPaused = null;
-                                      invokeCounter++;
-                                    } else {
-                                      scms.showSnackBar(
-                                        SnackBar(
-                                          content: Text(chainActivityPaused!
-                                                          .activity.type ==
-                                                      systemWaitActivityInDB ||
-                                                  chainActivityPaused!
-                                                          .activity.type ==
-                                                      systemStartActivityInDB
-                                              ? "Take rest, CAT will notify when it is time to act"
-                                              : "Activity ${chainActivityPaused!.activity.title} is still running. CAT will notify on its completion."),
-                                        ),
-                                      );
-                                    }
-                                  }
-                            : null,
-                        icon: chainActivityPaused != null &&
-                                chainActivityPaused!.endedAt != null &&
-                                chainActivityPaused!.activityDone == false
-                            ? const Icon(Icons.refresh)
-                            : Icon(
-                                key: KeyHelper.playChainForwardButtonKey,
-                                Icons.arrow_forward,
-                              ),
-                      ),
-                    ],
-                  ),
+                        )
+                      ],
+                    ),
                 ],
               ),
             ),
+          ),
+          bottomNavigationBar: Row(
+            children: [
+              IconButton(
+                key: KeyHelper.playChainBackwardButtonKey,
+                onPressed: () {},
+                icon: const Icon(
+                  Icons.arrow_back,
+                ),
+              ),
+              Expanded(
+                child: TextFormField(
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleLarge,
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    floatingLabelAlignment: FloatingLabelAlignment.center,
+                    floatingLabelBehavior: FloatingLabelBehavior.never,
+                  ),
+                  initialValue: chain.title,
+                  enabled: false,
+                ),
+              ),
+              IconButton(
+                key: KeyHelper.playChainForwardButtonKey,
+                onPressed: () {},
+                icon: const Icon(
+                  Icons.arrow_forward,
+                ),
+              ),
+            ],
           ),
         ),
       ),

@@ -133,6 +133,7 @@ class TutorialCoach {
     chainList.setSetting(tutorialType, falseSettingValue);
     // chainList.dontShowHelpOnNextLoad();
     // chainList.showHelpOnNextLoad();
+    chainList.stopChainExecution(sampleWorkoutChain);
     chainList.loadSampleChainsFromAssets();
     while (Navigator.of(context).canPop()) {
       Navigator.of(context).pop();

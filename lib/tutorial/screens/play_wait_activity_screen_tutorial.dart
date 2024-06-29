@@ -107,21 +107,6 @@ class _PlayWaitActivityTutorialState extends State<PlayWaitActivityTutorial> {
     setState(() => waitDuration = initialWaitDuration);
   }
 
-  void interruptAndCompleteActivity() async {
-    NavigatorState nav = Navigator.of(context);
-    await Provider.of<ChainList>(context, listen: false)
-        .playNotificationSound();
-    stopTimer();
-    nav.pop(waitDuration.inSeconds <= 0
-        ? null
-        : {
-            "running": running,
-            "waitDuration": waitDuration,
-            "interruptAndCompleted": true,
-            "resumedAt": resumedAt,
-          });
-  }
-
   //Build Function
 
   @override
@@ -186,68 +171,68 @@ class _PlayWaitActivityTutorialState extends State<PlayWaitActivityTutorial> {
         MediaQuery.of(context).viewPadding.top -
         MediaQuery.of(context).viewPadding.bottom;
 
-    return Semantics(
-      label: "Play Timer Screen Tutorial",
-      child: Scaffold(
-        body: SingleChildScrollView(
-          child: SafeArea(
-            child: SizedBox(
-              height: appHeight,
-              child: Column(
-                key: KeyHelper.playWaitKey,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(50),
-                    child: Container(
-                      margin: const EdgeInsets.all(5),
-                      child: screenImage == null || screenImage == ""
-                          ? Image.asset(
-                              assetMap['logoImage']!,
-                              fit: BoxFit.fitHeight,
-                              height: appHeight * 0.45,
-                            )
-                          : screenImage!.startsWith("http")
-                              ? FadeInImage.assetNetwork(
-                                  placeholder: assetMap["logoImage"]!,
-                                  image: screenImage!,
-                                  height: appHeight * 0.45,
-                                  fit: BoxFit.cover,
-                                  imageErrorBuilder:
-                                      (context, error, stackTrace) =>
-                                          Image.asset(
-                                    assetMap['logoImage']!,
+    return IgnorePointer(
+      ignoring: true,
+      child: Semantics(
+        label: "Play Timer Screen Tutorial",
+        child: Scaffold(
+          body: SingleChildScrollView(
+            child: SafeArea(
+              child: SizedBox(
+                height: appHeight,
+                child: Column(
+                  key: KeyHelper.playWaitKey,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(50),
+                      child: Container(
+                        margin: const EdgeInsets.all(5),
+                        child: screenImage == null || screenImage == ""
+                            ? Image.asset(
+                                assetMap['logoImage']!,
+                                fit: BoxFit.fitHeight,
+                                height: appHeight * 0.45,
+                              )
+                            : screenImage!.startsWith("http")
+                                ? FadeInImage.assetNetwork(
+                                    placeholder: assetMap["logoImage"]!,
+                                    image: screenImage!,
+                                    height: appHeight * 0.45,
+                                    fit: BoxFit.cover,
+                                    imageErrorBuilder:
+                                        (context, error, stackTrace) =>
+                                            Image.asset(
+                                      assetMap['logoImage']!,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  )
+                                : Image.file(
+                                    File(screenImage!),
+                                    height: appHeight * 0.45,
                                     fit: BoxFit.cover,
                                   ),
-                                )
-                              : Image.file(
-                                  File(screenImage!),
-                                  height: appHeight * 0.45,
-                                  fit: BoxFit.cover,
-                                ),
+                      ),
                     ),
-                  ),
-                  Text(
-                    title ?? "Generic Activity",
-                    style: Theme.of(context).textTheme.headlineMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  if (playScreenType != systemEndActivityInDB)
                     Text(
-                      "will compelte\n$timeLeft\n${(hours != 0 || minutes != 0) && seconds != 0 ? 'and' : ''}",
-                      style: Theme.of(context).textTheme.headlineSmall,
-                      textAlign: TextAlign.center,
-                    )
-                  else
-                    Text(
-                      "by pressing done.",
-                      style: Theme.of(context).textTheme.headlineSmall,
+                      title ?? "Generic Activity",
+                      style: Theme.of(context).textTheme.headlineMedium,
                       textAlign: TextAlign.center,
                     ),
-                  InkWell(
-                    onTap: interruptAndCompleteActivity,
-                    child: CircleAvatar(
+                    if (playScreenType != systemEndActivityInDB)
+                      Text(
+                        "will compelte\n$timeLeft\n${(hours != 0 || minutes != 0) && seconds != 0 ? 'and' : ''}",
+                        style: Theme.of(context).textTheme.headlineSmall,
+                        textAlign: TextAlign.center,
+                      )
+                    else
+                      Text(
+                        "by pressing done.",
+                        style: Theme.of(context).textTheme.headlineSmall,
+                        textAlign: TextAlign.center,
+                      ),
+                    CircleAvatar(
                       key: KeyHelper.playWaitTimerKey,
                       radius: 50,
                       backgroundColor: playScreenType == systemWaitActivityInDB
@@ -261,73 +246,55 @@ class _PlayWaitActivityTutorialState extends State<PlayWaitActivityTutorial> {
                         ),
                       ),
                     ),
-                  ),
-                  if (waitDuration.inSeconds != 0)
-                    Text(
-                      "Seconds.",
-                      style: Theme.of(context).textTheme.headlineSmall,
-                      textAlign: TextAlign.center,
-                    ),
-                  Container(
-                    margin: const EdgeInsets.all(5),
-                    padding: const EdgeInsets.only(bottom: 5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Theme.of(context).cardColor,
-                    ),
-                    child: const ShowBannerAd(),
-                  ),
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          Navigator.of(context).pop({
-                            "running": false, //running,
-                            "waitDuration": waitDuration,
-                            "interruptAndCompleted": false,
-                            "resumedAt": resumedAt,
-                          });
-                        },
-                        icon: Icon(
-                          key: KeyHelper.playWaitBackwardKey,
-                          Icons.arrow_back,
-                        ),
+                    if (waitDuration.inSeconds != 0)
+                      Text(
+                        "Seconds.",
+                        style: Theme.of(context).textTheme.headlineSmall,
+                        textAlign: TextAlign.center,
                       ),
-                      if (showPlayPause)
-                        Expanded(
-                          child: IconButton(
-                            onPressed: () {
-                              if (running) {
-                                stopTimer();
-                              } else {
-                                startTimer();
-                                resumedAt = DateTime.now();
-                              }
-
-                              setState(() {
-                                running = !running;
-                              });
-                            },
-                            icon: Icon(
-                              key: KeyHelper.playWaitPlayPauseKey,
-                              running ? Icons.pause : Icons.play_arrow,
-                            ),
+                    Container(
+                      margin: const EdgeInsets.all(5),
+                      padding: const EdgeInsets.only(bottom: 5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Theme.of(context).cardColor,
+                      ),
+                      child: const ShowBannerAd(),
+                    ),
+                    Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {},
+                          icon: Icon(
+                            key: KeyHelper.playWaitBackwardKey,
+                            Icons.arrow_back,
                           ),
-                        )
-                      else
-                        const Expanded(
-                          child: SizedBox(),
                         ),
-                      IconButton(
-                        onPressed: interruptAndCompleteActivity,
-                        icon: Icon(
-                          key: KeyHelper.playWaitForwardKey,
-                          Icons.arrow_forward,
+                        if (showPlayPause)
+                          Expanded(
+                            child: IconButton(
+                              onPressed: () {},
+                              icon: Icon(
+                                key: KeyHelper.playWaitPlayPauseKey,
+                                running ? Icons.pause : Icons.play_arrow,
+                              ),
+                            ),
+                          )
+                        else
+                          const Expanded(
+                            child: SizedBox(),
+                          ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: Icon(
+                            key: KeyHelper.playWaitForwardKey,
+                            Icons.arrow_forward,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

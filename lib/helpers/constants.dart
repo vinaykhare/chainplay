@@ -100,7 +100,6 @@ const Map<String, String> assetMap = {
   'chainImage': 'assets/AppIcons/chain.png',
   'verticalChainImage': 'assets/AppIcons/vertical_chain.png',
   'beepAudio': 'assets/Sounds/chain_activity_beep.mp3',
-  'cat_intro': 'assets/WhatIsCAT/cat_intro.png',
   'chains': 'assets/WhatIsCAT/chains.jpeg',
   'app_drawer': 'assets/WhatIsCAT/app_drawer.jpeg',
   'chain_file_view': 'assets/WhatIsCAT/chain_file_view.jpeg',
