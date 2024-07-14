@@ -87,7 +87,7 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
     ScaffoldMessengerState scms = ScaffoldMessenger.of(context);
     bool? permissionGranted = await chainList.askForNotificationPermission();
 
-    if (permissionGranted != null && permissionGranted == true) {
+    if (permissionGranted == true) {
       // await chainList.showNotification();
       await chainList.scheduleNotificationForActivityCompletion(
         chain,

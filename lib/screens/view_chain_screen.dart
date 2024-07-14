@@ -285,9 +285,10 @@ class _ViewChainState extends State<ViewChain> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          CircleAvatar(
-                            child: IconButton(
-                              onPressed: () async {
+                          Semantics(
+                            label: "Delete this chain.",
+                            child: InkWell(
+                              onTap: () async {
                                 NavigatorState nav = Navigator.of(context);
                                 bool? dialogResponse = await showDialog(
                                   context: context,
@@ -331,12 +332,15 @@ class _ViewChainState extends State<ViewChain> {
                                   nav.pop();
                                 }
                               },
-                              icon: const Icon(Icons.delete_forever_outlined),
+                              child: const CircleAvatar(
+                                child: Icon(Icons.delete_forever_outlined),
+                              ),
                             ),
                           ),
-                          CircleAvatar(
-                            child: IconButton(
-                              onPressed: () async {
+                          Semantics(
+                            label: "Download this chain.",
+                            child: InkWell(
+                              onTap: () async {
                                 ScaffoldMessengerState scm =
                                     ScaffoldMessenger.of(context);
                                 String downloadResponse =
@@ -353,35 +357,45 @@ class _ViewChainState extends State<ViewChain> {
                                   ),
                                 ));
                               },
-                              icon: const Icon(Icons.download),
+                              child: const CircleAvatar(
+                                child: Icon(Icons.download),
+                              ),
                             ),
                           ),
-                          CircleAvatar(
-                            child: IconButton(
-                              onPressed: () async {
+                          Semantics(
+                            label: "Share this chain.",
+                            child: InkWell(
+                              onTap: () async {
                                 await Provider.of<ChainList>(context,
                                         listen: false)
                                     .checkAndShareChain(context, chain);
                               },
-                              icon: const Icon(Icons.share_outlined),
+                              child: const CircleAvatar(
+                                child: Icon(Icons.share_outlined),
+                              ),
                             ),
                           ),
-                          CircleAvatar(
-                            child: IconButton(
-                              icon: chain.pinned
-                                  ? const Icon(Icons.favorite)
-                                  : const Icon(Icons.favorite_border_outlined),
-                              onPressed: () async {
+                          Semantics(
+                            label: "Mark this chain as Favorite.",
+                            child: InkWell(
+                              onTap: () async {
                                 chain.pinned = !chain.pinned;
                                 await Provider.of<ChainList>(context,
                                         listen: false)
                                     .updateChain(chain, false);
                               },
+                              child: CircleAvatar(
+                                child: chain.pinned
+                                    ? const Icon(Icons.favorite)
+                                    : const Icon(
+                                        Icons.favorite_border_outlined),
+                              ),
                             ),
                           ),
-                          CircleAvatar(
-                            child: IconButton(
-                              onPressed: () async {
+                          Semantics(
+                            label: "Check chain execution history.",
+                            child: InkWell(
+                              onTap: () async {
                                 NavigatorState nav = Navigator.of(context);
                                 bool allWell = await onPopOut(false);
                                 if (allWell) {
@@ -391,13 +405,18 @@ class _ViewChainState extends State<ViewChain> {
                                   );
                                 }
                               },
-                              icon: const Icon(Icons.history),
+                              child: const CircleAvatar(
+                                child: Icon(Icons.history),
+                              ),
                             ),
                           ),
-                          CircleAvatar(
-                            child: IconButton(
-                              onPressed: () => playTheChain(context),
-                              icon: getIconForChain(chain),
+                          Semantics(
+                            label: "Play this chain.",
+                            child: InkWell(
+                              onTap: () => playTheChain(context),
+                              child: CircleAvatar(
+                                child: getIconForChain(chain),
+                              ),
                             ),
                           ),
                         ],

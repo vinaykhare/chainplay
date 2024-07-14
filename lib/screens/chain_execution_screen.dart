@@ -182,44 +182,51 @@ class ChainExecutionScreen extends StatelessWidget {
                     ),
                   if (executingChains.isEmpty)
                     Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: CircleAvatar(
-                        backgroundColor: Theme.of(context).primaryColor,
-                        child: IconButton(
-                          onPressed: () async {
-                            if (chain.chainStatus == statusExecuting) {
-                              await chainList.stopChainExecution(chain);
-                            } else {
-                              NavigatorState nav = Navigator.of(context);
-                              Chain chainExecution =
-                                  await Provider.of<ChainList>(context,
-                                          listen: false)
-                                      .startChainExecution(chain);
-                              //await chainList.loadActivities(chain);
-                              int runningChainActivityIndex = chainList
-                                  .getRunningChainActivityIndex(chainExecution);
-                              // ChainActivity? chainActivityExecution =
-                              //     runningChainActivityIndex != -1
-                              //         ? chainExecution
-                              //             .activities[runningChainActivityIndex]
-                              //         : null;
-                              await nav
-                                  .pushNamed(PlayChain.routename, arguments: {
-                                payLoadChainExecId:
-                                    chainExecution.chainExecutionId,
-                                payLoadChainName: chainExecution.title,
-                                payLoadChainActivityIndex:
-                                    runningChainActivityIndex != -1
-                                        ? runningChainActivityIndex
-                                        : 0,
-                                payLoadChainActivityCount: chainHistory.length,
-                                payLoadChainAction: playChainActionPlay,
-                              });
-                            }
-                          },
-                          icon: chain.chainStatus == statusExecuting
-                              ? const Icon(Icons.pause)
-                              : const Icon(Icons.play_arrow),
+                      padding: const EdgeInsets.all(5.0),
+                      child: InkWell(
+                        onTap: () async {
+                          if (chain.chainStatus == statusExecuting) {
+                            await chainList.stopChainExecution(chain);
+                          } else {
+                            NavigatorState nav = Navigator.of(context);
+                            Chain chainExecution = await Provider.of<ChainList>(
+                                    context,
+                                    listen: false)
+                                .startChainExecution(chain);
+                            //await chainList.loadActivities(chain);
+                            int runningChainActivityIndex = chainList
+                                .getRunningChainActivityIndex(chainExecution);
+                            // ChainActivity? chainActivityExecution =
+                            //     runningChainActivityIndex != -1
+                            //         ? chainExecution
+                            //             .activities[runningChainActivityIndex]
+                            //         : null;
+                            await nav
+                                .pushNamed(PlayChain.routename, arguments: {
+                              payLoadChainExecId:
+                                  chainExecution.chainExecutionId,
+                              payLoadChainName: chainExecution.title,
+                              payLoadChainActivityIndex:
+                                  runningChainActivityIndex != -1
+                                      ? runningChainActivityIndex
+                                      : 0,
+                              payLoadChainActivityCount: chainHistory.length,
+                              payLoadChainAction: playChainActionPlay,
+                            });
+                          }
+                        },
+                        child: CircleAvatar(
+                          backgroundColor: Theme.of(context).primaryColor,
+                          radius: 40,
+                          child: chain.chainStatus == statusExecuting
+                              ? const Icon(
+                                  Icons.pause,
+                                  size: 40,
+                                )
+                              : const Icon(
+                                  Icons.play_arrow,
+                                  size: 40,
+                                ),
                         ),
                       ),
                     ),

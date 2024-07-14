@@ -10,6 +10,7 @@ import 'package:chain_activities/helpers/notification_tap_background.dart';
 import 'package:chain_activities/helpers/local_notifications/received_notification.dart';
 import 'package:timezone/data/latest_10y.dart';
 import 'package:timezone/timezone.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class LocalNotificationService with WidgetsBindingObserver {
   LocalNotificationService();
@@ -142,11 +143,15 @@ class LocalNotificationService with WidgetsBindingObserver {
     );
   }
 
-  Future<bool?> askNotificationPermission() async {
-    return await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestPermission();
+  Future<bool> askNotificationPermission() async {
+    bool exactAlarmPermission =
+        await Permission.scheduleExactAlarm.request().isGranted;
+    bool notificationPermission = await flutterLocalNotificationsPlugin
+            .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin>()
+            ?.requestPermission() ??
+        false;
+    return exactAlarmPermission && notificationPermission;
   }
 
   Future<Map<String, dynamic>?> checkForNotification() async {

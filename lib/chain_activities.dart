@@ -7,6 +7,7 @@ import 'package:chain_activities/tutorial/screens/play_chain_screen_tutorial.dar
 import 'package:chain_activities/tutorial/screens/play_wait_activity_screen_tutorial.dart';
 import 'package:chain_activities/tutorial/screens/view_chain_screen_tutorial.dart';
 import 'package:chain_activities/widgets/my_error_widget.dart';
+import 'package:chain_activities/widgets/palette_dark.dart';
 import 'package:chain_activities/widgets/palette_light_amber.dart';
 import 'package:chain_activities/widgets/redirect.dart';
 import 'package:flutter/material.dart';
@@ -54,16 +55,16 @@ class ChainActivities extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: darkTheme
           ? ThemeData(
-              primarySwatch: Colors.grey,
-              scaffoldBackgroundColor: const Color.fromARGB(255, 95, 96, 96),
-              cardColor: const Color.fromARGB(255, 63, 63, 63),
-              canvasColor: const Color.fromARGB(255, 58, 58, 59),
-              colorScheme: const ColorScheme.dark(
-                background: Color.fromARGB(255, 91, 91, 94),
-                primary: Colors.grey,
-                onPrimary: Colors.white,
+              primarySwatch: PaletteDark.lightGrey,
+              scaffoldBackgroundColor: PaletteDark.lightGrey.shade900,
+              cardColor: PaletteDark.lightGrey.shade800,
+              canvasColor: PaletteDark.lightGrey,
+              colorScheme: ColorScheme.dark(
+                background: PaletteDark.lightGrey,
+                primary: PaletteDark.lightGrey.shade700,
+                onPrimary: Colors.amber,
               ),
-              dialogBackgroundColor: Colors.black,
+              dialogBackgroundColor: PaletteDark.lightGrey,
               elevatedButtonTheme: ElevatedButtonThemeData(
                 style: ButtonStyle(
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -72,36 +73,24 @@ class ChainActivities extends StatelessWidget {
                     ),
                   ),
                   backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                    (states) => Colors.grey,
+                    (states) => PaletteDark.lightGrey,
                   ),
                   foregroundColor: MaterialStateProperty.resolveWith<Color>(
-                    (states) => Colors.white,
+                    (states) => Colors.amber,
                   ),
                   textStyle: MaterialStateProperty.resolveWith(
                     (states) => Theme.of(context).textTheme.labelLarge,
                   ),
                 ),
               ),
-              iconButtonTheme: IconButtonThemeData(
-                style: ButtonStyle(
-                  iconColor: MaterialStateProperty.resolveWith(
-                    (states) => Colors.amber,
-                  ),
-                ),
-              ),
-              iconTheme: const IconThemeData(
-                //size: 10,
-                color: Colors.amber,
-                opacity: 1,
-              ),
-              listTileTheme: const ListTileThemeData(
-                tileColor: Colors.black,
+              listTileTheme: ListTileThemeData(
+                tileColor: PaletteDark.lightGrey,
               ),
               switchTheme: SwitchThemeData(
                 thumbColor: MaterialStateProperty.resolveWith<Color>(
                   (states) {
                     if (states.contains(MaterialState.selected)) {
-                      return Colors.black;
+                      return PaletteDark.lightGrey;
                     } else {
                       return Colors.grey;
                     }
@@ -111,26 +100,29 @@ class ChainActivities extends StatelessWidget {
                   if (states.contains(MaterialState.selected)) {
                     return Colors.grey;
                   } else {
-                    return Colors.black;
+                    return PaletteDark.lightGrey;
                   }
                 }),
               ),
-              drawerTheme: const DrawerThemeData(
-                backgroundColor: Colors.black,
+              drawerTheme: DrawerThemeData(
+                backgroundColor: PaletteDark.lightGrey,
               ),
               dividerTheme: DividerThemeData(
-                color: Colors.grey.shade200,
+                color: PaletteDark.lightGrey.shade700,
               ),
-              appBarTheme: const AppBarTheme(
-                backgroundColor: Color.fromARGB(255, 53, 53, 55),
+              appBarTheme: AppBarTheme(
+                backgroundColor: PaletteDark.lightGrey,
               ),
-              inputDecorationTheme: const InputDecorationTheme(
-                fillColor: Color.fromARGB(255, 63, 63, 63),
+              inputDecorationTheme: InputDecorationTheme(
+                fillColor: PaletteDark.lightGrey.shade700,
               ),
               textSelectionTheme: TextSelectionThemeData(
-                selectionColor: Colors.black.withOpacity(0.5),
-                cursorColor: Colors.white,
-                selectionHandleColor: Colors.amber,
+                selectionColor: Colors.grey.withOpacity(0.5),
+                cursorColor: Colors.amber,
+                selectionHandleColor: Colors.grey,
+              ),
+              snackBarTheme: const SnackBarThemeData(
+                actionTextColor: Colors.amber,
               ),
               textTheme: const TextTheme(
                 titleMedium: TextStyle(
@@ -246,6 +238,9 @@ class ChainActivities extends StatelessWidget {
                 selectionColor: Colors.lightGreen.withOpacity(0.5),
                 cursorColor: Colors.black,
                 selectionHandleColor: Colors.lightGreen,
+              ),
+              snackBarTheme: const SnackBarThemeData(
+                actionTextColor: Colors.white,
               ),
               textTheme: const TextTheme(
                 titleMedium: TextStyle(

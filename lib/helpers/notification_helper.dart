@@ -30,7 +30,7 @@ class NotificationHelper {
     await localNotificationService.initialize();
   }
 
-  Future<bool?> askNotificationPermission() async {
+  Future<bool> askNotificationPermission() async {
     return await localNotificationService.askNotificationPermission();
   }
 

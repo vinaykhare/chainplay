@@ -191,22 +191,21 @@ class _PlayChainState extends State<PlayChain> {
 
   Future<void> scheduleActivity() async {
     ScaffoldMessengerState scms = ScaffoldMessenger.of(context);
-    bool? permissionGranted = await chainList.askForNotificationPermission();
+    String? scheduleNotificationResponse =
+        await chainList.scheduleNotificationForActivityCompletion(
+      chain,
+      chainActivityPaused!,
+      DateTime.now().add(chainActivityPaused!.activityDurationLeft!),
+    );
 
-    if (permissionGranted != null && permissionGranted == true) {
-      // await chainList.showNotification();
-      await chainList.scheduleNotificationForActivityCompletion(
-        chain,
-        chainActivityPaused!,
-        DateTime.now().add(chainActivityPaused!.activityDurationLeft!),
-      );
-    } else {
+    if (scheduleNotificationResponse != null) {
       scms.showSnackBar(
         SnackBar(
-          content: const Text(
-            "CAT do not have permission to send Notification.",
+          content: Text(
+            scheduleNotificationResponse,
           ),
           action: SnackBarAction(
+            //textColor: Colors.white,
             label: 'OK',
             onPressed: () {},
           ),
@@ -446,8 +445,11 @@ class _PlayChainState extends State<PlayChain> {
                     ? nav.pop()
                     : nav.pushNamed(ChainListScreen.routename);
               },
-              icon: const Icon(
-                Icons.arrow_back,
+              icon: Semantics(
+                label: "Go back to previous screen",
+                child: const Icon(
+                  Icons.arrow_back,
+                ),
               ),
             ),
             Expanded(

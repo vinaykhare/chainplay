@@ -625,8 +625,11 @@ class _AddChainScreenState extends State<AddChainScreen> {
                         activityDurationSecond = 0;
                       });
                     },
-                    icon: const Icon(
-                      Icons.clear_all,
+                    icon: Semantics(
+                      label: "Clear the duration field in add activity form.",
+                      child: const Icon(
+                        Icons.clear_all,
+                      ),
                     ),
                   ),
                 ),
@@ -756,8 +759,12 @@ class _AddChainScreenState extends State<AddChainScreen> {
                         activityImageController.clear();
                         setState(() {});
                       },
-                      icon: const Icon(
-                        Icons.clear_all,
+                      icon: Semantics(
+                        label:
+                            "Clear the selected image or its url in add activity form.",
+                        child: const Icon(
+                          Icons.clear_all,
+                        ),
                       ),
                     ),
                   ),
@@ -892,9 +899,12 @@ class _AddChainScreenState extends State<AddChainScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  IconButton(
-                    onPressed: saveAndExit,
-                    icon: const Icon(Icons.arrow_back),
+                  Semantics(
+                    label: "Save and Go back previous screen",
+                    child: IconButton(
+                      onPressed: saveAndExit,
+                      icon: const Icon(Icons.arrow_back),
+                    ),
                   ),
                   if (!updatingSystemWaitActivityInDB &&
                       tempChain.title.isNotEmpty)
@@ -921,11 +931,15 @@ class _AddChainScreenState extends State<AddChainScreen> {
                                     !addingDurationToActivity;
                               });
                             },
-                            icon: Icon(
-                              addingDurationToActivity
-                                  ? Icons.settings_suggest_outlined
-                                  : Icons.settings_suggest,
-                              color: Theme.of(context).iconTheme.color,
+                            icon: Semantics(
+                              label:
+                                  "Toggle to show the Duration and Image field to be added along with this activity.",
+                              child: Icon(
+                                addingDurationToActivity
+                                    ? Icons.settings_suggest_outlined
+                                    : Icons.settings_suggest,
+                                color: Theme.of(context).iconTheme.color,
+                              ),
                             ),
                           ),
                         ),

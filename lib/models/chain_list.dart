@@ -20,6 +20,7 @@ import 'package:chain_activities/models/system_setting.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:uuid/uuid.dart';
@@ -142,7 +143,7 @@ class ChainList with ChangeNotifier {
     }
   }
 
-  Future<bool?> askForNotificationPermission() async {
+  Future<bool> askForNotificationPermission() async {
     return await notificationHelper.askNotificationPermission();
   }
 
@@ -1738,52 +1739,63 @@ class ChainList with ChangeNotifier {
     return notificationHelper.showNotification(nextNotificationId);
   }
 
-  Future<void> scheduleNotificationForActivityCompletion(
+  Future<String?> scheduleNotificationForActivityCompletion(
     Chain chain,
     ChainActivity chainActivity,
     DateTime fromDateTime,
   ) async {
-    chain.notificationId = trueInDB;
-    await updateChainExecution(chain);
+    String? scheduleNotificationResponse;
 
-    int nextNotificationId = getNextNotificationId();
-    String activityTitle = chainActivity.activity.title;
+    bool permissionGranted = await askForNotificationPermission();
+    bool scheduleExactPermissionStatus =
+        await Permission.scheduleExactAlarm.status.isGranted;
+    if (permissionGranted == true && scheduleExactPermissionStatus) {
+      chain.notificationId = trueInDB;
+      await updateChainExecution(chain);
 
-    if (chainActivity.startActivityNotificationId != noValueInDB) {
-      notificationHelper
-          .cancelNotificationById(chainActivity.startActivityNotificationId);
+      int nextNotificationId = getNextNotificationId();
+      String activityTitle = chainActivity.activity.title;
+
+      if (chainActivity.startActivityNotificationId != noValueInDB) {
+        notificationHelper
+            .cancelNotificationById(chainActivity.startActivityNotificationId);
+      }
+      if (chainActivity.endActivityNotificationId != noValueInDB) {
+        notificationHelper
+            .cancelNotificationById(chainActivity.endActivityNotificationId);
+      }
+
+      chainActivity.endActivityNotificationId =
+          await notificationHelper.scheduleNotification(
+        fromDateTime,
+        nextNotificationId,
+        chain.title,
+        chainActivity.activity.type == systemWaitActivityInDB
+            ? "Rest is Over, lets start your next Activity."
+            : "$activityTitle is Completed.",
+        {
+          payLoadChainName: chain.title,
+          payLoadChainExecId: chain.chainExecutionId,
+          payLoadWidgetUrl: PlayChain.routename,
+          payLoadChainActivityIndex: chainActivity.index,
+          payLoadChainActivityCount: chain.activities.length,
+          payLoadChainAction: playChainActionPlay,
+        },
+      );
+
+      chainActivity.endedAt =
+          DateTime.now().add(chainActivity.activityDurationLeft!);
+      await updateChainActivityExecutionByActivityId(
+        chain,
+        chainActivity,
+      );
+    } else {
+      scheduleNotificationResponse =
+          "CAT do not have permission to send Notification.";
     }
-    if (chainActivity.endActivityNotificationId != noValueInDB) {
-      notificationHelper
-          .cancelNotificationById(chainActivity.endActivityNotificationId);
-    }
-
-    chainActivity.endActivityNotificationId =
-        await notificationHelper.scheduleNotification(
-      fromDateTime,
-      nextNotificationId,
-      chain.title,
-      chainActivity.activity.type == systemWaitActivityInDB
-          ? "Rest is Over, lets start your next Activity."
-          : "$activityTitle is Completed.",
-      {
-        payLoadChainName: chain.title,
-        payLoadChainExecId: chain.chainExecutionId,
-        payLoadWidgetUrl: PlayChain.routename,
-        payLoadChainActivityIndex: chainActivity.index,
-        payLoadChainActivityCount: chain.activities.length,
-        payLoadChainAction: playChainActionPlay,
-      },
-    );
-
-    chainActivity.endedAt =
-        DateTime.now().add(chainActivity.activityDurationLeft!);
-    await updateChainActivityExecutionByActivityId(
-      chain,
-      chainActivity,
-    );
 
     notifyListeners();
+    return scheduleNotificationResponse;
   }
 
   Future<void> cancelScheduledNotificationExecution(Chain chain) async {
@@ -1934,15 +1946,38 @@ class ChainList with ChangeNotifier {
   }
 
   Future<void> checkAndShareChain(BuildContext ctx, Chain chain) async {
-    bool doChainHasLocalReferences = chainHasLocalReferences(chain);
-
-    if (doChainHasLocalReferences) {
-      bool proceedToShareChain = await okToDownloadWithoutLocalImageRef(ctx);
+    ScaffoldMessengerState scms = ScaffoldMessenger.of(ctx);
+    ThemeData theme = Theme.of(context);
+    try {
+      bool doChainHasLocalReferences = chainHasLocalReferences(chain);
+      bool proceedToShareChain = doChainHasLocalReferences
+          ? await okToDownloadWithoutLocalImageRef(ctx)
+          : true;
+      // if (doChainHasLocalReferences) {
+      //   proceedToShareChain = await okToDownloadWithoutLocalImageRef(ctx);
+      // } else {}
       if (proceedToShareChain) {
         await shareChain(chain);
+      } else {
+        throw "Unable to share this chain!!\nTry to Download it from Chain's detailed view & share the downloaded file.";
       }
-    } else {
-      await shareChain(chain);
+    } catch (e) {
+      scms.showSnackBar(
+        SnackBar(
+          content: Text(
+            //e.toString(),
+            "Unable to share this chain!!\nTry to Download it from Chain's detailed view & share the downloaded file.",
+            style: theme.textTheme.titleMedium,
+            textAlign: TextAlign.center,
+          ),
+          duration: const Duration(seconds: 10),
+          action: SnackBarAction(
+            //textColor: Colors.white,
+            label: 'OK',
+            onPressed: () {},
+          ),
+        ),
+      );
     }
   }
 
@@ -1968,7 +2003,7 @@ class ChainList with ChangeNotifier {
 
   Future<void> cancelIntentSubscription() async {
     sharedFile = null;
-    ReceiveSharingIntent.reset();
+    ReceiveSharingIntent.instance.reset();
     if (intentDataStreamSubscription != null) {
       await intentDataStreamSubscription!.cancel();
       intentDataStreamSubscription = null;
@@ -1978,36 +2013,38 @@ class ChainList with ChangeNotifier {
   Future<void> receiveIntent() async {
     // String? sharedText;
 
-    intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream().listen(
-        (List<SharedMediaFile> sharedMediaFiles) {
+    intentDataStreamSubscription = ReceiveSharingIntent.instance
+        .getMediaStream()
+        .listen((List<SharedMediaFile> sharedMediaFiles) {
       if (sharedMediaFiles.isNotEmpty && sharedMediaFiles.length == 1) {
         sharedFile = sharedMediaFiles[0];
       }
-      ReceiveSharingIntent.reset();
+      ReceiveSharingIntent.instance.reset();
     }, onError: (err) {
       print("getIntentDataStream error: $err");
     });
 
-    await ReceiveSharingIntent.getInitialMedia()
+    await ReceiveSharingIntent.instance
+        .getInitialMedia()
         .then((List<SharedMediaFile> sharedMediaFiles) {
       if (sharedMediaFiles.isNotEmpty && sharedMediaFiles.length == 1) {
         sharedFile = sharedMediaFiles[0];
       }
-      ReceiveSharingIntent.reset();
+      ReceiveSharingIntent.instance.reset();
     });
 
     // intentDataStreamSubscription =
-    //     ReceiveSharingIntent.getTextStream().listen((String value) {
+    //     ReceiveSharingIntent.instance.getTextStream().listen((String value) {
     //   sharedText = value;
     //   print("Shared Text: $sharedText");
     // }, onError: (err) {
     //   print("getLinkStream error: $err");
     // });
 
-    // await ReceiveSharingIntent.getInitialText().then((String? value) {
+    // await ReceiveSharingIntent.instance.getInitialText().then((String? value) {
     //   sharedText = value;
     // });
-    ReceiveSharingIntent.reset();
+    ReceiveSharingIntent.instance.reset();
     await intentDataStreamSubscription!.cancel();
     intentDataStreamSubscription = null;
   }

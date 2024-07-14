@@ -23,29 +23,7 @@ class _HelpHeaderState extends State<HelpHeader> {
   Timer? countdownTimer;
   late ChainList chainList;
   bool isNotPlaying = false;
-
-  @override
-  void initState() {
-    super.initState();
-    chainList = Provider.of<ChainList>(context, listen: false);
-    Future.delayed(
-      const Duration(
-        seconds: 3,
-      ),
-    );
-    speak();
-    //startTimer();
-  }
-
-  @override
-  void dispose() {
-    // Future.delayed(
-    //   const Duration(seconds: 2),
-    // );
-    //if (countdownTimer != null) countdownTimer?.cancel();
-    //chainList.stopSpeech();
-    super.dispose();
-  }
+  bool initConfig = true;
 
   // void startTimer() {
   //   countdownTimer = Timer.periodic(
@@ -115,6 +93,16 @@ class _HelpHeaderState extends State<HelpHeader> {
 
   @override
   Widget build(BuildContext context) {
+    if (initConfig) {
+      chainList = Provider.of<ChainList>(context, listen: true);
+      Future.delayed(
+        const Duration(
+          seconds: 3,
+        ),
+      );
+      speak();
+      initConfig = false;
+    }
     double appHeight = widget.appHeight - 48;
 
     return GestureDetector(

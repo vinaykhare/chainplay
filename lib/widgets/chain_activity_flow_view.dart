@@ -121,27 +121,33 @@ class ChainActivityFlowView extends StatelessWidget {
                   trailing: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      IconButton(
-                        onPressed: () async {
-                          await chainList.removeActivityFromChain(
-                              tempChain, chainActivity);
-                        },
-                        icon: const Icon(
-                          Icons.delete_forever_rounded,
+                      Semantics(
+                        label: "Delete this activity from chain.",
+                        child: IconButton(
+                          onPressed: () async {
+                            await chainList.removeActivityFromChain(
+                                tempChain, chainActivity);
+                          },
+                          icon: const Icon(
+                            Icons.delete_forever_rounded,
+                          ),
                         ),
                       ),
-                      Expanded(
-                        child: IconButton(
-                          icon: Icon(
-                            chainActivity.edit ? Icons.undo : Icons.edit,
+                      Semantics(
+                        label: "Edit or Undo Edit this Chain Activity",
+                        child: Expanded(
+                          child: IconButton(
+                            icon: Icon(
+                              chainActivity.edit ? Icons.undo : Icons.edit,
+                            ),
+                            onPressed: () async {
+                              if (!chainActivity.edit) {
+                                editActivity!(chainActivity);
+                              } else {
+                                undoEdit!(chainActivity);
+                              }
+                            },
                           ),
-                          onPressed: () async {
-                            if (!chainActivity.edit) {
-                              editActivity!(chainActivity);
-                            } else {
-                              undoEdit!(chainActivity);
-                            }
-                          },
                         ),
                       ),
                     ],

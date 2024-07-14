@@ -84,9 +84,7 @@ Add, Chain, Execute, Custom, Run, Sequence, Clock, Timer, Schedule, Activities, 
 
 # Release Notes:
 
-1. Bug Fixes.
-2. Feature to restart the chain on chain completion
-3. Removed swipe to delete for activity in add/edit chain screen.
-4. Chain tile is updated for active and inactive chains.
-5. Updated the tutorial accordingly.
-6. Chain execution status screen's UI is updated to run app in backgroud or force complete the currnet activity in running chain.
+1. Added a Permission Handler Plugin to check schedule exact alarm permission before scheduling a notification.
+2. Target SDK Version is set to 34.
+3. Fixed the Dark Theme.
+4. Semantics are added for Content labelling.

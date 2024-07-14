@@ -152,11 +152,16 @@ class ChainSystemWaitActivityFlow extends StatelessWidget {
                               // crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(
-                                  chainActivity.edit
+                                Semantics(
+                                  label: chainActivity.edit
                                       ? "Rest Duration will add here"
-                                      : "Tap to add rest\nbetween two timer activities",
-                                  textAlign: TextAlign.center,
+                                      : "Tap to add rest between two timer activities",
+                                  child: Text(
+                                    chainActivity.edit
+                                        ? "Rest Duration will add here"
+                                        : "Tap to add rest\nbetween two timer activities",
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ),
                                 if (editActivity != null)
                                   Icon(activities[index].edit

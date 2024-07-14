@@ -93,12 +93,22 @@ class ChainTileView extends StatelessWidget {
     Chain? chainExecution =
         Provider.of<ChainList>(context, listen: false).getRunningChain(chain);
     if (chainExecution != null && chainExecution.notificationId == trueInDB) {
-      return const Icon(Icons.stop);
+      return Semantics(
+        label: "Stop the Chain Execution",
+        child: const Icon(
+          Icons.stop,
+        ),
+      );
     }
     // if (chain.chainStatus == statusExecuting) {
     //   return const Icon(Icons.pause);
     // }
-    return const Icon(Icons.play_arrow);
+    return Semantics(
+      label: "Play or Resume this chain",
+      child: const Icon(
+        Icons.play_arrow,
+      ),
+    );
   }
 
   Widget getChainTileTitle(BuildContext context, Chain chain) {
@@ -231,7 +241,7 @@ class ChainTileView extends StatelessWidget {
                 ),
 
                 leading: CircleAvatar(
-                  backgroundColor: Theme.of(context).primaryColorLight,
+                  // backgroundColor: Theme.of(context).primaryColor,
                   child: IconButton(
                     onPressed: () => playTheChain(context),
                     icon: getIconForChain(context, chain),

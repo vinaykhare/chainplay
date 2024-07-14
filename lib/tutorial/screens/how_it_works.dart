@@ -21,14 +21,7 @@ class _HowItWorksState extends State<HowItWorks> {
   // bool pdfView = false;
 
   late ChainList chainList;
-
-  @override
-  void initState() {
-    super.initState();
-    chainList = Provider.of<ChainList>(context, listen: false);
-    // chainList.showHelpOnNextLoad();
-    chainList.loadSampleChainsFromAssets();
-  }
+  bool initConfig = true;
 
   // @override
   // void dispose() {
@@ -38,6 +31,12 @@ class _HowItWorksState extends State<HowItWorks> {
 
   @override
   Widget build(BuildContext context) {
+    if (initConfig) {
+      chainList = Provider.of<ChainList>(context, listen: false);
+      // chainList.showHelpOnNextLoad();
+      chainList.loadSampleChainsFromAssets();
+      initConfig = false;
+    }
     double appHeight = MediaQuery.of(context).size.height -
         // (appBarWidget.preferredSize.height * 1) -
         MediaQuery.of(context).viewPadding.top;
