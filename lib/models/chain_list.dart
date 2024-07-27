@@ -20,7 +20,7 @@ import 'package:chain_activities/models/system_setting.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
+// import 'package:permission_handler/permission_handler.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:uuid/uuid.dart';
@@ -105,8 +105,7 @@ class ChainList with ChangeNotifier {
     notificationCameAs = null;
 
     Map<String, dynamic>? checkForNotificationResponse =
-        await notificationHelper.localNotificationService
-            .checkForNotification();
+        await notificationHelper.checkForNotification();
 
     for (int chainId = 0; chainId < chains.length; chainId++) {
       Chain chain = chains[chainId];
@@ -1734,11 +1733,6 @@ class ChainList with ChangeNotifier {
     return nextNotificationId;
   }
 
-  Future<int> showNotification() async {
-    int nextNotificationId = getNextNotificationId();
-    return notificationHelper.showNotification(nextNotificationId);
-  }
-
   Future<String?> scheduleNotificationForActivityCompletion(
     Chain chain,
     ChainActivity chainActivity,
@@ -1747,9 +1741,10 @@ class ChainList with ChangeNotifier {
     String? scheduleNotificationResponse;
 
     bool permissionGranted = await askForNotificationPermission();
-    bool scheduleExactPermissionStatus =
-        await Permission.scheduleExactAlarm.status.isGranted;
-    if (permissionGranted == true && scheduleExactPermissionStatus) {
+    // bool scheduleExactPermissionStatus =
+    //     await Permission.scheduleExactAlarm.status.isGranted;
+    // if (permissionGranted == true && scheduleExactPermissionStatus) {
+    if (permissionGranted == true) {
       chain.notificationId = trueInDB;
       await updateChainExecution(chain);
 

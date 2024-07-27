@@ -9,7 +9,7 @@ class ScrollButton extends StatelessWidget {
     //return ElevatedButton.icon(
     return ElevatedButton(
       style: Theme.of(context).elevatedButtonTheme.style!.copyWith(
-            backgroundColor: MaterialStateProperty.resolveWith<Color>(
+            backgroundColor: WidgetStateProperty.resolveWith<Color>(
               (states) =>
                   Theme.of(context).secondaryHeaderColor.withOpacity(0.1),
             ),

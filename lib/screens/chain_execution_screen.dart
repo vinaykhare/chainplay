@@ -143,7 +143,7 @@ class ChainExecutionScreen extends StatelessWidget {
                               colors: [
                                 chainExecution.notificationId == trueInDB
                                     ? Theme.of(context).colorScheme.secondary
-                                    : Theme.of(context).colorScheme.background,
+                                    : Theme.of(context).colorScheme.surface,
                                 Theme.of(context).scaffoldBackgroundColor,
                               ],
                             )),

@@ -17,7 +17,7 @@ class CatTextButton extends StatelessWidget {
     return TextButton.icon(
       onPressed: buttonAction,
       style: ButtonStyle(
-        iconColor: MaterialStateProperty.resolveWith(
+        iconColor: WidgetStateProperty.resolveWith(
           (states) => Theme.of(context).colorScheme.error,
         ),
       ),

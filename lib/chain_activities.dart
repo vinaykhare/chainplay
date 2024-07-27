@@ -55,30 +55,31 @@ class ChainActivities extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: darkTheme
           ? ThemeData(
+              // useMaterial3: false,
               primarySwatch: PaletteDark.lightGrey,
               scaffoldBackgroundColor: PaletteDark.lightGrey.shade900,
               cardColor: PaletteDark.lightGrey.shade800,
               canvasColor: PaletteDark.lightGrey,
               colorScheme: ColorScheme.dark(
-                background: PaletteDark.lightGrey,
+                surface: PaletteDark.lightGrey,
                 primary: PaletteDark.lightGrey.shade700,
                 onPrimary: Colors.amber,
               ),
               dialogBackgroundColor: PaletteDark.lightGrey,
               elevatedButtonTheme: ElevatedButtonThemeData(
                 style: ButtonStyle(
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
                     ),
                   ),
-                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                  backgroundColor: WidgetStateProperty.resolveWith<Color>(
                     (states) => PaletteDark.lightGrey,
                   ),
-                  foregroundColor: MaterialStateProperty.resolveWith<Color>(
+                  foregroundColor: WidgetStateProperty.resolveWith<Color>(
                     (states) => Colors.amber,
                   ),
-                  textStyle: MaterialStateProperty.resolveWith(
+                  textStyle: WidgetStateProperty.resolveWith(
                     (states) => Theme.of(context).textTheme.labelLarge,
                   ),
                 ),
@@ -87,17 +88,17 @@ class ChainActivities extends StatelessWidget {
                 tileColor: PaletteDark.lightGrey,
               ),
               switchTheme: SwitchThemeData(
-                thumbColor: MaterialStateProperty.resolveWith<Color>(
+                thumbColor: WidgetStateProperty.resolveWith<Color>(
                   (states) {
-                    if (states.contains(MaterialState.selected)) {
+                    if (states.contains(WidgetState.selected)) {
                       return PaletteDark.lightGrey;
                     } else {
                       return Colors.grey;
                     }
                   },
                 ),
-                trackColor: MaterialStateProperty.resolveWith<Color>((states) {
-                  if (states.contains(MaterialState.selected)) {
+                trackColor: WidgetStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(WidgetState.selected)) {
                     return Colors.grey;
                   } else {
                     return PaletteDark.lightGrey;
@@ -173,30 +174,31 @@ class ChainActivities extends StatelessWidget {
               ),
             )
           : ThemeData(
+              // useMaterial3: false,
               primarySwatch: PaletteLigthAmber.ligthAmber,
               scaffoldBackgroundColor: PaletteLigthAmber.ligthAmber.shade100,
               cardColor: Colors.lightGreen,
               canvasColor: PaletteLigthAmber.ligthAmber,
               colorScheme: ColorScheme.light(
-                background: Colors.lightGreen,
+                surface: Colors.lightGreen,
                 primary: PaletteLigthAmber.ligthAmber.shade300,
                 onPrimary: Colors.black,
               ),
               dialogBackgroundColor: Colors.lightGreen,
               elevatedButtonTheme: ElevatedButtonThemeData(
                 style: ButtonStyle(
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
                     ),
                   ),
-                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                  backgroundColor: WidgetStateProperty.resolveWith<Color>(
                     (states) => PaletteLigthAmber.ligthAmber,
                   ),
-                  foregroundColor: MaterialStateProperty.resolveWith<Color>(
+                  foregroundColor: WidgetStateProperty.resolveWith<Color>(
                     (states) => Colors.black,
                   ),
-                  textStyle: MaterialStateProperty.resolveWith(
+                  textStyle: WidgetStateProperty.resolveWith(
                     (states) => Theme.of(context).textTheme.labelLarge,
                   ),
                 ),
@@ -205,17 +207,17 @@ class ChainActivities extends StatelessWidget {
                 tileColor: PaletteLigthAmber.ligthAmber,
               ),
               switchTheme: SwitchThemeData(
-                thumbColor: MaterialStateProperty.resolveWith<Color>(
+                thumbColor: WidgetStateProperty.resolveWith<Color>(
                   (states) {
-                    if (states.contains(MaterialState.selected)) {
+                    if (states.contains(WidgetState.selected)) {
                       return PaletteLigthAmber.ligthAmber;
                     } else {
                       return Colors.lightGreen;
                     }
                   },
                 ),
-                trackColor: MaterialStateProperty.resolveWith<Color>((states) {
-                  if (states.contains(MaterialState.selected)) {
+                trackColor: WidgetStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(WidgetState.selected)) {
                     return Colors.lightGreen;
                   } else {
                     return PaletteLigthAmber.ligthAmber;
