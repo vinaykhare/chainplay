@@ -52,6 +52,9 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
       activityDurationMinute = 0,
       activityDurationSecond = 0;
 
+  Future<void> editActivity(ChainActivity chainActivity) async {}
+  Future<void> undoEdit(ChainActivity chainActivity) async {}
+
   @override
   void dispose() {
     super.dispose();
@@ -377,8 +380,8 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
                         label: "Editable Chain of Activities",
                         child: ChainActivitiesWidget(
                           tempChain: tempChain,
-                          editActivity: null,
-                          undoEdit: null,
+                          editActivity: editActivity,
+                          undoEdit: undoEdit,
                         ),
                       ),
                     ],

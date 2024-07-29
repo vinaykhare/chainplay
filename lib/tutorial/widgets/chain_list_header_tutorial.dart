@@ -21,7 +21,10 @@ class ChainListHeaderTutorial extends StatelessWidget {
       children: [
         Expanded(
           child: ListTile(
-            leading: Image.asset(assetMap["logoImage"]!),
+            leading: Image.asset(
+              assetMap["logoImage"]!,
+              key: KeyHelper.catTitle,
+            ),
             title: const Text(
               "C A T",
               style: TextStyle(

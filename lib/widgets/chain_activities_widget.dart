@@ -135,6 +135,9 @@ class _ChainActivitiesWidgetState extends State<ChainActivitiesWidget> {
           buildDefaultDragHandles: true,
           scrollController: scrollController,
           onReorder: (oldIndex, newIndex) {
+            if (widget.editActivity == null) {
+              return;
+            }
             oldIndex = activities.length - oldIndex - 1;
             newIndex = activities.length - newIndex - 1;
             chainList.rearrangeActivites(widget.tempChain, oldIndex, newIndex);

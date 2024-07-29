@@ -19,7 +19,15 @@ class ChainListHeader extends StatelessWidget {
       children: [
         Expanded(
           child: ListTile(
-            leading: Image.asset(assetMap["logoImage"]!),
+            leading: InkWell(
+              child: Image.asset(assetMap["logoImage"]!),
+              onTap: () {
+                ChainList chainList =
+                    Provider.of<ChainList>(context, listen: false);
+                chainList.loaded = false;
+                chainList.initialize();
+              },
+            ),
             title: Text(
               "C A T",
               style: Theme.of(context).textTheme.titleMedium!.copyWith(

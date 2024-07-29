@@ -84,7 +84,8 @@ Add, Chain, Execute, Custom, Run, Sequence, Clock, Timer, Schedule, Activities, 
 
 # Release Notes:
 
-1. Added a Permission Handler Plugin to check schedule exact alarm permission before scheduling a notification.
-2. Target SDK Version is set to 34.
-3. Fixed the Dark Theme.
-4. Semantics are added for Content labelling.
+1. In an attempt to resolve the crash detected in pre launch details, we have updated to the Latest version of all the dependencies along with latest version of Flutter, changed the jdk to version 17 and Kotlin version is changed from 1.7 to 1.9.
+2. Stopped the usage of USE_EXACT_ALARM.
+3. Target SDK Version is set to 34.
+4. Action to 'Refresh home' is added to App Icon on App Header of Home screen.
+   Tutorial is updated for this.

@@ -172,7 +172,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     }).toList(),
                                   )
                                 else
-                                  Container(),
+                                  Container(), //Invalid Use Case
                               ],
                             ),
                             if (!settings[index].type.startsWith("HIDDEN"))

@@ -1,11 +1,10 @@
-import 'dart:io';
-import 'package:chain_activities/helpers/constants.dart';
+import 'package:chain_activities/widgets/chain_activity_flow_common_view.dart';
+import 'package:chain_activities/widgets/chain_activity_flow_edit_view.dart';
+import 'package:chain_activities/widgets/chain_activity_flow_read_view.dart';
 import 'package:flutter/material.dart';
-import 'package:chain_activities/helpers/helper_functions.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_activity.dart';
 import 'package:chain_activities/models/chain_list.dart';
-import 'package:chain_activities/widgets/start_end_time_chain_widget.dart';
 
 class ChainActivityFlowView extends StatelessWidget {
   const ChainActivityFlowView({
@@ -37,271 +36,54 @@ class ChainActivityFlowView extends StatelessWidget {
       children: [
         arrowWidget,
         Card(
-          elevation: 10,
-          color: chainActivity.endedAt != null
-              ? Theme.of(context).textSelectionTheme.selectionColor
-              : chainActivity.edit
-                  ? Theme.of(context).cardColor.withOpacity(0.5)
-                  : Theme.of(context).cardColor,
-          child: editActivity != null
-              ? ListTile(
-                  tileColor: Theme.of(context).cardColor.withOpacity(0.1),
-                  onTap: () async {
-                    if (!chainActivity.edit) {
-                      editActivity!(chainActivity);
-                    } else {
-                      undoEdit!(chainActivity);
-                    }
-                  },
-                  title: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          chainActivity.activity.title,
-                          style: Theme.of(context).textTheme.headlineSmall,
-                        ),
-                      ),
-                      Expanded(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(50),
-                          child: Container(
-                            height: 100,
-                            margin: const EdgeInsets.all(5),
-                            child: chainActivity.activity.specification !=
-                                        null &&
-                                    chainActivity.activity.specification![
-                                            activitySpecImagePath] !=
-                                        null &&
-                                    chainActivity.activity.specification![
-                                            activitySpecImagePath] !=
-                                        ""
-                                ? chainActivity.activity
-                                        .specification![activitySpecImagePath]
-                                        .toString()
-                                        .startsWith("http")
-                                    ? FadeInImage.assetNetwork(
-                                        placeholder: assetMap["logoImage"]!,
-                                        image: chainActivity
-                                                .activity.specification![
-                                            activitySpecImagePath],
-                                        fit: BoxFit.cover,
-                                        imageErrorBuilder:
-                                            (context, error, stackTrace) =>
-                                                Image.asset(
-                                          assetMap['logoImage']!,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      )
-                                    : Image.file(
-                                        File(
-                                          chainActivity.activity.specification![
-                                              activitySpecImagePath],
-                                        ),
-                                        fit: BoxFit.cover,
-                                      )
-                                : Image.asset(
-                                    assetMap['logoImage']!,
-                                    fit: BoxFit.cover,
-                                  ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  subtitle: Text(
-                    "${chainActivity.endedAt != null ? 'Completed' : 'will Complete'} ${activities[index].isInterrupted ? ' before scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDurationLeft ?? chainActivity.activityDuration)}.",
-                  ),
-                  leading:
-                      (chainActivity.endedAt != null || editActivity == null)
-                          ? null
-                          : ReorderableDragStartListener(
-                              index: index,
-                              child: const Icon(Icons.drag_handle),
-                            ),
-                  trailing: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Semantics(
-                        label: "Delete this activity from chain.",
-                        child: IconButton(
-                          onPressed: () async {
-                            await chainList.removeActivityFromChain(
-                                tempChain, chainActivity);
-                          },
-                          icon: const Icon(
-                            Icons.delete_forever_rounded,
-                          ),
-                        ),
-                      ),
-                      Semantics(
-                        label: "Edit or Undo Edit this Chain Activity",
-                        child: Expanded(
-                          child: IconButton(
-                            icon: Icon(
-                              chainActivity.edit ? Icons.undo : Icons.edit,
-                            ),
-                            onPressed: () async {
-                              if (!chainActivity.edit) {
-                                editActivity!(chainActivity);
-                              } else {
-                                undoEdit!(chainActivity);
-                              }
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  // leading: Checkbox(
-                  //   key: ValueKey(
-                  //       'activities_checkbox_${chainActivity.activity.title}'),
-                  //   value: chainActivity.endedAt != null,
-                  //   onChanged: (value) async {
-                  //     await chainList.flipDoneActivity(
-                  //         tempChain, chainActivity);
-                  //   },
-                  // ),
-                )
-              : Column(
-                  children: [
-                    ListTile(
-                      tileColor: Theme.of(context).cardColor,
-                      title: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              chainActivity.activity.title,
-                              style: Theme.of(context).textTheme.headlineSmall,
-                            ),
-                          ),
-                          Expanded(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(50),
-                              child: Container(
-                                height: 100,
-                                margin: const EdgeInsets.all(5),
-                                child: chainActivity.activity.specification !=
-                                            null &&
-                                        chainActivity.activity.specification![
-                                                activitySpecImagePath] !=
-                                            null &&
-                                        chainActivity.activity.specification![
-                                                activitySpecImagePath] !=
-                                            ""
-                                    ? chainActivity
-                                            .activity
-                                            .specification![
-                                                activitySpecImagePath]
-                                            .toString()
-                                            .startsWith("http")
-                                        ? FadeInImage.assetNetwork(
-                                            placeholder: assetMap["logoImage"]!,
-                                            image: chainActivity
-                                                    .activity.specification![
-                                                activitySpecImagePath],
-                                            fit: BoxFit.cover,
-                                            imageErrorBuilder:
-                                                (context, error, stackTrace) =>
-                                                    Image.asset(
-                                              assetMap['logoImage']!,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          )
-                                        : Image.file(
-                                            File(
-                                              chainActivity
-                                                      .activity.specification![
-                                                  activitySpecImagePath],
-                                            ),
-                                            fit: BoxFit.cover,
-                                          )
-                                    : Image.asset(
-                                        assetMap['logoImage']!,
-                                        fit: BoxFit.cover,
-                                      ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      subtitle: Row(
-                        children: [
-                          if (chainActivity.endActivityNotificationId !=
-                                  noValueInDB &&
-                              chainActivity.endedAt != null)
-                            if (chainActivity.endedAt != null &&
-                                chainActivity.endedAt!
-                                        .difference(
-                                          DateTime.now(),
-                                        )
-                                        .inSeconds >
-                                    0)
-                              Expanded(
-                                child: Text(
-                                  "You will be notified for activity completion\n${HelperFunctions.durationToString(
-                                    chainActivity.endedAt!.difference(
-                                      DateTime.now(),
-                                    ),
-                                  )}\nfrom now.",
-                                  textAlign: TextAlign.center,
-                                ),
-                              )
-                            else
-                              const Expanded(
-                                child: Text(
-                                  "Acitivity completed. Notification should have been received by now. Please refresh.",
-                                  textAlign: TextAlign.center,
-                                ),
-                              )
-                          else
-                            Expanded(
-                              child: Text(
-                                "${chainActivity.endedAt != null ? 'Completed ' : 'It will Complete '}${activities[index].isInterrupted ? ' before the scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDurationLeft != null ? chainActivity.activityDurationLeft! : chainActivity.activityDuration)} ${chainActivity.activityDurationLeft != null ? "after resuming." : ""}",
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                        ],
-                      ),
-                      leading: ReorderableDragStartListener(
-                        index: index,
-                        child: const Icon(Icons.drag_handle),
-                      ),
-                    ),
-                    if (chainActivity.at != null)
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
-                        ),
-                        padding: const EdgeInsets.all(8.0),
-                        child: StartEndTimeChainWidget(
-                          cardTitle: null,
-                          startTime: chainActivity.at,
-                          endTime: chainActivity.endedAt,
-                          textInBetween: chainActivity.endedAt != null
-                              ? chainActivity.activityDone == false
-                                  ? chainActivity.endActivityNotificationId ==
-                                          noValueInDB
-                                      ? "Running"
-                                      : "Scheduled"
-                                  : "Done"
-                              : chainActivity.activityDurationLeft != null &&
-                                      chainActivity.activityDuration.inSeconds >
-                                          0
-                                  ? "Paused"
-                                  : null,
-                          // textInBetween: chainActivity.activityDurationLeft !=
-                          //             null &&
-                          //         chainActivity.endedAt == null &&
-                          //         chainActivity.activityDuration.inSeconds > 0
-                          //     ? "Paused"
-                          //     : chainActivity.endedAt == null
-                          //         ? "Running"
-                          //         : null,
-                        ),
-                      ),
-                  ],
+            elevation: 10,
+            color: chainActivity.endedAt != null
+                ? Theme.of(context).textSelectionTheme.selectionColor
+                : chainActivity.edit
+                    ? Theme.of(context).cardColor.withOpacity(0.5)
+                    : Theme.of(context).cardColor,
+            child: Column(
+              children: [
+                ChainActivityFlowCommonView(
+                  key: Key("${index.toString()}_common"),
+                  activities: activities,
+                  arrowWidget: arrowWidget,
+                  chainActivity: chainActivity,
+                  chainList: chainList,
+                  tempChain: tempChain,
+                  editActivity: editActivity,
+                  undoEdit: undoEdit,
+                  lineWidget: lineWidget,
+                  index: index,
                 ),
-        ),
+                if (editActivity != null)
+                  ChainActivityFlowEditView(
+                    key: Key("${index.toString()}_edit"),
+                    activities: activities,
+                    arrowWidget: arrowWidget,
+                    chainActivity: chainActivity,
+                    chainList: chainList,
+                    tempChain: tempChain,
+                    editActivity: editActivity,
+                    undoEdit: undoEdit,
+                    lineWidget: lineWidget,
+                    index: index,
+                  )
+                else
+                  ChainActivityFlowReadView(
+                    key: Key("${index.toString()}_read"),
+                    activities: activities,
+                    arrowWidget: arrowWidget,
+                    chainActivity: chainActivity,
+                    chainList: chainList,
+                    tempChain: tempChain,
+                    editActivity: editActivity,
+                    undoEdit: undoEdit,
+                    lineWidget: lineWidget,
+                    index: index,
+                  ),
+              ],
+            )),
       ],
     );
   }

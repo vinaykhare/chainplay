@@ -127,7 +127,7 @@ class ChainTileView extends StatelessWidget {
                   "with",
                   style: Theme.of(context).textTheme.labelMedium!.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Theme.of(context).secondaryHeaderColor,
+                        color: Theme.of(context).canvasColor,
                       ),
                 ),
                 Text(
@@ -150,7 +150,7 @@ class ChainTileView extends StatelessWidget {
                   "Last Updated",
                   style: Theme.of(context).textTheme.labelMedium!.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Theme.of(context).secondaryHeaderColor,
+                        color: Theme.of(context).canvasColor,
                       ),
                 ),
                 Text(
@@ -241,7 +241,7 @@ class ChainTileView extends StatelessWidget {
                 ),
 
                 leading: CircleAvatar(
-                  // backgroundColor: Theme.of(context).primaryColor,
+                  backgroundColor: Theme.of(context).primaryColor,
                   child: IconButton(
                     onPressed: () => playTheChain(context),
                     icon: getIconForChain(context, chain),

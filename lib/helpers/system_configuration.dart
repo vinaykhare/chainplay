@@ -160,7 +160,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               Text(
-                "This is the App's header with a couple of Buttons. Now press on the highlighted section over this and following screens to move to the next slide of this tutorial.",
+                "This is the App's header with a Logo and Couple of Buttons to the right. Now press on the highlighted section over this and the following screens to move to the next slide of this tutorial.",
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ],
@@ -170,7 +170,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
           "contentAlign": ContentAlign.bottom,
         },
         {
-          "title": "One of the Buttons is to Create the Chain",
+          "title": "Press here to Create a New Chain of Activities",
           "widgetToShow": ListView(
             shrinkWrap: true,
             children: [
@@ -189,7 +189,8 @@ List<Map<String, dynamic>> getTutorialItemsByType(
           "contentAlign": ContentAlign.bottom,
         },
         {
-          "title": "And another button to create a chain by uploading a file",
+          "title":
+              "And press this one to create a new chain by uploading a file",
           "widgetToShow": ListView(
             shrinkWrap: true,
             children: [
@@ -217,7 +218,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
         },
         {
           "title":
-              "This section lists all the chains present in your app. CAT App comes with few sample chains which are also listed here. We will take example of one of the sample chains to brief you more about the Chains.",
+              "This section lists all the chains present in your app. CAT App comes with few sample chains as listed here.",
           "widgetToShow": ListView(
             shrinkWrap: true,
             children: [
@@ -226,7 +227,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               Text(
-                "List of all the chains present in your app. CAT comes with few sample chains which are also listed here. ",
+                "List of all the chains present in your app. CAT comes with few sample chains as listed here. ",
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ],
@@ -234,6 +235,45 @@ List<Map<String, dynamic>> getTutorialItemsByType(
           "globalKey": KeyHelper.chainListKey,
           "focusAlign": Alignment.bottomCenter,
           "contentAlign": ContentAlign.top,
+        },
+        {
+          "title":
+              "We can have a situation where Chain was created but it is not present or listed here",
+          "widgetToShow": ListView(
+            shrinkWrap: true,
+            children: [
+              Text(
+                "All the Chains",
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              Text(
+                "Cannot find your chain here?",
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ],
+          ),
+          "globalKey": KeyHelper.chainListKey,
+          "focusAlign": Alignment.bottomCenter,
+          "contentAlign": ContentAlign.top,
+        },
+        {
+          "title": "Try refreshing the page by tapping over the app logo here.",
+          "widgetToShow": ListView(
+            shrinkWrap: true,
+            children: [
+              Text(
+                "App Icon",
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              Text(
+                "App Icon is not just a logo but a button to refresh the home page of this app. Action fetches the chains, activities and app settings from this app's local database.",
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ],
+          ),
+          "globalKey": KeyHelper.catTitle,
+          "focusAlign": Alignment.bottomCenter,
+          "contentAlign": ContentAlign.bottom,
         },
         {
           "title":

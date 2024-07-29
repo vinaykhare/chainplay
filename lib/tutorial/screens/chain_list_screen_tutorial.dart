@@ -36,7 +36,7 @@ class _ChainListScreenTutorialState extends State<ChainListScreenTutorial> {
       );
       tutorialCoach.createTutorial(context);
       chainList.speakText(
-          "This is the App's header with a couple of Buttons. Now press on the highlighted section over this and following screens to move to the next slide of this tutorial.");
+          "This is the App's header with a Logo and Couple of Buttons to the right. Now press on the highlighted section over this and the following screens to move to the next slide of this tutorial.");
       tutorialCoach.showTutorial(context);
       pageInit = false;
     }
