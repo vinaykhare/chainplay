@@ -33,6 +33,46 @@ class ChainActivityFlowCommonView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String subtitleText = "";
+    if (chainActivity.endActivityNotificationId != noValueInDB &&
+        chainActivity.endedAt != null) {
+      if (chainActivity.endedAt != null &&
+          chainActivity.endedAt!
+                  .difference(
+                    DateTime.now(),
+                  )
+                  .inSeconds >
+              0) {
+        subtitleText +=
+            "You will be notified for activity completion\n${HelperFunctions.durationToString(
+          chainActivity.endedAt!.difference(
+            DateTime.now(),
+          ),
+        )}\nfrom now.";
+      } else {
+        subtitleText +=
+            "Acitivity completed. Notification should have been received by now. Please refresh.";
+      }
+    } else {
+      if (chainActivity.endedAt != null) {
+        subtitleText += "has completed ";
+      } else {
+        subtitleText += "will complete ";
+      }
+
+      if (activities[index].isInterrupted) {
+        subtitleText += "before the scheduled duration";
+      } else {
+        subtitleText += HelperFunctions.durationToString(
+            chainActivity.activityDurationLeft ??
+                chainActivity.activityDuration);
+      }
+
+      if (chainActivity.activityDurationLeft != null) {
+        subtitleText += " after resuming";
+      }
+    }
+
     return ListTile(
       tileColor: Theme.of(context).cardColor.withOpacity(0.1),
       onTap: () async {
@@ -95,7 +135,7 @@ class ChainActivityFlowCommonView extends StatelessWidget {
         ],
       ),
       subtitle: Text(
-        "${chainActivity.endedAt != null ? 'Completed' : 'will Complete'} ${activities[index].isInterrupted ? ' before scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDurationLeft ?? chainActivity.activityDuration)}.",
+        subtitleText,
       ),
       leading: (chainActivity.endedAt != null || editActivity == null)
           ? Image.asset(assetMap['logoImage']!)

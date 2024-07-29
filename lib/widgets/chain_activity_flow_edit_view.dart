@@ -32,11 +32,12 @@ class ChainActivityFlowEditView extends StatelessWidget {
     return Column(
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             Semantics(
               label: "Delete this activity from chain.",
               child: IconButton(
+                color: Theme.of(context).colorScheme.error,
                 onPressed: () async {
                   bool? dialogResponse = await showDialog(
                     context: context,
