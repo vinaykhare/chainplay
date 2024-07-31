@@ -90,3 +90,4 @@ Add, Chain, Execute, Custom, Run, Sequence, Clock, Timer, Schedule, Activities, 
 4. Action to 'Refresh home' is added to App Icon on App Header of Home screen.
    Tutorial is updated for this.
 5. Setting page is extended to show check all the activities to delete if unused. Also added a button to show unused activities and clear them.
+6. View is changed for Chain Execution History.

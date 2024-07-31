@@ -1,5 +1,6 @@
 import 'package:chain_activities/widgets/chain_tile_view.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
+import 'package:chain_activities/widgets/chain_execution_header.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -103,9 +104,15 @@ class ChainExecutionScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             //mainAxisSize: MainAxisSize.min,
             children: [
+              const ChainExecutionHeader(
+                title: "Executed Chains",
+                textInBetween: "Count of Activities",
+                textInLeft: "Start",
+                textInRight: "End",
+              ),
               Expanded(
                 child: ListView.builder(
-                  reverse: true,
+                  // reverse: true,
                   // onReorder: (oldIndex, newIndex) =>
                   //     Provider.of<ChainList>(context, listen: false)
                   //         .rearrangeChains(oldIndex, newIndex),
@@ -118,11 +125,11 @@ class ChainExecutionScreen extends StatelessWidget {
                         .length;
                     return Column(
                       children: [
-                        if (index == executedChains.length - 1)
-                          Text(
-                            "Executed Chains",
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
+                        // if (index == executedChains.length - 1)
+                        // Text(
+                        //   "Executed Chains",
+                        //   style: Theme.of(context).textTheme.titleLarge,
+                        // ),
                         InkWell(
                           onTap: () => Navigator.of(context).pushNamed(
                             PlayChain.routename,
@@ -138,8 +145,10 @@ class ChainExecutionScreen extends StatelessWidget {
                             },
                           ),
                           child: Container(
+                            margin: const EdgeInsets.all(8.0),
                             decoration: BoxDecoration(
                                 gradient: RadialGradient(
+                              radius: 2,
                               colors: [
                                 chainExecution.notificationId == trueInDB
                                     ? Theme.of(context).colorScheme.secondary
@@ -147,14 +156,11 @@ class ChainExecutionScreen extends StatelessWidget {
                                 Theme.of(context).scaffoldBackgroundColor,
                               ],
                             )),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: StartEndTimeChainWidget(
-                                cardTitle: null,
-                                startTime: chainExecution.at,
-                                endTime: chainExecution.endedAt,
-                                textInBetween: "$numberOfUserActivites",
-                              ),
+                            child: StartEndTimeChainWidget(
+                              cardTitle: null,
+                              startTime: chainExecution.at,
+                              endTime: chainExecution.endedAt,
+                              textInBetween: "$numberOfUserActivites",
                             ),
                           ),
                         ),
@@ -163,100 +169,15 @@ class ChainExecutionScreen extends StatelessWidget {
                   },
                 ),
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.all(5),
-                    padding: const EdgeInsets.only(bottom: 5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Theme.of(context).cardColor,
-                    ),
-                    child: const ShowBannerAd(),
-                  ),
-                  if (executingChains.isEmpty)
-                    const Text(
-                      "Play Now",
-                      textAlign: TextAlign.center,
-                    ),
-                  if (executingChains.isEmpty)
-                    Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: InkWell(
-                        onTap: () async {
-                          if (chain.chainStatus == statusExecuting) {
-                            await chainList.stopChainExecution(chain);
-                          } else {
-                            NavigatorState nav = Navigator.of(context);
-                            Chain chainExecution = await Provider.of<ChainList>(
-                                    context,
-                                    listen: false)
-                                .startChainExecution(chain);
-                            //await chainList.loadActivities(chain);
-                            int runningChainActivityIndex = chainList
-                                .getRunningChainActivityIndex(chainExecution);
-                            // ChainActivity? chainActivityExecution =
-                            //     runningChainActivityIndex != -1
-                            //         ? chainExecution
-                            //             .activities[runningChainActivityIndex]
-                            //         : null;
-                            await nav
-                                .pushNamed(PlayChain.routename, arguments: {
-                              payLoadChainExecId:
-                                  chainExecution.chainExecutionId,
-                              payLoadChainName: chainExecution.title,
-                              payLoadChainActivityIndex:
-                                  runningChainActivityIndex != -1
-                                      ? runningChainActivityIndex
-                                      : 0,
-                              payLoadChainActivityCount: chainHistory.length,
-                              payLoadChainAction: playChainActionPlay,
-                            });
-                          }
-                        },
-                        child: CircleAvatar(
-                          backgroundColor: Theme.of(context).primaryColor,
-                          radius: 40,
-                          child: chain.chainStatus == statusExecuting
-                              ? const Icon(
-                                  Icons.pause,
-                                  size: 40,
-                                )
-                              : const Icon(
-                                  Icons.play_arrow,
-                                  size: 40,
-                                ),
-                        ),
-                      ),
-                    ),
-                  if (executingChains.isNotEmpty)
-                    Text(
-                      "Running Chain",
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                  if (executingChains.isNotEmpty)
-                    Container(
-                      padding: const EdgeInsets.all(5),
-                      margin: const EdgeInsets.fromLTRB(8, 5, 8, 0),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                        borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(30),
-                            topRight: Radius.circular(30)),
-                      ),
-                      child: ChainTileView(
-                        chain: chain,
-                        showHistory: false,
-                        allowFlag: false,
-                        key: Key(
-                          executingChains.first.index.toString(),
-                        ),
-                        index: executingChains.first.index,
-                      ),
-                    ),
-                ],
+              Divider(
+                color: Theme.of(context).primaryColor,
               ),
+              // PlayChainWidget(
+              //   executingChains: executingChains,
+              //   chain: chain,
+              //   chainList: chainList,
+              //   chainHistory: chainHistory,
+              // ),
               AppBar(
                 centerTitle: true,
                 title: Text(chain.title),
@@ -265,6 +186,114 @@ class ChainExecutionScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class PlayChainWidget extends StatelessWidget {
+  const PlayChainWidget({
+    super.key,
+    required this.executingChains,
+    required this.chain,
+    required this.chainList,
+    required this.chainHistory,
+  });
+
+  final List<Chain> executingChains;
+  final Chain chain;
+  final ChainList chainList;
+  final List<Chain> chainHistory;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Container(
+          margin: const EdgeInsets.all(5),
+          padding: const EdgeInsets.only(bottom: 5),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: Theme.of(context).cardColor,
+          ),
+          child: const ShowBannerAd(),
+        ),
+        if (executingChains.isEmpty)
+          const Text(
+            "Play Now",
+            textAlign: TextAlign.center,
+          ),
+        if (executingChains.isEmpty)
+          Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: InkWell(
+              onTap: () async {
+                if (chain.chainStatus == statusExecuting) {
+                  await chainList.stopChainExecution(chain);
+                } else {
+                  NavigatorState nav = Navigator.of(context);
+                  Chain chainExecution =
+                      await Provider.of<ChainList>(context, listen: false)
+                          .startChainExecution(chain);
+                  //await chainList.loadActivities(chain);
+                  int runningChainActivityIndex =
+                      chainList.getRunningChainActivityIndex(chainExecution);
+                  // ChainActivity? chainActivityExecution =
+                  //     runningChainActivityIndex != -1
+                  //         ? chainExecution
+                  //             .activities[runningChainActivityIndex]
+                  //         : null;
+                  await nav.pushNamed(PlayChain.routename, arguments: {
+                    payLoadChainExecId: chainExecution.chainExecutionId,
+                    payLoadChainName: chainExecution.title,
+                    payLoadChainActivityIndex: runningChainActivityIndex != -1
+                        ? runningChainActivityIndex
+                        : 0,
+                    payLoadChainActivityCount: chainHistory.length,
+                    payLoadChainAction: playChainActionPlay,
+                  });
+                }
+              },
+              child: CircleAvatar(
+                backgroundColor: Theme.of(context).primaryColor,
+                radius: 40,
+                child: chain.chainStatus == statusExecuting
+                    ? const Icon(
+                        Icons.pause,
+                        size: 40,
+                      )
+                    : const Icon(
+                        Icons.play_arrow,
+                        size: 40,
+                      ),
+              ),
+            ),
+          ),
+        if (executingChains.isNotEmpty)
+          Text(
+            "Running Chain",
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        if (executingChains.isNotEmpty)
+          Container(
+            padding: const EdgeInsets.all(5),
+            margin: const EdgeInsets.fromLTRB(8, 5, 8, 0),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+              borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+            ),
+            child: ChainTileView(
+              chain: chain,
+              showHistory: false,
+              allowFlag: false,
+              key: Key(
+                executingChains.first.index.toString(),
+              ),
+              index: executingChains.first.index,
+            ),
+          ),
+      ],
     );
   }
 }

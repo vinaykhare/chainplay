@@ -1,3 +1,4 @@
+import 'package:chain_activities/helpers/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -36,21 +37,12 @@ class StartEndTimeChainWidget extends StatelessWidget {
                     )
                   : null,
             ),
-            Icon(
-              Icons.circle,
-              size: 5,
-              color: Theme.of(context).disabledColor,
-            ),
             Expanded(
-              child: Divider(
-                thickness: 2,
-                color: Theme.of(context).disabledColor,
+              child: Image.asset(
+                assetMap["chainImage"]!,
+                height: 20,
+                fit: BoxFit.cover,
               ),
-            ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 20,
-              color: Theme.of(context).disabledColor,
             ),
             if (textInBetween != null)
               CircleAvatar(
@@ -64,23 +56,12 @@ class StartEndTimeChainWidget extends StatelessWidget {
                 ),
               ),
             if (textInBetween != null)
-              Icon(
-                Icons.circle,
-                size: 5,
-                color: Theme.of(context).disabledColor,
-              ),
-            if (textInBetween != null)
               Expanded(
-                child: Divider(
-                  thickness: 2,
-                  color: Theme.of(context).disabledColor,
+                child: Image.asset(
+                  assetMap["chainImage"]!,
+                  height: 20,
+                  fit: BoxFit.cover,
                 ),
-              ),
-            if (textInBetween != null)
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 20,
-                color: Theme.of(context).disabledColor,
               ),
             CircleAvatar(
               radius: 50,
