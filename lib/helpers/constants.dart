@@ -29,6 +29,8 @@ const String idToComeBackToHome =
 
 // Activity Specifications
 const String activitySpecImagePath = "imagePath";
+const String inUse = "Activities in use";
+const String notInUse = "Activities not in use";
 
 //Activity types
 const int systemStartActivityInDB = 0;

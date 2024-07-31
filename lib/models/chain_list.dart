@@ -994,12 +994,69 @@ class ChainList with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<bool> removeAllUnusedActivities(
+      List<Activity> activitiesToBeRemoved) async {
+    try {
+      for (Activity activity in activitiesToBeRemoved) {
+        List<Chain> chainsUsingThisActivity =
+            getChainsUsingThisActivity(activity);
+        if (chainsUsingThisActivity.isEmpty) {
+          await removeActivity(activity);
+        }
+      }
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Map<String, int> getCountForActivities() {
+    int inUseCount = 0, notInUseCount = 0;
+
+    for (Activity activity in activities) {
+      bool activityFound = false;
+      for (Chain chain in chains) {
+        for (ChainActivity chainActivity in chain.activities) {
+          if (chainActivity.activity.title == activity.title) {
+            activityFound = true;
+          }
+        }
+      }
+      if (activityFound) {
+        inUseCount++;
+      } else {
+        notInUseCount++;
+      }
+    }
+
+    return {
+      inUse: inUseCount,
+      notInUse: notInUseCount,
+    };
+  }
+
+  List<Chain> getChainsUsingThisActivity(Activity activity) {
+    List<Chain> chainsUsingThisActivity = [];
+
+    for (Chain chain in chains) {
+      for (ChainActivity chainActivity in chain.activities) {
+        if (chainActivity.activity.title == activity.title) {
+          chainsUsingThisActivity.add(chain);
+        }
+      }
+    }
+
+    return chainsUsingThisActivity;
+  }
+
   Future<void> removeActivity(Activity activity) async {
+    activities.removeWhere((act) => act.title == activity.title);
     DBHelper.removeData(
       "activity",
       "activityId = ?",
       [activity.activityId],
     );
+    notifyListeners();
   }
 
   Future<void> updateActivity(Activity activity) async {
@@ -1548,30 +1605,77 @@ class ChainList with ChangeNotifier {
 
   List<Chain> getChainsByFilters(
       String filter, bool showFavorites, bool showRunning) {
-    List<Chain> result = showFavorites ||
-            showRunning ||
-            (filter.isNotEmpty && filter != '')
+    List<Chain> resultWithPredefinedFilters = showFavorites || showRunning
         ? chains
             .where(
-              (element) =>
-                  (showFavorites && element.pinned == true) ||
-                  (showRunning && element.chainStatus == statusExecuting) ||
-                  (filter.isNotEmpty &&
-                      filter != '' &&
-                      (element.title
-                              .toLowerCase()
-                              .contains(filter.toString().toLowerCase()) ||
-                          element.activities.indexWhere((act) => act
-                                  .activity.title
-                                  .toLowerCase()
-                                  .contains(filter.toString().toLowerCase())) !=
-                              -1)),
+              (chain) =>
+                  (showFavorites && chain.pinned == true) ||
+                  (showRunning && chain.chainStatus == statusExecuting),
             )
             .toList()
         : chains;
 
+    List<Chain> resultWithTitleFilter = (filter.isNotEmpty && filter != '')
+        ? resultWithPredefinedFilters
+            .where(
+              (chain) =>
+                  filter.isNotEmpty &&
+                  filter != '' &&
+                  (chain.title
+                          .toLowerCase()
+                          .contains(filter.toString().toLowerCase()) ||
+                      chain.activities.indexWhere((act) => act.activity.title
+                              .toLowerCase()
+                              .contains(filter.toString().toLowerCase())) !=
+                          -1),
+            )
+            .toList()
+        : resultWithPredefinedFilters;
+    return resultWithTitleFilter;
+  }
+
+  List<Activity> getActivitiesByFilters(String filter, bool showWithImage,
+      bool showWithoutImage, bool showInUse, bool showNotInUse) {
+    List<Activity> userDefinedActivities = activities
+        .where((activity) => activity.type == waitActivityInDB)
+        .toList();
+    List<Activity> resultWithPredefinedFilters = showWithImage ||
+            showWithoutImage ||
+            showInUse ||
+            showNotInUse
+        ? userDefinedActivities
+            .where(
+              (activity) =>
+                  (showWithImage &&
+                      activity.specification != null &&
+                      activity.specification![activitySpecImagePath] != null) ||
+                  (showWithoutImage &&
+                      (activity.specification == null ||
+                          activity.specification![activitySpecImagePath] ==
+                              null ||
+                          activity.specification![activitySpecImagePath] ==
+                              "")) ||
+                  (showInUse &&
+                      getChainsUsingThisActivity(activity).isNotEmpty) ||
+                  (showNotInUse &&
+                      getChainsUsingThisActivity(activity).isEmpty),
+            )
+            .toList()
+        : userDefinedActivities;
+    List<Activity> resultWithTitleFilter = (filter.isNotEmpty && filter != '')
+        ? resultWithPredefinedFilters
+            .where(
+              (activity) =>
+                  filter.isNotEmpty &&
+                  filter != '' &&
+                  activity.title.toLowerCase().contains(
+                        filter.toString().toLowerCase(),
+                      ),
+            )
+            .toList()
+        : resultWithPredefinedFilters;
     // notifyListeners();
-    return result;
+    return resultWithTitleFilter;
   }
 
   Future<List<ChainActivity>> loadChainActivityHistory(

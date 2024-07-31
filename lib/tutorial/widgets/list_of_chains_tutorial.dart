@@ -68,7 +68,6 @@ class _ListOfChainsTutorialState extends State<ListOfChainsTutorial> {
                     showChainControlSummary
                         ? Icons.expand_more_rounded
                         : Icons.expand_less_rounded,
-                    color: Colors.black,
                   ),
                   label: Text(
                     "Summary of Chain Controls",

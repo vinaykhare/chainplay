@@ -89,3 +89,4 @@ Add, Chain, Execute, Custom, Run, Sequence, Clock, Timer, Schedule, Activities, 
 3. Target SDK Version is set to 34.
 4. Action to 'Refresh home' is added to App Icon on App Header of Home screen.
    Tutorial is updated for this.
+5. Setting page is extended to show check all the activities to delete if unused. Also added a button to show unused activities and clear them.
