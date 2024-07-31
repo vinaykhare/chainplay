@@ -81,7 +81,7 @@ class ChainExecutionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     Chain chain = Chain();
     ChainList chainList = Provider.of<ChainList>(context, listen: true);
-    List<Chain> chainHistory = [];
+    // List<Chain> chainHistory = [];
     if (ModalRoute.of(context)?.settings.arguments != null) {
       Chain chainArg = ModalRoute.of(context)?.settings.arguments as Chain;
       chain = chainList.chains.firstWhere((sch) => sch.title == chainArg.title);
@@ -92,9 +92,9 @@ class ChainExecutionScreen extends StatelessWidget {
     List<Chain> executedChains = chain.chainHistory
         .where((chain) => chain.chainStatus == statusDone)
         .toList();
-    List<Chain> executingChains = chain.chainHistory
-        .where((chain) => chain.chainStatus != statusDone)
-        .toList();
+    // List<Chain> executingChains = chain.chainHistory
+    //     .where((chain) => chain.chainStatus != statusDone)
+    //     .toList();
     return Semantics(
       label: "Chain Execution Screen",
       child: Scaffold(
