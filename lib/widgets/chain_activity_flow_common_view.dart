@@ -76,7 +76,7 @@ class ChainActivityFlowCommonView extends StatelessWidget {
     return ListTile(
       tileColor: Theme.of(context).cardColor.withOpacity(0.1),
       onTap: () async {
-        if (!chainActivity.edit) {
+        if (!chainActivity.edit && editActivity != null) {
           editActivity!(chainActivity);
         } else {
           undoEdit!(chainActivity);
