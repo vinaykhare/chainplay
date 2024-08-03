@@ -8,7 +8,7 @@ CAT allows you to Chain the Activities with Timers and Images (form local or a h
 
 These chain of activities are termed as Chains.
 CAT comes with sample chains for you to start with, and also let you to create your own Chains, or edit the existing.
-CAT provides a simple UI to play these chains interactively or in backgroud.
+CAT provides a simple UI to play these chains interactively or in background.
 You can also share and receive the chains in the form of a file (\*.json).
 
 # Long Description:
@@ -61,7 +61,7 @@ You can also share and receive the chains in the form of a file (\*.json).
         1.Trun on/off App Sound.
         2. App Theme: Dark or Colored.
 
-# Product Feautures Bullets:
+# Product Features Bullets:
 
     1. Create your own Schedule with the help of Chains of Activities (with Timers) i.e. CAT.
     2. App Comes with Sample Chains to start with.
@@ -84,7 +84,7 @@ Add, Chain, Execute, Custom, Run, Sequence, Clock, Timer, Schedule, Activities, 
 
 # Release Notes:
 
-1. In an attempt to resolve the crash detected in pre launch details, we have updated to the Latest version of all the dependencies along with latest version of Flutter, changed the jdk to version 17 and Kotlin version is changed from 1.7 to 1.9.
+1. In an attempt to resolve the crash detected in pre launch details, we have updated to the Latest version of all the dependencies along with latest version of Flutter, changed the jdk to version 17 and Kotlin version is changed from 1.7 to 1.9. Added default ndk.
 2. Stopped the usage of USE_EXACT_ALARM.
 3. Target SDK Version is set to 34.
 4. Action to 'Refresh home' is added to App Icon on App Header of Home screen.

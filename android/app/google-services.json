@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "96292374281",
+    "project_id": "chain-activities-with-timers",
+    "storage_bucket": "chain-activities-with-timers.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:96292374281:android:b379d66b29e3f3a239f5d8",
+        "android_client_info": {
+          "package_name": "com.promaxbiz.chain_activities"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrowz0eeG4nDEXbiobmuiIwsk7ouMfnyA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
