@@ -159,7 +159,7 @@ class _ViewChainState extends State<ViewChain> {
       label: "View Chain Screen",
       child: PopScope(
         canPop: false,
-        onPopInvoked: onPopOut,
+        onPopInvokedWithResult: (didPop,result) => onPopOut(didPop),
         child: Scaffold(
           body: SingleChildScrollView(
             child: SafeArea(

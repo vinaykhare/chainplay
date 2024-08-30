@@ -13,15 +13,6 @@ import java.util.*
 class MainActivity: FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "promaxbiz.com/flutter_local_notifications").setMethodCallHandler { call, result ->
-            if ("drawableToUri" == call.method) {
-                val resourceId = this@MainActivity.resources.getIdentifier(call.arguments as String, "drawable", this@MainActivity.packageName)
-                result.success(resourceToUriString(this@MainActivity.applicationContext, resourceId))
-            }
-            if ("getAlarmUri" == call.method) {
-                result.success(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM).toString())
-            }
-        }
     }
 
     private fun resourceToUriString(context: Context, resId: Int): String? {
