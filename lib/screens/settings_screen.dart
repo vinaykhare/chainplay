@@ -106,7 +106,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       label: "App Settings Screen",
       child: PopScope(
         canPop: false,
-        onPopInvoked: (didPop) async {
+        onPopInvokedWithResult: (didPop, result) async {
           if (didPop) {
             return;
           }

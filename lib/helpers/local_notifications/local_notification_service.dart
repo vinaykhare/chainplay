@@ -132,7 +132,7 @@ class LocalNotificationService {
       sound: const RawResourceAndroidNotificationSound(
         'chain_activity_alarm',
       ),
-      fullScreenIntent: true,
+      fullScreenIntent: false,
       showProgress: true,
       maxProgress: maxProgressVal,
       progress: progressVal,
