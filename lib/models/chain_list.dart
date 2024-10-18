@@ -60,7 +60,7 @@ class ChainList with ChangeNotifier {
   List<Activity> activities = [];
   List<SystemSetting> systemSettings = [];
   NotificationHelper notificationHelper = NotificationHelper();
-  Map<String, dynamic>? notificationCameAs;
+  Map<String, String?>? notificationCameAs;
   List<int> notificationIdsInDB = [];
   // Chain? notificationCameForChain;
   // String? notificaitonCameForUrl;
@@ -103,7 +103,7 @@ class ChainList with ChangeNotifier {
     await notificationHelper.initialize(systemSettings);
     await receiveIntent();
     notificationCameAs = null;
-
+    /*
     Map<String, dynamic>? checkForNotificationResponse =
         await notificationHelper.checkForNotification();
 
@@ -116,6 +116,7 @@ class ChainList with ChangeNotifier {
       }
       // await evaluateChainExecutions(chain);
     }
+    */
     configUpdated = true;
     // configUpdateStarted = false;
     notifyListeners();
@@ -1876,8 +1877,8 @@ class ChainList with ChangeNotifier {
           payLoadChainName: chain.title,
           payLoadChainExecId: chain.chainExecutionId,
           payLoadWidgetUrl: PlayChain.routename,
-          payLoadChainActivityIndex: chainActivity.index,
-          payLoadChainActivityCount: chain.activities.length,
+          payLoadChainActivityIndex: chainActivity.index.toString(),
+          payLoadChainActivityCount: chain.activities.length.toString(),
           payLoadChainAction: playChainActionPlay,
         },
       );

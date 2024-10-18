@@ -479,8 +479,8 @@ class _PlayChainState extends State<PlayChain> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title:
-                                    const Text("Chain is running in bacground"),
+                                title: const Text(
+                                    "Chain is running in background"),
                                 content: const Text(
                                     "Are you sure about force completing the current activity and go to the next one?"),
                                 actions: <Widget>[
