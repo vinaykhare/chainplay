@@ -139,28 +139,31 @@ class _HelpHeaderState extends State<HelpHeader> {
           key: ValueKey(page),
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            SizedBox(
+              height: appHeight * 0.05,
+            ),
             Column(
               children: [
                 SizedBox(
-                  height: appHeight * 0.05,
-                ),
-                headerSlideContent[page]["imageNetwork"] == ""
-                    ? Image.asset(
-                        headerSlideContent[page]["imageAsset"]!,
-                        //fit: BoxFit.cover,
-                      )
-                    : FadeInImage(
-                        imageErrorBuilder: (context, error, stackTrace) =>
-                            Image.asset(
+                  height: appHeight * 0.75,
+                  child: headerSlideContent[page]["imageNetwork"] == ""
+                      ? Image.asset(
                           headerSlideContent[page]["imageAsset"]!,
                           //fit: BoxFit.cover,
+                        )
+                      : FadeInImage(
+                          imageErrorBuilder: (context, error, stackTrace) =>
+                              Image.asset(
+                            headerSlideContent[page]["imageAsset"]!,
+                            //fit: BoxFit.cover,
+                          ),
+                          placeholder: AssetImage(
+                              headerSlideContent[page]["imageAsset"]!),
+                          image: NetworkImage(
+                              headerSlideContent[page]["imageNetwork"]!),
+                          //fit: BoxFit.fill,
                         ),
-                        placeholder:
-                            AssetImage(headerSlideContent[page]["imageAsset"]!),
-                        image: NetworkImage(
-                            headerSlideContent[page]["imageNetwork"]!),
-                        //fit: BoxFit.fill,
-                      ),
+                ),
                 ListTile(
                   title: Text(
                     headerSlideContent[page]["title"]!,

@@ -72,7 +72,7 @@ class _ListOfChainsState extends State<ListOfChains> {
             (widget.showChainControlSummary == null ||
                 widget.showChainControlSummary == true))
           const ChainTileHelp(),
-
+        const Divider(),
         // Container(
         //   width: double.infinity,
         //   margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
@@ -90,6 +90,7 @@ class _ListOfChainsState extends State<ListOfChains> {
         //     (widget.showChainControlSummary == null ||
         //         widget.showChainControlSummary == true))
         //   const Divider(),
+        // const Text("List of Chains"),
         Expanded(
           child: ReorderableListView.builder(
             //reverse: true,
@@ -115,6 +116,7 @@ class _ListOfChainsState extends State<ListOfChains> {
             },
           ),
         ),
+        const Divider(),
         if (widget.showAd == null || widget.showAd == true)
           Container(
             margin: const EdgeInsets.all(5),

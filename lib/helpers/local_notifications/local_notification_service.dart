@@ -30,7 +30,11 @@ class LocalNotificationService {
 
   Future<void> initialize() async {
     initializeTimeZones();
-    final String timeZoneName = await FlutterTimezone.getLocalTimezone();
+    String timeZoneName = await FlutterTimezone.getLocalTimezone();
+    // Temp fix due to Asia/Calcutta rename issue
+    if (timeZoneName == "Asia/Calcutta") {
+      timeZoneName = "Asia/Kolkata";
+    }
     setLocalLocation(getLocation(timeZoneName));
     //Android settings
     AndroidInitializationSettings androidInitializationSettings =

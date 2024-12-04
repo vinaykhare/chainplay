@@ -116,6 +116,7 @@ class _ListOfChainsTutorialState extends State<ListOfChainsTutorial> {
             ],
           ),
         ),
+        const Divider(),
         if (widget.showAd == null || widget.showAd == true)
           Container(
             margin: const EdgeInsets.all(5),
