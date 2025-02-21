@@ -34,7 +34,7 @@ class ChainActivityFlowReadView extends StatelessWidget {
     return (chainActivity.at != null)
         ? Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).cardColor.withOpacity(0.1),
+              color: Theme.of(context).cardColor.withValues(alpha: 0.1),
             ),
             padding: const EdgeInsets.all(8.0),
             child: StartEndTimeChainWidget(

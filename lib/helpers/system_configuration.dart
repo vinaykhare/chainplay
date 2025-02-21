@@ -128,10 +128,10 @@ List<Map<String, String>> headerSlideContent = [
   {
     "imageAsset": assetMap["logoImage"]!,
     "imageNetwork": "",
-    "title": "C A T",
-    "subtitle": "Chain the Activities with Timers",
+    "title": "Chain & Play",
+    "subtitle": "Chain the Activities and Play it",
     "speech":
-        "Thanks for choosing CAT. CAT is a tool to Chain your activities and Play it. Lets undestand the major functions of CAT App with a quick tutorial. You have the option to skip this tutorial by pressing the Close button.",
+        "Thanks for choosing Chain and Play. Chain and Play is a tool to Chain your activities and Play it. Lets undestand the major functions of Chain and Play App with a quick tutorial. You have the option to skip this tutorial by pressing the Close button.",
   },
   {
     "imageAsset": assetMap["chains"]!,
@@ -139,7 +139,7 @@ List<Map<String, String>> headerSlideContent = [
     "title": "CHAINS",
     "subtitle": "Runs in Background or Foreground",
     "speech":
-        "Cat has multiple features to streamline your activities with chains.",
+        "Chain and Play has multiple features to streamline your activities with chains.",
   },
 ];
 
@@ -151,12 +151,12 @@ List<Map<String, dynamic>> getTutorialItemsByType(
     case showHelpOnNextBootKey:
       tutorialItemType = [
         {
-          "title": "CAT Header",
+          "title": "Chain and Play Header",
           "widgetToShow": ListView(
             shrinkWrap: true,
             children: [
               Text(
-                "CAT Header",
+                "Chain and Play Header",
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               Text(
@@ -165,7 +165,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
               ),
             ],
           ),
-          "globalKey": KeyHelper.homeCatKey,
+          "globalKey": KeyHelper.homeChainAndPlayKey,
           "focusAlign": Alignment.bottomCenter,
           "contentAlign": ContentAlign.bottom,
         },
@@ -218,7 +218,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
         },
         {
           "title":
-              "This section lists all the chains present in your app. CAT App comes with few sample chains as listed here.",
+              "This section lists all the chains present in your app. Chain and Play App comes with few sample chains as listed here.",
           "widgetToShow": ListView(
             shrinkWrap: true,
             children: [
@@ -227,7 +227,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               Text(
-                "List of all the chains present in your app. CAT comes with few sample chains as listed here. ",
+                "List of all the chains present in your app. Chain and Play comes with few sample chains as listed here. ",
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ],
@@ -271,7 +271,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
               ),
             ],
           ),
-          "globalKey": KeyHelper.catTitle,
+          "globalKey": KeyHelper.chainAndPlayTitle,
           "focusAlign": Alignment.bottomCenter,
           "contentAlign": ContentAlign.bottom,
         },
@@ -297,7 +297,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
         },
         {
           "title":
-              "Bottom Bar of the App has a drawer at the left and a Search Text Box at the right. Pressing the App Drawer will open a Side Menu bar with all options like What is CAT which will Run this tutorial again, App Settings where you can switch to Dark Theme etcitra.",
+              "Bottom Bar of the App has a drawer at the left and a Search Text Box at the right. Pressing the App Drawer will open a Side Menu bar with all options like What is Chain and Play which will Run this tutorial again, App Settings where you can switch to Dark Theme etcitra.",
           "widgetToShow": ListView(
             shrinkWrap: true,
             children: [
@@ -310,7 +310,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               Text(
-                "Pressing the App Drawer will open a Side Menu bar with all options like What is CAT which will Run this tutorial again, App Settings where you can switch to Dark Theme etc.",
+                "Pressing the App Drawer will open a Side Menu bar with all options like What is Chain and Play which will Run this tutorial again, App Settings where you can switch to Dark Theme etc.",
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               Image.asset(

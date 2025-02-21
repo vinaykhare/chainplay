@@ -40,7 +40,7 @@ class ChainActivityFlowView extends StatelessWidget {
             color: chainActivity.endedAt != null
                 ? Theme.of(context).textSelectionTheme.selectionColor
                 : chainActivity.edit
-                    ? Theme.of(context).cardColor.withOpacity(0.5)
+                    ? Theme.of(context).cardColor.withValues(alpha: 0.5)
                     : Theme.of(context).cardColor,
             child: Column(
               children: [

@@ -33,7 +33,7 @@ class AppDrawer extends StatelessWidget {
               },
               leading: Image.asset(assetMap["logoImage"]!),
               title: Text(
-                "C A T",
+                "Chain & Play",
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -43,7 +43,7 @@ class AppDrawer extends StatelessWidget {
                 // ),
               ),
               subtitle: Text(
-                "CHAIN THE ACTIVITIES \nWITH TIMERS",
+                "CHAIN THE ACTIVITIES \nAND PLAY IT",
                 style: Theme.of(context).textTheme.titleSmall,
               ),
             ),
@@ -67,7 +67,7 @@ class AppDrawer extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.help),
                 title: Text(
-                  'What is CAT?',
+                  'What is Chain & Play?',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 onTap: () {
@@ -130,7 +130,7 @@ class AppDrawer extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 subtitle: Text(
-                  "shared or downloaded from CAT",
+                  "shared or downloaded from Chain & Play",
                   style: Theme.of(context).textTheme.labelSmall,
                 ),
                 onTap: () async {

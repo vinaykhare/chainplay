@@ -11,7 +11,7 @@ class ScrollButton extends StatelessWidget {
       style: Theme.of(context).elevatedButtonTheme.style!.copyWith(
             backgroundColor: WidgetStateProperty.resolveWith<Color>(
               (states) =>
-                  Theme.of(context).secondaryHeaderColor.withOpacity(0.1),
+                  Theme.of(context).secondaryHeaderColor.withValues(alpha: 0.1),
             ),
           ),
       onPressed: () {

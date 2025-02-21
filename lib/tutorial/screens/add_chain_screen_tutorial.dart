@@ -78,7 +78,7 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
     final durationInputForm = Form(
       child: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor.withOpacity(0.3),
+          color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
         ),
         child: Column(
           key: KeyHelper.addChainAddActivitySpecificationBarKey,

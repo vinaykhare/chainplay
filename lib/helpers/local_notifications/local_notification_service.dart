@@ -128,10 +128,10 @@ class LocalNotificationService {
         AndroidNotificationDetails(
       "CAT_TEST_CHANNEL_2",
       "CAT_TEST_CHANNEL_N2",
-      channelDescription: 'CAT Channel',
+      channelDescription: 'Chain & Play Channel',
       importance: Importance.max,
       priority: Priority.high,
-      ticker: 'CAT',
+      ticker: 'Chain & Play',
       playSound: true,
       sound: const RawResourceAndroidNotificationSound(
         'chain_activity_alarm',

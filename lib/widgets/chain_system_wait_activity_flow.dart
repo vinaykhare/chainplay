@@ -137,7 +137,7 @@ class ChainSystemWaitActivityFlow extends StatelessWidget {
                               color: activities[index].edit
                                   ? Theme.of(context)
                                       .primaryColor
-                                      .withOpacity(0.5)
+                                      .withValues(alpha: 0.5)
                                   : Theme.of(context).primaryColor,
                               borderRadius: const BorderRadius.vertical(
                                 top: Radius.circular(30),

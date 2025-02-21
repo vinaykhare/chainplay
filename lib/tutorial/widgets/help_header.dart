@@ -198,7 +198,7 @@ class _HelpHeaderState extends State<HelpHeader> {
                           decrementPage();
                           // resetTimer();
                         }),
-                        child: Text(page > 0 ? "Previous" : "CAT Home"),
+                        child: Text(page > 0 ? "Previous" : "Home"),
                       ),
                     ],
                   ),
@@ -260,7 +260,7 @@ class _HelpHeaderState extends State<HelpHeader> {
 
             // Container(
             //   decoration: BoxDecoration(
-            //     color: Theme.of(context).scaffoldBackgroundColor.withOpacity(
+            //     color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha:
             //           0.3,
             //         ),
             //     borderRadius: const BorderRadius.all(

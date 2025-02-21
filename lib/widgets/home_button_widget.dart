@@ -8,13 +8,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class HomeButtonWidget extends StatelessWidget {
-  final String buttonText, chainListFunction;
+  final String buttonText, chainListFunction, buttonSubText;
   final Widget logo;
   const HomeButtonWidget({
     super.key,
     required this.buttonText,
     required this.chainListFunction,
     required this.logo,
+    required this.buttonSubText,
   });
 
   @override
@@ -23,11 +24,7 @@ class HomeButtonWidget extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.all(5),
       padding: const EdgeInsets.only(bottom: 5),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: Theme.of(context).cardColor.withOpacity(0.7),
-      ),
-      child: TextButton(
+      child: ElevatedButton(
         onPressed: () async {
           switch (chainListFunction) {
             case "loadSampleChains":
@@ -69,25 +66,36 @@ class HomeButtonWidget extends StatelessWidget {
         child: SizedBox(
           width: double.infinity,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(5, 5, 0, 5),
+                padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
                 child: logo,
               ),
-              Text(
-                buttonText,
-                //textAlign: TextAlign.left,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).unselectedWidgetColor,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    buttonText,
+                    //textAlign: TextAlign.left,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).unselectedWidgetColor,
+                    ),
+                  ),
+                  Text(
+                    buttonSubText,
+                    //textAlign: TextAlign.left,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).unselectedWidgetColor,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(
-                width: 20,
-              )
             ],
           ),
         ),

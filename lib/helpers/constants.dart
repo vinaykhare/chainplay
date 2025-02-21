@@ -11,7 +11,7 @@ const String sampleMedicineRoutineChainTitle = "Sample Medicine Routine Chain";
 // const String idToShowHideAppDrawer =
 //     "You can hide it or keep it, just by clicking this expand shrink button";
 const String idToLoadSampleChainForTutorial =
-    "If both the filters are selected then CAT will display both active and favorite chains. For example, if one chain is Favorite but not active and other chain is active but not favorite, then selecting both filters will disply both the chains.";
+    "If both the filters are selected then app will display both active and favorite chains. For example, if one chain is Favorite but not active and other chain is active but not favorite, then selecting both filters will disply both the chains.";
 const String idToStartViewChain =
     "Now Lets take this Sample Workout Chain as an example to understand a Chain and its features";
 const String idToStartAddChain =
@@ -57,8 +57,8 @@ const int setFailedDueToAppPermission = 2;
 //Settings
 const String appSoundSettingKey = "App Sound";
 const String darkThemeSettingKey = "DARK THEME";
-const String showHelpOnNextBootKey = "Need CAT Introduction?";
-const String catClockModeKey = "Cat Clock Mode";
+const String showHelpOnNextBootKey = "Need Chain & Play Introduction?";
+const String catClockModeKey = "Chain & Play Clock Mode";
 const String catClockModeValue = "HH:MM:SS,HH:MM,AM/PM";
 const String trueSettingValue = "TRUE";
 const String falseSettingValue = "FALSE";
@@ -102,9 +102,9 @@ const Map<String, String> assetMap = {
   'chainImage': 'assets/AppIcons/chain.png',
   'verticalChainImage': 'assets/AppIcons/vertical_chain.png',
   'beepAudio': 'assets/Sounds/chain_activity_beep.mp3',
-  'chains': 'assets/WhatIsCAT/chains.jpeg',
-  'app_drawer': 'assets/WhatIsCAT/app_drawer.jpeg',
-  'chain_file_view': 'assets/WhatIsCAT/chain_file_view.jpeg',
+  'chains': 'assets/WhatIsChainAndPlay/chains.jpeg',
+  'app_drawer': 'assets/WhatIsChainAndPlay/app_drawer.jpeg',
+  'chain_file_view': 'assets/WhatIsChainAndPlay/chain_file_view.jpeg',
   'sample_diet_routine_chain':
       'assets/SampleChains/Sample_Diet_Routine_Chain.json',
   'sample_medicine_routine_chain':

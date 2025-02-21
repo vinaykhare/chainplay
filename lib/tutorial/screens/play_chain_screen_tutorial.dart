@@ -98,7 +98,7 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
       scms.showSnackBar(
         SnackBar(
           content: const Text(
-            "CAT do not have permission to send Notification.",
+            "Chain & Play do not have permission to send Notification.",
           ),
           action: SnackBarAction(
             label: 'OK',
@@ -219,8 +219,9 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
                             horizontal: 10,
                           ),
                           decoration: BoxDecoration(
-                            color:
-                                Theme.of(context).primaryColor.withOpacity(0.3),
+                            color: Theme.of(context)
+                                .primaryColor
+                                .withValues(alpha: 0.3),
                             borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(
                                 30,

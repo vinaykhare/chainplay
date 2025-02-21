@@ -38,7 +38,7 @@ class ChainActivities extends StatelessWidget {
         ? false
         : chainList.systemSettings[themeIndex].value == trueSettingValue;
     return MaterialApp(
-      title: 'CAT',
+      title: 'Chain & Play',
       builder: (context, widget) {
         Widget error = const Scaffold(body: Center(child: MyErrorWidget()));
         ErrorWidget.builder = (errorDetails) => error;
@@ -65,7 +65,6 @@ class ChainActivities extends StatelessWidget {
                 primary: PaletteDark.lightGrey.shade700,
                 onPrimary: Colors.amber,
               ),
-              dialogBackgroundColor: PaletteDark.lightGrey,
               elevatedButtonTheme: ElevatedButtonThemeData(
                 style: ButtonStyle(
                   shape: WidgetStateProperty.all<RoundedRectangleBorder>(
@@ -118,7 +117,7 @@ class ChainActivities extends StatelessWidget {
                 fillColor: PaletteDark.lightGrey.shade700,
               ),
               textSelectionTheme: TextSelectionThemeData(
-                selectionColor: Colors.grey.withOpacity(0.5),
+                selectionColor: Colors.grey.withValues(alpha: 0.5),
                 cursorColor: Colors.amber,
                 selectionHandleColor: Colors.grey,
               ),
@@ -172,19 +171,20 @@ class ChainActivities extends StatelessWidget {
                   color: Colors.amber,
                 ),
               ),
+              dialogTheme:
+                  DialogThemeData(backgroundColor: PaletteDark.lightGrey),
             )
           : ThemeData(
               // useMaterial3: false,
               primarySwatch: PaletteLigthAmber.ligthAmber,
-              scaffoldBackgroundColor: PaletteLigthAmber.ligthAmber.shade100,
-              cardColor: Colors.lightGreen,
-              canvasColor: PaletteLigthAmber.ligthAmber,
+              scaffoldBackgroundColor: Colors.white,
+              cardColor: PaletteLigthAmber.ligthAmber.shade300,
+              canvasColor: PaletteLigthAmber.ligthAmber.shade100,
               colorScheme: ColorScheme.light(
-                surface: Colors.lightGreen,
-                primary: PaletteLigthAmber.ligthAmber.shade300,
+                surface: PaletteLigthAmber.ligthAmber,
+                primary: PaletteLigthAmber.ligthAmber.shade100,
                 onPrimary: Colors.black,
               ),
-              dialogBackgroundColor: Colors.lightGreen,
               elevatedButtonTheme: ElevatedButtonThemeData(
                 style: ButtonStyle(
                   shape: WidgetStateProperty.all<RoundedRectangleBorder>(
@@ -193,53 +193,72 @@ class ChainActivities extends StatelessWidget {
                     ),
                   ),
                   backgroundColor: WidgetStateProperty.resolveWith<Color>(
-                    (states) => PaletteLigthAmber.ligthAmber,
-                  ),
+                      (states) => Colors.white),
                   foregroundColor: WidgetStateProperty.resolveWith<Color>(
                     (states) => Colors.black,
                   ),
                   textStyle: WidgetStateProperty.resolveWith(
                     (states) => Theme.of(context).textTheme.labelLarge,
                   ),
+                  iconColor: WidgetStateProperty.resolveWith<Color>(
+                    (states) => Colors.black,
+                  ),
                 ),
               ),
+              textButtonTheme: TextButtonThemeData(
+                style: ButtonStyle(
+                  backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                      (states) => PaletteLigthAmber.ligthAmber.shade100),
+                  foregroundColor: WidgetStateProperty.resolveWith<Color>(
+                    (states) => Colors.black,
+                  ),
+                  textStyle: WidgetStateProperty.resolveWith(
+                    (states) => Theme.of(context).textTheme.labelLarge,
+                  ),
+                  iconColor: WidgetStateProperty.resolveWith<Color>(
+                    (states) => Colors.black,
+                  ),
+                ),
+              ),
+
               listTileTheme: ListTileThemeData(
-                tileColor: PaletteLigthAmber.ligthAmber,
+                tileColor: Colors.white,
               ),
               switchTheme: SwitchThemeData(
                 thumbColor: WidgetStateProperty.resolveWith<Color>(
                   (states) {
                     if (states.contains(WidgetState.selected)) {
-                      return PaletteLigthAmber.ligthAmber;
+                      return Colors.white;
                     } else {
-                      return Colors.lightGreen;
+                      return PaletteLigthAmber.ligthAmber;
                     }
                   },
                 ),
                 trackColor: WidgetStateProperty.resolveWith<Color>((states) {
                   if (states.contains(WidgetState.selected)) {
-                    return Colors.lightGreen;
-                  } else {
                     return PaletteLigthAmber.ligthAmber;
+                  } else {
+                    return Colors.white;
                   }
                 }),
               ),
+
               drawerTheme: DrawerThemeData(
-                backgroundColor: PaletteLigthAmber.ligthAmber,
+                backgroundColor: Colors.white,
               ),
               dividerTheme: DividerThemeData(
                 color: PaletteLigthAmber.ligthAmber.shade200,
               ),
               appBarTheme: AppBarTheme(
-                backgroundColor: PaletteLigthAmber.ligthAmber,
+                backgroundColor: Colors.white,
               ),
               inputDecorationTheme: InputDecorationTheme(
                 fillColor: PaletteLigthAmber.ligthAmber.shade200,
               ),
               textSelectionTheme: TextSelectionThemeData(
-                selectionColor: Colors.lightGreen.withOpacity(0.5),
+                selectionColor: PaletteLigthAmber.ligthAmber.shade400,
                 cursorColor: Colors.black,
-                selectionHandleColor: Colors.lightGreen,
+                selectionHandleColor: PaletteLigthAmber.ligthAmber,
               ),
               snackBarTheme: const SnackBarThemeData(
                 actionTextColor: Colors.white,
@@ -290,6 +309,9 @@ class ChainActivities extends StatelessWidget {
                 labelSmall: TextStyle(
                   color: Colors.black,
                 ),
+              ),
+              dialogTheme: DialogThemeData(
+                backgroundColor: Colors.white,
               ),
             ),
       home: FutureBuilder(

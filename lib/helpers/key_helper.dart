@@ -4,8 +4,8 @@ class KeyHelper {
   static GlobalKey<NavigatorState>? navigatorKey =
       GlobalKey<NavigatorState>(debugLabel: "Chain_Activities_Debug_NavState");
 
-  static GlobalKey homeCatKey = GlobalKey();
-  static GlobalKey catTitle = GlobalKey();
+  static GlobalKey homeChainAndPlayKey = GlobalKey();
+  static GlobalKey chainAndPlayTitle = GlobalKey();
 
   static GlobalKey chainListKey = GlobalKey();
   static GlobalKey sampleWorkoutChainListItemKey = GlobalKey();

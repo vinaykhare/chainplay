@@ -2,7 +2,6 @@ import 'package:chain_activities/widgets/list_of_chains.dart';
 import 'package:flutter/material.dart';
 //import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
-import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
 //import 'package:chain_activities/widgets/app_drawer.dart';
 
@@ -16,7 +15,7 @@ class SearchChainScreen extends StatefulWidget {
 }
 
 class _SearchChainScreenState extends State<SearchChainScreen> {
-  List<Chain> displayChains = [];
+  // List<Chain> displayChains = [];
   late ChainList chainList;
   bool showFavorites = false, showRunning = false;
   String? textFilter;
@@ -29,8 +28,8 @@ class _SearchChainScreenState extends State<SearchChainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    displayChains = chainList.getChainsByFilters(
-        textFilter ?? '', showFavorites, showRunning);
+    // displayChains = chainList.getChainsByFilters(
+    //     textFilter ?? '', showFavorites, showRunning);
 
     return Semantics(
       label: "Search Chains Screen",
@@ -53,9 +52,12 @@ class _SearchChainScreenState extends State<SearchChainScreen> {
                     showAd: false,
                     showChainControlSummary: false,
                     showChainInReverse: true,
+                    showFavorites: showFavorites,
+                    showRunning: showRunning,
                   ),
                 ),
                 AppBar(
+                  backgroundColor: Theme.of(context).primaryColor,
                   title: TextField(
                     autofocus: true,
                     textInputAction: TextInputAction.search,
@@ -73,9 +75,24 @@ class _SearchChainScreenState extends State<SearchChainScreen> {
                         borderSide: BorderSide.none,
                       ),
                       filled: true,
-                      fillColor: Theme.of(context).primaryColor,
+                      fillColor: Theme.of(context).scaffoldBackgroundColor,
                     ),
                   ),
+                  actions: [
+                    IconButton(
+                      onPressed: () async {
+                        setState(() {
+                          showRunning = !showRunning;
+                        });
+                      },
+                      icon: Icon(
+                        showRunning
+                            ? Icons.run_circle_rounded
+                            : Icons.run_circle_outlined,
+                        //color: Theme.of(context).primaryColorDark,
+                      ),
+                    ),
+                  ],
                 )
               ],
             ),

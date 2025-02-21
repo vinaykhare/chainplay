@@ -127,7 +127,7 @@ class ChainTileView extends StatelessWidget {
                   "with",
                   style: Theme.of(context).textTheme.labelMedium!.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Theme.of(context).canvasColor,
+                        color: Theme.of(context).scaffoldBackgroundColor,
                       ),
                 ),
                 Text(
@@ -150,7 +150,7 @@ class ChainTileView extends StatelessWidget {
                   "Last Updated",
                   style: Theme.of(context).textTheme.labelMedium!.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Theme.of(context).canvasColor,
+                        color: Theme.of(context).scaffoldBackgroundColor,
                       ),
                 ),
                 Text(
@@ -225,7 +225,7 @@ class ChainTileView extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             color: chain.at != null
-                ? Theme.of(context).cardColor.withOpacity(0.7)
+                ? Theme.of(context).cardColor.withValues(alpha: 0.7)
                 : Theme.of(context).cardColor,
           ),
           child: Column(

@@ -372,8 +372,9 @@ class _PlayChainState extends State<PlayChain> {
                           horizontal: 10,
                         ),
                         decoration: BoxDecoration(
-                          color:
-                              Theme.of(context).primaryColor.withOpacity(0.3),
+                          color: Theme.of(context)
+                              .primaryColor
+                              .withValues(alpha: 0.3),
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(
                               30,

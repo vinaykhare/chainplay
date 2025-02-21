@@ -2,7 +2,7 @@ name: chain_activities
 description: Flutter project to Chain the Activites with Timers.
 
 publish_to: "play.google.com"
-version: 1.0.0+14
+version: 1.0.0+15
 
 environment:
   sdk: ">=3.3.3 <4.0.0"
@@ -64,6 +64,6 @@ flutter:
     - assets/SampleChains/Sample_Diet_Routine_Chain.json
     - assets/SampleChains/Sample_Medicine_Routine_Chain.json
     - assets/SampleChains/Sample_Workout_Chain.json
-    - assets/WhatIsCAT/chains.jpeg
-    - assets/WhatIsCAT/app_drawer.jpeg
-    - assets/WhatIsCAT/chain_file_view.jpeg
+    - assets/WhatIsChainAndPlay/chains.jpeg
+    - assets/WhatIsChainAndPlay/app_drawer.jpeg
+    - assets/WhatIsChainAndPlay/chain_file_view.jpeg

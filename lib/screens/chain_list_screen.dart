@@ -20,6 +20,7 @@ class ChainListScreen extends StatefulWidget {
 
 class _ChainListScreenState extends State<ChainListScreen> {
   late ChainList chainList;
+  bool showFavorites = false, showRunning = false;
 
   // late ChainList chainList;
   @override
@@ -28,6 +29,7 @@ class _ChainListScreenState extends State<ChainListScreen> {
     List<Chain> chains = chainList.chains;
 
     final appBarWidget = AppBar(
+      backgroundColor: Theme.of(context).primaryColor,
       centerTitle: true,
       title: TextField(
         keyboardType: TextInputType.none,
@@ -47,9 +49,21 @@ class _ChainListScreenState extends State<ChainListScreen> {
             Icons.search,
             color: Theme.of(context).iconTheme.color,
           ),
-          //fillColor: Theme.of(context).primaryColor.withGreen(200),
+          fillColor: Theme.of(context).scaffoldBackgroundColor,
         ),
       ),
+      actions: [
+        IconButton(
+          onPressed: () async {
+            setState(() {
+              showRunning = !showRunning;
+            });
+          },
+          icon: Icon(
+            showRunning ? Icons.run_circle_rounded : Icons.run_circle_outlined,
+          ),
+        ),
+      ],
     );
     // double appHeight =
     //     MediaQuery.of(context).size.height - appBarWidget.preferredSize.height;
@@ -80,7 +94,16 @@ class _ChainListScreenState extends State<ChainListScreen> {
                     child: Column(
                       children: [
                         (chains.isNotEmpty)
-                            ? const Expanded(child: ListOfChains())
+                            ? Expanded(
+                                child: ListOfChains(
+                                  textFilter: null,
+                                  showAd: true,
+                                  showChainControlSummary: true,
+                                  showChainInReverse: false,
+                                  showFavorites: showFavorites,
+                                  showRunning: showRunning,
+                                ),
+                              )
                             : const Expanded(child: NoChainsView()),
                       ],
                     ),

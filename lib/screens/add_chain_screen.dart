@@ -49,7 +49,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
       chainNameOnPageLoad = "";
 
   bool showSaveAndExit = false,
-      addingDurationToActivity = true,
+      addingDurationToActivity = false,
       updatingSystemWaitActivityInDB = false,
       // scrollAtTop = false,
       pageInit = true;
@@ -339,11 +339,16 @@ class _AddChainScreenState extends State<AddChainScreen> {
 
     addActivityController.clear();
     activityImageController.clear();
+
+    durationHourController.clear();
+    durationMinuteController.clear();
+    durationSecondController.clear();
+
     setState(() {
       activityDurationHour = 0;
       activityDurationMinute = 0;
       activityDurationSecond = 0;
-      //addingDurationToActivity = false;
+      addingDurationToActivity = false;
     });
   }
 
@@ -381,8 +386,13 @@ class _AddChainScreenState extends State<AddChainScreen> {
     FocusScopeNode focusScope = FocusScope.of(context);
     addActivityController.clear();
     activityImageController.clear();
+    durationHourController.clear();
+    durationMinuteController.clear();
+    durationSecondController.clear();
+
     chainActivityInEditMode = chainActivity;
     chainActivityInEditMode!.edit = false;
+    addingDurationToActivity = false;
 
     ChainList chainList = Provider.of<ChainList>(context, listen: false);
 
@@ -495,14 +505,14 @@ class _AddChainScreenState extends State<AddChainScreen> {
       key: durationFormKey,
       child: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor.withOpacity(0.3),
+          color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
         ),
         child: Column(
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
               child: Text(
-                "Chain Activity Specifications",
+                "Specifications of Activity",
                 style: Theme.of(context).textTheme.titleSmall,
                 //textAlign: TextAlign.left,
               ),

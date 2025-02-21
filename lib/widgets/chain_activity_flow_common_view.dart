@@ -74,7 +74,7 @@ class ChainActivityFlowCommonView extends StatelessWidget {
     }
 
     return ListTile(
-      tileColor: Theme.of(context).cardColor.withOpacity(0.1),
+      tileColor: Theme.of(context).cardColor.withValues(alpha: 0.1),
       onTap: () async {
         if (!chainActivity.edit && editActivity != null) {
           editActivity!(chainActivity);
@@ -82,67 +82,52 @@ class ChainActivityFlowCommonView extends StatelessWidget {
           undoEdit!(chainActivity);
         }
       },
-      title: Row(
-        children: [
-          Expanded(
-            child: Text(
-              chainActivity.activity.title,
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-          ),
-          Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(50),
-              child: Container(
-                height: 100,
-                margin: const EdgeInsets.all(5),
-                child: chainActivity.activity.specification != null &&
-                        chainActivity.activity
-                                .specification![activitySpecImagePath] !=
-                            null &&
-                        chainActivity.activity
-                                .specification![activitySpecImagePath] !=
-                            ""
-                    ? chainActivity
-                            .activity.specification![activitySpecImagePath]
-                            .toString()
-                            .startsWith("http")
-                        ? FadeInImage.assetNetwork(
-                            placeholder: assetMap["logoImage"]!,
-                            image: chainActivity
-                                .activity.specification![activitySpecImagePath],
-                            fit: BoxFit.cover,
-                            imageErrorBuilder: (context, error, stackTrace) =>
-                                Image.asset(
-                              assetMap['logoImage']!,
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                        : Image.file(
-                            File(
-                              chainActivity.activity
-                                  .specification![activitySpecImagePath],
-                            ),
-                            fit: BoxFit.cover,
-                          )
-                    : Image.asset(
-                        assetMap['logoImage']!,
-                        fit: BoxFit.cover,
-                      ),
-              ),
-            ),
-          ),
-        ],
+      title: Text(
+        chainActivity.activity.title,
+        style: Theme.of(context).textTheme.headlineSmall,
       ),
       subtitle: Text(
         subtitleText,
       ),
-      leading: (chainActivity.endedAt != null || editActivity == null)
-          ? Image.asset(assetMap['logoImage']!)
-          : ReorderableDragStartListener(
-              index: index,
-              child: const Icon(Icons.drag_handle),
-            ),
+      leading: ClipRRect(
+        borderRadius: BorderRadius.circular(50),
+        child: Container(
+          height: 100,
+          margin: const EdgeInsets.all(5),
+          child: chainActivity.activity.specification != null &&
+                  chainActivity
+                          .activity.specification![activitySpecImagePath] !=
+                      null &&
+                  chainActivity
+                          .activity.specification![activitySpecImagePath] !=
+                      ""
+              ? chainActivity.activity.specification![activitySpecImagePath]
+                      .toString()
+                      .startsWith("http")
+                  ? FadeInImage.assetNetwork(
+                      placeholder: assetMap["logoImage"]!,
+                      image: chainActivity
+                          .activity.specification![activitySpecImagePath],
+                      fit: BoxFit.cover,
+                      imageErrorBuilder: (context, error, stackTrace) =>
+                          Image.asset(
+                        assetMap['logoImage']!,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : Image.file(
+                      File(
+                        chainActivity
+                            .activity.specification![activitySpecImagePath],
+                      ),
+                      fit: BoxFit.cover,
+                    )
+              : Image.asset(
+                  assetMap['logoImage']!,
+                  fit: BoxFit.cover,
+                ),
+        ),
+      ),
 
       // leading: Checkbox(
       //   key: ValueKey(

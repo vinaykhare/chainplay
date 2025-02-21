@@ -16,23 +16,23 @@ class ChainListHeaderTutorial extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      key: KeyHelper.homeCatKey,
+      key: KeyHelper.homeChainAndPlayKey,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
           child: ListTile(
             leading: Image.asset(
               assetMap["logoImage"]!,
-              key: KeyHelper.catTitle,
+              key: KeyHelper.chainAndPlayTitle,
             ),
             title: const Text(
-              "C A T",
+              "Chain & Play",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
               ),
             ),
             subtitle: const Text(
-              "CHAIN THE ACTIVITIES \nWITH TIMERS",
+              "CHAIN THE ACTIVITIES \nAND PLAY IT",
             ),
           ),
         ),
