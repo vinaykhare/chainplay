@@ -64,6 +64,5 @@ flutter:
     - assets/SampleChains/Sample_Diet_Routine_Chain.json
     - assets/SampleChains/Sample_Medicine_Routine_Chain.json
     - assets/SampleChains/Sample_Workout_Chain.json
-    - assets/WhatIsChainAndPlay/chains.jpeg
     - assets/WhatIsChainAndPlay/app_drawer.jpeg
     - assets/WhatIsChainAndPlay/chain_file_view.jpeg

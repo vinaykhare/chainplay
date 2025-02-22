@@ -87,8 +87,8 @@ class _SearchChainScreenState extends State<SearchChainScreen> {
                       },
                       icon: Icon(
                         showRunning
-                            ? Icons.run_circle_rounded
-                            : Icons.run_circle_outlined,
+                            ? Icons.view_timeline
+                            : Icons.view_timeline_outlined,
                         //color: Theme.of(context).primaryColorDark,
                       ),
                     ),

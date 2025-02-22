@@ -139,9 +139,9 @@ class _HelpHeaderState extends State<HelpHeader> {
           key: ValueKey(page),
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            SizedBox(
-              height: appHeight * 0.05,
-            ),
+            // SizedBox(
+            //   height: appHeight * 0.05,
+            // ),
             Column(
               children: [
                 SizedBox(
@@ -182,25 +182,21 @@ class _HelpHeaderState extends State<HelpHeader> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      IconButton(
-                        onPressed: () => setState(() {
-                          decrementPage();
-                        }),
-                        icon: const Icon(
-                          Icons.skip_previous,
+                  InkWell(
+                    onTap: () => setState(() {
+                      decrementPage();
+                    }),
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Icon(
+                            page > 0 ? Icons.skip_previous : Icons.home,
+                          ),
                         ),
-                      ),
-                      TextButton(
-                        onPressed: () => setState(() {
-                          decrementPage();
-                          // resetTimer();
-                        }),
-                        child: Text(page > 0 ? "Previous" : "Home"),
-                      ),
-                    ],
+                        Text(page > 0 ? "Previous" : "Skip & Go Home"),
+                      ],
+                    ),
                   ),
                   IconButton(
                     onPressed: () => setState(() {
@@ -214,26 +210,39 @@ class _HelpHeaderState extends State<HelpHeader> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      TextButton(
-                        onPressed: () => setState(() {
+                      // TextButton(
+                      //   onPressed: () => setState(() {
+                      //     incrementPage();
+                      //     // resetTimer();
+                      //   }),
+                      //   child: const Text(
+                      //     // page < (headerSlideContent.length - 1)
+                      //     //     ? "Next"
+                      //     //     : "Done",
+                      //     "Next",
+                      //     textAlign: TextAlign.right,
+                      //   ),
+                      // ),
+                      InkWell(
+                        onTap: () => setState(() {
                           incrementPage();
                           // resetTimer();
                         }),
-                        child: const Text(
-                          // page < (headerSlideContent.length - 1)
-                          //     ? "Next"
-                          //     : "Done",
-                          "Next",
-                          textAlign: TextAlign.right,
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () => setState(() {
-                          incrementPage();
-                          // resetTimer();
-                        }),
-                        icon: const Icon(
-                          Icons.skip_next,
+                        child: Row(
+                          children: [
+                            Text(page == (headerSlideContent.length - 1)
+                                ? "Start Tutorial"
+                                : "Next"),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
+                              child: Icon(
+                                page == (headerSlideContent.length - 1)
+                                    ? Icons.play_lesson_outlined
+                                    : Icons.skip_next,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],

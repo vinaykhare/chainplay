@@ -60,7 +60,7 @@ class _ChainListScreenState extends State<ChainListScreen> {
             });
           },
           icon: Icon(
-            showRunning ? Icons.run_circle_rounded : Icons.run_circle_outlined,
+            showRunning ? Icons.view_timeline : Icons.view_timeline_outlined,
           ),
         ),
       ],

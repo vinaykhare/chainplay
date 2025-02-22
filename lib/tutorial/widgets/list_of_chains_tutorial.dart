@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 
 class ListOfChainsTutorial extends StatefulWidget {
   final String? textFilter;
+  final bool showFavorites, showRunning;
   final bool? showChainControlSummary, showAd, showChainInReverse;
   const ListOfChainsTutorial({
     super.key,
@@ -16,6 +17,8 @@ class ListOfChainsTutorial extends StatefulWidget {
     this.showChainControlSummary,
     this.showAd,
     this.showChainInReverse,
+    required this.showFavorites,
+    required this.showRunning,
   });
 
   @override
@@ -24,8 +27,8 @@ class ListOfChainsTutorial extends StatefulWidget {
 
 class _ListOfChainsTutorialState extends State<ListOfChainsTutorial> {
   bool showChainControlSummary = true;
+  List<Chain> allChains = [], activeChains = [], favoriteChains = [];
   late ChainList chainList;
-  bool showFavorites = false, showRunning = false;
 
   @override
   void didChangeDependencies() {
@@ -37,6 +40,7 @@ class _ListOfChainsTutorialState extends State<ListOfChainsTutorial> {
   Widget build(BuildContext context) {
     // ChainList chainList = Provider.of<ChainList>(context, listen: true);
     // List<Chain> chains = chainList.chains;
+    bool showFavorites = widget.showFavorites, showRunning = widget.showRunning;
     Chain sampleWorkoutChain = chainList.getChainsByFilters(
         "Sample Workout Chain", showFavorites, showRunning)[0];
     Chain sampleDietChain = chainList.getChainsByFilters(
@@ -55,7 +59,7 @@ class _ListOfChainsTutorialState extends State<ListOfChainsTutorial> {
                 width: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: const BorderRadius.all(Radius.circular(30)),
-                  color: Theme.of(context).scaffoldBackgroundColor,
+                  color: Theme.of(context).primaryColor,
                 ),
                 child: TextButton.icon(
                   onPressed: () {
@@ -127,85 +131,6 @@ class _ListOfChainsTutorialState extends State<ListOfChainsTutorial> {
             ),
             child: const ShowBannerAd(),
           ),
-        Container(
-          key: KeyHelper.chainFiltersKey,
-          decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                key: KeyHelper.favoriteChainFilterKey,
-                child: Card(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Theme.of(context).cardColor,
-                          Theme.of(context).primaryColor,
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                    ),
-                    child: TextButton.icon(
-                      icon: Icon(
-                        Icons.favorite,
-                        color: showFavorites
-                            ? Theme.of(context).secondaryHeaderColor
-                            : Theme.of(context).disabledColor,
-                      ),
-                      label: Text(
-                        "Favorites",
-                        style: Theme.of(context).textTheme.labelLarge,
-                      ),
-                      onPressed: () async {
-                        setState(() {
-                          showFavorites = !showFavorites;
-                        });
-                      },
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                key: KeyHelper.activeChainFilterKey,
-                child: Card(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Theme.of(context).cardColor,
-                          Theme.of(context).primaryColor,
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                    ),
-                    child: TextButton.icon(
-                      icon: Icon(
-                        Icons.run_circle,
-                        color: showRunning
-                            ? Theme.of(context).secondaryHeaderColor
-                            : Theme.of(context).disabledColor,
-                      ),
-                      label: Text(
-                        "Active",
-                        style: Theme.of(context).textTheme.labelLarge,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          showRunning = !showRunning;
-                        });
-                      },
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
       ],
     );
   }

@@ -133,14 +133,14 @@ List<Map<String, String>> headerSlideContent = [
     "speech":
         "Thanks for choosing Chain and Play. Chain and Play is a tool to Chain your activities and Play it. Lets undestand the major functions of Chain and Play App with a quick tutorial. You have the option to skip this tutorial by pressing the Close button.",
   },
-  {
-    "imageAsset": assetMap["chains"]!,
-    "imageNetwork": "",
-    "title": "CHAINS",
-    "subtitle": "Runs in Background or Foreground",
-    "speech":
-        "Chain and Play has multiple features to streamline your activities with chains.",
-  },
+  // {
+  //   "imageAsset": assetMap["chains"]!,
+  //   "imageNetwork": "",
+  //   "title": "CHAINS",
+  //   "subtitle": "Runs in Background or Foreground",
+  //   "speech":
+  //       "Chain and Play has multiple features to streamline your activities with chains.",
+  // },
 ];
 
 List<Map<String, dynamic>> getTutorialItemsByType(
@@ -349,7 +349,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
         },
         {
           "title":
-              "We have also provided a couple of buttons to quickly filter the chains.",
+              "We have also provided a button to quickly filter the active chains.",
           "widgetToShow": ListView(
             shrinkWrap: true,
             children: [
@@ -358,7 +358,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               Text(
-                "When number of chains are high, and we are struggling to find our favorite chain then these quick filters can help.",
+                "When number of chains are high, and we are struggling to find chains that running then this filter can help.",
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ],

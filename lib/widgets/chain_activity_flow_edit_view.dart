@@ -40,6 +40,9 @@ class ChainActivityFlowEditView extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     border: Border.all(),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(10),
+                    ),
                   ),
                   child: InkWell(
                     onTap: () async {
@@ -90,7 +93,10 @@ class ChainActivityFlowEditView extends StatelessWidget {
                           Icons.delete_forever_rounded,
                           color: Theme.of(context).colorScheme.error,
                         ),
-                        const Text("Delete"),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: const Text("Delete"),
+                        ),
                       ],
                     ),
                   ),
@@ -103,6 +109,9 @@ class ChainActivityFlowEditView extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     border: Border.all(),
+                    borderRadius: BorderRadius.only(
+                      bottomRight: Radius.circular(10),
+                    ),
                   ),
                   child: InkWell(
                     onTap: () async {
@@ -118,33 +127,37 @@ class ChainActivityFlowEditView extends StatelessWidget {
                         Icon(
                           chainActivity.edit ? Icons.undo : Icons.edit,
                         ),
-                        const Text("Edit"),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(chainActivity.edit ? "Discard" : "Edit"),
+                        ),
                       ],
                     ),
                   ),
                 ),
               ),
             ),
-            Expanded(
-              child: Semantics(
-                label: "Button to reorder the Chain Items.",
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ReorderableDragStartListener(
-                        index: index,
-                        child: const Icon(Icons.drag_handle),
-                      ),
-                      const Text("Reorder"),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            // Expanded(
+            //   child: Semantics(
+            //     label: "Button to reorder the Chain Items.",
+            //     child: Container(
+            //       decoration: BoxDecoration(
+            //         border: Border.all(),
+            //         borderRadius: BorderRadius.circular(30),
+            //       ),
+            //       child: Row(
+            //         mainAxisAlignment: MainAxisAlignment.center,
+            //         children: [
+            //           ReorderableDragStartListener(
+            //             index: index,
+            //             child: const Icon(Icons.drag_handle),
+            //           ),
+            //           const Text("Reorder"),
+            //         ],
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ],

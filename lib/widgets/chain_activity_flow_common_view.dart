@@ -75,13 +75,13 @@ class ChainActivityFlowCommonView extends StatelessWidget {
 
     return ListTile(
       tileColor: Theme.of(context).cardColor.withValues(alpha: 0.1),
-      onTap: () async {
-        if (!chainActivity.edit && editActivity != null) {
-          editActivity!(chainActivity);
-        } else {
-          undoEdit!(chainActivity);
-        }
-      },
+      // onTap: () async {
+      //   if (!chainActivity.edit && editActivity != null) {
+      //     editActivity!(chainActivity);
+      //   } else {
+      //     undoEdit!(chainActivity);
+      //   }
+      // },
       title: Text(
         chainActivity.activity.title,
         style: Theme.of(context).textTheme.headlineSmall,
@@ -128,6 +128,13 @@ class ChainActivityFlowCommonView extends StatelessWidget {
                 ),
         ),
       ),
+
+      trailing: !chainActivity.edit && editActivity != null
+          ? ReorderableDragStartListener(
+              index: index,
+              child: const Icon(Icons.drag_handle),
+            )
+          : null,
 
       // leading: Checkbox(
       //   key: ValueKey(

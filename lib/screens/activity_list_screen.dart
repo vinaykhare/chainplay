@@ -51,6 +51,7 @@ class _ActivityListScreenState extends State<ActivityListScreen> {
                 AppBar(
                   centerTitle: true,
                   automaticallyImplyLeading: false,
+                  backgroundColor: Theme.of(context).primaryColor,
                   title: Text(
                     "Activites",
                     style: Theme.of(context).textTheme.titleLarge,
@@ -71,9 +72,11 @@ class _ActivityListScreenState extends State<ActivityListScreen> {
                     textFilter: textFilter,
                     showAd: false,
                     showActivitiesInReverse: true,
+                    showNotInUse: showNotInUse,
                   ),
                 ),
                 AppBar(
+                  backgroundColor: Theme.of(context).primaryColor,
                   title: TextField(
                     autofocus: true,
                     textInputAction: TextInputAction.search,
@@ -91,9 +94,21 @@ class _ActivityListScreenState extends State<ActivityListScreen> {
                         borderSide: BorderSide.none,
                       ),
                       filled: true,
-                      fillColor: Theme.of(context).primaryColor,
+                      fillColor: Theme.of(context).scaffoldBackgroundColor,
                     ),
                   ),
+                  actions: [
+                    IconButton(
+                      icon: Icon(showNotInUse
+                          ? Icons.filter_alt_off
+                          : Icons.filter_alt_off_outlined),
+                      onPressed: () {
+                        setState(() {
+                          showNotInUse = !showNotInUse;
+                        });
+                      },
+                    ),
+                  ],
                 )
               ],
             ),

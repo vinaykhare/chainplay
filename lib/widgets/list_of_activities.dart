@@ -8,11 +8,13 @@ import 'package:provider/provider.dart';
 class ListOfActivities extends StatefulWidget {
   final String? textFilter;
   final bool? showAd, showActivitiesInReverse;
+  final bool showNotInUse;
   const ListOfActivities({
     super.key,
     this.textFilter,
     this.showAd,
     this.showActivitiesInReverse,
+    required this.showNotInUse,
   });
 
   @override
@@ -38,12 +40,14 @@ class _ListOfActivitiesState extends State<ListOfActivities> {
   Widget build(BuildContext context) {
     // ChainList chainList = Provider.of<ChainList>(context, listen: true);
     // List<Chain> chains = chainList.chains;
+    showNotInUse = widget.showNotInUse;
     displayActivities = chainList.getActivitiesByFilters(
         widget.textFilter ?? '',
         showWithImage,
         showWithoutImage,
         showInUse,
         showNotInUse);
+
     return Column(
       //crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -78,148 +82,148 @@ class _ListOfActivitiesState extends State<ListOfActivities> {
             ),
             child: const ShowBannerAd(),
           ),
-        Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                child: Card(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Theme.of(context).cardColor,
-                          Theme.of(context).primaryColor,
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                    ),
-                    child: TextButton.icon(
-                      icon: Icon(
-                        Icons.account_circle,
-                        color: showWithImage
-                            ? Theme.of(context).secondaryHeaderColor
-                            : Theme.of(context).disabledColor,
-                      ),
-                      label: Text(
-                        "With\nImage",
-                        style: Theme.of(context).textTheme.labelLarge,
-                      ),
-                      onPressed: () async {
-                        setState(() {
-                          showWithImage = !showWithImage;
-                        });
-                      },
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Card(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Theme.of(context).cardColor,
-                          Theme.of(context).primaryColor,
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                    ),
-                    child: TextButton.icon(
-                      icon: Icon(
-                        Icons.no_accounts,
-                        color: showWithoutImage
-                            ? Theme.of(context).secondaryHeaderColor
-                            : Theme.of(context).disabledColor,
-                      ),
-                      label: Text(
-                        "W/O\nImage",
-                        style: Theme.of(context).textTheme.labelLarge,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          showWithoutImage = !showWithoutImage;
-                        });
-                      },
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Card(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Theme.of(context).cardColor,
-                          Theme.of(context).primaryColor,
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                    ),
-                    child: TextButton.icon(
-                      icon: Icon(
-                        Icons.done_all,
-                        color: showInUse
-                            ? Theme.of(context).secondaryHeaderColor
-                            : Theme.of(context).disabledColor,
-                      ),
-                      label: Text(
-                        "In\nUse",
-                        style: Theme.of(context).textTheme.labelLarge,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          showInUse = !showInUse;
-                        });
-                      },
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Card(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Theme.of(context).cardColor,
-                          Theme.of(context).primaryColor,
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                    ),
-                    child: TextButton.icon(
-                      icon: Icon(
-                        Icons.remove_done,
-                        color: showNotInUse
-                            ? Theme.of(context).secondaryHeaderColor
-                            : Theme.of(context).disabledColor,
-                      ),
-                      label: Text(
-                        "Not\nIn Use",
-                        style: Theme.of(context).textTheme.labelLarge,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          showNotInUse = !showNotInUse;
-                        });
-                      },
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+        // Container(
+        //   decoration: BoxDecoration(
+        //     color: Theme.of(context).primaryColor,
+        //   ),
+        //   child: Row(
+        //     mainAxisAlignment: MainAxisAlignment.center,
+        //     children: [
+        //       Expanded(
+        //         child: Card(
+        //           child: Container(
+        //             decoration: BoxDecoration(
+        //               gradient: LinearGradient(
+        //                 colors: [
+        //                   Theme.of(context).cardColor,
+        //                   Theme.of(context).primaryColor,
+        //                 ],
+        //                 begin: Alignment.topCenter,
+        //                 end: Alignment.bottomCenter,
+        //               ),
+        //             ),
+        //             child: TextButton.icon(
+        //               icon: Icon(
+        //                 Icons.account_circle,
+        //                 color: showWithImage
+        //                     ? Theme.of(context).secondaryHeaderColor
+        //                     : Theme.of(context).disabledColor,
+        //               ),
+        //               label: Text(
+        //                 "With\nImage",
+        //                 style: Theme.of(context).textTheme.labelLarge,
+        //               ),
+        //               onPressed: () async {
+        //                 setState(() {
+        //                   showWithImage = !showWithImage;
+        //                 });
+        //               },
+        //             ),
+        //           ),
+        //         ),
+        //       ),
+        //       Expanded(
+        //         child: Card(
+        //           child: Container(
+        //             decoration: BoxDecoration(
+        //               gradient: LinearGradient(
+        //                 colors: [
+        //                   Theme.of(context).cardColor,
+        //                   Theme.of(context).primaryColor,
+        //                 ],
+        //                 begin: Alignment.topCenter,
+        //                 end: Alignment.bottomCenter,
+        //               ),
+        //             ),
+        //             child: TextButton.icon(
+        //               icon: Icon(
+        //                 Icons.no_accounts,
+        //                 color: showWithoutImage
+        //                     ? Theme.of(context).secondaryHeaderColor
+        //                     : Theme.of(context).disabledColor,
+        //               ),
+        //               label: Text(
+        //                 "W/O\nImage",
+        //                 style: Theme.of(context).textTheme.labelLarge,
+        //               ),
+        //               onPressed: () {
+        //                 setState(() {
+        //                   showWithoutImage = !showWithoutImage;
+        //                 });
+        //               },
+        //             ),
+        //           ),
+        //         ),
+        //       ),
+        //       Expanded(
+        //         child: Card(
+        //           child: Container(
+        //             decoration: BoxDecoration(
+        //               gradient: LinearGradient(
+        //                 colors: [
+        //                   Theme.of(context).cardColor,
+        //                   Theme.of(context).primaryColor,
+        //                 ],
+        //                 begin: Alignment.topCenter,
+        //                 end: Alignment.bottomCenter,
+        //               ),
+        //             ),
+        //             child: TextButton.icon(
+        //               icon: Icon(
+        //                 Icons.done_all,
+        //                 color: showInUse
+        //                     ? Theme.of(context).secondaryHeaderColor
+        //                     : Theme.of(context).disabledColor,
+        //               ),
+        //               label: Text(
+        //                 "In\nUse",
+        //                 style: Theme.of(context).textTheme.labelLarge,
+        //               ),
+        //               onPressed: () {
+        //                 setState(() {
+        //                   showInUse = !showInUse;
+        //                 });
+        //               },
+        //             ),
+        //           ),
+        //         ),
+        //       ),
+        //       Expanded(
+        //         child: Card(
+        //           child: Container(
+        //             decoration: BoxDecoration(
+        //               gradient: LinearGradient(
+        //                 colors: [
+        //                   Theme.of(context).cardColor,
+        //                   Theme.of(context).primaryColor,
+        //                 ],
+        //                 begin: Alignment.topCenter,
+        //                 end: Alignment.bottomCenter,
+        //               ),
+        //             ),
+        //             child: TextButton.icon(
+        //               icon: Icon(
+        //                 Icons.remove_done,
+        //                 color: showNotInUse
+        //                     ? Theme.of(context).secondaryHeaderColor
+        //                     : Theme.of(context).disabledColor,
+        //               ),
+        //               label: Text(
+        //                 "Not\nIn Use",
+        //                 style: Theme.of(context).textTheme.labelLarge,
+        //               ),
+        //               onPressed: () {
+        //                 setState(() {
+        //                   showNotInUse = !showNotInUse;
+        //                 });
+        //               },
+        //             ),
+        //           ),
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // ),
       ],
     );
   }

@@ -43,6 +43,7 @@ class _ChainListScreenTutorialState extends State<ChainListScreenTutorial> {
     List<Chain> chains = chainList.chains;
 
     final appBarWidget = AppBar(
+      backgroundColor: Theme.of(context).primaryColor,
       key: KeyHelper.chianListScreenAppBarkey,
       centerTitle: true,
       title: TextField(
@@ -61,8 +62,18 @@ class _ChainListScreenTutorialState extends State<ChainListScreenTutorial> {
             Icons.search,
             color: Theme.of(context).iconTheme.color,
           ),
+          fillColor: Theme.of(context).scaffoldBackgroundColor,
         ),
       ),
+      actions: [
+        IconButton(
+          key: KeyHelper.chainFiltersKey,
+          onPressed: null,
+          icon: Icon(
+            Icons.view_timeline,
+          ),
+        ),
+      ],
     );
     return IgnorePointer(
       ignoring: true,
@@ -74,17 +85,11 @@ class _ChainListScreenTutorialState extends State<ChainListScreenTutorial> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                  ),
-                  margin: const EdgeInsets.all(10),
-                  child: const ChainListHeaderTutorial(),
-                ),
+                const ChainListHeaderTutorial(),
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.all(5),
-                    margin: const EdgeInsets.fromLTRB(8, 5, 8, 0),
+                    margin: const EdgeInsets.symmetric(horizontal: 8),
                     decoration: BoxDecoration(
                       color: Theme.of(context).primaryColor,
                       borderRadius: const BorderRadius.only(
@@ -94,7 +99,16 @@ class _ChainListScreenTutorialState extends State<ChainListScreenTutorial> {
                     child: Column(
                       children: [
                         (chains.isNotEmpty)
-                            ? const Expanded(child: ListOfChainsTutorial())
+                            ? const Expanded(
+                                child: ListOfChainsTutorial(
+                                  textFilter: null,
+                                  showAd: true,
+                                  showChainControlSummary: true,
+                                  showChainInReverse: false,
+                                  showFavorites: false,
+                                  showRunning: false,
+                                ),
+                              )
                             : const Expanded(child: NoChainsView()),
                       ],
                     ),

@@ -108,9 +108,11 @@ class ActivityListItem extends StatelessWidget {
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   actions: [
-                    ElevatedButton(
+                    TextButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      child: const Text("Ok"),
+                      child: Text(
+                        "Ok",
+                      ),
                     ),
                   ],
                 );
