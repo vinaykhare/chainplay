@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 //import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/helpers/constants.dart';
@@ -13,6 +16,7 @@ import 'package:chain_activities/models/chain_list.dart';
 //import 'package:chain_activities/widgets/activities_timeline.dart';
 import 'package:chain_activities/widgets/chain_activities_widget.dart';
 import 'package:uuid/uuid.dart';
+import 'package:duration_picker/duration_picker.dart';
 
 class AddChainScreen extends StatefulWidget {
   static String routename = "/add_chains";
@@ -46,6 +50,8 @@ class _AddChainScreenState extends State<AddChainScreen> {
   String pageTitle = "Add Chain",
       activityTitle = "",
       errorString = "",
+      formImageUrlErrorString = "",
+      formActivityTitleErrorString = "",
       chainNameOnPageLoad = "";
 
   bool showSaveAndExit = false,
@@ -244,9 +250,34 @@ class _AddChainScreenState extends State<AddChainScreen> {
     });
   }
 
-  void onSubmitText() {
+  Future<bool> validURL(String path) async {
+    if (path == "") {
+      return true;
+    } else if (path.startsWith("http")) {
+      try {
+        Uri uri = Uri.parse(path); // Try to parse the path as a URI
+        var response = await http.get(uri); // Make HTTP request [1, 10]
+
+        if (response.statusCode == 200 &&
+            response.headers['content-type']!.startsWith('image/')) {
+          return true; // Valid image URL [1, 10]
+        }
+        return true;
+      } catch (e) {
+        return false;
+      }
+    } else if (path.startsWith("/")) {
+      return File(path).existsSync();
+    }
+    return false;
+  }
+
+  void onSubmitText() async {
+    FocusScopeNode focusScope = FocusScope.of(context);
     setState(() {
       errorString = "";
+      formImageUrlErrorString = "";
+      formActivityTitleErrorString = "";
     });
 
     bool validChainForm = chainFormKey.currentState!.validate();
@@ -274,7 +305,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
             activityDurationMinute > 0 ||
             activityDurationSecond > 0)) {
       setState(() {
-        errorString = "Add Chain Activity Name";
+        formActivityTitleErrorString = "Add Chain Activity Name";
       });
       return;
     }
@@ -285,10 +316,20 @@ class _AddChainScreenState extends State<AddChainScreen> {
 
     if (addActivityController.text.length > 35) {
       setState(() {
-        errorString =
+        formActivityTitleErrorString =
             "Length of Acitivity Name is too long. It should not be more than 35 letters long.";
       });
       return;
+    }
+
+    if (activityImageController.text.isNotEmpty) {
+      bool isValidURL = await validURL(activityImageController.text);
+      if (!isValidURL) {
+        setState(() {
+          formImageUrlErrorString = "Invald Image URL";
+        });
+        return;
+      }
     }
 
     if (chainActivityInEditMode != null) {
@@ -334,7 +375,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
         ),
       );
 
-      FocusScope.of(context).requestFocus(addActivityFocus);
+      focusScope.requestFocus(addActivityFocus);
     }
 
     addActivityController.clear();
@@ -480,6 +521,8 @@ class _AddChainScreenState extends State<AddChainScreen> {
       //FocusScope.of(context).requestFocus(addActivityFocus);
     }
 
+    double appWidth = MediaQuery.of(context).size.width;
+
     // Autocomplete<String>(
     //   optionsBuilder: (TextEditingValue textEditingValue) async {
     //     if (textEditingValue.text == '') {
@@ -517,6 +560,210 @@ class _AddChainScreenState extends State<AddChainScreen> {
                 //textAlign: TextAlign.left,
               ),
             ),
+            if (chainActivityInEditMode?.activity.type !=
+                    systemStartActivityInDB &&
+                chainActivityInEditMode?.activity.type !=
+                    systemWaitActivityInDB)
+              Row(
+                children: [
+                  Column(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.photo,
+                          ),
+                          onPressed: () async {
+                            // XFile? pickedImage = await ImagePicker()
+                            //     .pickImage(source: ImageSource.gallery);
+                            // if (pickedImage != null) {
+                            //   // activityImageController.text = pickedImage.path;
+                            //   setState(() {
+                            //     localImagePath = pickedImage.path;
+                            //   });
+                            // }
+                            FilePickerResult? result =
+                                await FilePicker.platform.pickFiles(
+                              type: FileType.custom,
+                              allowedExtensions: [
+                                'jpg',
+                                'jpeg',
+                                'gif',
+                                'png',
+                                'webp',
+                                'svg',
+                                'jfif',
+                                'pjpeg',
+                                'pjp',
+                                'apng',
+                                'avif',
+                                'bmp',
+                                'tif',
+                                'tiff',
+                                'ico',
+                                'cur'
+                              ],
+                            );
+                            if (result != null) {
+                              activityImageController.text =
+                                  result.files.single.path!;
+                              setState(() {
+                                formImageUrlErrorString = "";
+                              });
+                            } else {
+                              // User cancelled the picker
+                            }
+                          },
+                        ),
+                      ),
+                      // const Padding(
+                      //   padding: EdgeInsets.symmetric(horizontal: 10),
+                      //   child: Text(
+                      //     "Select Local",
+                      //   ),
+                      // ),
+                    ],
+                  ),
+                  if (formImageUrlErrorString == "" &&
+                      activityImageController.text != "" &&
+                      (activityImageController.text.startsWith("/") ||
+                          activityImageController.text.startsWith("http")))
+                    Container(
+                      height: appWidth * 0.135,
+                      width: appWidth * 0.135,
+                      padding: EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        border: Border.all(),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: activityImageController.text == ""
+                          ? Image.asset(
+                              assetMap['noImagePlaceholder']!,
+                              fit: BoxFit.fitHeight,
+                            )
+                          : activityImageController.text.startsWith("http")
+                              ? FadeInImage.assetNetwork(
+                                  placeholder: assetMap["noImagePlaceholder"]!,
+                                  image: activityImageController.text,
+                                  fit: BoxFit.cover,
+                                  imageErrorBuilder:
+                                      (context, error, stackTrace) =>
+                                          Image.asset(
+                                    assetMap['noImagePlaceholder']!,
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                              : Image.file(
+                                  File(activityImageController.text),
+                                  fit: BoxFit.cover,
+                                ),
+                    ),
+                  Expanded(
+                    child: activityImageController.text.startsWith("/")
+                        ? IgnorePointer(
+                            ignoring: true,
+                            child: TextFormField(
+                              //readOnly: true,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                filled: true,
+                                label: Center(
+                                  child: Text(
+                                    formImageUrlErrorString == ""
+                                        ? "Local Image"
+                                        : formImageUrlErrorString,
+                                  ),
+                                ),
+                                labelStyle: TextStyle(
+                                  //color: Theme.of(context).secondaryHeaderColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                hintText: "https://",
+                                alignLabelWithHint: true,
+                                floatingLabelBehavior:
+                                    FloatingLabelBehavior.never,
+                              ),
+                            ),
+                          )
+                        : TextFormField(
+                            key: ValueKey(
+                              "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_image",
+                            ),
+                            keyboardType: TextInputType.url,
+                            textAlign: TextAlign.center,
+                            controller: activityImageController,
+                            // onSaved: (_) => chainActivityInEditMode!
+                            //         .activity.specification![activitySpecImagePath] =
+                            //     activityImageController.text,
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              label: Text(
+                                "HTTP URL to an Image or a GIF",
+                                style: TextStyle(
+                                  color: Theme.of(context).disabledColor,
+                                ),
+                              ),
+                              hintText: "https://",
+                              alignLabelWithHint: true,
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.never,
+                            ),
+                            validator: (imagePath) {
+                              try {
+                                if (imagePath != null && imagePath != "") {
+                                  if (imagePath.startsWith("http")) {
+                                    Uri.parse(imagePath);
+                                  } else {
+                                    return File(imagePath).existsSync()
+                                        ? null
+                                        : "Invalid File Path";
+                                  }
+                                }
+                              } catch (exception) {
+                                return "Invalid URL";
+                              }
+                              return null;
+                            },
+                          ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    child: IconButton(
+                      onPressed: () {
+                        activityImageController.clear();
+                        setState(() {
+                          formImageUrlErrorString = "";
+                        });
+                      },
+                      icon: Semantics(
+                        label:
+                            "Clear the selected image or its url in add activity form.",
+                        child: const Icon(
+                          Icons.clear_all,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            if (formImageUrlErrorString != "")
+              Semantics(
+                label: "Form Image URL Error Message",
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    formImageUrlErrorString,
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.error),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
             Row(
               children: [
                 Container(
@@ -524,10 +771,29 @@ class _AddChainScreenState extends State<AddChainScreen> {
                     color: Theme.of(context).primaryColor,
                   ),
                   child: IconButton(
-                    onPressed: null,
+                    onPressed: () async {
+                      final resultingDuration = await showDurationPicker(
+                        context: context,
+                        initialTime: const Duration(seconds: 30),
+                        baseUnit: BaseUnit.second,
+                        upperBound: const Duration(seconds: 60),
+                        lowerBound: const Duration(seconds: 10),
+                      );
+                      if (resultingDuration != null) {
+                        durationHourController.text =
+                            resultingDuration.inHours.toString();
+                        durationMinuteController.text =
+                            (resultingDuration.inMinutes -
+                                    resultingDuration.inHours * 60)
+                                .toString();
+                        durationSecondController.text =
+                            (resultingDuration.inSeconds -
+                                    (resultingDuration.inMinutes * 60))
+                                .toString();
+                      }
+                    },
                     icon: Icon(
                       Icons.watch_later,
-                      color: Theme.of(context).shadowColor,
                     ),
                   ),
                 ),
@@ -645,141 +911,19 @@ class _AddChainScreenState extends State<AddChainScreen> {
                 ),
               ],
             ),
-            if (chainActivityInEditMode?.activity.type !=
-                    systemStartActivityInDB &&
-                chainActivityInEditMode?.activity.type !=
-                    systemWaitActivityInDB)
-              Row(
-                children: [
-                  Column(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.photo,
-                          ),
-                          onPressed: () async {
-                            // XFile? pickedImage = await ImagePicker()
-                            //     .pickImage(source: ImageSource.gallery);
-                            // if (pickedImage != null) {
-                            //   // activityImageController.text = pickedImage.path;
-                            //   setState(() {
-                            //     localImagePath = pickedImage.path;
-                            //   });
-                            // }
-                            FilePickerResult? result =
-                                await FilePicker.platform.pickFiles(
-                              type: FileType.custom,
-                              allowedExtensions: [
-                                'jpg',
-                                'jpeg',
-                                'gif',
-                                'png',
-                                'webp',
-                                'svg',
-                                'jfif',
-                                'pjpeg',
-                                'pjp',
-                                'apng',
-                                'avif',
-                                'bmp',
-                                'tif',
-                                'tiff',
-                                'ico',
-                                'cur'
-                              ],
-                            );
-                            if (result != null) {
-                              activityImageController.text =
-                                  result.files.single.path!;
-                              setState(() {});
-                            } else {
-                              // User cancelled the picker
-                            }
-                          },
-                        ),
-                      ),
-                      // const Padding(
-                      //   padding: EdgeInsets.symmetric(horizontal: 10),
-                      //   child: Text(
-                      //     "Select Local",
-                      //   ),
-                      // ),
-                    ],
+            if (formActivityTitleErrorString != "")
+              Semantics(
+                label: "Form Image URL Error Message",
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    formActivityTitleErrorString,
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.error),
+                    textAlign: TextAlign.center,
                   ),
-                  Expanded(
-                    child: activityImageController.text.startsWith("/")
-                        ? IgnorePointer(
-                            ignoring: true,
-                            child: TextFormField(
-                              //readOnly: true,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                filled: true,
-                                label: Center(
-                                  child: Text(
-                                    "A Local Image is Set for this Activity",
-                                  ),
-                                ),
-                                labelStyle: TextStyle(
-                                  //color: Theme.of(context).secondaryHeaderColor,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                hintText: "https://",
-                                alignLabelWithHint: true,
-                                floatingLabelBehavior:
-                                    FloatingLabelBehavior.never,
-                              ),
-                            ),
-                          )
-                        : TextFormField(
-                            key: ValueKey(
-                              "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_image",
-                            ),
-                            keyboardType: TextInputType.url,
-                            textAlign: TextAlign.center,
-                            controller: activityImageController,
-                            // onSaved: (_) => chainActivityInEditMode!
-                            //         .activity.specification![activitySpecImagePath] =
-                            //     activityImageController.text,
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              label: Text(
-                                "HTTP URL to an Image or a GIF",
-                                style: TextStyle(
-                                  color: Theme.of(context).disabledColor,
-                                ),
-                              ),
-                              hintText: "https://",
-                              alignLabelWithHint: true,
-                              floatingLabelBehavior:
-                                  FloatingLabelBehavior.never,
-                            ),
-                          ),
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                    child: IconButton(
-                      onPressed: () {
-                        activityImageController.clear();
-                        setState(() {});
-                      },
-                      icon: Semantics(
-                        label:
-                            "Clear the selected image or its url in add activity form.",
-                        child: const Icon(
-                          Icons.clear_all,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              )
+                ),
+              ),
           ],
         ),
       ),
@@ -858,7 +1002,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
             ),
             if (errorString != "")
               Semantics(
-                label: "Error Message",
+                label: "Chain Error Message",
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(

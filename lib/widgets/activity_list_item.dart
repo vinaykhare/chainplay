@@ -179,7 +179,7 @@ class ActivityListItem extends StatelessWidget {
                                 fit: BoxFit.cover,
                               )
                         : Image.asset(
-                            assetMap['logoImage']!,
+                            assetMap['noImagePlaceholder']!,
                             fit: BoxFit.cover,
                           ),
                   ),

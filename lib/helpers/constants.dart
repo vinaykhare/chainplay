@@ -101,6 +101,7 @@ const Map<String, String> assetMap = {
   'logoImage': 'assets/AppIcons/playstore.png',
   'chainImage': 'assets/AppIcons/chain.png',
   'verticalChainImage': 'assets/AppIcons/vertical_chain.png',
+  'noImagePlaceholder': 'assets/AppIcons/no-Image-placeholder.png',
   'beepAudio': 'assets/Sounds/chain_activity_beep.mp3',
   'app_drawer': 'assets/WhatIsChainAndPlay/app_drawer.jpeg',
   'chain_file_view': 'assets/WhatIsChainAndPlay/chain_file_view.jpeg',
