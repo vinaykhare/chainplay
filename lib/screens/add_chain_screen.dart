@@ -50,8 +50,8 @@ class _AddChainScreenState extends State<AddChainScreen> {
   String pageTitle = "Add Chain",
       activityTitle = "",
       errorString = "",
-      formImageUrlErrorString = "",
-      formActivityTitleErrorString = "",
+      // formImageUrlErrorString = "",
+      activityFormErrorString = "",
       chainNameOnPageLoad = "";
 
   bool showSaveAndExit = false,
@@ -276,8 +276,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
     FocusScopeNode focusScope = FocusScope.of(context);
     setState(() {
       errorString = "";
-      formImageUrlErrorString = "";
-      formActivityTitleErrorString = "";
+      activityFormErrorString = "";
     });
 
     bool validChainForm = chainFormKey.currentState!.validate();
@@ -305,7 +304,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
             activityDurationMinute > 0 ||
             activityDurationSecond > 0)) {
       setState(() {
-        formActivityTitleErrorString = "Add Chain Activity Name";
+        activityFormErrorString = "Add Chain Activity Name";
       });
       return;
     }
@@ -316,7 +315,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
 
     if (addActivityController.text.length > 35) {
       setState(() {
-        formActivityTitleErrorString =
+        activityFormErrorString =
             "Length of Acitivity Name is too long. It should not be more than 35 letters long.";
       });
       return;
@@ -326,10 +325,36 @@ class _AddChainScreenState extends State<AddChainScreen> {
       bool isValidURL = await validURL(activityImageController.text);
       if (!isValidURL) {
         setState(() {
-          formImageUrlErrorString = "Invald Image URL";
+          activityFormErrorString = "Invalid Path or URL";
         });
         return;
       }
+    }
+
+    String? validHour = validateHour(durationHourController.text);
+    String? validMinute = validateMinuteOrSecond(durationMinuteController.text);
+    String? validSecond = validateMinuteOrSecond(durationSecondController.text);
+
+    if (validHour != null) {
+      setState(() {
+        activityFormErrorString = "Hours should be in the range of $validHour";
+      });
+      return;
+    }
+
+    if (validMinute != null) {
+      setState(() {
+        activityFormErrorString =
+            "Minutes should be in the range of $validMinute";
+      });
+      return;
+    }
+    if (validSecond != null) {
+      setState(() {
+        activityFormErrorString =
+            "Seconds should be in the range of $validSecond";
+      });
+      return;
     }
 
     if (chainActivityInEditMode != null) {
@@ -560,6 +585,23 @@ class _AddChainScreenState extends State<AddChainScreen> {
                 //textAlign: TextAlign.left,
               ),
             ),
+            if (activityFormErrorString != "")
+              Semantics(
+                label: "Activity Form Error Message",
+                child: Text(
+                  activityFormErrorString,
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelSmall!
+                      .copyWith(color: Theme.of(context).colorScheme.error),
+                  // style: TextStyle(color: Theme.of(context).colorScheme.error),
+                  textAlign: TextAlign.center,
+                ),
+              )
+            else
+              SizedBox(
+                height: 16,
+              ),
             if (chainActivityInEditMode?.activity.type !=
                     systemStartActivityInDB &&
                 chainActivityInEditMode?.activity.type !=
@@ -611,7 +653,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
                               activityImageController.text =
                                   result.files.single.path!;
                               setState(() {
-                                formImageUrlErrorString = "";
+                                activityFormErrorString = "";
                               });
                             } else {
                               // User cancelled the picker
@@ -627,10 +669,9 @@ class _AddChainScreenState extends State<AddChainScreen> {
                       // ),
                     ],
                   ),
-                  if (formImageUrlErrorString == "" &&
+                  if (activityFormErrorString == "" &&
                       activityImageController.text != "" &&
-                      (activityImageController.text.startsWith("/") ||
-                          activityImageController.text.startsWith("http")))
+                      activityImageController.text.startsWith("http"))
                     Container(
                       height: appWidth * 0.135,
                       width: appWidth * 0.135,
@@ -663,30 +704,37 @@ class _AddChainScreenState extends State<AddChainScreen> {
                     ),
                   Expanded(
                     child: activityImageController.text.startsWith("/")
-                        ? IgnorePointer(
-                            ignoring: true,
-                            child: TextFormField(
-                              //readOnly: true,
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                filled: true,
-                                label: Center(
-                                  child: Text(
-                                    formImageUrlErrorString == ""
-                                        ? "Local Image"
-                                        : formImageUrlErrorString,
-                                  ),
-                                ),
-                                labelStyle: TextStyle(
-                                  //color: Theme.of(context).secondaryHeaderColor,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                hintText: "https://",
-                                alignLabelWithHint: true,
-                                floatingLabelBehavior:
-                                    FloatingLabelBehavior.never,
-                              ),
+                        ? Container(
+                            height: appWidth * 0.135,
+                            width: appWidth * 0.135,
+                            padding: EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              border: Border.all(),
+                              borderRadius: BorderRadius.circular(5),
                             ),
+                            child: activityImageController.text == ""
+                                ? Image.asset(
+                                    assetMap['noImagePlaceholder']!,
+                                    fit: BoxFit.fitHeight,
+                                  )
+                                : activityImageController.text
+                                        .startsWith("http")
+                                    ? FadeInImage.assetNetwork(
+                                        placeholder:
+                                            assetMap["noImagePlaceholder"]!,
+                                        image: activityImageController.text,
+                                        fit: BoxFit.contain,
+                                        imageErrorBuilder:
+                                            (context, error, stackTrace) =>
+                                                Image.asset(
+                                          assetMap['noImagePlaceholder']!,
+                                          fit: BoxFit.contain,
+                                        ),
+                                      )
+                                    : Image.file(
+                                        File(activityImageController.text),
+                                        fit: BoxFit.contain,
+                                      ),
                           )
                         : TextFormField(
                             key: ValueKey(
@@ -711,22 +759,42 @@ class _AddChainScreenState extends State<AddChainScreen> {
                               floatingLabelBehavior:
                                   FloatingLabelBehavior.never,
                             ),
-                            validator: (imagePath) {
-                              try {
-                                if (imagePath != null && imagePath != "") {
-                                  if (imagePath.startsWith("http")) {
-                                    Uri.parse(imagePath);
-                                  } else {
-                                    return File(imagePath).existsSync()
-                                        ? null
-                                        : "Invalid File Path";
-                                  }
-                                }
-                              } catch (exception) {
-                                return "Invalid URL";
+                            onFieldSubmitted: (imagePath) async {
+                              bool valid = await validURL(imagePath);
+                              if (!valid) {
+                                activityImageController.text = "";
+                                activityFormErrorString = "Invalid Path or URL";
                               }
-                              return null;
+                              // if (imagePath.startsWith("/") &&
+                              //     !File(imagePath).existsSync()) {
+                              //   activityImageController.text = "";
+                              //   formImageUrlErrorString = "Invalid Local Path";
+                              // }
+                              // if (imagePath.startsWith("http")) {
+                              //   try {
+                              //     Uri.parse(imagePath);
+                              //   } catch (e) {
+                              //     activityImageController.text = "";
+                              //     formImageUrlErrorString = "Invalid Http path";
+                              //   }
+                              // }
                             },
+                            // validator: (imagePath) {
+                            //   String? validationError;
+                            //   try {
+                            //     if (imagePath != null && imagePath != "") {
+                            //       if (imagePath.startsWith("http")) {
+                            //         Uri.parse(imagePath);
+                            //       } else if (!File(imagePath).existsSync()) {
+                            //         activityImageController.text = "";
+                            //         validationError = "Invalid File Path";
+                            //       }
+                            //     }
+                            //     return validationError;
+                            //   } catch (exception) {
+                            //     return "Invalid URL";
+                            //   }
+                            // },
                           ),
                   ),
                   Container(
@@ -737,7 +805,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
                       onPressed: () {
                         activityImageController.clear();
                         setState(() {
-                          formImageUrlErrorString = "";
+                          activityFormErrorString = "";
                         });
                       },
                       icon: Semantics(
@@ -750,19 +818,6 @@ class _AddChainScreenState extends State<AddChainScreen> {
                     ),
                   ),
                 ],
-              ),
-            if (formImageUrlErrorString != "")
-              Semantics(
-                label: "Form Image URL Error Message",
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    formImageUrlErrorString,
-                    style:
-                        TextStyle(color: Theme.of(context).colorScheme.error),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
               ),
             Row(
               children: [
@@ -822,7 +877,14 @@ class _AddChainScreenState extends State<AddChainScreen> {
                         newValue != "" && newValue != null
                             ? int.parse(newValue)
                             : 0,
-                    validator: (value) => validateHour(value),
+                    onFieldSubmitted: (value) {
+                      String? valResult = validateHour(value);
+                      if (valResult != null) {
+                        activityFormErrorString =
+                            "Hours should be in the range of $valResult";
+                      }
+                    },
+                    // validator: (value) => validateHour(value),
                     controller: durationHourController,
                   ),
                 ),
@@ -851,7 +913,14 @@ class _AddChainScreenState extends State<AddChainScreen> {
                       hintText:
                           activityDurationMinute.toString().padLeft(2, '0'),
                     ),
-                    validator: (value) => validateMinuteOrSecond(value),
+                    onFieldSubmitted: (value) {
+                      String? valResult = validateMinuteOrSecond(value);
+                      if (valResult != null) {
+                        activityFormErrorString =
+                            "Minutes should be in the range of $valResult";
+                      }
+                    },
+                    // validator: (value) => validateMinuteOrSecond(value),
                     controller: durationMinuteController,
                   ),
                 ),
@@ -882,7 +951,14 @@ class _AddChainScreenState extends State<AddChainScreen> {
                           activityDurationSecond.toString().padLeft(2, '0'),
                       alignLabelWithHint: true,
                     ),
-                    validator: (value) => validateMinuteOrSecond(value),
+                    onFieldSubmitted: (value) {
+                      String? valResult = validateMinuteOrSecond(value);
+                      if (valResult != null) {
+                        activityFormErrorString =
+                            "Seconds should be in the range of $valResult";
+                      }
+                    },
+                    // validator: (value) => validateMinuteOrSecond(value),
                     controller: durationSecondController,
                   ),
                 ),
@@ -899,6 +975,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
                         activityDurationHour = 0;
                         activityDurationMinute = 0;
                         activityDurationSecond = 0;
+                        activityFormErrorString = "";
                       });
                     },
                     icon: Semantics(
@@ -911,19 +988,6 @@ class _AddChainScreenState extends State<AddChainScreen> {
                 ),
               ],
             ),
-            if (formActivityTitleErrorString != "")
-              Semantics(
-                label: "Form Image URL Error Message",
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    formActivityTitleErrorString,
-                    style:
-                        TextStyle(color: Theme.of(context).colorScheme.error),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
           ],
         ),
       ),
