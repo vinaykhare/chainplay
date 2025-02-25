@@ -1,12 +1,10 @@
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/chain_activities.dart';
-import 'firebase_options.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 // import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -20,24 +18,13 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  MobileAds.instance.initialize();
+  if (!kIsWeb) {
+    MobileAds.instance.initialize();
+  }
   // LocalNotificationService localNotifyService = LocalNotificationService();
   // localNotifyService.initialize();
   // final initMobileAds = MobileAds.instance.initialize();
   // final adState = AdState(initMobileAds);
-
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
-  FlutterError.onError = (errorDetails) {
-    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-  };
-  // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
-  PlatformDispatcher.instance.onError = (error, stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    return true;
-  };
 
   runApp(
     MultiProvider(

@@ -10,6 +10,7 @@ import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_activity.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/widgets/chain_activities_widget.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class PlayChainTutorial extends StatefulWidget {
   static String routename = "play_chain_tutorial";
@@ -29,7 +30,9 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
 
   Future<void> playTheChain() async {
     NavigatorState nav = Navigator.of(context);
-    await chainList.loadInterstitialAd();
+    if (!kIsWeb) {
+      await chainList.loadInterstitialAd();
+    }
     for (invokeCounter = 0; invokeCounter < 2; invokeCounter++) {
       ChainActivity chainActivity = chain.activities[invokeCounter];
       if ((chainActivity.endedAt != null &&
@@ -110,7 +113,9 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
   }
 
   Future<bool> onPopOut() async {
-    await chainList.loadInterstitialAd();
+    if (!kIsWeb) {
+      await chainList.loadInterstitialAd();
+    }
     if (chainList.interstitialAd != null) {
       await chainList.interstitialAd!.show();
       await chainList.interstitialAd!.dispose();
@@ -122,7 +127,9 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
   @override
   void dispose() {
     super.dispose();
-    chainList.disposeAds();
+    if (!kIsWeb) {
+      chainList.disposeAds();
+    }
   }
 
   //Build Function

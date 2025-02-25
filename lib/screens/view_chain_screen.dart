@@ -14,6 +14,8 @@ import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:chain_activities/widgets/chain_activities_widget.dart';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 class ViewChain extends StatefulWidget {
   static String routename = "view_chain";
   const ViewChain({super.key});
@@ -278,7 +280,7 @@ class _ViewChainState extends State<ViewChain> {
                               ),
                             ]),
                       ),
-                    const ShowBannerAd(),
+                    if (!kIsWeb) const ShowBannerAd(),
                     if (savedInDb == true &&
                         invalidChain == false &&
                         chain.activities.length >= 3)

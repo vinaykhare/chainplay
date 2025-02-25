@@ -10,6 +10,7 @@ import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/screens/play_chain_screen.dart';
 import 'package:chain_activities/widgets/start_end_time_chain_widget.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 //import 'package:chain_activities/widgets/app_drawer.dart';
 
@@ -209,15 +210,16 @@ class PlayChainWidget extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Container(
-          margin: const EdgeInsets.all(5),
-          padding: const EdgeInsets.only(bottom: 5),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: Theme.of(context).cardColor,
+        if (!kIsWeb)
+          Container(
+            margin: const EdgeInsets.all(5),
+            padding: const EdgeInsets.only(bottom: 5),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: Theme.of(context).cardColor,
+            ),
+            child: const ShowBannerAd(),
           ),
-          child: const ShowBannerAd(),
-        ),
         if (executingChains.isEmpty)
           const Text(
             "Play Now",

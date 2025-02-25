@@ -10,6 +10,7 @@ import 'package:chain_activities/helpers/helper_functions.dart';
 import 'package:chain_activities/models/chain_activity.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/models/system_setting.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class PlayWaitActivityTutorial extends StatefulWidget {
   static String routename = "run_activity_tutorial";
@@ -252,15 +253,16 @@ class _PlayWaitActivityTutorialState extends State<PlayWaitActivityTutorial> {
                         style: Theme.of(context).textTheme.headlineSmall,
                         textAlign: TextAlign.center,
                       ),
-                    Container(
-                      margin: const EdgeInsets.all(5),
-                      padding: const EdgeInsets.only(bottom: 5),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Theme.of(context).cardColor,
+                    if (!kIsWeb)
+                      Container(
+                        margin: const EdgeInsets.all(5),
+                        padding: const EdgeInsets.only(bottom: 5),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Theme.of(context).cardColor,
+                        ),
+                        child: const ShowBannerAd(),
                       ),
-                      child: const ShowBannerAd(),
-                    ),
                     Row(
                       children: [
                         IconButton(

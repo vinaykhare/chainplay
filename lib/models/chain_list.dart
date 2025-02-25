@@ -24,6 +24,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:uuid/uuid.dart';
+
 //import 'package:chain_activities/screens/play_chain_screen.dart';
 
 /*
@@ -1419,8 +1420,12 @@ class ChainList with ChangeNotifier {
   }
 
   Future<List<SystemSetting>> fetchSettings() async {
-    List<Map<String, dynamic>> loadedSettings =
-        await DBHelper.getData("settings", "type ASC");
+    List<Map<String, dynamic>> loadedSettings;
+    loadedSettings = await DBHelper.getWebSettings();
+    if (loadedSettings.isEmpty) {
+      loadedSettings = await DBHelper.getData("settings", "type ASC");
+    }
+
     systemSettings = [];
     for (var loadedSetting in loadedSettings) {
       SystemSetting setting = SystemSetting();

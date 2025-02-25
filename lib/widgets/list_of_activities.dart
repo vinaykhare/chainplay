@@ -4,6 +4,7 @@ import 'package:chain_activities/widgets/activity_list_item.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class ListOfActivities extends StatefulWidget {
   final String? textFilter;
@@ -72,7 +73,7 @@ class _ListOfActivitiesState extends State<ListOfActivities> {
             },
           ),
         ),
-        if (widget.showAd == null || widget.showAd == true)
+        if (!kIsWeb && (widget.showAd == null || widget.showAd == true))
           Container(
             margin: const EdgeInsets.all(5),
             //padding: const EdgeInsets.only(bottom: 5),

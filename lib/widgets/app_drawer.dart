@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:chain_activities/tutorial/screens/how_it_works.dart';
 import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({
@@ -166,7 +167,7 @@ class AppDrawer extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 const Divider(),
-                const ShowBannerAd(),
+                if (!kIsWeb) const ShowBannerAd(),
                 const Divider(),
                 ListTile(
                   leading: const Icon(Icons.settings),

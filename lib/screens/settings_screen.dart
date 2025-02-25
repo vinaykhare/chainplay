@@ -9,6 +9,8 @@ import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/models/system_setting.dart';
 import 'package:chain_activities/widgets/app_drawer.dart';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 class SettingsScreen extends StatefulWidget {
   static String routename = "/settings";
   const SettingsScreen({super.key});
@@ -192,7 +194,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   settings: settings,
                   chainList: chainList,
                 ),
-                const ShowBannerAd(),
+                if (!kIsWeb) const ShowBannerAd(),
                 AppBar(
                   centerTitle: true,
                   title: const Text("Settings"),

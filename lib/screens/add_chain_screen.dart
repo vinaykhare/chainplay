@@ -17,6 +17,7 @@ import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/widgets/chain_activities_widget.dart';
 import 'package:uuid/uuid.dart';
 import 'package:duration_picker/duration_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AddChainScreen extends StatefulWidget {
   static String routename = "/add_chains";
@@ -1035,15 +1036,16 @@ class _AddChainScreenState extends State<AddChainScreen> {
                 ),
               ),
             ),
-            Container(
-              margin: const EdgeInsets.all(5),
-              padding: const EdgeInsets.only(bottom: 5),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: Theme.of(context).cardColor,
+            if (!kIsWeb)
+              Container(
+                margin: const EdgeInsets.all(5),
+                padding: const EdgeInsets.only(bottom: 5),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Theme.of(context).cardColor,
+                ),
+                child: const ShowBannerAd(),
               ),
-              child: const ShowBannerAd(),
-            ),
             if (addingDurationToActivity && tempChain.title.isNotEmpty)
               durationInputForm,
             Container(

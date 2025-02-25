@@ -7,6 +7,7 @@ import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_activity.dart';
 import 'package:chain_activities/widgets/chain_activities_widget.dart';
 import 'package:uuid/uuid.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AddChainScreenTutorial extends StatefulWidget {
   static String routename = "/add_chains_tutorial";
@@ -388,15 +389,16 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
                   ),
                 ),
               ),
-              Container(
-                margin: const EdgeInsets.all(5),
-                padding: const EdgeInsets.only(bottom: 5),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Theme.of(context).cardColor,
+              if (!kIsWeb)
+                Container(
+                  margin: const EdgeInsets.all(5),
+                  padding: const EdgeInsets.only(bottom: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Theme.of(context).cardColor,
+                  ),
+                  child: const ShowBannerAd(),
                 ),
-                child: const ShowBannerAd(),
-              ),
               if (addingDurationToActivity && tempChain.title.isNotEmpty)
                 durationInputForm,
               Container(
