@@ -29,13 +29,13 @@ class ChainListHeader extends StatelessWidget {
               },
             ),
             title: Text(
-              "Chain & Play",
+              "ChainPlay",
               style: Theme.of(context).textTheme.titleMedium!.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
             ),
             subtitle: Text(
-              "CHAIN THE ACTIVITIES \nAND PLAY IT",
+              "CHAIN THE ACTIVITIES\n& PLAY IT",
               style: Theme.of(context).textTheme.titleSmall,
             ),
           ),

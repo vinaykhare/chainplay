@@ -263,12 +263,19 @@ class _PlayWaitActivityTutorialState extends State<PlayWaitActivityTutorial> {
                     ),
                     Row(
                       children: [
-                        IconButton(
-                          onPressed: () {},
-                          icon: Icon(
-                            key: KeyHelper.playWaitBackwardKey,
-                            Icons.arrow_back,
-                          ),
+                        Row(
+                          children: [
+                            Icon(
+                              key: KeyHelper.playWaitBackwardKey,
+                              Icons.arrow_back,
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(
+                                left: 5,
+                              ),
+                              child: const Text("Chain Status"),
+                            ),
+                          ],
                         ),
                         if (showPlayPause)
                           Expanded(
@@ -284,12 +291,23 @@ class _PlayWaitActivityTutorialState extends State<PlayWaitActivityTutorial> {
                           const Expanded(
                             child: SizedBox(),
                           ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: Icon(
-                            key: KeyHelper.playWaitForwardKey,
-                            Icons.arrow_forward,
-                          ),
+                        Row(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(
+                                right: 5,
+                              ),
+                              child: const Text(
+                                "Next Activity",
+                              ),
+                            ),
+                            Icon(
+                              key: KeyHelper.playWaitForwardKey,
+                              playScreenType == systemEndActivityInDB
+                                  ? Icons.done
+                                  : Icons.arrow_forward,
+                            ),
+                          ],
                         ),
                       ],
                     ),

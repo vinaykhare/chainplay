@@ -38,7 +38,7 @@ class ChainActivities extends StatelessWidget {
         ? false
         : chainList.systemSettings[themeIndex].value == trueSettingValue;
     return MaterialApp(
-      title: 'Chain & Play',
+      title: 'ChainPlay',
       builder: (context, widget) {
         Widget error = const Scaffold(body: Center(child: MyErrorWidget()));
         ErrorWidget.builder = (errorDetails) => error;

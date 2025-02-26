@@ -86,7 +86,7 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
               child: Text(
-                "Chain Activity Specifications",
+                "Specifications of Activity",
                 style: Theme.of(context).textTheme.titleSmall,
                 //textAlign: TextAlign.left,
               ),
@@ -203,8 +203,9 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
                   ),
                   child: IconButton(
                     onPressed: () {},
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.clear_all,
+                      color: Theme.of(context).colorScheme.error,
                     ),
                   ),
                 ),
@@ -267,8 +268,9 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
                     ),
                     child: IconButton(
                       onPressed: () {},
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.clear_all,
+                        color: Theme.of(context).colorScheme.error,
                       ),
                     ),
                   ),
@@ -339,6 +341,8 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
       ],
     );
 
+    double appWidth = MediaQuery.of(context).size.width;
+
     return IgnorePointer(
       ignoring: true,
       child: Scaffold(
@@ -406,10 +410,25 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    IconButton(
-                      key: KeyHelper.addChainSaveAndExitKey,
-                      onPressed: () {},
-                      icon: const Icon(Icons.arrow_back),
+                    Semantics(
+                      label: "Save and Go back previous screen",
+                      child: SizedBox(
+                        width: appWidth * 0.21,
+                        child: InkWell(
+                          onTap: () {},
+                          child: Column(
+                            key: KeyHelper.addChainSaveAndExitKey,
+                            children: [
+                              const Icon(Icons.arrow_back),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 5),
+                                child: const Text("Save & Exit"),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
                     if (!updatingSystemWaitActivityInDB &&
                         tempChain.title.isNotEmpty)
@@ -464,14 +483,50 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
                           ),
                         ),
                       ),
-                    if (tempChain.title.isNotEmpty)
-                      IconButton(
-                        onPressed: () {},
-                        icon: chainActivityInEditMode != null
-                            ? const Icon(Icons.done_outline)
-                            : updatingSystemWaitActivityInDB
-                                ? const Icon(Icons.done)
-                                : const Icon(Icons.add_task_outlined),
+                    SizedBox(
+                      width: appWidth * 0.21,
+                      child: InkWell(
+                        onTap: () {},
+                        child: Column(
+                          children: [
+                            chainActivityInEditMode != null
+                                ? const Icon(Icons.done_outline)
+                                : updatingSystemWaitActivityInDB
+                                    ? const Icon(Icons.done)
+                                    : const Icon(Icons.add_task_outlined),
+                            chainActivityInEditMode != null
+                                ? updatingSystemWaitActivityInDB
+                                    ? const Text("Just here")
+                                    : const Text("Update")
+                                : const Text("Add"),
+                          ],
+                        ),
+                      ),
+                    ),
+                    if (updatingSystemWaitActivityInDB)
+                      InkWell(
+                        onTap: () {},
+                        child: Column(
+                          children: [
+                            const Icon(Icons.done_all),
+                            const Text("Between All"),
+                          ],
+                        ),
+                      ),
+                    if (updatingSystemWaitActivityInDB)
+                      InkWell(
+                        onTap: () {
+                          undoEdit(chainActivityInEditMode!);
+                          // tempChain.at = null;
+                          // tempChain.repeatType = repeatTypeDoesNotRepeat;
+                          // tempChain.repeatCount = repeatTypeDefaultCount;
+                        },
+                        child: Column(
+                          children: [
+                            const Icon(Icons.cancel_outlined),
+                            const Text("Discard"),
+                          ],
+                        ),
                       ),
                   ],
                 ),

@@ -1,21 +1,21 @@
 # Display title:
 
-Chain & Play, Chain the Activities & Play it
+ChainPlay, Chain the Activities & Play it
 
 # Short Description:
 
-"Chain & Play" allows you to Chain the Activities with Timers and Images (form local or a http url), and play it.
+"ChainPlay" allows you to Chain the Activities with Timers and Images (form local or a http url), and play it.
 
 These chain of activities are termed as Chains.
-"Chain & Play" comes with sample chains for you to start with, and also let you to create your own Chains, or edit the existing.
-"Chain & Play" provides a simple UI to play these chains interactively or in background.
+"ChainPlay" comes with sample chains for you to start with, and also let you to create your own Chains, or edit the existing.
+"ChainPlay" provides a simple UI to play these chains interactively or in background.
 You can also share and receive the chains in the form of a file (\*.json).
 
 # Long Description:
 
-    "Chain & Play" comes with sample chain of Timers which can be added to the app with just a tap.
-    Home screen of the "Chain & Play" App shows the buttons to create Chain, add sample, help etc. when No chains are present.
-    Home screen of the "Chain & Play" App shows the list of all Chains, with other friendly options like Create chain, upload chain and search chains.
+    "ChainPlay" comes with sample chain of Timers which can be added to the app with just a tap.
+    Home screen of the "ChainPlay" App shows the buttons to create Chain, add sample, help etc. when No chains are present.
+    Home screen of the "ChainPlay" App shows the list of all Chains, with other friendly options like Create chain, upload chain and search chains.
 
     Show Chain:
         We can see the details of chain by tapping on it.
@@ -41,7 +41,7 @@ You can also share and receive the chains in the form of a file (\*.json).
         On chain executoin completion, user get the option to either restart the chain or mark it complete and exit.
 
     Remove Chain:
-        We can swipe the chain right on Home screen to remove the chain from "Chain & Play" App.
+        We can swipe the chain right on Home screen to remove the chain from "ChainPlay" App.
         We can also go the Chain details, where we have delete icon to remove the chain.
 
     Create Chain of Timers:
@@ -54,7 +54,7 @@ You can also share and receive the chains in the form of a file (\*.json).
         We can add wait duration between the two timer-activities by tapping between the two Timer Activities.
         We can edit the Timer Activity already present in Chain, by tapping over it. Similarly, we can edit the wait/rest duration between two timer-activities.
         We can select image from Local file system or internet in most common formats including gif.
-        Sample workout chain that comes with "Chain & Play" App has gif images from internet for each timer activity in Chain sequence. Default image is the Logo of "Chain & Play" App.
+        Sample workout chain that comes with "ChainPlay" App has gif images from internet for each timer activity in Chain sequence. Default image is the Logo of "ChainPlay" App.
 
     App Settings:
         App Settings allows us to:
@@ -63,12 +63,12 @@ You can also share and receive the chains in the form of a file (\*.json).
 
 # Product Features Bullets:
 
-    1. Create your own Schedule with the help of Chains of Activities i.e. "Chain & Play".
+    1. Create your own Schedule with the help of Chains of Activities i.e. "ChainPlay".
     2. App Comes with Sample Chains to start with.
     3. Share the Chains in simple file format (*.json).
     4. Receive Chains:
-        4.1 Simply share the *.json file with "Chain & Play" App in "Chain & Play" specific format.
-        4.2 Upload *.json file (in "Chain & Play" specific format) using the Upload Button on home screen of app.
+        4.1 Simply share the *.json file with "ChainPlay" App in "ChainPlay" specific format.
+        4.2 Upload *.json file (in "ChainPlay" specific format) using the Upload Button on home screen of app.
     5. Interactively execute the Chain with Voice Enabled directions.
     6. Pause the chain and continue later, or the paused chain activity in background.
     7. Force complete the activities in the chain.
@@ -76,7 +76,7 @@ You can also share and receive the chains in the form of a file (\*.json).
     9. Delete the chain.
     10. Dark Theme is also possible.
     11. Disable app sound if you need.
-    12. Help instructions (What is "Chain & Play"?).
+    12. Help instructions (What is "ChainPlay"?).
 
 # Keywords:
 

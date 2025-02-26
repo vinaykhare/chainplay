@@ -128,10 +128,10 @@ List<Map<String, String>> headerSlideContent = [
   {
     "imageAsset": assetMap["logoImage"]!,
     "imageNetwork": "",
-    "title": "Chain & Play",
+    "title": "ChainPlay",
     "subtitle": "Chain the Activities and Play it",
     "speech":
-        "Thanks for choosing Chain and Play. Chain and Play is a tool to Chain your activities and Play it. Lets undestand the major functions of Chain and Play App with a quick tutorial. You have the option to skip this tutorial by pressing the Close button.",
+        "Thanks for choosing Chain Play. Chain Play is a tool to Chain your activities and Play it. Lets undestand the major functions of Chain Play App with a quick tutorial. You have the option to skip this tutorial by pressing the Close button.",
   },
   // {
   //   "imageAsset": assetMap["chains"]!,
@@ -139,7 +139,7 @@ List<Map<String, String>> headerSlideContent = [
   //   "title": "CHAINS",
   //   "subtitle": "Runs in Background or Foreground",
   //   "speech":
-  //       "Chain and Play has multiple features to streamline your activities with chains.",
+  //       "Chain Play has multiple features to streamline your activities with chains.",
   // },
 ];
 
@@ -151,12 +151,12 @@ List<Map<String, dynamic>> getTutorialItemsByType(
     case showHelpOnNextBootKey:
       tutorialItemType = [
         {
-          "title": "Chain and Play Header",
+          "title": "ChainPlay Header",
           "widgetToShow": ListView(
             shrinkWrap: true,
             children: [
               Text(
-                "Chain and Play Header",
+                "ChainPlay Header",
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               Text(
@@ -218,7 +218,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
         },
         {
           "title":
-              "This section lists all the chains present in your app. Chain and Play App comes with few sample chains as listed here.",
+              "This section lists all the chains present in your app. Chain Play App comes with few sample chains as listed here.",
           "widgetToShow": ListView(
             shrinkWrap: true,
             children: [
@@ -227,7 +227,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               Text(
-                "List of all the chains present in your app. Chain and Play comes with few sample chains as listed here. ",
+                "List of all the chains present in your app. Chain Play comes with few sample chains as listed here. ",
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ],
@@ -297,7 +297,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
         },
         {
           "title":
-              "Bottom Bar of the App has a drawer at the left and a Search Text Box at the right. Pressing the App Drawer will open a Side Menu bar with all options like What is Chain and Play which will Run this tutorial again, App Settings where you can switch to Dark Theme etcitra.",
+              "Bottom Bar of the App has a drawer at the left and a Search Text Box at the right. Pressing the App Drawer will open a Side Menu bar with all options like What is Chain Play which will Run this tutorial again, App Settings where you can switch to Dark Theme etcitra.",
           "widgetToShow": ListView(
             shrinkWrap: true,
             children: [
@@ -310,7 +310,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               Text(
-                "Pressing the App Drawer will open a Side Menu bar with all options like What is Chain and Play which will Run this tutorial again, App Settings where you can switch to Dark Theme etc.",
+                "Pressing the App Drawer will open a Side Menu bar with all options like What is Chain Play which will Run this tutorial again, App Settings where you can switch to Dark Theme etc.",
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               Image.asset(
@@ -349,7 +349,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
         },
         {
           "title":
-              "We have also provided a button to quickly filter the active chains.",
+              "We have also provided a button to quickly filter the favorite chains.",
           "widgetToShow": ListView(
             shrinkWrap: true,
             children: [
@@ -358,7 +358,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               Text(
-                "When number of chains are high, and we are struggling to find chains that running then this filter can help.",
+                "When number of chains are high, and we are struggling to find our favorite chain then this filter can help.",
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ],

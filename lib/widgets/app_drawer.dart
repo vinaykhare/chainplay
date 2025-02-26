@@ -33,7 +33,7 @@ class AppDrawer extends StatelessWidget {
               },
               leading: Image.asset(assetMap["logoImage"]!),
               title: Text(
-                "Chain & Play",
+                "ChainPlay",
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -43,7 +43,7 @@ class AppDrawer extends StatelessWidget {
                 // ),
               ),
               subtitle: Text(
-                "CHAIN THE ACTIVITIES \nAND PLAY IT",
+                "CHAIN THE ACTIVITIES\n& PLAY IT",
                 style: Theme.of(context).textTheme.titleSmall,
               ),
             ),
@@ -67,7 +67,7 @@ class AppDrawer extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.help),
                 title: Text(
-                  'What is Chain & Play?',
+                  'What is ChainPlay?',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 onTap: () {
@@ -80,7 +80,7 @@ class AppDrawer extends StatelessWidget {
               ),
               //const Divider(),
               ListTile(
-                leading: const Icon(Icons.web_stories),
+                leading: const Icon(Icons.add_circle),
                 title: Text(
                   'Add Sample Chains',
                   style: Theme.of(context).textTheme.titleMedium,
@@ -101,7 +101,7 @@ class AppDrawer extends StatelessWidget {
               ),
               ListTile(
                 leading: const Icon(
-                  Icons.add_box_outlined,
+                  Icons.create,
                   size: 30,
                 ),
                 title: Text(
@@ -122,7 +122,7 @@ class AppDrawer extends StatelessWidget {
               ),
               ListTile(
                 leading: const Icon(
-                  Icons.upload_outlined,
+                  Icons.upload,
                   size: 30,
                 ),
                 title: Text(
@@ -130,7 +130,7 @@ class AppDrawer extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 subtitle: Text(
-                  "shared or downloaded from Chain & Play",
+                  "shared or downloaded from ChainPlay",
                   style: Theme.of(context).textTheme.labelSmall,
                 ),
                 onTap: () async {

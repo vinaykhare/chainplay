@@ -48,15 +48,15 @@ class _ListOfChainsState extends State<ListOfChains> {
     bool showFavorites = widget.showFavorites, showRunning = widget.showRunning;
     allChains = chainList.getChainsByFilters(
         widget.textFilter ?? '', showFavorites, showRunning);
-    allChains.sort(
-      (Chain a, Chain b) {
-        if (!a.pinned) {
-          return 1;
-        } else {
-          return -1;
-        }
-      },
-    );
+    // allChains.sort(
+    //   (Chain a, Chain b) {
+    //     if (!a.pinned) {
+    //       return 1;
+    //     } else {
+    //       return -1;
+    //     }
+    //   },
+    // );
 
     return Column(
       //crossAxisAlignment: CrossAxisAlignment.start,

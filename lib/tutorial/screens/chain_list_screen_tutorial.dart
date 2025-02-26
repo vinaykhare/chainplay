@@ -68,9 +68,9 @@ class _ChainListScreenTutorialState extends State<ChainListScreenTutorial> {
       actions: [
         IconButton(
           key: KeyHelper.chainFiltersKey,
-          onPressed: null,
+          onPressed: () {},
           icon: Icon(
-            Icons.view_timeline,
+            Icons.favorite_outline,
           ),
         ),
       ],

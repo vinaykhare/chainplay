@@ -56,11 +56,11 @@ class _ChainListScreenState extends State<ChainListScreen> {
         IconButton(
           onPressed: () async {
             setState(() {
-              showRunning = !showRunning;
+              showFavorites = !showFavorites;
             });
           },
           icon: Icon(
-            showRunning ? Icons.view_timeline : Icons.view_timeline_outlined,
+            showFavorites ? Icons.favorite : Icons.favorite_outline,
           ),
         ),
       ],
