@@ -264,9 +264,9 @@ class _PlayWaitActivityTutorialState extends State<PlayWaitActivityTutorial> {
                     Row(
                       children: [
                         Row(
+                          key: KeyHelper.playWaitBackwardKey,
                           children: [
                             Icon(
-                              key: KeyHelper.playWaitBackwardKey,
                               Icons.arrow_back,
                             ),
                             Container(
@@ -280,18 +280,21 @@ class _PlayWaitActivityTutorialState extends State<PlayWaitActivityTutorial> {
                         if (showPlayPause)
                           Expanded(
                             child: IconButton(
+                              key: KeyHelper.playWaitPlayPauseKey,
                               onPressed: () {},
                               icon: Icon(
-                                key: KeyHelper.playWaitPlayPauseKey,
                                 running ? Icons.pause : Icons.play_arrow,
                               ),
                             ),
                           )
                         else
                           const Expanded(
-                            child: SizedBox(),
+                            child: SizedBox(
+                              height: 45,
+                            ),
                           ),
                         Row(
+                          key: KeyHelper.playWaitForwardKey,
                           children: [
                             Container(
                               margin: EdgeInsets.only(
@@ -302,7 +305,6 @@ class _PlayWaitActivityTutorialState extends State<PlayWaitActivityTutorial> {
                               ),
                             ),
                             Icon(
-                              key: KeyHelper.playWaitForwardKey,
                               playScreenType == systemEndActivityInDB
                                   ? Icons.done
                                   : Icons.arrow_forward,

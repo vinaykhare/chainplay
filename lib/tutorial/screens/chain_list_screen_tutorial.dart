@@ -65,15 +65,15 @@ class _ChainListScreenTutorialState extends State<ChainListScreenTutorial> {
           fillColor: Theme.of(context).scaffoldBackgroundColor,
         ),
       ),
-      actions: [
-        IconButton(
-          key: KeyHelper.chainFiltersKey,
-          onPressed: () {},
-          icon: Icon(
-            Icons.favorite_outline,
-          ),
-        ),
-      ],
+      // actions: [
+      //   IconButton(
+      //     key: KeyHelper.chainFiltersKey,
+      //     onPressed: () {},
+      //     icon: Icon(
+      //       Icons.favorite_outline,
+      //     ),
+      //   ),
+      // ],
     );
     return IgnorePointer(
       ignoring: true,

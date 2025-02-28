@@ -7,10 +7,6 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/chain_activities.dart';
 import 'firebase_options.dart';
-
-// import 'package:google_mobile_ads/google_mobile_ads.dart';
-
-// import 'helpers/ad_state.dart';
 import 'models/chain_list.dart';
 
 void main() async {

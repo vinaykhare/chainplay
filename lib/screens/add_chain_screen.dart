@@ -1128,6 +1128,8 @@ class _AddChainScreenState extends State<AddChainScreen> {
     return Scaffold(
       //appBar: appBarWidget,
       body: SafeArea(
+        // child: Stack(
+        //   children: [
         child: Column(
           children: [
             Semantics(
@@ -1188,25 +1190,29 @@ class _AddChainScreenState extends State<AddChainScreen> {
                 color: Theme.of(context).primaryColor,
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Semantics(
-                    label: "Save and Go back previous screen",
+                    label: "Save and Go back to previous screen",
                     child: SizedBox(
-                      width: appWidth * 0.21,
-                      child: InkWell(
-                        onTap: saveAndExit,
-                        child: Column(
-                          children: [
-                            const Icon(Icons.arrow_back),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 5),
-                              child: const Text("Save & Exit"),
-                            ),
-                          ],
-                        ),
+                      // width: appWidth * 0.21,
+                      child: IconButton(
+                        onPressed: saveAndExit,
+                        icon: const Icon(Icons.arrow_back),
                       ),
+                      // child: InkWell(
+                      //   onTap: saveAndExit,
+                      //   child: Column(
+                      //     children: [
+                      //       const Icon(Icons.arrow_back),
+                      //       Padding(
+                      //         padding:
+                      //             const EdgeInsets.symmetric(horizontal: 5),
+                      //         child: const Text("Save & Exit"),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
                     ),
                   ),
                   if (!updatingSystemWaitActivityInDB &&
@@ -1271,10 +1277,26 @@ class _AddChainScreenState extends State<AddChainScreen> {
                         ),
                       ),
                     ),
-                  //if (tempChain.title.isNotEmpty)
-                  SizedBox(
-                    width: appWidth * 0.21,
-                    child: InkWell(
+                  if (chainActivityInEditMode == null ||
+                      chainActivityInEditMode!.activity.type !=
+                          systemWaitActivityInDB)
+                    SizedBox(
+                      // width: appWidth * 0.21,
+                      child: IconButton(
+                        onPressed: tempChain.title.isNotEmpty
+                            ? onSubmitText
+                            : () {
+                                validateForm(context, false);
+                              },
+                        icon: chainActivityInEditMode != null
+                            ? const Icon(Icons.done_outline)
+                            : updatingSystemWaitActivityInDB
+                                ? const Icon(Icons.done)
+                                : const Icon(Icons.add_task_outlined),
+                      ),
+                    )
+                  else
+                    InkWell(
                       onTap: tempChain.title.isNotEmpty
                           ? onSubmitText
                           : () {
@@ -1282,20 +1304,11 @@ class _AddChainScreenState extends State<AddChainScreen> {
                             },
                       child: Column(
                         children: [
-                          chainActivityInEditMode != null
-                              ? const Icon(Icons.done_outline)
-                              : updatingSystemWaitActivityInDB
-                                  ? const Icon(Icons.done)
-                                  : const Icon(Icons.add_task_outlined),
-                          chainActivityInEditMode != null
-                              ? updatingSystemWaitActivityInDB
-                                  ? const Text("Just here")
-                                  : const Text("Update")
-                              : const Text("Add"),
+                          const Icon(Icons.done_outline),
+                          const Text("Just here")
                         ],
                       ),
                     ),
-                  ),
                   if (updatingSystemWaitActivityInDB)
                     InkWell(
                       onTap: updateDurationForAllSystemWaitActivity,
@@ -1326,6 +1339,26 @@ class _AddChainScreenState extends State<AddChainScreen> {
             ),
           ],
         ),
+        // Expanded(
+        //   child: Positioned(
+        //     bottom: 50,
+        //     child: AnimatedContainer(
+        //       width: ((addingDurationToActivity || addingImageToActivity) &&
+        //               tempChain.title.isNotEmpty)
+        //           ? appWidth
+        //           : 0,
+        //       duration: Duration(milliseconds: 500),
+        //       curve: Curves.easeOut,
+        //       color: Colors.black,
+        //       child: ((addingDurationToActivity || addingImageToActivity) &&
+        //               tempChain.title.isNotEmpty)
+        //           ? activitySpecificationForm
+        //           : null,
+        //     ),
+        //   ),
+        // ),
+        // ],
+        // ),
       ),
     );
   }

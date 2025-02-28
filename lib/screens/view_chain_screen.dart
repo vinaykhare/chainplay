@@ -428,19 +428,11 @@ class _ViewChainState extends State<ViewChain> {
                             child: Container(
                               margin: const EdgeInsets.symmetric(horizontal: 5),
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Theme.of(context).cardColor,
-                                    Theme.of(context).primaryColorDark,
-                                  ],
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                ),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: TextButton.icon(
                                 label: Text(
-                                  "Not OK! Discard this Chain",
+                                  "Not OK!\nDiscard this Chain",
                                   style: Theme.of(context).textTheme.labelLarge,
                                 ),
                                 onPressed: exitScreen,
@@ -455,19 +447,11 @@ class _ViewChainState extends State<ViewChain> {
                             child: Container(
                               margin: const EdgeInsets.symmetric(horizontal: 5),
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Theme.of(context).cardColor,
-                                    Theme.of(context).primaryColor,
-                                  ],
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                ),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: TextButton.icon(
                                 label: Text(
-                                  "Looks OK! Save this Chain",
+                                  "Looks OK!\nSave this Chain",
                                   style: Theme.of(context).textTheme.labelLarge,
                                 ),
                                 onPressed: () async {

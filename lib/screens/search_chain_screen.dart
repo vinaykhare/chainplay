@@ -78,19 +78,19 @@ class _SearchChainScreenState extends State<SearchChainScreen> {
                       fillColor: Theme.of(context).scaffoldBackgroundColor,
                     ),
                   ),
-                  actions: [
-                    IconButton(
-                      onPressed: () async {
-                        setState(() {
-                          showFavorites = !showFavorites;
-                        });
-                      },
-                      icon: Icon(
-                        showFavorites ? Icons.favorite : Icons.favorite_outline,
-                        //color: Theme.of(context).primaryColorDark,
-                      ),
-                    ),
-                  ],
+                  // actions: [
+                  //   IconButton(
+                  //     onPressed: () async {
+                  //       setState(() {
+                  //         showFavorites = !showFavorites;
+                  //       });
+                  //     },
+                  //     icon: Icon(
+                  //       showFavorites ? Icons.favorite : Icons.favorite_outline,
+                  //       //color: Theme.of(context).primaryColorDark,
+                  //     ),
+                  //   ),
+                  // ],
                 )
               ],
             ),

@@ -234,7 +234,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
           ),
           "globalKey": KeyHelper.chainListKey,
           "focusAlign": Alignment.bottomCenter,
-          "contentAlign": ContentAlign.top,
+          "contentAlign": ContentAlign.bottom,
         },
         {
           "title":
@@ -277,7 +277,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
         },
         {
           "title":
-              "This section is just kept for your help to understand the set of actions that you can perform on a chain.",
+              "This section is just kept for your help to understand the set of actions that you can perform for creating chains and playting with it.",
           "widgetToShow": ListView(
             shrinkWrap: true,
             children: [
@@ -286,7 +286,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               Text(
-                "This section is just kept for your help to understand the set of actions that you can perform on a chain.",
+                "This section is just kept for your help to understand the set of actions that you can perform for creating chains and playting with it.",
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ],
@@ -349,7 +349,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
         },
         {
           "title":
-              "We have also provided a button to quickly filter the favorite chains.",
+              "We have also provided a button to quickly filter the chains.",
           "widgetToShow": ListView(
             shrinkWrap: true,
             children: [
@@ -358,14 +358,14 @@ List<Map<String, dynamic>> getTutorialItemsByType(
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               Text(
-                "When number of chains are high, and we are struggling to find our favorite chain then this filter can help.",
+                "When number of chains are high, and we are struggling to find our favorite chains or running chains then these filters can help.",
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ],
           ),
           "globalKey": KeyHelper.chainFiltersKey,
           "focusAlign": Alignment.topCenter,
-          "contentAlign": ContentAlign.top,
+          "contentAlign": ContentAlign.bottom,
         },
         {
           "title": idToStartViewChain,
@@ -384,7 +384,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
           ),
           "globalKey": KeyHelper.sampleWorkoutChainListItemKey,
           "focusAlign": Alignment.bottomCenter,
-          "contentAlign": ContentAlign.top,
+          "contentAlign": ContentAlign.bottom,
         },
         {
           "title":

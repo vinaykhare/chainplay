@@ -378,7 +378,9 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                 )
               else
                 const Expanded(
-                  child: SizedBox(),
+                  child: SizedBox(
+                    height: 45,
+                  ),
                 ),
               InkWell(
                 onTap: interruptAndCompleteActivity,

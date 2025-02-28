@@ -127,7 +127,7 @@ class ChainTileView extends StatelessWidget {
                   "with",
                   style: Theme.of(context).textTheme.labelMedium!.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Theme.of(context).scaffoldBackgroundColor,
+                        // color: Theme.of(context).scaffoldBackgroundColor,
                       ),
                 ),
                 Text(
@@ -150,7 +150,7 @@ class ChainTileView extends StatelessWidget {
                   "Last Updated",
                   style: Theme.of(context).textTheme.labelMedium!.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Theme.of(context).scaffoldBackgroundColor,
+                        // color: Theme.of(context).scaffoldBackgroundColor,
                       ),
                 ),
                 Text(
@@ -197,16 +197,14 @@ class ChainTileView extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             child: Text(
               "$status at",
-              style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                    color: Theme.of(context).secondaryHeaderColor,
-                  ),
+              style: Theme.of(context).textTheme.labelMedium,
             ),
           ),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Text(
               currentActivityTitle,
-              style: Theme.of(context).textTheme.titleMedium,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
         ],
@@ -221,7 +219,7 @@ class ChainTileView extends StatelessWidget {
       child: InkWell(
         onTap: () => navigateToViewChainOrPlayChain(context),
         child: Container(
-          margin: const EdgeInsets.symmetric(vertical: 2),
+          margin: const EdgeInsets.symmetric(vertical: 5),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             color: chain.at != null
@@ -299,7 +297,7 @@ class ChainTileView extends StatelessWidget {
                       chain.title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: Theme.of(context).hintColor,
+                            //color: Theme.of(context).hintColor,
                           ),
                     ),
                   ),

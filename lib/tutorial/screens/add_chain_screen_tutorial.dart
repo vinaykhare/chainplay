@@ -341,8 +341,6 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
       ],
     );
 
-    double appWidth = MediaQuery.of(context).size.width;
-
     return IgnorePointer(
       ignoring: true,
       child: Scaffold(
@@ -413,20 +411,11 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
                     Semantics(
                       label: "Save and Go back previous screen",
                       child: SizedBox(
-                        width: appWidth * 0.21,
-                        child: InkWell(
-                          onTap: () {},
-                          child: Column(
-                            key: KeyHelper.addChainSaveAndExitKey,
-                            children: [
-                              const Icon(Icons.arrow_back),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 5),
-                                child: const Text("Save & Exit"),
-                              ),
-                            ],
-                          ),
+                        // width: appWidth * 0.21,
+                        child: IconButton(
+                          key: KeyHelper.addChainSaveAndExitKey,
+                          onPressed: () {},
+                          icon: const Icon(Icons.arrow_back),
                         ),
                       ),
                     ),
@@ -484,22 +473,16 @@ class _AddChainScreenTutorialState extends State<AddChainScreenTutorial> {
                         ),
                       ),
                     SizedBox(
-                      width: appWidth * 0.21,
-                      child: InkWell(
-                        onTap: () {},
-                        child: Column(
-                          children: [
-                            chainActivityInEditMode != null
-                                ? const Icon(Icons.done_outline)
-                                : updatingSystemWaitActivityInDB
-                                    ? const Icon(Icons.done)
-                                    : const Icon(Icons.add_task_outlined),
-                            chainActivityInEditMode != null
-                                ? updatingSystemWaitActivityInDB
-                                    ? const Text("Just here")
-                                    : const Text("Update")
-                                : const Text("Add"),
-                          ],
+                      // width: appWidth * 0.21,
+                      child: SizedBox(
+                        // width: appWidth * 0.21,
+                        child: IconButton(
+                          onPressed: () {},
+                          icon: chainActivityInEditMode != null
+                              ? const Icon(Icons.done_outline)
+                              : updatingSystemWaitActivityInDB
+                                  ? const Icon(Icons.done)
+                                  : const Icon(Icons.add_task_outlined),
                         ),
                       ),
                     ),

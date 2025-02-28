@@ -7,138 +7,115 @@ class ChainTileHelp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        //const Divider(),
-        FittedBox(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextButton.icon(
-                onPressed: null,
-                icon: const Icon(
-                  Icons.play_circle,
+        Padding(
+          padding: const EdgeInsets.all(4),
+          child: FittedBox(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.play_circle,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Text(
+                        "Play Chain",
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                    ),
+                  ],
                 ),
-                label: Text(
-                  "Play Chain",
-                  style: Theme.of(context).textTheme.labelLarge,
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.touch_app_rounded,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Text(
+                        "View Chain",
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              TextButton.icon(
-                onPressed: null,
-                icon: const Icon(
-                  Icons.touch_app_rounded,
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.stop,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Text(
+                        "Stop Chain",
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                    ),
+                  ],
                 ),
-                label: Text(
-                  "View Chain",
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
-              ),
-              TextButton.icon(
-                onPressed: null,
-                icon: const Icon(
-                  Icons.stop,
-                ),
-                label: Text(
-                  "Stop Chain",
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-        const Divider(),
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: [
-        //     CircleAvatar(
-        //       radius: 10,
-        //       backgroundColor: Theme.of(context).primaryColorLight,
-        //       child: const Icon(Icons.play_arrow, size: 15),
-        //     ),
-        //     const Text("Play Chain"),
-        //     CircleAvatar(
-        //       radius: 10,
-        //       backgroundColor: Theme.of(context).primaryColorLight,
-        //       child: const Icon(Icons.pause, size: 15),
-        //     ),
-        //     const Text("Stop Chain"),
-        //   ],
-        // ),
-
-        // const Divider(),
-        FittedBox(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextButton.icon(
-                onPressed: null,
-                icon: const Icon(
-                  Icons.share_rounded,
+        SizedBox(
+          height: 10,
+        ),
+        Padding(
+          padding: const EdgeInsets.all(4),
+          child: FittedBox(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.share_rounded,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Text(
+                        "Share Chain",
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                    ),
+                  ],
                 ),
-                label: Text(
-                  "Share Chain",
-                  style: Theme.of(context).textTheme.labelLarge,
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.favorite_outline_outlined,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Text(
+                        "Favorite",
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              TextButton.icon(
-                onPressed: null,
-                icon: const Icon(
-                  Icons.favorite_outline_outlined,
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.swipe_right_sharp,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Text(
+                        "Delete Chain",
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                    ),
+                  ],
                 ),
-                label: Text(
-                  "Favorite",
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
-              ),
-              TextButton.icon(
-                onPressed: null,
-                icon: const Icon(
-                  Icons.swipe_right_sharp,
-                ),
-                label: Text(
-                  "Delete Chain",
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: [
-        //     CircleAvatar(
-        //       radius: 10,
-        //       backgroundColor: Theme.of(context).primaryColorLight,
-        //       child: const Icon(Icons.touch_app_outlined, size: 20),
-        //     ),
-        //     const Padding(
-        //       padding: EdgeInsets.symmetric(horizontal: 8.0),
-        //       child: Text("View Chain"),
-        //     ),
-        //     CircleAvatar(
-        //       radius: 10,
-        //       backgroundColor: Theme.of(context).primaryColorLight,
-        //       child: const Icon(Icons.favorite, size: 15),
-        //     ),
-        //     const Padding(
-        //       padding: EdgeInsets.symmetric(horizontal: 8.0),
-        //       child: Text("Favorite"),
-        //     ),
-        //     const SizedBox(
-        //       width: 50,
-        //     ),
-        //     CircleAvatar(
-        //       radius: 10,
-        //       backgroundColor: Theme.of(context).primaryColorLight,
-        //       child: const Icon(Icons.swipe_right, size: 20),
-        //     ),
-        //     const Padding(
-        //       padding: EdgeInsets.symmetric(horizontal: 8.0),
-        //       child: Text("Delete Chain"),
-        //     ),
-        //   ],
-        // ),
-        // const Divider(),
       ],
     );
   }

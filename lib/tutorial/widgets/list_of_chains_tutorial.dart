@@ -2,8 +2,6 @@ import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/widgets/chain_list_item.dart';
-import 'package:chain_activities/widgets/chain_tile_help.dart';
-import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -52,85 +50,120 @@ class _ListOfChainsTutorialState extends State<ListOfChainsTutorial> {
       children: [
         if (widget.showChainControlSummary == null ||
             widget.showChainControlSummary == true)
-          Column(
-            key: KeyHelper.chainControlSummaryKey,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(30)),
-                  color: Theme.of(context).primaryColor,
-                ),
-                child: TextButton.icon(
-                  onPressed: () {
-                    setState(() {
-                      showChainControlSummary = !showChainControlSummary;
-                    });
-                  },
-                  icon: Icon(
-                    key: KeyHelper.minmaxChainControlSummaryKey,
-                    showChainControlSummary
-                        ? Icons.expand_more_rounded
-                        : Icons.expand_less_rounded,
-                  ),
-                  label: Text(
-                    "Summary of Chain Controls",
-                    style: Theme.of(context).textTheme.titleMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
+              IconButton(
+                key: KeyHelper.chainControlSummaryKey,
+                icon: Icon(Icons.help),
+                onPressed: () {
+                  setState(() {
+                    showChainControlSummary = !showChainControlSummary;
+                  });
+                },
               ),
-              if (showChainControlSummary &&
-                  (widget.showChainControlSummary == null ||
-                      widget.showChainControlSummary == true))
-                const ChainTileHelp(),
+              Row(
+                key: KeyHelper.chainFiltersKey,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        showFavorites = false;
+                        showRunning = false;
+                      });
+                    },
+                    child: Text(
+                      "All Chains",
+                      style: TextStyle(
+                        fontWeight:
+                            showFavorites == false && showRunning == false
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        showRunning = true;
+                        showFavorites = false;
+                      });
+                    },
+                    child: Text(
+                      "Running Chains",
+                      style: TextStyle(
+                        fontWeight:
+                            showFavorites == false && showRunning == true
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        showFavorites = true;
+                        showRunning = false;
+                      });
+                    },
+                    child: Text(
+                      "Favorite Chains",
+                      style: TextStyle(
+                        fontWeight:
+                            showFavorites == true && showRunning == false
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(),
             ],
           ),
-        Expanded(
+        Column(
           key: KeyHelper.chainListKey,
-          child: Column(
-            children: [
-              ChainListItem(
-                tutorialChain: sampleWorkoutChain.title,
-                //adChain: adChain,
-                chain: sampleWorkoutChain,
-                showHistory: true,
-                allowFlag: true,
-                key: KeyHelper.sampleWorkoutChainListItemKey,
-                index: sampleWorkoutChain.index,
-              ),
-              ChainListItem(
-                tutorialChain: sampleDietChain.title,
-                //adChain: adChain,
-                chain: sampleDietChain,
-                showHistory: true,
-                allowFlag: true,
-                key: KeyHelper.sampleDietChainListItemKey,
-                index: sampleDietChain.index,
-              ),
-              ChainListItem(
-                tutorialChain: sampleMedicineChain.title,
-                //adChain: adChain,
-                chain: sampleMedicineChain,
-                showHistory: true,
-                allowFlag: true,
-                key: KeyHelper.sampleMedicineChainListItemKey,
-                index: sampleMedicineChain.index,
-              ),
-            ],
-          ),
+          children: [
+            ChainListItem(
+              tutorialChain: sampleWorkoutChain.title,
+              //adChain: adChain,
+              chain: sampleWorkoutChain,
+              showHistory: true,
+              allowFlag: true,
+              key: KeyHelper.sampleWorkoutChainListItemKey,
+              index: sampleWorkoutChain.index,
+            ),
+            ChainListItem(
+              tutorialChain: sampleDietChain.title,
+              //adChain: adChain,
+              chain: sampleDietChain,
+              showHistory: true,
+              allowFlag: true,
+              key: KeyHelper.sampleDietChainListItemKey,
+              index: sampleDietChain.index,
+            ),
+            ChainListItem(
+              tutorialChain: sampleMedicineChain.title,
+              //adChain: adChain,
+              chain: sampleMedicineChain,
+              showHistory: true,
+              allowFlag: true,
+              key: KeyHelper.sampleMedicineChainListItemKey,
+              index: sampleMedicineChain.index,
+            ),
+          ],
         ),
         const Divider(),
-        if (widget.showAd == null || widget.showAd == true)
-          Container(
-            margin: const EdgeInsets.all(5),
-            //padding: const EdgeInsets.only(bottom: 5),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: Theme.of(context).cardColor,
-            ),
-            child: const ShowBannerAd(),
-          ),
+        // if (widget.showAd == null || widget.showAd == true)
+        //   Container(
+        //     margin: const EdgeInsets.all(5),
+        //     //padding: const EdgeInsets.only(bottom: 5),
+        //     decoration: BoxDecoration(
+        //       borderRadius: BorderRadius.circular(20),
+        //       color: Theme.of(context).cardColor,
+        //     ),
+        //     child: const ShowBannerAd(),
+        //   ),
       ],
     );
   }

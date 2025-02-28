@@ -171,8 +171,8 @@ class ChainActivities extends StatelessWidget {
                   color: Colors.amber,
                 ),
               ),
-              dialogTheme:
-                  DialogThemeData(backgroundColor: PaletteDark.lightGrey),
+              dialogTheme: DialogThemeData(
+                  backgroundColor: PaletteDark.lightGrey.shade800),
             )
           : ThemeData(
               // useMaterial3: false,
