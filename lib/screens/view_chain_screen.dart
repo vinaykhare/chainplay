@@ -264,17 +264,17 @@ class _ViewChainState extends State<ViewChain> {
                                 textAlign: TextAlign.center,
                               ),
                               Text(
-                                "Go back and try with Valid Chain & Play's JSON File.\n",
+                                "Go back and try with Valid ChainPlay's JSON File.\n",
                                 style: Theme.of(context).textTheme.labelLarge,
                                 textAlign: TextAlign.center,
                               ),
                               Text(
-                                "Chain & Play's valid JSON File has a predefined format.\n",
+                                "ChainPlay's valid JSON File has a predefined format.\n",
                                 style: Theme.of(context).textTheme.labelLarge,
                                 textAlign: TextAlign.center,
                               ),
                               Text(
-                                "Chain & Play's valid JSON File must have a title and more than one activity.\n",
+                                "ChainPlay's valid JSON File must have a title and more than one activity.\n",
                                 style: Theme.of(context).textTheme.labelLarge,
                                 textAlign: TextAlign.center,
                               ),
@@ -430,19 +430,11 @@ class _ViewChainState extends State<ViewChain> {
                             child: Container(
                               margin: const EdgeInsets.symmetric(horizontal: 5),
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Theme.of(context).cardColor,
-                                    Theme.of(context).primaryColorDark,
-                                  ],
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                ),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: TextButton.icon(
                                 label: Text(
-                                  "Not OK! Discard this Chain",
+                                  "Not OK!\nDiscard this Chain",
                                   style: Theme.of(context).textTheme.labelLarge,
                                 ),
                                 onPressed: exitScreen,
@@ -457,19 +449,11 @@ class _ViewChainState extends State<ViewChain> {
                             child: Container(
                               margin: const EdgeInsets.symmetric(horizontal: 5),
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Theme.of(context).cardColor,
-                                    Theme.of(context).primaryColor,
-                                  ],
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                ),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: TextButton.icon(
                                 label: Text(
-                                  "Looks OK! Save this Chain",
+                                  "Looks OK!\nSave this Chain",
                                   style: Theme.of(context).textTheme.labelLarge,
                                 ),
                                 onPressed: () async {

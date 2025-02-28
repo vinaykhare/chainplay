@@ -101,7 +101,7 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
       scms.showSnackBar(
         SnackBar(
           content: const Text(
-            "Chain & Play do not have permission to send Notification.",
+            "ChainPlay do not have permission to send Notification.",
           ),
           action: SnackBarAction(
             label: 'OK',

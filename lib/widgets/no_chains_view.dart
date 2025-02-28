@@ -48,7 +48,7 @@ class NoChainsView extends StatelessWidget {
         HomeButtonWidget(
           chainListFunction: "navigateToHelpScreen",
           buttonText: "Know",
-          buttonSubText: "more about Chain & Play.",
+          buttonSubText: "more about ChainPlay.",
           logo: Icon(
             Icons.help_outline,
             size: 50,

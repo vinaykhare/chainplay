@@ -52,18 +52,18 @@ class _ChainListScreenState extends State<ChainListScreen> {
           fillColor: Theme.of(context).scaffoldBackgroundColor,
         ),
       ),
-      actions: [
-        IconButton(
-          onPressed: () async {
-            setState(() {
-              showRunning = !showRunning;
-            });
-          },
-          icon: Icon(
-            showRunning ? Icons.view_timeline : Icons.view_timeline_outlined,
-          ),
-        ),
-      ],
+      // actions: [
+      //   IconButton(
+      //     onPressed: () async {
+      //       setState(() {
+      //         showFavorites = !showFavorites;
+      //       });
+      //     },
+      //     icon: Icon(
+      //       showFavorites ? Icons.favorite : Icons.favorite_outline,
+      //     ),
+      //   ),
+      // ],
     );
     // double appHeight =
     //     MediaQuery.of(context).size.height - appBarWidget.preferredSize.height;

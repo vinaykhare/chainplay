@@ -322,8 +322,8 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
           ),
           bottomNavigationBar: Row(
             children: [
-              IconButton(
-                onPressed: () {
+              InkWell(
+                onTap: () {
                   Navigator.of(context).pop({
                     "running": false, //running,
                     "waitDuration": waitDuration,
@@ -331,10 +331,33 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                     "resumedAt": resumedAt,
                   });
                 },
-                icon: const Icon(
-                  Icons.arrow_back,
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.arrow_back,
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(
+                        left: 5,
+                      ),
+                      child: const Text("Chain Status"),
+                    ),
+                  ],
                 ),
               ),
+              // IconButton(
+              //   onPressed: () {
+              //     Navigator.of(context).pop({
+              //       "running": false, //running,
+              //       "waitDuration": waitDuration,
+              //       "interruptAndCompleted": false,
+              //       "resumedAt": resumedAt,
+              //     });
+              //   },
+              //   icon: const Icon(
+              //     Icons.arrow_back,
+              //   ),
+              // ),
               if (showPlayPause)
                 Expanded(
                   child: IconButton(
@@ -357,16 +380,38 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                 )
               else
                 const Expanded(
-                  child: SizedBox(),
+                  child: SizedBox(
+                    height: 45,
+                  ),
                 ),
-              IconButton(
-                onPressed: interruptAndCompleteActivity,
-                icon: Icon(
-                  playScreenType == systemEndActivityInDB
-                      ? Icons.done
-                      : Icons.arrow_forward,
+              InkWell(
+                onTap: interruptAndCompleteActivity,
+                child: Row(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(
+                        right: 5,
+                      ),
+                      child: const Text(
+                        "Next Activity",
+                      ),
+                    ),
+                    Icon(
+                      playScreenType == systemEndActivityInDB
+                          ? Icons.done
+                          : Icons.arrow_forward,
+                    ),
+                  ],
                 ),
               ),
+              // IconButton(
+              //   onPressed: interruptAndCompleteActivity,
+              //   icon: Icon(
+              //     playScreenType == systemEndActivityInDB
+              //         ? Icons.done
+              //         : Icons.arrow_forward,
+              //   ),
+              // ),
             ],
           ),
         ),

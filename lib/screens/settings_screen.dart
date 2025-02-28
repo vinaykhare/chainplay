@@ -28,7 +28,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     {
       //NavigatorState nav = Navigator.of(context);
       ScaffoldMessengerState scms = ScaffoldMessenger.of(context);
-      ThemeData theme = Theme.of(context);
+
       bool? dialogResponse = await showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -68,13 +68,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
         scms.showSnackBar(
           SnackBar(
-            backgroundColor: theme.primaryColor,
+            // backgroundColor: theme.primaryColor,
             content: Text(
               //e.toString(),
               removed
                   ? "All Unused User Created Activities are deleted"
                   : "Failed to delete the Unused User created activities",
-              style: theme.textTheme.titleMedium,
+              // style: theme.textTheme.titleMedium,
               textAlign: TextAlign.center,
             ),
             duration: const Duration(seconds: 10),

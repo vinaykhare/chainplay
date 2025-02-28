@@ -26,13 +26,13 @@ class ChainListHeaderTutorial extends StatelessWidget {
               key: KeyHelper.chainAndPlayTitle,
             ),
             title: const Text(
-              "Chain & Play",
+              "ChainPlay",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
               ),
             ),
             subtitle: const Text(
-              "CHAIN THE ACTIVITIES \nAND PLAY IT",
+              "CHAIN THE ACTIVITIES\n& PLAY IT",
             ),
           ),
         ),

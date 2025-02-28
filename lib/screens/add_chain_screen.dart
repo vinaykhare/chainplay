@@ -51,12 +51,13 @@ class _AddChainScreenState extends State<AddChainScreen> {
   String pageTitle = "Add Chain",
       activityTitle = "",
       errorString = "",
-      formImageUrlErrorString = "",
-      formActivityTitleErrorString = "",
+      // formImageUrlErrorString = "",
+      activityFormErrorString = "",
       chainNameOnPageLoad = "";
 
   bool showSaveAndExit = false,
       addingDurationToActivity = false,
+      addingImageToActivity = false,
       updatingSystemWaitActivityInDB = false,
       // scrollAtTop = false,
       pageInit = true;
@@ -273,12 +274,82 @@ class _AddChainScreenState extends State<AddChainScreen> {
     return false;
   }
 
+  Future<void> updateDurationForAllSystemWaitActivity() async {
+    setState(() {
+      errorString = "";
+      activityFormErrorString = "";
+    });
+
+    String? validHour = validateHour(durationHourController.text);
+    String? validMinute = validateMinuteOrSecond(durationMinuteController.text);
+    String? validSecond = validateMinuteOrSecond(durationSecondController.text);
+
+    if (validHour != null) {
+      setState(() {
+        activityFormErrorString = "Hours should be in the range of $validHour";
+      });
+      return;
+    }
+
+    if (validMinute != null) {
+      setState(() {
+        activityFormErrorString =
+            "Minutes should be in the range of $validMinute";
+      });
+      return;
+    }
+    if (validSecond != null) {
+      setState(() {
+        activityFormErrorString =
+            "Seconds should be in the range of $validSecond";
+      });
+      return;
+    }
+
+    activityDurationHour = durationHourController.text == ""
+        ? 0
+        : int.parse(durationHourController.text);
+    activityDurationMinute = durationMinuteController.text == ""
+        ? 0
+        : int.parse(durationMinuteController.text);
+    activityDurationSecond = durationSecondController.text == ""
+        ? 0
+        : int.parse(durationSecondController.text);
+    for (var chainActivity in tempChain.activities) {
+      if (chainActivity.activity.type == systemWaitActivityInDB) {
+        chainActivityInEditMode = chainActivity;
+        chainActivityInEditMode!.edit = false;
+        chainActivityInEditMode!.activityDuration = Duration(
+          hours: activityDurationHour,
+          minutes: activityDurationMinute,
+          seconds: activityDurationSecond,
+        );
+
+        await updateActivity(chainActivityInEditMode!);
+      }
+    }
+
+    addActivityController.clear();
+    activityImageController.clear();
+
+    durationHourController.clear();
+    durationMinuteController.clear();
+    durationSecondController.clear();
+
+    setState(() {
+      activityDurationHour = 0;
+      activityDurationMinute = 0;
+      activityDurationSecond = 0;
+      addingDurationToActivity = false;
+      addingImageToActivity = false;
+    });
+  }
+
   void onSubmitText() async {
     FocusScopeNode focusScope = FocusScope.of(context);
     setState(() {
       errorString = "";
-      formImageUrlErrorString = "";
-      formActivityTitleErrorString = "";
+      activityFormErrorString = "";
     });
 
     bool validChainForm = chainFormKey.currentState!.validate();
@@ -306,7 +377,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
             activityDurationMinute > 0 ||
             activityDurationSecond > 0)) {
       setState(() {
-        formActivityTitleErrorString = "Add Chain Activity Name";
+        activityFormErrorString = "Add Chain Activity Name";
       });
       return;
     }
@@ -317,7 +388,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
 
     if (addActivityController.text.length > 35) {
       setState(() {
-        formActivityTitleErrorString =
+        activityFormErrorString =
             "Length of Acitivity Name is too long. It should not be more than 35 letters long.";
       });
       return;
@@ -327,10 +398,36 @@ class _AddChainScreenState extends State<AddChainScreen> {
       bool isValidURL = await validURL(activityImageController.text);
       if (!isValidURL) {
         setState(() {
-          formImageUrlErrorString = "Invald Image URL";
+          activityFormErrorString = "Invalid Path or URL";
         });
         return;
       }
+    }
+
+    String? validHour = validateHour(durationHourController.text);
+    String? validMinute = validateMinuteOrSecond(durationMinuteController.text);
+    String? validSecond = validateMinuteOrSecond(durationSecondController.text);
+
+    if (validHour != null) {
+      setState(() {
+        activityFormErrorString = "Hours should be in the range of $validHour";
+      });
+      return;
+    }
+
+    if (validMinute != null) {
+      setState(() {
+        activityFormErrorString =
+            "Minutes should be in the range of $validMinute";
+      });
+      return;
+    }
+    if (validSecond != null) {
+      setState(() {
+        activityFormErrorString =
+            "Seconds should be in the range of $validSecond";
+      });
+      return;
     }
 
     if (chainActivityInEditMode != null) {
@@ -391,6 +488,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
       activityDurationMinute = 0;
       activityDurationSecond = 0;
       addingDurationToActivity = false;
+      addingImageToActivity = false;
     });
   }
 
@@ -435,6 +533,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
     chainActivityInEditMode = chainActivity;
     chainActivityInEditMode!.edit = false;
     addingDurationToActivity = false;
+    addingImageToActivity = false;
 
     ChainList chainList = Provider.of<ChainList>(context, listen: false);
 
@@ -453,7 +552,11 @@ class _AddChainScreenState extends State<AddChainScreen> {
     focusScope.unfocus();
   }
 
-  Future<void> editActivity(ChainActivity chainActivity) async {
+  Future<void> editActivity(
+    ChainActivity chainActivity, [
+    bool editDuration = true,
+    bool editImage = true,
+  ]) async {
     //FocusScopeNode focusScope = FocusScope.of(context);
 
     ChainList chainList = Provider.of<ChainList>(context, listen: false);
@@ -471,35 +574,40 @@ class _AddChainScreenState extends State<AddChainScreen> {
 
     Duration chainActivityDuration = chainActivityInEditMode!.activityDuration;
 
-    if (chainActivity.activity.type == systemStartActivityInDB) {
-      setState(() {
-        addingDurationToActivity = false;
+    setState(() {
+      addingDurationToActivity = editDuration;
+      addingImageToActivity = editImage;
+      activityDurationHour = chainActivityDuration.inHours;
+      activityDurationMinute =
+          chainActivityDuration.inMinutes - (activityDurationHour * 60);
+      activityDurationSecond = chainActivityDuration.inSeconds -
+          (activityDurationHour * 3600) -
+          (activityDurationMinute * 60);
+      activityImageController.text = chainActivityInEditMode!
+              .activity.specification?[activitySpecImagePath] ??
+          "";
+
+      if (chainActivity.activity.type == systemStartActivityInDB) {
         chainStartDate = tempChain.at;
         chainStartTime = tempChain.at;
-      });
-    } else {
-      setState(() {
-        addingDurationToActivity = true;
-        activityDurationHour = chainActivityDuration.inHours;
-        activityDurationMinute =
-            chainActivityDuration.inMinutes - (activityDurationHour * 60);
-        activityDurationSecond = chainActivityDuration.inSeconds -
-            (activityDurationHour * 3600) -
-            (activityDurationMinute * 60);
-        activityImageController.text = chainActivityInEditMode!
-                .activity.specification?[activitySpecImagePath] ??
-            "";
-      });
-      durationHourController.text = activityDurationHour == 0
-          ? ""
-          : activityDurationHour.toString().padLeft(2, '0');
-      durationMinuteController.text = activityDurationMinute == 0
-          ? ""
-          : activityDurationMinute.toString().padLeft(2, '0');
-      durationSecondController.text = activityDurationSecond == 0
-          ? ""
-          : activityDurationSecond.toString().padLeft(2, '0');
-    }
+        addingDurationToActivity = false;
+        addingImageToActivity = false;
+      }
+
+      if (chainActivity.activity.type == systemWaitActivityInDB) {
+        addingImageToActivity = false;
+      }
+    });
+    durationHourController.text = activityDurationHour == 0
+        ? ""
+        : activityDurationHour.toString().padLeft(2, '0');
+    durationMinuteController.text = activityDurationMinute == 0
+        ? ""
+        : activityDurationMinute.toString().padLeft(2, '0');
+    durationSecondController.text = activityDurationSecond == 0
+        ? ""
+        : activityDurationSecond.toString().padLeft(2, '0');
+
     addActivityController.text = chainActivity.activity.title;
     // if (!updatingSystemWaitActivityInDB && !addingScheduleToChain) {
     //   focusScope.requestFocus(addActivityFocus);
@@ -545,7 +653,375 @@ class _AddChainScreenState extends State<AddChainScreen> {
     //   },
     // );
 
-    final durationInputForm = Form(
+    var imageInputForm = Row(
+      children: [
+        Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor,
+              ),
+              child: IconButton(
+                icon: const Icon(
+                  Icons.photo,
+                ),
+                onPressed: () async {
+                  // XFile? pickedImage = await ImagePicker()
+                  //     .pickImage(source: ImageSource.gallery);
+                  // if (pickedImage != null) {
+                  //   // activityImageController.text = pickedImage.path;
+                  //   setState(() {
+                  //     localImagePath = pickedImage.path;
+                  //   });
+                  // }
+                  FilePickerResult? result =
+                      await FilePicker.platform.pickFiles(
+                    type: FileType.custom,
+                    allowedExtensions: [
+                      'jpg',
+                      'jpeg',
+                      'gif',
+                      'png',
+                      'webp',
+                      'svg',
+                      'jfif',
+                      'pjpeg',
+                      'pjp',
+                      'apng',
+                      'avif',
+                      'bmp',
+                      'tif',
+                      'tiff',
+                      'ico',
+                      'cur'
+                    ],
+                  );
+                  if (result != null) {
+                    activityImageController.text = result.files.single.path!;
+                    setState(() {
+                      activityFormErrorString = "";
+                    });
+                  } else {
+                    // User cancelled the picker
+                  }
+                },
+              ),
+            ),
+            // const Padding(
+            //   padding: EdgeInsets.symmetric(horizontal: 10),
+            //   child: Text(
+            //     "Select Local",
+            //   ),
+            // ),
+          ],
+        ),
+        if (activityFormErrorString == "" &&
+            activityImageController.text != "" &&
+            activityImageController.text.startsWith("http"))
+          Container(
+            height: appWidth * 0.135,
+            width: appWidth * 0.135,
+            padding: EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              border: Border.all(),
+              borderRadius: BorderRadius.circular(5),
+            ),
+            child: activityImageController.text == ""
+                ? Image.asset(
+                    assetMap['noImagePlaceholder']!,
+                    fit: BoxFit.fitHeight,
+                  )
+                : activityImageController.text.startsWith("http")
+                    ? FadeInImage.assetNetwork(
+                        placeholder: assetMap["noImagePlaceholder"]!,
+                        image: activityImageController.text,
+                        fit: BoxFit.cover,
+                        imageErrorBuilder: (context, error, stackTrace) =>
+                            Image.asset(
+                          assetMap['noImagePlaceholder']!,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : Image.file(
+                        File(activityImageController.text),
+                        fit: BoxFit.cover,
+                      ),
+          ),
+        Expanded(
+          child: activityImageController.text.startsWith("/")
+              ? Container(
+                  height: appWidth * 0.135,
+                  width: appWidth * 0.135,
+                  padding: EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    border: Border.all(),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: activityImageController.text == ""
+                      ? Image.asset(
+                          assetMap['noImagePlaceholder']!,
+                          fit: BoxFit.fitHeight,
+                        )
+                      : activityImageController.text.startsWith("http")
+                          ? FadeInImage.assetNetwork(
+                              placeholder: assetMap["noImagePlaceholder"]!,
+                              image: activityImageController.text,
+                              fit: BoxFit.contain,
+                              imageErrorBuilder: (context, error, stackTrace) =>
+                                  Image.asset(
+                                assetMap['noImagePlaceholder']!,
+                                fit: BoxFit.contain,
+                              ),
+                            )
+                          : Image.file(
+                              File(activityImageController.text),
+                              fit: BoxFit.contain,
+                            ),
+                )
+              : TextFormField(
+                  key: ValueKey(
+                    "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_image",
+                  ),
+                  keyboardType: TextInputType.url,
+                  textAlign: TextAlign.center,
+                  controller: activityImageController,
+                  // onSaved: (_) => chainActivityInEditMode!
+                  //         .activity.specification![activitySpecImagePath] =
+                  //     activityImageController.text,
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    label: Text(
+                      "HTTP URL to an Image or a GIF",
+                      style: TextStyle(
+                        color: Theme.of(context).disabledColor,
+                      ),
+                    ),
+                    hintText: "https://",
+                    alignLabelWithHint: true,
+                    floatingLabelBehavior: FloatingLabelBehavior.never,
+                  ),
+                  onFieldSubmitted: (imagePath) async {
+                    bool valid = await validURL(imagePath);
+                    if (!valid) {
+                      activityImageController.text = "";
+                      activityFormErrorString = "Invalid Path or URL";
+                    }
+                    // if (imagePath.startsWith("/") &&
+                    //     !File(imagePath).existsSync()) {
+                    //   activityImageController.text = "";
+                    //   formImageUrlErrorString = "Invalid Local Path";
+                    // }
+                    // if (imagePath.startsWith("http")) {
+                    //   try {
+                    //     Uri.parse(imagePath);
+                    //   } catch (e) {
+                    //     activityImageController.text = "";
+                    //     formImageUrlErrorString = "Invalid Http path";
+                    //   }
+                    // }
+                  },
+                  // validator: (imagePath) {
+                  //   String? validationError;
+                  //   try {
+                  //     if (imagePath != null && imagePath != "") {
+                  //       if (imagePath.startsWith("http")) {
+                  //         Uri.parse(imagePath);
+                  //       } else if (!File(imagePath).existsSync()) {
+                  //         activityImageController.text = "";
+                  //         validationError = "Invalid File Path";
+                  //       }
+                  //     }
+                  //     return validationError;
+                  //   } catch (exception) {
+                  //     return "Invalid URL";
+                  //   }
+                  // },
+                ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColor,
+          ),
+          child: IconButton(
+            onPressed: () {
+              activityImageController.clear();
+              setState(() {
+                activityFormErrorString = "";
+              });
+            },
+            icon: Semantics(
+              label:
+                  "Clear the selected image or its url in add activity form.",
+              child: Icon(
+                Icons.clear_all,
+                color: Theme.of(context).colorScheme.error,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+    var durationInputForm = Row(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColor,
+          ),
+          child: IconButton(
+            onPressed: () async {
+              final resultingDuration = await showDurationPicker(
+                context: context,
+                initialTime: const Duration(seconds: 30),
+                baseUnit: BaseUnit.second,
+                upperBound: const Duration(seconds: 60),
+                lowerBound: const Duration(seconds: 10),
+              );
+              if (resultingDuration != null) {
+                durationHourController.text =
+                    resultingDuration.inHours.toString();
+                durationMinuteController.text = (resultingDuration.inMinutes -
+                        resultingDuration.inHours * 60)
+                    .toString();
+                durationSecondController.text = (resultingDuration.inSeconds -
+                        (resultingDuration.inMinutes * 60))
+                    .toString();
+              }
+            },
+            icon: Icon(
+              Icons.watch_later,
+            ),
+          ),
+        ),
+        Expanded(
+          child: TextFormField(
+            key: ValueKey(
+              "${chainActivityInEditMode?.activity.title}_${chainActivityInEditMode?.index.toString()}_hours",
+            ),
+            keyboardType: TextInputType.number,
+            textInputAction: TextInputAction.none,
+            textAlign: TextAlign.center,
+            // initialValue: activityDurationHour == 0
+            //     ? null
+            //     : activityDurationHour.toString().padLeft(2, '0'),
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              label: Text(
+                "Hour",
+                style: TextStyle(
+                  color: Theme.of(context).disabledColor,
+                ),
+              ),
+              hintText: activityDurationHour.toString().padLeft(2, '0'),
+            ),
+            onSaved: (newValue) => activityDurationHour =
+                newValue != "" && newValue != null ? int.parse(newValue) : 0,
+            onFieldSubmitted: (value) {
+              String? valResult = validateHour(value);
+              if (valResult != null) {
+                activityFormErrorString =
+                    "Hours should be in the range of $valResult";
+              }
+            },
+            // validator: (value) => validateHour(value),
+            controller: durationHourController,
+          ),
+        ),
+        Expanded(
+          child: TextFormField(
+            key: ValueKey(
+              "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_minutes",
+            ),
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            // initialValue: activityDurationMinute == 0
+            //     ? null
+            //     : activityDurationMinute.toString().padLeft(2, '0'),
+            onSaved: (newValue) => activityDurationMinute =
+                newValue != "" && newValue != null ? int.parse(newValue) : 0,
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              label: Text(
+                "Minute",
+                style: TextStyle(
+                  color: Theme.of(context).disabledColor,
+                ),
+              ),
+              hintText: activityDurationMinute.toString().padLeft(2, '0'),
+            ),
+            onFieldSubmitted: (value) {
+              String? valResult = validateMinuteOrSecond(value);
+              if (valResult != null) {
+                activityFormErrorString =
+                    "Minutes should be in the range of $valResult";
+              }
+            },
+            // validator: (value) => validateMinuteOrSecond(value),
+            controller: durationMinuteController,
+          ),
+        ),
+        Expanded(
+          child: TextFormField(
+            key: ValueKey(
+              "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_seconds",
+            ),
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            // initialValue: activityDurationSecond == 0
+            //     ? null
+            //     : activityDurationSecond.toString().padLeft(2, '0'),
+            onSaved: (newValue) => activityDurationSecond =
+                newValue != "" && newValue != null ? int.parse(newValue) : 0,
+            onChanged: (value) {},
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              label: Text(
+                "Second",
+                style: TextStyle(
+                  color: Theme.of(context).disabledColor,
+                ),
+              ),
+              hintText: activityDurationSecond.toString().padLeft(2, '0'),
+              alignLabelWithHint: true,
+            ),
+            onFieldSubmitted: (value) {
+              String? valResult = validateMinuteOrSecond(value);
+              if (valResult != null) {
+                activityFormErrorString =
+                    "Seconds should be in the range of $valResult";
+              }
+            },
+            // validator: (value) => validateMinuteOrSecond(value),
+            controller: durationSecondController,
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColor,
+          ),
+          child: IconButton(
+            onPressed: () {
+              setState(() {
+                durationHourController.clear();
+                durationMinuteController.clear();
+                durationSecondController.clear();
+                activityDurationHour = 0;
+                activityDurationMinute = 0;
+                activityDurationSecond = 0;
+                activityFormErrorString = "";
+              });
+            },
+            icon: Semantics(
+              label: "Clear the duration field in add activity form.",
+              child: Icon(
+                Icons.clear_all,
+                color: Theme.of(context).colorScheme.error,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+    final activitySpecificationForm = Form(
       key: durationFormKey,
       child: Container(
         decoration: BoxDecoration(
@@ -556,375 +1032,35 @@ class _AddChainScreenState extends State<AddChainScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
               child: Text(
-                "Specifications of Activity",
+                (chainActivityInEditMode?.activity.type !=
+                            systemStartActivityInDB &&
+                        chainActivityInEditMode?.activity.type !=
+                            systemWaitActivityInDB)
+                    ? "Specifications of Activity"
+                    : "Add Rest Duration",
                 style: Theme.of(context).textTheme.titleSmall,
                 //textAlign: TextAlign.left,
               ),
             ),
-            if (chainActivityInEditMode?.activity.type !=
-                    systemStartActivityInDB &&
-                chainActivityInEditMode?.activity.type !=
-                    systemWaitActivityInDB)
-              Row(
-                children: [
-                  Column(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.photo,
-                          ),
-                          onPressed: () async {
-                            // XFile? pickedImage = await ImagePicker()
-                            //     .pickImage(source: ImageSource.gallery);
-                            // if (pickedImage != null) {
-                            //   // activityImageController.text = pickedImage.path;
-                            //   setState(() {
-                            //     localImagePath = pickedImage.path;
-                            //   });
-                            // }
-                            FilePickerResult? result =
-                                await FilePicker.platform.pickFiles(
-                              type: FileType.custom,
-                              allowedExtensions: [
-                                'jpg',
-                                'jpeg',
-                                'gif',
-                                'png',
-                                'webp',
-                                'svg',
-                                'jfif',
-                                'pjpeg',
-                                'pjp',
-                                'apng',
-                                'avif',
-                                'bmp',
-                                'tif',
-                                'tiff',
-                                'ico',
-                                'cur'
-                              ],
-                            );
-                            if (result != null) {
-                              activityImageController.text =
-                                  result.files.single.path!;
-                              setState(() {
-                                formImageUrlErrorString = "";
-                              });
-                            } else {
-                              // User cancelled the picker
-                            }
-                          },
-                        ),
-                      ),
-                      // const Padding(
-                      //   padding: EdgeInsets.symmetric(horizontal: 10),
-                      //   child: Text(
-                      //     "Select Local",
-                      //   ),
-                      // ),
-                    ],
-                  ),
-                  if (formImageUrlErrorString == "" &&
-                      activityImageController.text != "" &&
-                      (activityImageController.text.startsWith("/") ||
-                          activityImageController.text.startsWith("http")))
-                    Container(
-                      height: appWidth * 0.135,
-                      width: appWidth * 0.135,
-                      padding: EdgeInsets.all(2),
-                      decoration: BoxDecoration(
-                        border: Border.all(),
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: activityImageController.text == ""
-                          ? Image.asset(
-                              assetMap['noImagePlaceholder']!,
-                              fit: BoxFit.fitHeight,
-                            )
-                          : activityImageController.text.startsWith("http")
-                              ? FadeInImage.assetNetwork(
-                                  placeholder: assetMap["noImagePlaceholder"]!,
-                                  image: activityImageController.text,
-                                  fit: BoxFit.cover,
-                                  imageErrorBuilder:
-                                      (context, error, stackTrace) =>
-                                          Image.asset(
-                                    assetMap['noImagePlaceholder']!,
-                                    fit: BoxFit.cover,
-                                  ),
-                                )
-                              : Image.file(
-                                  File(activityImageController.text),
-                                  fit: BoxFit.cover,
-                                ),
-                    ),
-                  Expanded(
-                    child: activityImageController.text.startsWith("/")
-                        ? IgnorePointer(
-                            ignoring: true,
-                            child: TextFormField(
-                              //readOnly: true,
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                filled: true,
-                                label: Center(
-                                  child: Text(
-                                    formImageUrlErrorString == ""
-                                        ? "Local Image"
-                                        : formImageUrlErrorString,
-                                  ),
-                                ),
-                                labelStyle: TextStyle(
-                                  //color: Theme.of(context).secondaryHeaderColor,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                hintText: "https://",
-                                alignLabelWithHint: true,
-                                floatingLabelBehavior:
-                                    FloatingLabelBehavior.never,
-                              ),
-                            ),
-                          )
-                        : TextFormField(
-                            key: ValueKey(
-                              "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_image",
-                            ),
-                            keyboardType: TextInputType.url,
-                            textAlign: TextAlign.center,
-                            controller: activityImageController,
-                            // onSaved: (_) => chainActivityInEditMode!
-                            //         .activity.specification![activitySpecImagePath] =
-                            //     activityImageController.text,
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              label: Text(
-                                "HTTP URL to an Image or a GIF",
-                                style: TextStyle(
-                                  color: Theme.of(context).disabledColor,
-                                ),
-                              ),
-                              hintText: "https://",
-                              alignLabelWithHint: true,
-                              floatingLabelBehavior:
-                                  FloatingLabelBehavior.never,
-                            ),
-                            validator: (imagePath) {
-                              try {
-                                if (imagePath != null && imagePath != "") {
-                                  if (imagePath.startsWith("http")) {
-                                    Uri.parse(imagePath);
-                                  } else {
-                                    return File(imagePath).existsSync()
-                                        ? null
-                                        : "Invalid File Path";
-                                  }
-                                }
-                              } catch (exception) {
-                                return "Invalid URL";
-                              }
-                              return null;
-                            },
-                          ),
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                    child: IconButton(
-                      onPressed: () {
-                        activityImageController.clear();
-                        setState(() {
-                          formImageUrlErrorString = "";
-                        });
-                      },
-                      icon: Semantics(
-                        label:
-                            "Clear the selected image or its url in add activity form.",
-                        child: const Icon(
-                          Icons.clear_all,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            if (formImageUrlErrorString != "")
+            if (activityFormErrorString != "")
               Semantics(
-                label: "Form Image URL Error Message",
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    formImageUrlErrorString,
-                    style:
-                        TextStyle(color: Theme.of(context).colorScheme.error),
-                    textAlign: TextAlign.center,
-                  ),
+                label: "Activity Form Error Message",
+                child: Text(
+                  activityFormErrorString,
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelSmall!
+                      .copyWith(color: Theme.of(context).colorScheme.error),
+                  // style: TextStyle(color: Theme.of(context).colorScheme.error),
+                  textAlign: TextAlign.center,
                 ),
               ),
-            Row(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  child: IconButton(
-                    onPressed: () async {
-                      final resultingDuration = await showDurationPicker(
-                        context: context,
-                        initialTime: const Duration(seconds: 30),
-                        baseUnit: BaseUnit.second,
-                        upperBound: const Duration(seconds: 60),
-                        lowerBound: const Duration(seconds: 10),
-                      );
-                      if (resultingDuration != null) {
-                        durationHourController.text =
-                            resultingDuration.inHours.toString();
-                        durationMinuteController.text =
-                            (resultingDuration.inMinutes -
-                                    resultingDuration.inHours * 60)
-                                .toString();
-                        durationSecondController.text =
-                            (resultingDuration.inSeconds -
-                                    (resultingDuration.inMinutes * 60))
-                                .toString();
-                      }
-                    },
-                    icon: Icon(
-                      Icons.watch_later,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: TextFormField(
-                    key: ValueKey(
-                      "${chainActivityInEditMode?.activity.title}_${chainActivityInEditMode?.index.toString()}_hours",
-                    ),
-                    keyboardType: TextInputType.number,
-                    textInputAction: TextInputAction.none,
-                    textAlign: TextAlign.center,
-                    // initialValue: activityDurationHour == 0
-                    //     ? null
-                    //     : activityDurationHour.toString().padLeft(2, '0'),
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      label: Text(
-                        "Hour",
-                        style: TextStyle(
-                          color: Theme.of(context).disabledColor,
-                        ),
-                      ),
-                      hintText: activityDurationHour.toString().padLeft(2, '0'),
-                    ),
-                    onSaved: (newValue) => activityDurationHour =
-                        newValue != "" && newValue != null
-                            ? int.parse(newValue)
-                            : 0,
-                    validator: (value) => validateHour(value),
-                    controller: durationHourController,
-                  ),
-                ),
-                Expanded(
-                  child: TextFormField(
-                    key: ValueKey(
-                      "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_minutes",
-                    ),
-                    keyboardType: TextInputType.number,
-                    textAlign: TextAlign.center,
-                    // initialValue: activityDurationMinute == 0
-                    //     ? null
-                    //     : activityDurationMinute.toString().padLeft(2, '0'),
-                    onSaved: (newValue) => activityDurationMinute =
-                        newValue != "" && newValue != null
-                            ? int.parse(newValue)
-                            : 0,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      label: Text(
-                        "Minute",
-                        style: TextStyle(
-                          color: Theme.of(context).disabledColor,
-                        ),
-                      ),
-                      hintText:
-                          activityDurationMinute.toString().padLeft(2, '0'),
-                    ),
-                    validator: (value) => validateMinuteOrSecond(value),
-                    controller: durationMinuteController,
-                  ),
-                ),
-                Expanded(
-                  child: TextFormField(
-                    key: ValueKey(
-                      "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_seconds",
-                    ),
-                    keyboardType: TextInputType.number,
-                    textAlign: TextAlign.center,
-                    // initialValue: activityDurationSecond == 0
-                    //     ? null
-                    //     : activityDurationSecond.toString().padLeft(2, '0'),
-                    onSaved: (newValue) => activityDurationSecond =
-                        newValue != "" && newValue != null
-                            ? int.parse(newValue)
-                            : 0,
-                    onChanged: (value) {},
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      label: Text(
-                        "Second",
-                        style: TextStyle(
-                          color: Theme.of(context).disabledColor,
-                        ),
-                      ),
-                      hintText:
-                          activityDurationSecond.toString().padLeft(2, '0'),
-                      alignLabelWithHint: true,
-                    ),
-                    validator: (value) => validateMinuteOrSecond(value),
-                    controller: durationSecondController,
-                  ),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  child: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        durationHourController.clear();
-                        durationMinuteController.clear();
-                        durationSecondController.clear();
-                        activityDurationHour = 0;
-                        activityDurationMinute = 0;
-                        activityDurationSecond = 0;
-                      });
-                    },
-                    icon: Semantics(
-                      label: "Clear the duration field in add activity form.",
-                      child: const Icon(
-                        Icons.clear_all,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            if (formActivityTitleErrorString != "")
-              Semantics(
-                label: "Form Image URL Error Message",
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    formActivityTitleErrorString,
-                    style:
-                        TextStyle(color: Theme.of(context).colorScheme.error),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
+            // else
+            //   SizedBox(
+            //     height: 16,
+            //   ),
+            if (addingImageToActivity) imageInputForm,
+            if (addingDurationToActivity) durationInputForm,
           ],
         ),
       ),
@@ -993,6 +1129,8 @@ class _AddChainScreenState extends State<AddChainScreen> {
     return Scaffold(
       //appBar: appBarWidget,
       body: SafeArea(
+        // child: Stack(
+        //   children: [
         child: Column(
           children: [
             Semantics(
@@ -1046,20 +1184,37 @@ class _AddChainScreenState extends State<AddChainScreen> {
                 ),
                 child: const ShowBannerAd(),
               ),
-            if (addingDurationToActivity && tempChain.title.isNotEmpty)
-              durationInputForm,
+            if ((addingDurationToActivity || addingImageToActivity) &&
+                tempChain.title.isNotEmpty)
+              activitySpecificationForm,
             Container(
               decoration: BoxDecoration(
                 color: Theme.of(context).primaryColor,
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Semantics(
-                    label: "Save and Go back previous screen",
-                    child: IconButton(
-                      onPressed: saveAndExit,
-                      icon: const Icon(Icons.arrow_back),
+                    label: "Save and Go back to previous screen",
+                    child: SizedBox(
+                      // width: appWidth * 0.21,
+                      child: IconButton(
+                        onPressed: saveAndExit,
+                        icon: const Icon(Icons.arrow_back),
+                      ),
+                      // child: InkWell(
+                      //   onTap: saveAndExit,
+                      //   child: Column(
+                      //     children: [
+                      //       const Icon(Icons.arrow_back),
+                      //       Padding(
+                      //         padding:
+                      //             const EdgeInsets.symmetric(horizontal: 5),
+                      //         child: const Text("Save & Exit"),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
                     ),
                   ),
                   if (!updatingSystemWaitActivityInDB &&
@@ -1085,13 +1240,15 @@ class _AddChainScreenState extends State<AddChainScreen> {
                               setState(() {
                                 addingDurationToActivity =
                                     !addingDurationToActivity;
+                                addingImageToActivity = !addingImageToActivity;
                               });
                             },
                             icon: Semantics(
                               label:
                                   "Toggle to show the Duration and Image field to be added along with this activity.",
                               child: Icon(
-                                addingDurationToActivity
+                                addingDurationToActivity ||
+                                        addingImageToActivity
                                     ? Icons.settings_suggest_outlined
                                     : Icons.settings_suggest,
                                 color: Theme.of(context).iconTheme.color,
@@ -1104,16 +1261,6 @@ class _AddChainScreenState extends State<AddChainScreen> {
                           onSubmitText();
                         },
                       ),
-                    ),
-                  if (updatingSystemWaitActivityInDB)
-                    IconButton(
-                      onPressed: () {
-                        undoEdit(chainActivityInEditMode!);
-                        // tempChain.at = null;
-                        // tempChain.repeatType = repeatTypeDoesNotRepeat;
-                        // tempChain.repeatCount = repeatTypeDefaultCount;
-                      },
-                      icon: const Icon(Icons.cancel_outlined),
                     ),
                   if (tempChain.at != null)
                     TextButton(
@@ -1132,24 +1279,88 @@ class _AddChainScreenState extends State<AddChainScreen> {
                         ),
                       ),
                     ),
-                  //if (tempChain.title.isNotEmpty)
-                  IconButton(
-                    onPressed: tempChain.title.isNotEmpty
-                        ? onSubmitText
-                        : () {
-                            validateForm(context, false);
-                          },
-                    icon: chainActivityInEditMode != null
-                        ? const Icon(Icons.done_outline)
-                        : updatingSystemWaitActivityInDB
-                            ? const Icon(Icons.done)
-                            : const Icon(Icons.add_task_outlined),
-                  ),
+                  if (chainActivityInEditMode == null ||
+                      chainActivityInEditMode!.activity.type !=
+                          systemWaitActivityInDB)
+                    SizedBox(
+                      // width: appWidth * 0.21,
+                      child: IconButton(
+                        onPressed: tempChain.title.isNotEmpty
+                            ? onSubmitText
+                            : () {
+                                validateForm(context, false);
+                              },
+                        icon: chainActivityInEditMode != null
+                            ? const Icon(Icons.done_outline)
+                            : updatingSystemWaitActivityInDB
+                                ? const Icon(Icons.done)
+                                : const Icon(Icons.add_task_outlined),
+                      ),
+                    )
+                  else
+                    InkWell(
+                      onTap: tempChain.title.isNotEmpty
+                          ? onSubmitText
+                          : () {
+                              validateForm(context, false);
+                            },
+                      child: Column(
+                        children: [
+                          const Icon(Icons.done_outline),
+                          const Text("Just here")
+                        ],
+                      ),
+                    ),
+                  if (updatingSystemWaitActivityInDB)
+                    InkWell(
+                      onTap: updateDurationForAllSystemWaitActivity,
+                      child: Column(
+                        children: [
+                          const Icon(Icons.done_all),
+                          const Text("Between All"),
+                        ],
+                      ),
+                    ),
+                  if (updatingSystemWaitActivityInDB)
+                    InkWell(
+                      onTap: () {
+                        undoEdit(chainActivityInEditMode!);
+                        // tempChain.at = null;
+                        // tempChain.repeatType = repeatTypeDoesNotRepeat;
+                        // tempChain.repeatCount = repeatTypeDefaultCount;
+                      },
+                      child: Column(
+                        children: [
+                          const Icon(Icons.cancel_outlined),
+                          const Text("Discard"),
+                        ],
+                      ),
+                    ),
                 ],
               ),
             ),
           ],
         ),
+        // Expanded(
+        //   child: Positioned(
+        //     bottom: 50,
+        //     child: AnimatedContainer(
+        //       width: ((addingDurationToActivity || addingImageToActivity) &&
+        //               tempChain.title.isNotEmpty)
+        //           ? appWidth
+        //           : 0,
+        //       duration: Duration(milliseconds: 500),
+        //       curve: Curves.easeOut,
+        //       color: Colors.black,
+        //       child: ((addingDurationToActivity || addingImageToActivity) &&
+        //               tempChain.title.isNotEmpty)
+        //           ? activitySpecificationForm
+        //           : null,
+        //     ),
+        //   ),
+        // ),
+        // ],
+        // ),
       ),
     );
   }

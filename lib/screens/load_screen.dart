@@ -28,7 +28,7 @@ class LoadScreen extends StatelessWidget {
                     height: appHeight * 0.5,
                   ),
                   Text(
-                    "Loading Chain & Play...",
+                    "Loading ChainPlay...",
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),

@@ -44,140 +44,166 @@ class ChainSystemWaitActivityFlow extends StatelessWidget {
           children: [
             if (index != 0) lineWidget,
             if (index != 0)
-              InkWell(
-                onTap: () {
-                  if (!chainActivity.edit) {
-                    editActivity!(chainActivity);
-                  } else {
-                    undoEdit!(chainActivity);
-                  }
-                },
-                child: (activities[index].activityDuration.inSeconds > 0)
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(20),
-                              ),
-                              color: activities[index].edit ||
-                                      (activities[index].at != null &&
-                                          activities[index].endedAt == null) ||
-                                      activities[index]
-                                              .endActivityNotificationId !=
-                                          noValueInDB
-                                  ? Theme.of(context).focusColor
-                                  : Theme.of(context).primaryColor,
-                              border: activities[index].edit
-                                  ? Border.all(
-                                      color: Colors.red,
-                                    )
-                                  : null,
+              (activities[index].activityDuration.inSeconds > 0)
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(20),
                             ),
-                            // child: Text(
-                            //         "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? 'before scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDuration)}${activities[index].activityDurationLeft != null ? '\nafter resuming.' : '.'}",
-                            //         textAlign: TextAlign.center,
-                            //       )
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                if (activities[index]
-                                        .endActivityNotificationId !=
-                                    noValueInDB)
-                                  if (activities[index].endedAt != null &&
-                                      activities[index]
-                                              .endedAt!
-                                              .difference(
-                                                DateTime.now(),
-                                              )
-                                              .inSeconds >
-                                          0)
-                                    Expanded(
-                                      child: Text(
-                                        "You will be notified for the next activity on ${DateFormat.yMMMEd().format(activities[index].endedAt!)} at ${DateFormat.jms().format(activities[index].endedAt!)}\ni.e. after ${HelperFunctions.durationToString(
-                                          chainActivity.endedAt!.difference(
-                                            DateTime.now(),
-                                          ),
-                                        )}.",
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    )
-                                  else
-                                    const Expanded(
-                                      child: Text(
-                                        "Rest Ended. Notification should have been received by now. Please refresh.",
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    )
-                                else
+                            color: activities[index].edit ||
+                                    (activities[index].at != null &&
+                                        activities[index].endedAt == null) ||
+                                    activities[index]
+                                            .endActivityNotificationId !=
+                                        noValueInDB
+                                ? Theme.of(context).focusColor
+                                : Theme.of(context).primaryColor,
+                            border: activities[index].edit
+                                ? Border.all(
+                                    color: Colors.red,
+                                  )
+                                : null,
+                          ),
+                          // child: Text(
+                          //         "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? 'before scheduled duration' : HelperFunctions.durationToString(chainActivity.activityDuration)}${activities[index].activityDurationLeft != null ? '\nafter resuming.' : '.'}",
+                          //         textAlign: TextAlign.center,
+                          //       )
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (activities[index].endActivityNotificationId !=
+                                  noValueInDB)
+                                if (activities[index].endedAt != null &&
+                                    activities[index]
+                                            .endedAt!
+                                            .difference(
+                                              DateTime.now(),
+                                            )
+                                            .inSeconds >
+                                        0)
                                   Expanded(
                                     child: Text(
-                                      "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? 'before scheduled duration' : HelperFunctions.durationToString(activities[index].activityDurationLeft ?? chainActivity.activityDuration)}${activities[index].activityDurationLeft != null ? '\nafter resuming.' : '.'}  ",
+                                      "You will be notified for the next activity on ${DateFormat.yMMMEd().format(activities[index].endedAt!)} at ${DateFormat.jms().format(activities[index].endedAt!)}\ni.e. after ${HelperFunctions.durationToString(
+                                        chainActivity.endedAt!.difference(
+                                          DateTime.now(),
+                                        ),
+                                      )}.",
                                       textAlign: TextAlign.center,
                                     ),
-                                  ),
-                                if (editActivity != null)
-                                  Icon(activities[index].edit
-                                      ? Icons.undo
-                                      : Icons.edit),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-                    : undoEdit == null || editActivity == null
-                        ? Container() //Invalid Use Case
-                        : Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: activities[index].edit
-                                  ? Theme.of(context)
-                                      .primaryColor
-                                      .withValues(alpha: 0.5)
-                                  : Theme.of(context).primaryColor,
-                              borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(30),
-                                bottom: Radius.circular(30),
-                              ),
-                              border: activities[index].edit
-                                  ? Border.all(color: Colors.red)
-                                  : null,
-                            ),
-                            child: Row(
-                              // mainAxisAlignment: MainAxisAlignment.center,
-                              // crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Semantics(
-                                  label: chainActivity.edit
-                                      ? "Rest Duration will add here"
-                                      : "Tap to add rest between two timer activities",
+                                  )
+                                else
+                                  const Expanded(
+                                    child: Text(
+                                      "Rest Ended. Notification should have been received by now. Please refresh.",
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  )
+                              else
+                                Expanded(
                                   child: Text(
-                                    chainActivity.edit
-                                        ? "Rest Duration will add here"
-                                        : "Tap to add rest\nbetween two timer activities",
+                                    "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? 'before scheduled duration' : HelperFunctions.durationToString(activities[index].activityDurationLeft ?? chainActivity.activityDuration)}${activities[index].activityDurationLeft != null ? '\nafter resuming.' : '.'}  ",
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
-                                if (editActivity != null)
-                                  Icon(activities[index].edit
-                                      ? Icons.undo
-                                      : Icons.edit),
-                              ],
-                            ),
+                              if (editActivity != null)
+                                InkWell(
+                                  onTap: () {
+                                    if (!chainActivity.edit) {
+                                      editActivity!(chainActivity);
+                                    } else {
+                                      undoEdit!(chainActivity);
+                                    }
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(left: 5),
+                                    padding: EdgeInsets.all(5),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).cardColor,
+                                      borderRadius: BorderRadius.circular(
+                                        20,
+                                      ),
+                                    ),
+                                    child: Icon(activities[index].edit
+                                        ? Icons.undo
+                                        : Icons.edit),
+                                  ),
+                                ),
+                            ],
                           ),
-                // : Icon(
-                //     Icons.circle_outlined,
-                //     size: 15,
-                //     color: activities[index].edit
-                //         ? Theme.of(context).colorScheme.error
-                //         : Theme.of(context).primaryColor,
-                //   ),
-              ),
+                        ),
+                      ],
+                    )
+                  : undoEdit == null || editActivity == null
+                      ? Container() //Invalid Use Case
+                      : Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: activities[index].edit
+                                ? Theme.of(context)
+                                    .primaryColor
+                                    .withValues(alpha: 0.5)
+                                : Theme.of(context).primaryColor,
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(30),
+                              bottom: Radius.circular(30),
+                            ),
+                            border: activities[index].edit
+                                ? Border.all(color: Colors.red)
+                                : null,
+                          ),
+                          child: Row(
+                            // mainAxisAlignment: MainAxisAlignment.center,
+                            // crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Semantics(
+                                label: chainActivity.edit
+                                    ? "Rest Duration"
+                                    : "Add Rest",
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 8,
+                                  ),
+                                  child: Text(
+                                    chainActivity.edit
+                                        ? "Rest Duration"
+                                        : "Add Rest",
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                              if (editActivity != null)
+                                InkWell(
+                                  onTap: () {
+                                    if (!chainActivity.edit) {
+                                      editActivity!(chainActivity);
+                                    } else {
+                                      undoEdit!(chainActivity);
+                                    }
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(left: 5),
+                                    padding: EdgeInsets.all(5),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).cardColor,
+                                      borderRadius: BorderRadius.circular(
+                                        20,
+                                      ),
+                                    ),
+                                    child: Icon(activities[index].edit
+                                        ? Icons.undo
+                                        : Icons.add),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
             if (index == 0) arrowWidget,
             if (index == 0)
               tempChain.endedAt == null

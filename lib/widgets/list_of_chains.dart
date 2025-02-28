@@ -1,6 +1,6 @@
-import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
+import 'package:chain_activities/widgets/app_header_buttons_help.dart';
 import 'package:chain_activities/widgets/chain_list_item.dart';
 import 'package:chain_activities/widgets/chain_tile_help.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
@@ -27,8 +27,11 @@ class ListOfChains extends StatefulWidget {
 }
 
 class _ListOfChainsState extends State<ListOfChains> {
-  bool showChainControlSummary = true;
-  List<Chain> allChains = [], activeChains = [], favoriteChains = [];
+  bool showChainControlSummary = false,
+      pageInit = false,
+      showFavorites = false,
+      showRunning = false;
+  List<Chain> allChains = [];
   late ChainList chainList;
 
   @override
@@ -42,22 +45,23 @@ class _ListOfChainsState extends State<ListOfChains> {
     // ChainList chainList = Provider.of<ChainList>(context, listen: true);
     // List<Chain> chains = chainList.chains;
 
-    activeChains = chainList.chains
-        .where((chain) => chain.chainStatus == statusExecuting)
-        .toList();
+    if (!pageInit) {
+      showFavorites = widget.showFavorites;
+      showRunning = widget.showRunning;
+      pageInit = true;
+    }
 
-    bool showFavorites = widget.showFavorites, showRunning = widget.showRunning;
     allChains = chainList.getChainsByFilters(
         widget.textFilter ?? '', showFavorites, showRunning);
-    allChains.sort(
-      (Chain a, Chain b) {
-        if (!a.pinned) {
-          return 1;
-        } else {
-          return -1;
-        }
-      },
-    );
+    // allChains.sort(
+    //   (Chain a, Chain b) {
+    //     if (!a.pinned) {
+    //       return 1;
+    //     } else {
+    //       return -1;
+    //     }
+    //   },
+    // );
 
     return Column(
       //crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,58 +69,165 @@ class _ListOfChainsState extends State<ListOfChains> {
       children: [
         if (widget.showChainControlSummary == null ||
             widget.showChainControlSummary == true)
-          Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.all(Radius.circular(30)),
-              color: Theme.of(context).primaryColor,
-            ),
-            child: TextButton.icon(
-              onPressed: () {
-                setState(() {
-                  showChainControlSummary = !showChainControlSummary;
-                });
-              },
-              icon: Icon(
-                showChainControlSummary
-                    ? Icons.expand_more_rounded
-                    : Icons.expand_less_rounded,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: Icon(Icons.help),
+                onPressed: () {
+                  setState(() {
+                    showChainControlSummary = !showChainControlSummary;
+                  });
+                },
               ),
-              label: Text(
-                "Summary of Chain Controls",
-                style: Theme.of(context).textTheme.titleMedium,
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-        if (showChainControlSummary &&
-            (widget.showChainControlSummary == null ||
-                widget.showChainControlSummary == true))
-          const ChainTileHelp(),
-        const Divider(),
-
-        Expanded(
-          child: ReorderableListView.builder(
-            onReorder: (oldIndex, newIndex) =>
-                Provider.of<ChainList>(context, listen: false)
-                    .rearrangeChains(oldIndex, newIndex),
-            itemCount: allChains.length,
-            reverse: widget.showChainInReverse != null &&
-                widget.showChainInReverse == true,
-            itemBuilder: (context, index) {
-              Chain chain = allChains[index];
-              //BannerAd? adChain = chain.adBanner;
-              return ChainListItem(
-                //adChain: adChain,
-                chain: chain,
-                showHistory: true,
-                allowFlag: true,
-                key: Key(
-                  index.toString(),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    showFavorites = false;
+                    showRunning = false;
+                  });
+                },
+                child: Text(
+                  "All Chains",
+                  style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                        fontWeight:
+                            showFavorites == false && showRunning == false
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                      ),
                 ),
-                index: index,
-              );
-            },
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    showRunning = true;
+                    showFavorites = false;
+                  });
+                },
+                child: Text(
+                  "Running Chains",
+                  style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                        fontWeight:
+                            showFavorites == false && showRunning == true
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                      ),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    showFavorites = true;
+                    showRunning = false;
+                  });
+                },
+                child: Text(
+                  "Favorite Chains",
+                  style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                        fontWeight:
+                            showFavorites == true && showRunning == false
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                      ),
+                ),
+              ),
+              SizedBox(),
+            ],
+          ),
+        Expanded(
+          child: Stack(
+            children: [
+              ReorderableListView.builder(
+                onReorder: (oldIndex, newIndex) =>
+                    Provider.of<ChainList>(context, listen: false)
+                        .rearrangeChains(oldIndex, newIndex),
+                itemCount: allChains.length,
+                reverse: widget.showChainInReverse != null &&
+                    widget.showChainInReverse == true,
+                itemBuilder: (context, index) {
+                  Chain chain = allChains[index];
+                  //BannerAd? adChain = chain.adBanner;
+                  return ChainListItem(
+                    //adChain: adChain,
+                    chain: chain,
+                    showHistory: true,
+                    allowFlag: true,
+                    key: Key(
+                      index.toString(),
+                    ),
+                    index: index,
+                  );
+                },
+              ),
+              AnimatedContainer(
+                // height: showChainControlSummary ? 150 : 0,
+                width: showChainControlSummary ? 350 : 0,
+                // padding: EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                duration: Duration(milliseconds: 500),
+                curve: Curves.fastLinearToSlowEaseIn,
+                child: (showChainControlSummary &&
+                        (widget.showChainControlSummary == null ||
+                            widget.showChainControlSummary == true))
+                    ? Column(
+                        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              IconButton(
+                                onPressed: () {},
+                                icon: Icon(Icons.help_outline),
+                              ),
+                              Text(
+                                "Quick Help with Controls",
+                                style: Theme.of(context).textTheme.titleMedium,
+                                textAlign: TextAlign.center,
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    showChainControlSummary =
+                                        !showChainControlSummary;
+                                  });
+                                },
+                                icon: Icon(
+                                  Icons.cancel,
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            "1. Buttons on App Header",
+                            style: Theme.of(context).textTheme.titleMedium,
+                            textAlign: TextAlign.center,
+                          ),
+                          Divider(),
+                          const AppHeaderButtonsHelp(),
+                          Divider(),
+                          SizedBox(
+                            height: 30,
+                          ),
+                          Text(
+                            "2. Controls on a Chain Tile",
+                            style: Theme.of(context).textTheme.titleMedium,
+                            textAlign: TextAlign.center,
+                          ),
+                          Divider(),
+                          const ChainTileHelp(),
+                          Divider(),
+                        ],
+                      )
+                    : null,
+              ),
+            ],
           ),
         ),
         const Divider(),
@@ -130,56 +241,6 @@ class _ListOfChainsState extends State<ListOfChains> {
             ),
             child: const ShowBannerAd(),
           ),
-
-        // Container(
-        //   width: double.infinity,
-        //   decoration: BoxDecoration(
-        //     color: Theme.of(context).canvasColor,
-        //   ),
-        //   child: Row(
-        //     mainAxisAlignment: MainAxisAlignment.center,
-        //     children: [
-        //       Expanded(
-        //         child: TextButton.icon(
-        //           icon: Icon(
-        //             Icons.favorite,
-        //             color: showFavorites
-        //                 ? Theme.of(context).secondaryHeaderColor
-        //                 : Theme.of(context).disabledColor,
-        //           ),
-        //           label: Text(
-        //             "Favorites",
-        //             style: Theme.of(context).textTheme.labelLarge,
-        //           ),
-        //           onPressed: () async {
-        //             setState(() {
-        //               showFavorites = !showFavorites;
-        //             });
-        //           },
-        //         ),
-        //       ),
-        //       Expanded(
-        //         child: TextButton.icon(
-        //           icon: Icon(
-        //             Icons.run_circle,
-        //             color: showRunning
-        //                 ? Theme.of(context).secondaryHeaderColor
-        //                 : Theme.of(context).disabledColor,
-        //           ),
-        //           label: Text(
-        //             "Active",
-        //             style: Theme.of(context).textTheme.labelLarge,
-        //           ),
-        //           onPressed: () {
-        //             setState(() {
-        //               showRunning = !showRunning;
-        //             });
-        //           },
-        //         ),
-        //       ),
-        //     ],
-        //   ),
-        // ),
       ],
     );
   }

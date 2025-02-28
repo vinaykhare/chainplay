@@ -57,8 +57,8 @@ const int setFailedDueToAppPermission = 2;
 //Settings
 const String appSoundSettingKey = "App Sound";
 const String darkThemeSettingKey = "DARK THEME";
-const String showHelpOnNextBootKey = "Need Chain & Play Introduction?";
-const String catClockModeKey = "Chain & Play Clock Mode";
+const String showHelpOnNextBootKey = "Need ChainPlay Introduction?";
+const String catClockModeKey = "ChainPlay Clock Mode";
 const String catClockModeValue = "HH:MM:SS,HH:MM,AM/PM";
 const String trueSettingValue = "TRUE";
 const String falseSettingValue = "FALSE";
