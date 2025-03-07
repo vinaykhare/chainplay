@@ -107,7 +107,9 @@ class _ViewChainState extends State<ViewChain> {
     if (didPop) {
       return true;
     }
-    await chainList.cancelIntentSubscription();
+    if (!kIsWeb) {
+      await chainList.cancelIntentSubscription();
+    }
     return true;
   }
 

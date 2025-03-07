@@ -207,7 +207,9 @@ class ChainSystemWaitActivityFlow extends StatelessWidget {
             if (index == 0) arrowWidget,
             if (index == 0)
               tempChain.endedAt == null
-                  ? const SystemWaitActivity(taskText: 'End')
+                  ? SizedBox(
+                      width: double.infinity,
+                      child: const SystemWaitActivity(taskText: 'End'))
                   : SystemWaitActivityWithDuration(
                       taskText:
                           'Ended on ${DateFormat.yMd().add_jms().format(tempChain.endedAt!)}',

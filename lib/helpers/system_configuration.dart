@@ -277,7 +277,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
         },
         {
           "title":
-              "This section is just kept for your help to understand the set of actions that you can perform for creating chains and playting with it.",
+              "This section is just kept for your help to understand the set of actions that you can perform for creating chains and playing with it.",
           "widgetToShow": ListView(
             shrinkWrap: true,
             children: [
@@ -286,7 +286,7 @@ List<Map<String, dynamic>> getTutorialItemsByType(
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               Text(
-                "This section is just kept for your help to understand the set of actions that you can perform for creating chains and playting with it.",
+                "This section is just kept for your help to understand the set of actions that you can perform for creating chains and playing with it.",
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ],

@@ -7,6 +7,7 @@ import 'package:chain_activities/helpers/tts_state.dart';
 import 'package:chain_activities/models/system_setting.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class NotificationHelper {
   LocalNotificationService localNotificationService =
@@ -27,14 +28,19 @@ class NotificationHelper {
 
   Future<void> initialize(List<SystemSetting> systemSettingsFromRoot) async {
     systemSettings = systemSettingsFromRoot;
-    await localNotificationService.initialize();
+    if (!kIsWeb) {
+      await localNotificationService.initialize();
+    }
   }
 
   Future<bool> askNotificationPermission() async {
-    return await localNotificationService.askNotificationPermission();
+    return kIsWeb
+        ? false
+        : await localNotificationService.askNotificationPermission();
   }
 
   Future<Map<String, dynamic>?> checkForNotification() async {
+    if (kIsWeb) return null;
     Map<String, dynamic>? responsePayload =
         await localNotificationService.checkForNotification();
 
@@ -43,14 +49,16 @@ class NotificationHelper {
 
   Future<int> scheduleNotification(DateTime chainAt, int notificationId,
       String title, String body, Map<String, dynamic> payload) async {
-    if (await localNotificationService.scheduleNotification(
-        chainAt, notificationId, title, body, payload)) {
+    if (!kIsWeb &&
+        await localNotificationService.scheduleNotification(
+            chainAt, notificationId, title, body, payload)) {
       return notificationId;
     }
     return noValueInDB;
   }
 
   Future<void> cancelNotificationById(int id) async {
+    if (kIsWeb) return;
     await localNotificationService.cancelScheduledNotification(id);
   }
 

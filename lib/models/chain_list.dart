@@ -24,6 +24,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:uuid/uuid.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 //import 'package:chain_activities/screens/play_chain_screen.dart';
 
@@ -85,10 +86,13 @@ class ChainList with ChangeNotifier {
     if (loaded) {
       return;
     }
+
     await fetchSettings();
-    Future<InitializationStatus> initMobileAds =
-        MobileAds.instance.initialize();
-    adState = AdState(initMobileAds);
+    if (!kIsWeb) {
+      Future<InitializationStatus> initMobileAds =
+          MobileAds.instance.initialize();
+      adState = AdState(initMobileAds);
+    }
     await fetchActivities();
     await fetchChains();
 
@@ -102,21 +106,24 @@ class ChainList with ChangeNotifier {
     }
     configUpdateStarted = true;
     await notificationHelper.initialize(systemSettings);
-    await receiveIntent();
-    notificationCameAs = null;
+    if (!kIsWeb) {
+      await receiveIntent();
+      notificationCameAs = null;
 
-    Map<String, dynamic>? checkForNotificationResponse =
-        await notificationHelper.checkForNotification();
+      Map<String, dynamic>? checkForNotificationResponse =
+          await notificationHelper.checkForNotification();
 
-    for (int chainId = 0; chainId < chains.length; chainId++) {
-      Chain chain = chains[chainId];
-      collectNotificationIds(chain);
-      if (checkForNotificationResponse != null &&
-          chain.title == checkForNotificationResponse[payLoadChainName]) {
-        notificationCameAs = checkForNotificationResponse;
+      for (int chainId = 0; chainId < chains.length; chainId++) {
+        Chain chain = chains[chainId];
+        collectNotificationIds(chain);
+        if (checkForNotificationResponse != null &&
+            chain.title == checkForNotificationResponse[payLoadChainName]) {
+          notificationCameAs = checkForNotificationResponse;
+        }
+        // await evaluateChainExecutions(chain);
       }
-      // await evaluateChainExecutions(chain);
     }
+
     configUpdated = true;
     // configUpdateStarted = false;
     notifyListeners();
@@ -420,9 +427,15 @@ class ChainList with ChangeNotifier {
   }
 
   Future<bool> nameExistInDB(String title) async {
-    List<Map<String, dynamic>> result = await DBHelper.getDataBySQL(
-        'Select title, editChain from chain where editChain = 0 and title = ?',
-        [title]);
+    // List<Map<String, dynamic>> result = await DBHelper.getDataBySQL(
+    //     'Select title, editChain from chain where editChain = 0 and title = ?',
+    //     [title]);
+    List<Map<String, dynamic>> result = await DBHelper.getData(
+      'chain',
+      'chainIndex DESC',
+      'editChain = ? and title = ?',
+      [0, title],
+    );
     if (result.isNotEmpty && result[0]['title'] != "") {
       return true;
     }
@@ -1420,12 +1433,8 @@ class ChainList with ChangeNotifier {
   }
 
   Future<List<SystemSetting>> fetchSettings() async {
-    List<Map<String, dynamic>> loadedSettings;
-    loadedSettings = await DBHelper.getWebSettings();
-    if (loadedSettings.isEmpty) {
-      loadedSettings = await DBHelper.getData("settings", "type ASC");
-    }
-
+    List<Map<String, dynamic>> loadedSettings =
+        await DBHelper.getData("settings", "type ASC");
     systemSettings = [];
     for (var loadedSetting in loadedSettings) {
       SystemSetting setting = SystemSetting();
@@ -1510,16 +1519,23 @@ class ChainList with ChangeNotifier {
 
   Future<List<ChainActivity>> loadActivities(Chain chain) async {
     List<Map<String, dynamic>> loadedChainActivity =
-        await DBHelper.getDataBySQL(
-      '''
-      SELECT chain_activity.*, activity.*
-      FROM chain_activity
-      JOIN activity ON (chain_activity.activityId = activity.activityId)
-      WHERE chain_activity.title = ?
-      ORDER BY chain_activity.activityIndex
-      ''',
+        await DBHelper.getJointResult(
+      ["chain_activity", "activity"],
+      "activityId",
+      ["title"],
       [chain.title],
+      "activityIndex",
     );
+    //     await DBHelper.getDataBySQL(
+    //   '''
+    //   SELECT chain_activity.*, activity.*
+    //   FROM chain_activity
+    //   JOIN activity ON (chain_activity.activityId = activity.activityId)
+    //   WHERE chain_activity.title = ?
+    //   ORDER BY chain_activity.activityIndex
+    //   ''',
+    //   [chain.title],
+    // );
     chain.activities = [];
     for (var chainActivity in loadedChainActivity) {
       ChainActivity tempActivity = ChainActivity(
@@ -1808,7 +1824,7 @@ class ChainList with ChangeNotifier {
 
     activities = [];
 
-    for (var activity in loadedActivities) {
+    for (Map<String, dynamic> activity in loadedActivities) {
       Activity tempActivity = Activity(
         activityId: activity["activityId"],
         title: activity["title"],

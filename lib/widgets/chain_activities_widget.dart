@@ -72,7 +72,12 @@ class _ChainActivitiesWidgetState extends State<ChainActivitiesWidget> {
                       taskText:
                           "${widget.tempChain.at!.isAfter(DateTime.now()) ? 'Scheduled to Start at' : 'Started on '} \n${DateFormat.yMd().add_jms().format(widget.tempChain.at!)}",
                     )
-                  : const SystemWaitActivity(taskText: 'Start'),
+                  : SizedBox(
+                      width: double.infinity,
+                      child: const SystemWaitActivity(
+                        taskText: 'Start',
+                      ),
+                    ),
               if (widget.tempChain.activities.length == 1 &&
                   widget.tempChain.repeatType != repeatTypeDoesNotRepeat &&
                   (widget.tempChain.repeatCount - 1) != 0)
