@@ -68,70 +68,72 @@ class _ListOfChainsState extends State<ListOfChains> {
       children: [
         if (widget.showChainControlSummary == null ||
             widget.showChainControlSummary == true)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                icon: Icon(Icons.help),
-                onPressed: () {
-                  setState(() {
-                    showChainControlSummary = !showChainControlSummary;
-                  });
-                },
-              ),
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    showFavorites = false;
-                    showRunning = false;
-                  });
-                },
-                child: Text(
-                  "All Chains",
-                  style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                        fontWeight:
-                            showFavorites == false && showRunning == false
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                      ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.help),
+                  onPressed: () {
+                    setState(() {
+                      showChainControlSummary = !showChainControlSummary;
+                    });
+                  },
                 ),
-              ),
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    showRunning = true;
-                    showFavorites = false;
-                  });
-                },
-                child: Text(
-                  "Running Chains",
-                  style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                        fontWeight:
-                            showFavorites == false && showRunning == true
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                      ),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      showFavorites = false;
+                      showRunning = false;
+                    });
+                  },
+                  child: Text(
+                    "All Chains",
+                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                          fontWeight:
+                              showFavorites == false && showRunning == false
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                        ),
+                  ),
                 ),
-              ),
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    showFavorites = true;
-                    showRunning = false;
-                  });
-                },
-                child: Text(
-                  "Favorite Chains",
-                  style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                        fontWeight:
-                            showFavorites == true && showRunning == false
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                      ),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      showRunning = true;
+                      showFavorites = false;
+                    });
+                  },
+                  child: Text(
+                    "Running Chains",
+                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                          fontWeight:
+                              showFavorites == false && showRunning == true
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                        ),
+                  ),
                 ),
-              ),
-              SizedBox(),
-            ],
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      showFavorites = true;
+                      showRunning = false;
+                    });
+                  },
+                  child: Text(
+                    "Favorite Chains",
+                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                          fontWeight:
+                              showFavorites == true && showRunning == false
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                        ),
+                  ),
+                ),
+              ],
+            ),
           ),
         Expanded(
           child: Stack(

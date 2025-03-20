@@ -43,11 +43,12 @@ class ChainActivities extends StatelessWidget {
         Widget error = const Scaffold(body: Center(child: MyErrorWidget()));
         ErrorWidget.builder = (errorDetails) => error;
         if (widget != null) {
-          return MediaQuery(
-            data: MediaQuery.of(context)
-                .copyWith(textScaler: const TextScaler.linear(1.0)),
-            child: widget,
-          );
+          return widget;
+          // return MediaQuery(
+          //   data: MediaQuery.of(context)
+          //       .copyWith(textScaler: const TextScaler.linear(1.0)),
+          //   child: widget,
+          // );
         }
         throw ('widget is null');
       },

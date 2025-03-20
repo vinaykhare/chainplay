@@ -318,99 +318,101 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
               ],
             ),
           ),
-          bottomNavigationBar: Row(
-            children: [
-              InkWell(
-                onTap: () {
-                  Navigator.of(context).pop({
-                    "running": false, //running,
-                    "waitDuration": waitDuration,
-                    "interruptAndCompleted": false,
-                    "resumedAt": resumedAt,
-                  });
-                },
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.arrow_back,
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(
-                        left: 5,
+          bottomNavigationBar: SafeArea(
+            child: Row(
+              children: [
+                InkWell(
+                  onTap: () {
+                    Navigator.of(context).pop({
+                      "running": false, //running,
+                      "waitDuration": waitDuration,
+                      "interruptAndCompleted": false,
+                      "resumedAt": resumedAt,
+                    });
+                  },
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.arrow_back,
                       ),
-                      child: const Text("Chain Status"),
-                    ),
-                  ],
+                      Container(
+                        margin: EdgeInsets.only(
+                          left: 5,
+                        ),
+                        child: const Text("Chain Status"),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              // IconButton(
-              //   onPressed: () {
-              //     Navigator.of(context).pop({
-              //       "running": false, //running,
-              //       "waitDuration": waitDuration,
-              //       "interruptAndCompleted": false,
-              //       "resumedAt": resumedAt,
-              //     });
-              //   },
-              //   icon: const Icon(
-              //     Icons.arrow_back,
-              //   ),
-              // ),
-              if (showPlayPause)
-                Expanded(
-                  child: IconButton(
-                    onPressed: () {
-                      if (running) {
-                        stopTimer();
-                      } else {
-                        startTimer();
-                        resumedAt = DateTime.now();
-                      }
+                // IconButton(
+                //   onPressed: () {
+                //     Navigator.of(context).pop({
+                //       "running": false, //running,
+                //       "waitDuration": waitDuration,
+                //       "interruptAndCompleted": false,
+                //       "resumedAt": resumedAt,
+                //     });
+                //   },
+                //   icon: const Icon(
+                //     Icons.arrow_back,
+                //   ),
+                // ),
+                if (showPlayPause)
+                  Expanded(
+                    child: IconButton(
+                      onPressed: () {
+                        if (running) {
+                          stopTimer();
+                        } else {
+                          startTimer();
+                          resumedAt = DateTime.now();
+                        }
 
-                      setState(() {
-                        running = !running;
-                      });
-                    },
-                    icon: Icon(
-                      running ? Icons.pause : Icons.play_arrow,
-                    ),
-                  ),
-                )
-              else
-                const Expanded(
-                  child: SizedBox(
-                    height: 45,
-                  ),
-                ),
-              InkWell(
-                onTap: interruptAndCompleteActivity,
-                child: Row(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(
-                        right: 5,
-                      ),
-                      child: const Text(
-                        "Next Activity",
+                        setState(() {
+                          running = !running;
+                        });
+                      },
+                      icon: Icon(
+                        running ? Icons.pause : Icons.play_arrow,
                       ),
                     ),
-                    Icon(
-                      playScreenType == systemEndActivityInDB
-                          ? Icons.done
-                          : Icons.arrow_forward,
+                  )
+                else
+                  const Expanded(
+                    child: SizedBox(
+                      height: 45,
                     ),
-                  ],
+                  ),
+                InkWell(
+                  onTap: interruptAndCompleteActivity,
+                  child: Row(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(
+                          right: 5,
+                        ),
+                        child: const Text(
+                          "Next Activity",
+                        ),
+                      ),
+                      Icon(
+                        playScreenType == systemEndActivityInDB
+                            ? Icons.done
+                            : Icons.arrow_forward,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              // IconButton(
-              //   onPressed: interruptAndCompleteActivity,
-              //   icon: Icon(
-              //     playScreenType == systemEndActivityInDB
-              //         ? Icons.done
-              //         : Icons.arrow_forward,
-              //   ),
-              // ),
-            ],
+                // IconButton(
+                //   onPressed: interruptAndCompleteActivity,
+                //   icon: Icon(
+                //     playScreenType == systemEndActivityInDB
+                //         ? Icons.done
+                //         : Icons.arrow_forward,
+                //   ),
+                // ),
+              ],
+            ),
           ),
         ),
       ),

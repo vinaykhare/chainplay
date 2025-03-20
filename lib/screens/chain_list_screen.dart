@@ -40,9 +40,45 @@ class _ChainListScreenState extends State<ChainListScreen> {
         decoration: InputDecoration(
           floatingLabelBehavior: FloatingLabelBehavior.never,
           label: const Text("Search Chains"),
-          border: const OutlineInputBorder(
-            borderSide: BorderSide.none,
-            //borderRadius: BorderRadius.all(Radius.circular(50)),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.onPrimary,
+              width: 0,
+            ),
+            // borderSide: BorderSide.none,
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.error,
+              width: 0,
+            ),
+            // borderSide: BorderSide.none,
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+          disabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.onPrimary,
+              width: 0,
+            ),
+            // borderSide: BorderSide.none,
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.onPrimary,
+              width: 0,
+            ),
+            // borderSide: BorderSide.none,
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+          border: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.onPrimary,
+              width: 0,
+            ),
+            // borderSide: BorderSide.none,
+            borderRadius: BorderRadius.all(Radius.circular(10)),
           ),
           filled: true,
           prefixIcon: Icon(
