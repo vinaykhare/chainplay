@@ -24,48 +24,27 @@ class AppDrawer extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: AppBar(
-                title: ListTile(
-                  onTap: () {
-                    // while (Navigator.of(context).canPop()) {
-                    //   Navigator.of(context).pop();
-                    // }
-                    Navigator.of(context)
-                        .pushReplacementNamed(ChainListScreen.routename);
-                  },
-                  leading: Image.asset(assetMap["logoImage"]!),
-                  title: Text(
-                    "ChainPlay",
-                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                    // style: TextStyle(
-                    //   fontWeight: FontWeight.bold,
-                    //   color: Theme.of(context).textTheme.titleLarge!.color,
-                    // ),
-                  ),
-                  subtitle: Text(
-                    "CHAIN THE ACTIVITIES\n& PLAY IT",
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                ),
-                automaticallyImplyLeading: false,
-                // actions: [
-                //   IconButton(
-                //     onPressed: () {
-                //       while (Navigator.of(context).canPop()) {
-                //         Navigator.of(context).pop();
-                //       }
-                //       Navigator.of(context)
-                //           .pushReplacementNamed(SettingsScreen.routename);
-                //     },
-                //     icon: const Icon(Icons.settings),
-                //   ),
-                // ],
+            ListTile(
+              onTap: () {
+                // while (Navigator.of(context).canPop()) {
+                //   Navigator.of(context).pop();
+                // }
+                Navigator.of(context)
+                    .pushReplacementNamed(ChainListScreen.routename);
+              },
+              leading: Image.asset(assetMap["logoImage"]!),
+              title: Text(
+                "ChainPlay",
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              subtitle: Text(
+                "CHAIN THE ACTIVITIES\n& PLAY IT",
+                style: Theme.of(context).textTheme.titleSmall,
               ),
             ),
+
             Column(
               children: [
                 const Divider(),

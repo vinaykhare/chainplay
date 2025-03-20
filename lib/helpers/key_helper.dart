@@ -51,6 +51,7 @@ class KeyHelper {
 
   static GlobalKey playWaitKey = GlobalKey();
   static GlobalKey playWaitBackwardKey = GlobalKey();
+  static GlobalKey playWaitGoBackAndNotifyKey = GlobalKey();
   static GlobalKey playWaitTimerKey = GlobalKey();
   static GlobalKey playWaitPlayPauseKey = GlobalKey();
   static GlobalKey playWaitForwardKey = GlobalKey();

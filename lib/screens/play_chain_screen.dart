@@ -124,6 +124,10 @@ class _PlayChainState extends State<PlayChain> {
             playChainAction = playChainActionPause;
           }
 
+          if (popResponse["notify"] == true) {
+            await scheduleActivity();
+          }
+
           break;
         } else {
           chainActivity.activityDurationLeft = null;

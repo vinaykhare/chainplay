@@ -623,6 +623,26 @@ List<Map<String, dynamic>> getTutorialItemsByType(
         },
         {
           "title":
+              "If Timer is taking long and you can't keep looking at the screen for so long, then use this buttong to Go Back to Chain Execution Status Screen and Notify when Activity is done.",
+          "widgetToShow": ListView(
+            shrinkWrap: true,
+            children: [
+              Text(
+                "Go Back to Chain Execution Status & Run in Background",
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              Text(
+                "If Timer is taking long and you can't keep looking at the screen for so long, then use this buttong to Go Back to Chain Execution Status Screen and Notify when Activity is done.",
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ],
+          ),
+          "globalKey": KeyHelper.playWaitGoBackAndNotifyKey,
+          "focusAlign": Alignment.topCenter,
+          "contentAlign": ContentAlign.top,
+        },
+        {
+          "title":
               "Timer keeps ticking for the activity with Timer duration here. If the activity does not have timer then we get an option to press Done and complete the activty.",
           "widgetToShow": ListView(
             shrinkWrap: true,

@@ -203,7 +203,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
         child: Scaffold(
           body: SafeArea(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              // crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
@@ -305,6 +305,22 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                     "Seconds.",
                     style: Theme.of(context).textTheme.headlineSmall,
                     textAlign: TextAlign.center,
+                  ),
+                if (waitDuration.inSeconds != 0)
+                  ElevatedButton.icon(
+                    label: const Text("Go Back & Notify when done"),
+                    onPressed: () {
+                      Navigator.of(context).pop({
+                        "running": false, //running,
+                        "waitDuration": waitDuration,
+                        "interruptAndCompleted": false,
+                        "resumedAt": resumedAt,
+                        "notify": true,
+                      });
+                    },
+                    icon: Icon(
+                      Icons.notification_add,
+                    ),
                   ),
                 Container(
                   margin: const EdgeInsets.all(5),
