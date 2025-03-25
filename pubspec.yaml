@@ -29,6 +29,7 @@ dependencies:
   flutter_tts: ^4.0.2
   google_mobile_ads: ^5.1.0
   tutorial_coach_mark: ^1.2.11
+  pixabay_picker: ^1.0.7
 
   firebase_core: ^3.3.0
   firebase_crashlytics: ^4.0.4
@@ -61,6 +62,7 @@ flutter:
     - assets/AppIcons/chain.png
     - assets/AppIcons/vertical_chain.png
     - assets/AppIcons/no-Image-placeholder.png
+    - assets/AppIcons/pixabaylogo.png
     - assets/Sounds/chain_activity_beep.mp3
     - assets/Sounds/chain_activity_alarm.wav
     - assets/SampleChains/Sample_Diet_Routine_Chain.json

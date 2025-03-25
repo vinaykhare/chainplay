@@ -73,6 +73,33 @@ class ChainActivityFlowCommonView extends StatelessWidget {
       }
     }
 
+    var chainActivityImage = chainActivity.activity.specification != null &&
+            chainActivity.activity.specification![activitySpecImagePath] !=
+                null &&
+            chainActivity.activity.specification![activitySpecImagePath] != ""
+        ? chainActivity.activity.specification![activitySpecImagePath]
+                .toString()
+                .startsWith("http")
+            ? FadeInImage.assetNetwork(
+                placeholder: assetMap["logoImage"]!,
+                image: chainActivity
+                    .activity.specification![activitySpecImagePath],
+                fit: BoxFit.cover,
+                imageErrorBuilder: (context, error, stackTrace) => Image.asset(
+                  assetMap['logoImage']!,
+                  fit: BoxFit.cover,
+                ),
+              )
+            : Image.file(
+                File(
+                  chainActivity.activity.specification![activitySpecImagePath],
+                ),
+                fit: BoxFit.cover,
+              )
+        : Image.asset(
+            assetMap['noImagePlaceholder']!,
+            fit: BoxFit.cover,
+          );
     return ListTile(
       tileColor: Theme.of(context).cardColor.withValues(alpha: 0.1),
       // onTap: () async {
@@ -89,43 +116,36 @@ class ChainActivityFlowCommonView extends StatelessWidget {
       subtitle: Text(
         subtitleText,
       ),
-      leading: ClipRRect(
-        borderRadius: BorderRadius.circular(50),
-        child: Container(
-          height: 100,
-          margin: const EdgeInsets.all(5),
-          child: chainActivity.activity.specification != null &&
-                  chainActivity
-                          .activity.specification![activitySpecImagePath] !=
-                      null &&
-                  chainActivity
-                          .activity.specification![activitySpecImagePath] !=
-                      ""
-              ? chainActivity.activity.specification![activitySpecImagePath]
-                      .toString()
-                      .startsWith("http")
-                  ? FadeInImage.assetNetwork(
-                      placeholder: assetMap["logoImage"]!,
-                      image: chainActivity
-                          .activity.specification![activitySpecImagePath],
-                      fit: BoxFit.cover,
-                      imageErrorBuilder: (context, error, stackTrace) =>
-                          Image.asset(
-                        assetMap['logoImage']!,
-                        fit: BoxFit.cover,
+      leading: InkWell(
+        onTap: () async {
+          await showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text(chainActivity.activity.title),
+                content: chainActivityImage,
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text(
+                      "Close",
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
                       ),
-                    )
-                  : Image.file(
-                      File(
-                        chainActivity
-                            .activity.specification![activitySpecImagePath],
-                      ),
-                      fit: BoxFit.cover,
-                    )
-              : Image.asset(
-                  assetMap['noImagePlaceholder']!,
-                  fit: BoxFit.cover,
-                ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(50),
+          child: Container(
+            height: 100,
+            margin: const EdgeInsets.all(5),
+            child: chainActivityImage,
+          ),
         ),
       ),
 

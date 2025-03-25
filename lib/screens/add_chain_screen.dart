@@ -1,10 +1,13 @@
 import 'dart:io';
 
 import 'package:chain_activities/screens/chain_list_screen.dart';
+import 'package:chain_activities/screens/pixabay_selection_screen.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:pixabay_picker/model/pixabay_media.dart';
+import 'package:pixabay_picker/pixabay_api.dart';
 //import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/helpers/constants.dart';
@@ -59,7 +62,9 @@ class _AddChainScreenState extends State<AddChainScreen> {
       addingImageToActivity = false,
       updatingSystemWaitActivityInDB = false,
       // scrollAtTop = false,
-      pageInit = true;
+      pageInit = true,
+      processingRequest = false,
+      showSubmitActivityButton = true;
 
   int activityDurationHour = 0,
       activityDurationMinute = 0,
@@ -78,6 +83,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
   GlobalKey<FormState> durationFormKey = GlobalKey<FormState>();
   GlobalKey<FormState> startDateTimeInputKey = GlobalKey<FormState>();
   FocusNode addActivityFocus = FocusNode();
+  late ScaffoldMessengerState scms;
 
   @override
   void dispose() {
@@ -89,6 +95,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
   Future<bool> isNameValid() async {
     setState(() {
       errorString = "";
+      processingRequest = true;
     });
     ChainList chainList = Provider.of<ChainList>(context, listen: false);
     bool nameExist = await chainList.nameExistInDB(tempChain.title);
@@ -105,6 +112,9 @@ class _AddChainScreenState extends State<AddChainScreen> {
       });
       return false;
     }
+    setState(() {
+      processingRequest = false;
+    });
     return true;
   }
 
@@ -127,7 +137,13 @@ class _AddChainScreenState extends State<AddChainScreen> {
       [bool existingScreen = true]) async {
     ChainList chainList = Provider.of<ChainList>(context, listen: false);
     FocusScopeNode fsn = FocusScope.of(context);
+    setState(() {
+      processingRequest = true;
+    });
     if (chainFormKey.currentState == null) {
+      setState(() {
+        processingRequest = false;
+      });
       return true;
     }
     bool valid = chainFormKey.currentState!.validate();
@@ -136,6 +152,9 @@ class _AddChainScreenState extends State<AddChainScreen> {
 
     bool validName = await isNameValid();
     if (!valid || !validName) {
+      setState(() {
+        processingRequest = false;
+      });
       return false;
     }
 
@@ -143,6 +162,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
       setState(() {
         errorString =
             "Give a valid name to this Chain!\n OR\n Remove all Activites to delete the Chain.";
+        processingRequest = false;
       });
       return false;
     }
@@ -182,10 +202,16 @@ class _AddChainScreenState extends State<AddChainScreen> {
       await chainList.updatChainActivityByChainName(tempChain);
     }
     fsn.requestFocus(addActivityFocus);
+    setState(() {
+      processingRequest = false;
+    });
     return true;
   }
 
   Future<void> addActivity(ChainActivity newActivity) async {
+    setState(() {
+      processingRequest = true;
+    });
     ChainList chainList = Provider.of<ChainList>(context, listen: false);
     ChainActivity restChainActivity = ChainActivity(
       activity: restActivity,
@@ -193,6 +219,9 @@ class _AddChainScreenState extends State<AddChainScreen> {
     bool validName = await isNameValid();
 
     if (!(validName)) {
+      setState(() {
+        processingRequest = false;
+      });
       return;
     }
 
@@ -225,15 +254,23 @@ class _AddChainScreenState extends State<AddChainScreen> {
       restChainActivity,
     );
     //Navigator.of(context).pop();
-    setState(() {});
+    setState(() {
+      processingRequest = false;
+    });
   }
 
   //chainActivityInEditMode should not be null before calling this function.
   Future<void> updateActivity(ChainActivity newActivity) async {
+    setState(() {
+      processingRequest = true;
+    });
     ChainList chainList = Provider.of<ChainList>(context, listen: false);
     bool validName = await isNameValid();
 
     if (!(validName)) {
+      setState(() {
+        processingRequest = true;
+      });
       return;
     }
 
@@ -248,6 +285,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
     setState(() {
       chainActivityInEditMode = null;
       updatingSystemWaitActivityInDB = false;
+      processingRequest = false;
     });
   }
 
@@ -314,6 +352,9 @@ class _AddChainScreenState extends State<AddChainScreen> {
     activityDurationSecond = durationSecondController.text == ""
         ? 0
         : int.parse(durationSecondController.text);
+    setState(() {
+      processingRequest = true;
+    });
     for (var chainActivity in tempChain.activities) {
       if (chainActivity.activity.type == systemWaitActivityInDB) {
         chainActivityInEditMode = chainActivity;
@@ -341,6 +382,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
       activityDurationSecond = 0;
       addingDurationToActivity = false;
       addingImageToActivity = false;
+      processingRequest = false;
     });
   }
 
@@ -349,6 +391,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
     setState(() {
       errorString = "";
       activityFormErrorString = "";
+      processingRequest = true;
     });
 
     bool validChainForm = chainFormKey.currentState!.validate();
@@ -356,6 +399,9 @@ class _AddChainScreenState extends State<AddChainScreen> {
     bool validStartDateTimeForm =
         startDateTimeInputKey.currentState?.validate() ?? true;
     if (!validChainForm || !validDurationForm || !validStartDateTimeForm) {
+      setState(() {
+        processingRequest = false;
+      });
       return;
     }
 
@@ -366,6 +412,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
       setState(() {
         errorString =
             "Please insert the Chain name before adding activity to it.";
+        processingRequest = false;
       });
       return;
     }
@@ -377,11 +424,15 @@ class _AddChainScreenState extends State<AddChainScreen> {
             activityDurationSecond > 0)) {
       setState(() {
         activityFormErrorString = "Add Chain Activity Name";
+        processingRequest = false;
       });
       return;
     }
 
     if (addActivityController.text.isEmpty) {
+      setState(() {
+        processingRequest = false;
+      });
       return;
     }
 
@@ -389,6 +440,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
       setState(() {
         activityFormErrorString =
             "Length of Acitivity Name is too long. It should not be more than 35 letters long.";
+        processingRequest = false;
       });
       return;
     }
@@ -398,6 +450,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
       if (!isValidURL) {
         setState(() {
           activityFormErrorString = "Invalid Path or URL";
+          processingRequest = false;
         });
         return;
       }
@@ -410,6 +463,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
     if (validHour != null) {
       setState(() {
         activityFormErrorString = "Hours should be in the range of $validHour";
+        processingRequest = false;
       });
       return;
     }
@@ -418,6 +472,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
       setState(() {
         activityFormErrorString =
             "Minutes should be in the range of $validMinute";
+        processingRequest = false;
       });
       return;
     }
@@ -425,6 +480,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
       setState(() {
         activityFormErrorString =
             "Seconds should be in the range of $validSecond";
+        processingRequest = false;
       });
       return;
     }
@@ -488,6 +544,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
       activityDurationSecond = 0;
       addingDurationToActivity = false;
       addingImageToActivity = false;
+      processingRequest = false;
     });
   }
 
@@ -522,6 +579,9 @@ class _AddChainScreenState extends State<AddChainScreen> {
   }
 
   Future<void> undoEdit(ChainActivity chainActivity) async {
+    setState(() {
+      processingRequest = true;
+    });
     FocusScopeNode focusScope = FocusScope.of(context);
     addActivityController.clear();
     activityImageController.clear();
@@ -547,6 +607,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
       activityDurationMinute = 0;
       activityDurationSecond = 0;
       updatingSystemWaitActivityInDB = false;
+      processingRequest = false;
     });
     focusScope.unfocus();
   }
@@ -556,7 +617,10 @@ class _AddChainScreenState extends State<AddChainScreen> {
     bool editDuration = true,
     bool editImage = true,
   ]) async {
-    //FocusScopeNode focusScope = FocusScope.of(context);
+    FocusScopeNode focusScope = FocusScope.of(context);
+    setState(() {
+      processingRequest = true;
+    });
 
     ChainList chainList = Provider.of<ChainList>(context, listen: false);
     chainActivityInEditMode = chainActivity;
@@ -596,6 +660,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
       if (chainActivity.activity.type == systemWaitActivityInDB) {
         addingImageToActivity = false;
       }
+      processingRequest = false;
     });
     durationHourController.text = activityDurationHour == 0
         ? ""
@@ -608,15 +673,18 @@ class _AddChainScreenState extends State<AddChainScreen> {
         : activityDurationSecond.toString().padLeft(2, '0');
 
     addActivityController.text = chainActivity.activity.title;
-    // if (!updatingSystemWaitActivityInDB && !addingScheduleToChain) {
-    //   focusScope.requestFocus(addActivityFocus);
-    // }
+    if (!updatingSystemWaitActivityInDB &&
+        !addingDurationToActivity &&
+        !addingImageToActivity) {
+      focusScope.requestFocus(addActivityFocus);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     //ChainList chainList = Provider.of<ChainList>(context, listen: false);
     if (pageInit) {
+      scms = ScaffoldMessenger.of(context);
       if (ModalRoute.of(context)?.settings.arguments != null) {
         tempChain = ModalRoute.of(context)?.settings.arguments as Chain;
         pageTitle = tempChain.title;
@@ -625,6 +693,15 @@ class _AddChainScreenState extends State<AddChainScreen> {
       } else {
         showSaveAndExit = true;
       }
+      addActivityController.addListener(() {
+        setState(() {
+          if (addActivityController.text.isNotEmpty) {
+            showSubmitActivityButton = true;
+          } else {
+            showSubmitActivityButton = false;
+          }
+        });
+      });
       pageInit = false;
       //FocusScope.of(context).requestFocus(addActivityFocus);
     }
@@ -665,44 +742,203 @@ class _AddChainScreenState extends State<AddChainScreen> {
                   Icons.photo,
                 ),
                 onPressed: () async {
-                  // XFile? pickedImage = await ImagePicker()
-                  //     .pickImage(source: ImageSource.gallery);
-                  // if (pickedImage != null) {
-                  //   // activityImageController.text = pickedImage.path;
-                  //   setState(() {
-                  //     localImagePath = pickedImage.path;
-                  //   });
-                  // }
-                  FilePickerResult? result =
-                      await FilePicker.platform.pickFiles(
-                    type: FileType.custom,
-                    allowedExtensions: [
-                      'jpg',
-                      'jpeg',
-                      'gif',
-                      'png',
-                      'webp',
-                      'svg',
-                      'jfif',
-                      'pjpeg',
-                      'pjp',
-                      'apng',
-                      'avif',
-                      'bmp',
-                      'tif',
-                      'tiff',
-                      'ico',
-                      'cur'
-                    ],
+                  String imagePath = "";
+                  String imageSelectionError = "";
+                  NavigatorState nav = Navigator.of(context);
+
+                  setState(() {
+                    processingRequest = true;
+                  });
+                  bool? dialogResponse = await showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text(
+                          "Choose an Image Source",
+                          textAlign: TextAlign.center,
+                        ),
+                        actions: <Widget>[
+                          Card(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: InkWell(
+                                onTap: () => Navigator.of(context).pop(true),
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      width: appWidth * 0.20,
+                                      child: Image(
+                                        image: AssetImage(
+                                            assetMap['pixabaylogo']!),
+                                        fit: BoxFit.fill,
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge!
+                                            .color,
+                                        width: 50,
+                                      ),
+                                    ),
+                                    Text(
+                                      "PixaBay\nRecommendation",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelMedium!
+                                          .copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .inverseSurface,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Card(
+                            color: Theme.of(context).secondaryHeaderColor,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: InkWell(
+                                onTap: () => Navigator.of(context).pop(false),
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      height: 50,
+                                      width: appWidth * 0.20,
+                                      child: Icon(
+                                        Icons.sd_storage_outlined,
+                                        size: 45,
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge!
+                                            .color,
+                                      ),
+                                    ),
+                                    Text(
+                                      "Pick from\nLocal Storage",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelMedium!
+                                          .copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .inverseSurface,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   );
-                  if (result != null) {
-                    activityImageController.text = result.files.single.path!;
-                    setState(() {
-                      activityFormErrorString = "";
-                    });
-                  } else {
-                    // User cancelled the picker
+
+                  try {
+                    if (dialogResponse == true) {
+                      PixabayMediaProvider api = PixabayMediaProvider(
+                        apiKey: pixaBayApiKey,
+                        language: "en",
+                      );
+                      PixabayResponse? result =
+                          await api.requestImagesWithKeyword(
+                              keyword: addActivityController.text,
+                              resultsPerPage: 100);
+
+                      if (result != null &&
+                          result.hits != null &&
+                          result.hits!.isNotEmpty) {
+                        List<String?> pixabayLinks = result.hits!.map((hit) {
+                          return hit.getDownloadLink();
+                        }).toList();
+
+                        int? chosenPictureIndex = await nav.pushNamed(
+                          PixabaySelectionScreen.routename,
+                          arguments: {
+                            "activityTitle": addActivityController.text,
+                            "pixabayLinks": pixabayLinks,
+                          },
+                        ) as int?;
+                        if (chosenPictureIndex != null) {
+                          imagePath = pixabayLinks[chosenPictureIndex] ?? "";
+                        } else {
+                          imagePath = "";
+                        }
+                      } else {
+                        // User cancelled the picker
+                        imageSelectionError =
+                            "Pixabay is unable to get images matching the Chain Activity Name.";
+                      }
+                      setState(() {
+                        processingRequest = false;
+                      });
+                    }
+                    // XFile? pickedImage = await ImagePicker()
+                    //     .pickImage(source: ImageSource.gallery);
+                    // if (pickedImage != null) {
+                    //   // activityImageController.text = pickedImage.path;
+                    //   setState(() {
+                    //     localImagePath = pickedImage.path;
+                    //   });
+                    // }
+                    else if (dialogResponse == false) {
+                      FilePickerResult? result =
+                          await FilePicker.platform.pickFiles(
+                        type: FileType.custom,
+                        allowedExtensions: [
+                          'jpg',
+                          'jpeg',
+                          'gif',
+                          'png',
+                          'webp',
+                          'svg',
+                          'jfif',
+                          'pjpeg',
+                          'pjp',
+                          'apng',
+                          'avif',
+                          'bmp',
+                          'tif',
+                          'tiff',
+                          'ico',
+                          'cur'
+                        ],
+                      );
+                      if (result != null) {
+                        imagePath = result.files.single.path!;
+                      } else {
+                        // User cancelled the picker
+                      }
+                    }
+                  } catch (e) {
+                    imageSelectionError = e.toString();
                   }
+
+                  if (imageSelectionError != "") {
+                    scms.showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          //e.toString(),
+                          imageSelectionError,
+                          textAlign: TextAlign.center,
+                        ),
+                        duration: const Duration(seconds: 10),
+                        action: SnackBarAction(
+                          //textColor: Colors.white,
+                          label: 'OK',
+                          onPressed: () {},
+                        ),
+                      ),
+                    );
+                  } else {
+                    activityImageController.text = imagePath;
+                  }
+                  setState(() {
+                    activityFormErrorString = "";
+                    processingRequest = false;
+                  });
                 },
               ),
             ),
@@ -1159,17 +1395,13 @@ class _AddChainScreenState extends State<AddChainScreen> {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Stack(
-                  children: [
-                    Semantics(
-                      label: "Editable Chain of Activities",
-                      child: ChainActivitiesWidget(
-                        tempChain: tempChain,
-                        editActivity: editActivity,
-                        undoEdit: undoEdit,
-                      ),
-                    ),
-                  ],
+                child: Semantics(
+                  label: "Editable Chain of Activities",
+                  child: ChainActivitiesWidget(
+                    tempChain: tempChain,
+                    editActivity: editActivity,
+                    undoEdit: undoEdit,
+                  ),
                 ),
               ),
             ),
@@ -1222,7 +1454,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
                         cursorColor: Theme.of(context).shadowColor,
                         focusNode: addActivityFocus,
                         decoration: InputDecoration(
-                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          //floatingLabelBehavior: FloatingLabelBehavior.never,
                           label: Text(
                             'Chain Activity Name',
                             style: TextStyle(
@@ -1256,70 +1488,34 @@ class _AddChainScreenState extends State<AddChainScreen> {
                         ),
                         controller: addActivityController,
                         onSubmitted: (_) {
-                          onSubmitText();
+                          if (!processingRequest) {
+                            onSubmitText();
+                          }
                         },
                       ),
                     ),
-                  if (tempChain.at != null)
-                    TextButton(
-                      onPressed: () {
-                        undoEdit(chainActivityInEditMode!);
-                        tempChain.at = null;
-                        tempChain.repeatType = repeatTypeDoesNotRepeat;
-                        tempChain.repeatCount = repeatTypeDefaultCount;
-                      },
-                      child: CircleAvatar(
-                        radius: 50,
-                        child: Text(
-                          "Remove\nAlarm",
-                          style: Theme.of(context).textTheme.labelSmall,
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                  if (chainActivityInEditMode == null ||
-                      chainActivityInEditMode!.activity.type !=
-                          systemWaitActivityInDB)
-                    SizedBox(
-                      // width: appWidth * 0.21,
-                      child: IconButton(
-                        onPressed: tempChain.title.isNotEmpty
-                            ? onSubmitText
-                            : () {
-                                validateForm(context, false);
-                              },
-                        icon: chainActivityInEditMode != null
-                            ? const Icon(Icons.done_outline)
-                            : updatingSystemWaitActivityInDB
-                                ? const Icon(Icons.done)
-                                : const Icon(Icons.add_task_outlined),
-                      ),
-                    )
-                  else
-                    InkWell(
-                      onTap: tempChain.title.isNotEmpty
-                          ? onSubmitText
-                          : () {
-                              validateForm(context, false);
-                            },
-                      child: Column(
-                        children: [
-                          const Icon(Icons.done_outline),
-                          const Text("Just here")
-                        ],
-                      ),
-                    ),
-                  if (updatingSystemWaitActivityInDB)
-                    InkWell(
-                      onTap: updateDurationForAllSystemWaitActivity,
-                      child: Column(
-                        children: [
-                          const Icon(Icons.done_all),
-                          const Text("Between All"),
-                        ],
-                      ),
-                    ),
-                  if (updatingSystemWaitActivityInDB)
+                  // if (tempChain.at != null)
+                  //   TextButton(
+                  //     onPressed: () {
+                  //       undoEdit(chainActivityInEditMode!);
+                  //       tempChain.at = null;
+                  //       tempChain.repeatType = repeatTypeDoesNotRepeat;
+                  //       tempChain.repeatCount = repeatTypeDefaultCount;
+                  //     },
+                  //     child: CircleAvatar(
+                  //       radius: 50,
+                  //       child: Text(
+                  //         "Remove\nAlarm",
+                  //         style: Theme.of(context).textTheme.labelSmall,
+                  //         textAlign: TextAlign.center,
+                  //       ),
+                  //     ),
+                  //   ),
+                  // if (chainActivityInEditMode == null ||
+                  //     chainActivityInEditMode!.activity.type !=
+                  //         systemWaitActivityInDB)
+
+                  if (chainActivityInEditMode != null)
                     InkWell(
                       onTap: () {
                         undoEdit(chainActivityInEditMode!);
@@ -1327,12 +1523,79 @@ class _AddChainScreenState extends State<AddChainScreen> {
                         // tempChain.repeatType = repeatTypeDoesNotRepeat;
                         // tempChain.repeatCount = repeatTypeDefaultCount;
                       },
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 15 // appWidth * 0.04,
+                            ),
+                        child: Column(
+                          children: [
+                            const Icon(Icons.cancel_outlined),
+                            const Text("Discard"),
+                          ],
+                        ),
+                      ),
+                    ),
+                  if (updatingSystemWaitActivityInDB)
+                    InkWell(
+                      onTap: updateDurationForAllSystemWaitActivity,
                       child: Column(
                         children: [
-                          const Icon(Icons.cancel_outlined),
-                          const Text("Discard"),
+                          if (processingRequest)
+                            CircularProgressIndicator(
+                              color: Colors.black,
+                            )
+                          else
+                            const Icon(Icons.done_all),
+                          if (updatingSystemWaitActivityInDB)
+                            const Text("Between All"),
                         ],
                       ),
+                    ),
+                  if (showSubmitActivityButton)
+                    Column(
+                      children: [
+                        InkWell(
+                          onTap: processingRequest
+                              ? null
+                              : tempChain.title.isNotEmpty
+                                  ? onSubmitText
+                                  : () {
+                                      validateForm(context, false);
+                                    },
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 15 // appWidth * 0.04,
+                                ),
+                            child: Column(
+                              children: [
+                                if (processingRequest)
+                                  CircularProgressIndicator(
+                                    color: Colors.black,
+                                  )
+                                else
+                                  chainActivityInEditMode != null ||
+                                          updatingSystemWaitActivityInDB
+                                      ? const Icon(Icons.done_outline)
+                                      : const Icon(Icons.add_task_outlined),
+                                if (updatingSystemWaitActivityInDB)
+                                  const Text("Just here"),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // IconButton(
+                        //   onPressed:
+                        //       tempChain.title.isNotEmpty && !processingRequest
+                        //           ? onSubmitText
+                        //           : () {
+                        //               validateForm(context, false);
+                        //             },
+                        //   icon: chainActivityInEditMode != null ||
+                        //           updatingSystemWaitActivityInDB
+                        //       ? const Icon(Icons.done_outline)
+                        //       : const Icon(Icons.add_task_outlined),
+                        // ),
+                      ],
                     ),
                 ],
               ),

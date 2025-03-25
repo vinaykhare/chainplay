@@ -66,7 +66,7 @@ class ChainActivityFlowEditView extends StatelessWidget {
             children: [
               Expanded(
                 child: Semantics(
-                  label: "Add or update Image for Chain Activity",
+                  label: "Edit the chain activity title",
                   child: Container(
                     decoration: BoxDecoration(
                       border: Border.all(),
@@ -76,22 +76,39 @@ class ChainActivityFlowEditView extends StatelessWidget {
                     ),
                     child: InkWell(
                       onTap: () async {
+                        await editActivity!(chainActivity, false, false);
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: const Text("Title"),
+                          ),
+                          Icon(
+                            Icons.edit,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Semantics(
+                  label: "Add or update Image for Chain Activity",
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(),
+                    ),
+                    child: InkWell(
+                      onTap: () async {
                         await editActivity!(chainActivity, false, true);
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
-                            chainActivity.activity.specification != null &&
-                                    chainActivity.activity.specification![
-                                            activitySpecImagePath] !=
-                                        null &&
-                                    chainActivity.activity.specification![
-                                            activitySpecImagePath] !=
-                                        ""
-                                ? Icons.photo_camera
-                                : Icons.add_a_photo,
-                          ),
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 8.0),
@@ -107,73 +124,16 @@ class ChainActivityFlowEditView extends StatelessWidget {
                                   : "Add",
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Semantics(
-                  label: "Delete this activity from chain.",
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(),
-                    ),
-                    child: InkWell(
-                      onTap: () async {
-                        bool? dialogResponse = await showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text("Confirm Deletion"),
-                              content: const Text(
-                                  "Are you sure about deleting this Activity?"),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () =>
-                                      Navigator.of(context).pop(true),
-                                  child: Text(
-                                    "Yes, Delete this Activity!",
-                                    style: TextStyle(
-                                      color:
-                                          Theme.of(context).colorScheme.error,
-                                    ),
-                                  ),
-                                ),
-                                TextButton(
-                                  onPressed: () =>
-                                      Navigator.of(context).pop(false),
-                                  child: Text(
-                                    "No, chose this option by mistake.",
-                                    style: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .inverseSurface,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-
-                        if (dialogResponse == true) {
-                          await chainList.removeActivityFromChain(
-                              tempChain, chainActivity);
-                        }
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
                           Icon(
-                            Icons.delete_forever_rounded,
-                            color: Theme.of(context).colorScheme.error,
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: const Text("Delete"),
+                            chainActivity.activity.specification != null &&
+                                    chainActivity.activity.specification![
+                                            activitySpecImagePath] !=
+                                        null &&
+                                    chainActivity.activity.specification![
+                                            activitySpecImagePath] !=
+                                        ""
+                                ? Icons.photo_camera
+                                : Icons.add_a_photo,
                           ),
                         ],
                       ),
@@ -187,9 +147,6 @@ class ChainActivityFlowEditView extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       border: Border.all(),
-                      borderRadius: BorderRadius.only(
-                        bottomRight: Radius.circular(10),
-                      ),
                     ),
                     child: InkWell(
                       onTap: () async {
@@ -198,11 +155,6 @@ class ChainActivityFlowEditView extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
-                            chainActivity.activityDuration.inSeconds > 0
-                                ? Icons.access_time_sharp
-                                : Icons.more_time,
-                          ),
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 8.0),
@@ -212,33 +164,83 @@ class ChainActivityFlowEditView extends StatelessWidget {
                                   : "Add",
                             ),
                           ),
+                          Icon(
+                            chainActivity.activityDuration.inSeconds > 0
+                                ? Icons.access_time_sharp
+                                : Icons.more_time,
+                          ),
                         ],
                       ),
                     ),
                   ),
                 ),
               ),
-              // Expanded(
-              //   child: Semantics(
-              //     label: "Button to reorder the Chain Items.",
-              //     child: Container(
-              //       decoration: BoxDecoration(
-              //         border: Border.all(),
-              //         borderRadius: BorderRadius.circular(30),
-              //       ),
-              //       child: Row(
-              //         mainAxisAlignment: MainAxisAlignment.center,
-              //         children: [
-              //           ReorderableDragStartListener(
-              //             index: index,
-              //             child: const Icon(Icons.drag_handle),
-              //           ),
-              //           const Text("Reorder"),
-              //         ],
-              //       ),
-              //     ),
-              //   ),
-              // ),
+              Semantics(
+                label: "Delete this activity from chain.",
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 11,
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(),
+                    borderRadius: BorderRadius.only(
+                      bottomRight: Radius.circular(10),
+                    ),
+                  ),
+                  child: InkWell(
+                    onTap: () async {
+                      bool? dialogResponse = await showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text("Confirm Deletion"),
+                            content: const Text(
+                                "Are you sure about deleting this Activity?"),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(true),
+                                child: Text(
+                                  "Yes, Delete this Activity!",
+                                  style: TextStyle(
+                                    color: Theme.of(context).colorScheme.error,
+                                  ),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(false),
+                                child: Text(
+                                  "No, chose this option by mistake.",
+                                  style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .inverseSurface,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+
+                      if (dialogResponse == true) {
+                        await chainList.removeActivityFromChain(
+                            tempChain, chainActivity);
+                      }
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.delete_forever_rounded,
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
       ],
