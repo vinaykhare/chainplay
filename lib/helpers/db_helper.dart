@@ -185,7 +185,7 @@ class DBHelper {
       String table, String orderBy,
       [String condition = "", List<dynamic> conditionArgs = const []]) async {
     List<Map<String, dynamic>> result = [];
-    final SharedPreferencesAsync asyncPrefs = SharedPreferencesAsync();
+    final SharedPreferencesAsync asyncPrefs = await sharedPrefDatabase();
     List<String> tableContent = await asyncPrefs.getStringList(table) ?? [];
 
     List<String> conditionParams = condition.split("= ?");
@@ -229,7 +229,7 @@ class DBHelper {
       List<String> conditionParams,
       List<dynamic> conditionArgs,
       String orderBy) async {
-    final SharedPreferencesAsync asyncPrefs = SharedPreferencesAsync();
+    final SharedPreferencesAsync asyncPrefs = await sharedPrefDatabase();
 
     List<String> primaryTableRawContent =
         await asyncPrefs.getStringList(tables[0]) ?? [];
@@ -350,7 +350,7 @@ class DBHelper {
   static Future<void> removeDataFromSharedPref(
       String table, String condition, List<dynamic> conditionArgs) async {
     try {
-      final SharedPreferencesAsync asyncPrefs = SharedPreferencesAsync();
+      final SharedPreferencesAsync asyncPrefs = await sharedPrefDatabase();
       List<String> tableContent = await asyncPrefs.getStringList(table) ?? [];
       tableContent.removeWhere((String entry) {
         Map<String, dynamic> objectEntry = jsonDecode(entry);

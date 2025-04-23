@@ -1,5 +1,6 @@
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
+import 'package:chain_activities/widgets/app_bottom_buttons_help.dart';
 import 'package:chain_activities/widgets/app_header_buttons_help.dart';
 import 'package:chain_activities/widgets/chain_list_item.dart';
 import 'package:chain_activities/widgets/chain_tile_help.dart';
@@ -69,70 +70,72 @@ class _ListOfChainsState extends State<ListOfChains> {
       children: [
         if (widget.showChainControlSummary == null ||
             widget.showChainControlSummary == true)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                icon: Icon(Icons.help),
-                onPressed: () {
-                  setState(() {
-                    showChainControlSummary = !showChainControlSummary;
-                  });
-                },
-              ),
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    showFavorites = false;
-                    showRunning = false;
-                  });
-                },
-                child: Text(
-                  "All Chains",
-                  style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                        fontWeight:
-                            showFavorites == false && showRunning == false
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                      ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.help),
+                  onPressed: () {
+                    setState(() {
+                      showChainControlSummary = !showChainControlSummary;
+                    });
+                  },
                 ),
-              ),
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    showRunning = true;
-                    showFavorites = false;
-                  });
-                },
-                child: Text(
-                  "Running Chains",
-                  style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                        fontWeight:
-                            showFavorites == false && showRunning == true
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                      ),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      showFavorites = false;
+                      showRunning = false;
+                    });
+                  },
+                  child: Text(
+                    "All Chains",
+                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                          fontWeight:
+                              showFavorites == false && showRunning == false
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                        ),
+                  ),
                 ),
-              ),
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    showFavorites = true;
-                    showRunning = false;
-                  });
-                },
-                child: Text(
-                  "Favorite Chains",
-                  style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                        fontWeight:
-                            showFavorites == true && showRunning == false
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                      ),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      showRunning = true;
+                      showFavorites = false;
+                    });
+                  },
+                  child: Text(
+                    "Running Chains",
+                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                          fontWeight:
+                              showFavorites == false && showRunning == true
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                        ),
+                  ),
                 ),
-              ),
-              SizedBox(),
-            ],
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      showFavorites = true;
+                      showRunning = false;
+                    });
+                  },
+                  child: Text(
+                    "Favorite Chains",
+                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                          fontWeight:
+                              showFavorites == true && showRunning == false
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                        ),
+                  ),
+                ),
+              ],
+            ),
           ),
         Expanded(
           child: Stack(
@@ -168,26 +171,18 @@ class _ListOfChainsState extends State<ListOfChains> {
                   borderRadius: BorderRadius.circular(30),
                 ),
                 duration: Duration(milliseconds: 500),
-                curve: Curves.fastLinearToSlowEaseIn,
+                curve: Curves.easeInOutSine,
                 child: (showChainControlSummary &&
                         (widget.showChainControlSummary == null ||
                             widget.showChainControlSummary == true))
-                    ? Column(
-                        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              IconButton(
-                                onPressed: () {},
-                                icon: Icon(Icons.help_outline),
-                              ),
-                              Text(
-                                "Quick Help with Controls",
-                                style: Theme.of(context).textTheme.titleMedium,
-                                textAlign: TextAlign.center,
-                              ),
-                              IconButton(
+                    ? SingleChildScrollView(
+                        child: Column(
+                          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: double.infinity,
+                              child: IconButton(
                                 onPressed: () {
                                   setState(() {
                                     showChainControlSummary =
@@ -199,31 +194,72 @@ class _ListOfChainsState extends State<ListOfChains> {
                                   color: Theme.of(context).colorScheme.error,
                                 ),
                               ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            "1. Buttons on App Header",
-                            style: Theme.of(context).textTheme.titleMedium,
-                            textAlign: TextAlign.center,
-                          ),
-                          Divider(),
-                          const AppHeaderButtonsHelp(),
-                          Divider(),
-                          SizedBox(
-                            height: 30,
-                          ),
-                          Text(
-                            "2. Controls on a Chain Tile",
-                            style: Theme.of(context).textTheme.titleMedium,
-                            textAlign: TextAlign.center,
-                          ),
-                          Divider(),
-                          const ChainTileHelp(),
-                          Divider(),
-                        ],
+                            ),
+                            Container(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              margin: const EdgeInsets.only(bottom: 10),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).focusColor,
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(30),
+                                  bottomRight: Radius.circular(30),
+                                ),
+                              ),
+                              child: Text(
+                                "1. App Header Controls",
+                                style: Theme.of(context).textTheme.titleMedium,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: const AppHeaderButtonsHelp(),
+                            ),
+                            Container(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              margin: const EdgeInsets.only(bottom: 10),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).focusColor,
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(30),
+                                  bottomRight: Radius.circular(30),
+                                ),
+                              ),
+                              child: Text(
+                                "2. Controls on a Chain Tile",
+                                style: Theme.of(context).textTheme.titleMedium,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 30),
+                              child: const ChainTileHelp(),
+                            ),
+                            Container(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              margin: const EdgeInsets.only(bottom: 10),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).focusColor,
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(30),
+                                  bottomRight: Radius.circular(30),
+                                ),
+                              ),
+                              child: Text(
+                                "3. Bottom Bar Controls",
+                                style: Theme.of(context).textTheme.titleMedium,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: const AppBottomButtonsHelp(),
+                            ),
+                          ],
+                        ),
                       )
                     : null,
               ),

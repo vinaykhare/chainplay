@@ -11,10 +11,9 @@ class AppHeaderButtonsHelp extends StatelessWidget {
         Row(
           children: [
             SizedBox(
-              width: appWidth * 0.2,
+              width: appWidth * 0.1,
               child: const Icon(
                 Icons.add_box_outlined,
-                size: 30,
               ),
             ),
             Expanded(
@@ -31,10 +30,9 @@ class AppHeaderButtonsHelp extends StatelessWidget {
         Row(
           children: [
             SizedBox(
-              width: appWidth * 0.2,
+              width: appWidth * 0.1,
               child: const Icon(
                 Icons.upload_outlined,
-                size: 30,
               ),
             ),
             Expanded(

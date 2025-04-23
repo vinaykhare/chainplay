@@ -19,12 +19,13 @@ class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          AppBar(
-            title: ListTile(
+    return SafeArea(
+      //top: false,
+      child: Drawer(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            ListTile(
               onTap: () {
                 // while (Navigator.of(context).canPop()) {
                 //   Navigator.of(context).pop();
@@ -38,141 +39,22 @@ class AppDrawer extends StatelessWidget {
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
-                // style: TextStyle(
-                //   fontWeight: FontWeight.bold,
-                //   color: Theme.of(context).textTheme.titleLarge!.color,
-                // ),
               ),
               subtitle: Text(
                 "CHAIN THE ACTIVITIES\n& PLAY IT",
                 style: Theme.of(context).textTheme.titleSmall,
               ),
             ),
-            automaticallyImplyLeading: false,
-            // actions: [
-            //   IconButton(
-            //     onPressed: () {
-            //       while (Navigator.of(context).canPop()) {
-            //         Navigator.of(context).pop();
-            //       }
-            //       Navigator.of(context)
-            //           .pushReplacementNamed(SettingsScreen.routename);
-            //     },
-            //     icon: const Icon(Icons.settings),
-            //   ),
-            // ],
-          ),
-          Column(
-            children: [
-              const Divider(),
-              ListTile(
-                leading: const Icon(Icons.help),
-                title: Text(
-                  'What is ChainPlay?',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                onTap: () {
-                  while (Navigator.of(context).canPop()) {
-                    Navigator.of(context).pop();
-                  }
-                  Navigator.of(context)
-                      .pushReplacementNamed(HowItWorks.routename);
-                },
-              ),
-              //const Divider(),
-              ListTile(
-                leading: const Icon(Icons.add_circle),
-                title: Text(
-                  'Add Sample Chains',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                subtitle: Text(
-                  "made of Timer & Manual Tasks",
-                  style: Theme.of(context).textTheme.labelSmall,
-                ),
-                onTap: () async {
-                  NavigatorState nav = Navigator.of(context);
-                  while (Navigator.of(context).canPop()) {
-                    Navigator.of(context).pop();
-                  }
-                  await Provider.of<ChainList>(context, listen: false)
-                      .loadSampleChainsFromAssets();
-                  nav.pushReplacementNamed(ChainListScreen.routename);
-                },
-              ),
-              ListTile(
-                leading: const Icon(
-                  Icons.create,
-                  size: 30,
-                ),
-                title: Text(
-                  'Create Your Own Chain',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                subtitle: Text(
-                  "of Timer & Manual Tasks",
-                  style: Theme.of(context).textTheme.labelSmall,
-                ),
-                onTap: () {
-                  while (Navigator.of(context).canPop()) {
-                    Navigator.of(context).pop();
-                  }
-                  Navigator.of(context)
-                      .pushReplacementNamed(AddChainScreen.routename);
-                },
-              ),
-              ListTile(
-                leading: const Icon(
-                  Icons.upload,
-                  size: 30,
-                ),
-                title: Text(
-                  'Upload a Chain',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                subtitle: Text(
-                  "shared or downloaded from ChainPlay",
-                  style: Theme.of(context).textTheme.labelSmall,
-                ),
-                onTap: () async {
-                  NavigatorState nav = Navigator.of(context);
-                  ChainList chainList =
-                      Provider.of<ChainList>(context, listen: false);
-                  FilePickerResult? result =
-                      await FilePicker.platform.pickFiles(
-                    type: FileType.custom,
-                    allowedExtensions: ["json"],
-                  );
 
-                  if (result != null) {
-                    Chain? chain =
-                        await chainList.uploadChain(result.files.single.path!);
-                    nav.pushNamed(
-                      ViewChain.routename,
-                      arguments: {
-                        "chain": chain ?? Chain(),
-                        "savedInDb": false,
-                        "invalidChain": chain == null,
-                      },
-                    );
-                  } else {
-                    // User canceled the picker
-                  }
-                },
-              ),
-            ],
-          ),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
+            Column(
               children: [
                 const Divider(),
                 if (!kIsWeb) const ShowBannerAd(),
                 const Divider(),
                 ListTile(
-                  leading: const Icon(Icons.settings),
+                  leading: const Icon(Icons.help),
                   title: Text(
-                    'Settings',
+                    'What is ChainPlay?',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   onTap: () {
@@ -180,14 +62,119 @@ class AppDrawer extends StatelessWidget {
                       Navigator.of(context).pop();
                     }
                     Navigator.of(context)
-                        .pushReplacementNamed(SettingsScreen.routename);
+                        .pushReplacementNamed(HowItWorks.routename);
+                  },
+                ),
+                //const Divider(),
+                ListTile(
+                  leading: const Icon(Icons.add_circle),
+                  title: Text(
+                    'Add Sample Chains',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  subtitle: Text(
+                    "made of Timer & Manual Tasks",
+                    style: Theme.of(context).textTheme.labelSmall,
+                  ),
+                  onTap: () async {
+                    NavigatorState nav = Navigator.of(context);
+                    while (Navigator.of(context).canPop()) {
+                      Navigator.of(context).pop();
+                    }
+                    await Provider.of<ChainList>(context, listen: false)
+                        .loadSampleChainsFromAssets();
+                    nav.pushReplacementNamed(ChainListScreen.routename);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(
+                    Icons.create,
+                    size: 30,
+                  ),
+                  title: Text(
+                    'Create Your Own Chain',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  subtitle: Text(
+                    "of Timer & Manual Tasks",
+                    style: Theme.of(context).textTheme.labelSmall,
+                  ),
+                  onTap: () {
+                    while (Navigator.of(context).canPop()) {
+                      Navigator.of(context).pop();
+                    }
+                    Navigator.of(context)
+                        .pushReplacementNamed(AddChainScreen.routename);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(
+                    Icons.upload,
+                    size: 30,
+                  ),
+                  title: Text(
+                    'Upload a Chain',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  subtitle: Text(
+                    "shared or downloaded from ChainPlay",
+                    style: Theme.of(context).textTheme.labelSmall,
+                  ),
+                  onTap: () async {
+                    NavigatorState nav = Navigator.of(context);
+                    ChainList chainList =
+                        Provider.of<ChainList>(context, listen: false);
+                    FilePickerResult? result =
+                        await FilePicker.platform.pickFiles(
+                      type: FileType.custom,
+                      allowedExtensions: ["json"],
+                    );
+
+                    if (result != null) {
+                      Chain? chain = await chainList
+                          .uploadChain(result.files.single.path!);
+                      nav.pushNamed(
+                        ViewChain.routename,
+                        arguments: {
+                          "chain": chain ?? Chain(),
+                          "savedInDb": false,
+                          "invalidChain": chain == null,
+                        },
+                      );
+                    } else {
+                      // User canceled the picker
+                    }
                   },
                 ),
               ],
             ),
-          ),
-          //const Divider(),
-        ],
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  const Divider(),
+                  if (!kIsWeb) const ShowBannerAd(),
+                  const Divider(),
+                  ListTile(
+                    leading: const Icon(Icons.settings),
+                    title: Text(
+                      'Settings',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    onTap: () {
+                      while (Navigator.of(context).canPop()) {
+                        Navigator.of(context).pop();
+                      }
+                      Navigator.of(context)
+                          .pushReplacementNamed(SettingsScreen.routename);
+                    },
+                  ),
+                ],
+              ),
+            ),
+            //const Divider(),
+          ],
+        ),
       ),
     );
   }

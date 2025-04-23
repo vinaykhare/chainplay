@@ -84,10 +84,8 @@ Add, Chain, Execute, Custom, Run, Sequence, Clock, Timer, Schedule, Activities, 
 
 # Release Notes:
 
-1. In an attempt to resolve the crash detected in pre launch details, we have updated to the Latest version of all the dependencies along with latest version of Flutter, changed the jdk to version 17 and Kotlin version is changed from 1.7 to 1.9. Added default ndk.
-2. Stopped the usage of USE_EXACT_ALARM.
-3. Target SDK Version is set to 34.
-4. Action to 'Refresh home' is added to App Icon on App Header of Home screen.
-   Tutorial is updated for this.
-5. Setting page is extended to show check all the activities to delete if unused. Also added a button to show unused activities and clear them.
-6. View is changed for Chain Execution History.
+1. App is renamed to ChainPlay from CAT.
+2. Color themeing is update to make the App light.
+3. Add Chain screen is improvised in many aspects including the support og pixabay to choose images, popup ui to select the timer etc.
+4. Upgraded the app to Latest Flutter version along with latest compatible dependencies.
+5. Bug Fixes

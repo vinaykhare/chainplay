@@ -127,6 +127,10 @@ class _PlayChainState extends State<PlayChain> {
             playChainAction = playChainActionPause;
           }
 
+          if (popResponse["notify"] == true) {
+            await scheduleActivity();
+          }
+
           break;
         } else {
           chainActivity.activityDurationLeft = null;
@@ -443,107 +447,110 @@ class _PlayChainState extends State<PlayChain> {
             ),
           ),
         ),
-        bottomNavigationBar: Row(
-          children: [
-            IconButton(
-              onPressed: () async {
-                NavigatorState nav = Navigator.of(context);
-                bool allWell = await onPopOut();
-                allWell && nav.canPop()
-                    ? nav.pop()
-                    : nav.pushNamed(ChainListScreen.routename);
-              },
-              icon: Semantics(
-                label: "Go back to previous screen",
-                child: const Icon(
-                  Icons.arrow_back,
+        bottomNavigationBar: SafeArea(
+          child: Row(
+            children: [
+              IconButton(
+                onPressed: () async {
+                  NavigatorState nav = Navigator.of(context);
+                  bool allWell = await onPopOut();
+                  allWell && nav.canPop()
+                      ? nav.pop()
+                      : nav.pushNamed(ChainListScreen.routename);
+                },
+                icon: Semantics(
+                  label: "Go back to previous screen",
+                  child: const Icon(
+                    Icons.arrow_back,
+                  ),
                 ),
               ),
-            ),
-            Expanded(
-              child: TextFormField(
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleLarge,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  floatingLabelAlignment: FloatingLabelAlignment.center,
-                  floatingLabelBehavior: FloatingLabelBehavior.never,
+              Expanded(
+                child: TextFormField(
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleLarge,
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    floatingLabelAlignment: FloatingLabelAlignment.center,
+                    floatingLabelBehavior: FloatingLabelBehavior.never,
+                  ),
+                  initialValue: chain.title,
+                  enabled: false,
                 ),
-                initialValue: chain.title,
-                enabled: false,
               ),
-            ),
-            IconButton(
-              onPressed: invokeCounter < chain.activities.length
-                  ? (chain.notificationId == noValueInDB &&
-                          (chainActivityPaused == null ||
-                              chainActivityPaused!.endedAt == null))
-                      ? () {
-                          chainActivityPaused = null;
-                          playTheChain();
-                        }
-                      : () async {
-                          bool? dialogResponse = await showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text(
-                                    "Chain is running in background"),
-                                content: const Text(
-                                    "Are you sure about force completing the current activity and go to the next one?"),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(true),
-                                    child: Text(
-                                      "Yes, Do it!",
-                                      style: TextStyle(
-                                        color:
-                                            Theme.of(context).colorScheme.error,
-                                      ),
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(false),
-                                    child: Text(
-                                      "No, my bad!",
-                                      style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .inverseSurface,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-
-                          if (dialogResponse == false) {
-                            // nav.pop();
-                            return;
-                          } else {
-                            chainActivityPaused!.isInterrupted = true;
-                            chainActivityPaused!.endedAt = DateTime.now();
-                            await cancelNotificationAndCompleteActivity(
-                              chain,
-                              chainActivityPaused!,
-                            );
-
-                            setState(() {
-                              chainActivityPaused = null;
-                              invokeCounter++;
-                            });
+              IconButton(
+                onPressed: invokeCounter < chain.activities.length
+                    ? (chain.notificationId == noValueInDB &&
+                            (chainActivityPaused == null ||
+                                chainActivityPaused!.endedAt == null))
+                        ? () {
+                            chainActivityPaused = null;
                             playTheChain();
                           }
-                        }
-                  : null,
-              icon: const Icon(
-                Icons.arrow_forward,
+                        : () async {
+                            bool? dialogResponse = await showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text(
+                                      "Chain is running in background"),
+                                  content: const Text(
+                                      "Are you sure about force completing the current activity and go to the next one?"),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(true),
+                                      child: Text(
+                                        "Yes, Do it!",
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .error,
+                                        ),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(false),
+                                      child: Text(
+                                        "No, my bad!",
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .inverseSurface,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+
+                            if (dialogResponse == false) {
+                              // nav.pop();
+                              return;
+                            } else {
+                              chainActivityPaused!.isInterrupted = true;
+                              chainActivityPaused!.endedAt = DateTime.now();
+                              await cancelNotificationAndCompleteActivity(
+                                chain,
+                                chainActivityPaused!,
+                              );
+
+                              setState(() {
+                                chainActivityPaused = null;
+                                invokeCounter++;
+                              });
+                              playTheChain();
+                            }
+                          }
+                    : null,
+                icon: const Icon(
+                  Icons.arrow_forward,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

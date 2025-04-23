@@ -3,14 +3,12 @@ import 'dart:io';
 
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/widgets/cat_button.dart';
-import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/helpers/helper_functions.dart';
 import 'package:chain_activities/models/chain_activity.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/models/system_setting.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
 class PlayWaitActivity extends StatefulWidget {
   static String routename = "run_activity";
@@ -204,7 +202,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
         child: Scaffold(
           body: SafeArea(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              // crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
@@ -307,112 +305,128 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                     style: Theme.of(context).textTheme.headlineSmall,
                     textAlign: TextAlign.center,
                   ),
-                if (!kIsWeb)
-                  Container(
-                    margin: const EdgeInsets.all(5),
-                    padding: const EdgeInsets.only(bottom: 5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Theme.of(context).cardColor,
-                    ),
-                    child: const ShowBannerAd(),
-                  ),
-              ],
-            ),
-          ),
-          bottomNavigationBar: Row(
-            children: [
-              InkWell(
-                onTap: () {
-                  Navigator.of(context).pop({
-                    "running": false, //running,
-                    "waitDuration": waitDuration,
-                    "interruptAndCompleted": false,
-                    "resumedAt": resumedAt,
-                  });
-                },
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.arrow_back,
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(
-                        left: 5,
-                      ),
-                      child: const Text("Chain Status"),
-                    ),
-                  ],
-                ),
-              ),
-              // IconButton(
-              //   onPressed: () {
-              //     Navigator.of(context).pop({
-              //       "running": false, //running,
-              //       "waitDuration": waitDuration,
-              //       "interruptAndCompleted": false,
-              //       "resumedAt": resumedAt,
-              //     });
-              //   },
-              //   icon: const Icon(
-              //     Icons.arrow_back,
-              //   ),
-              // ),
-              if (showPlayPause)
-                Expanded(
-                  child: IconButton(
+                if (waitDuration.inSeconds != 0)
+                  ElevatedButton.icon(
+                    label: const Text("Go Back & Notify when done"),
                     onPressed: () {
-                      if (running) {
-                        stopTimer();
-                      } else {
-                        startTimer();
-                        resumedAt = DateTime.now();
-                      }
-
-                      setState(() {
-                        running = !running;
+                      Navigator.of(context).pop({
+                        "running": false, //running,
+                        "waitDuration": waitDuration,
+                        "interruptAndCompleted": false,
+                        "resumedAt": resumedAt,
+                        "notify": true,
                       });
                     },
                     icon: Icon(
-                      running ? Icons.pause : Icons.play_arrow,
+                      Icons.notification_add,
                     ),
                   ),
-                )
-              else
-                const Expanded(
-                  child: SizedBox(
-                    height: 45,
+                Container(
+                  margin: const EdgeInsets.all(5),
+                  padding: const EdgeInsets.only(bottom: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Theme.of(context).cardColor,
                   ),
                 ),
-              InkWell(
-                onTap: interruptAndCompleteActivity,
-                child: Row(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(
-                        right: 5,
+              ],
+            ),
+          ),
+          bottomNavigationBar: SafeArea(
+            child: Row(
+              children: [
+                InkWell(
+                  onTap: () {
+                    Navigator.of(context).pop({
+                      "running": false, //running,
+                      "waitDuration": waitDuration,
+                      "interruptAndCompleted": false,
+                      "resumedAt": resumedAt,
+                    });
+                  },
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.arrow_back,
                       ),
-                      child: const Text(
-                        "Next Activity",
+                      Container(
+                        margin: EdgeInsets.only(
+                          left: 5,
+                        ),
+                        child: const Text("Chain Status"),
                       ),
-                    ),
-                    Icon(
-                      playScreenType == systemEndActivityInDB
-                          ? Icons.done
-                          : Icons.arrow_forward,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              // IconButton(
-              //   onPressed: interruptAndCompleteActivity,
-              //   icon: Icon(
-              //     playScreenType == systemEndActivityInDB
-              //         ? Icons.done
-              //         : Icons.arrow_forward,
-              //   ),
-              // ),
-            ],
+                // IconButton(
+                //   onPressed: () {
+                //     Navigator.of(context).pop({
+                //       "running": false, //running,
+                //       "waitDuration": waitDuration,
+                //       "interruptAndCompleted": false,
+                //       "resumedAt": resumedAt,
+                //     });
+                //   },
+                //   icon: const Icon(
+                //     Icons.arrow_back,
+                //   ),
+                // ),
+                if (showPlayPause)
+                  Expanded(
+                    child: IconButton(
+                      onPressed: () {
+                        if (running) {
+                          stopTimer();
+                        } else {
+                          startTimer();
+                          resumedAt = DateTime.now();
+                        }
+
+                        setState(() {
+                          running = !running;
+                        });
+                      },
+                      icon: Icon(
+                        running ? Icons.pause : Icons.play_arrow,
+                      ),
+                    ),
+                  )
+                else
+                  const Expanded(
+                    child: SizedBox(
+                      height: 45,
+                    ),
+                  ),
+                InkWell(
+                  onTap: interruptAndCompleteActivity,
+                  child: Row(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(
+                          right: 5,
+                        ),
+                        child: const Text(
+                          "Next Activity",
+                        ),
+                      ),
+                      Icon(
+                        playScreenType == systemEndActivityInDB
+                            ? Icons.done
+                            : Icons.arrow_forward,
+                      ),
+                    ],
+                  ),
+                ),
+                // IconButton(
+                //   onPressed: interruptAndCompleteActivity,
+                //   icon: Icon(
+                //     playScreenType == systemEndActivityInDB
+                //         ? Icons.done
+                //         : Icons.arrow_forward,
+                //   ),
+                // ),
+              ],
+            ),
           ),
         ),
       ),

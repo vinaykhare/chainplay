@@ -12,52 +12,55 @@ class ChainTileHelp extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(4),
           child: FittedBox(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.play_circle,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Text(
-                        "Play Chain",
-                        style: Theme.of(context).textTheme.labelLarge,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.play_circle,
                       ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.touch_app_rounded,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Text(
-                        "View Chain",
-                        style: Theme.of(context).textTheme.labelLarge,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Text(
+                          "Play Chain",
+                          style: Theme.of(context).textTheme.labelLarge,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.stop,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Text(
-                        "Stop Chain",
-                        style: Theme.of(context).textTheme.labelLarge,
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.touch_app_rounded,
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Text(
+                          "View Chain",
+                          style: Theme.of(context).textTheme.labelLarge,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.stop,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Text(
+                          "Stop Chain",
+                          style: Theme.of(context).textTheme.labelLarge,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -67,52 +70,55 @@ class ChainTileHelp extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(4),
           child: FittedBox(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.share_rounded,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Text(
-                        "Share Chain",
-                        style: Theme.of(context).textTheme.labelLarge,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.share_rounded,
                       ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.favorite_outline_outlined,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Text(
-                        "Favorite",
-                        style: Theme.of(context).textTheme.labelLarge,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Text(
+                          "Share Chain",
+                          style: Theme.of(context).textTheme.labelLarge,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.swipe_right_sharp,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Text(
-                        "Delete Chain",
-                        style: Theme.of(context).textTheme.labelLarge,
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.favorite_outline_outlined,
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Text(
+                          "Favorite",
+                          style: Theme.of(context).textTheme.labelLarge,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.swipe_right_sharp,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Text(
+                          "Delete Chain",
+                          style: Theme.of(context).textTheme.labelLarge,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

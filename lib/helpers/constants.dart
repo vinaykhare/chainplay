@@ -29,6 +29,7 @@ const String idToComeBackToHome =
 
 // Activity Specifications
 const String activitySpecImagePath = "imagePath";
+const String pixaBayApiKey = "49503054-f92036d9ea19800816b8e4902";
 const String inUse = "Activities in use";
 const String notInUse = "Activities not in use";
 
@@ -102,6 +103,7 @@ const Map<String, String> assetMap = {
   'chainImage': 'assets/AppIcons/chain.png',
   'verticalChainImage': 'assets/AppIcons/vertical_chain.png',
   'noImagePlaceholder': 'assets/AppIcons/no-Image-placeholder.png',
+  'pixabaylogo': 'assets/AppIcons/pixabaylogo.png',
   'beepAudio': 'assets/Sounds/chain_activity_beep.mp3',
   'app_drawer': 'assets/WhatIsChainAndPlay/app_drawer.jpeg',
   'chain_file_view': 'assets/WhatIsChainAndPlay/chain_file_view.jpeg',

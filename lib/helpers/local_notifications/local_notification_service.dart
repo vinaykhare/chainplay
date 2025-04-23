@@ -168,8 +168,6 @@ class LocalNotificationService {
         TZDateTime.from(chainAt, local),
         details,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
         payload: jsonEncode(payLoad),
       );
       return true;

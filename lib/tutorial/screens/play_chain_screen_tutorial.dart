@@ -278,36 +278,38 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
               ),
             ),
           ),
-          bottomNavigationBar: Row(
-            children: [
-              IconButton(
-                key: KeyHelper.playChainBackwardButtonKey,
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.arrow_back,
-                ),
-              ),
-              Expanded(
-                child: TextFormField(
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.titleLarge,
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    floatingLabelAlignment: FloatingLabelAlignment.center,
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
+          bottomNavigationBar: SafeArea(
+            child: Row(
+              children: [
+                IconButton(
+                  key: KeyHelper.playChainBackwardButtonKey,
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.arrow_back,
                   ),
-                  initialValue: chain.title,
-                  enabled: false,
                 ),
-              ),
-              IconButton(
-                key: KeyHelper.playChainForwardButtonKey,
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.arrow_forward,
+                Expanded(
+                  child: TextFormField(
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleLarge,
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      floatingLabelAlignment: FloatingLabelAlignment.center,
+                      floatingLabelBehavior: FloatingLabelBehavior.never,
+                    ),
+                    initialValue: chain.title,
+                    enabled: false,
+                  ),
                 ),
-              ),
-            ],
+                IconButton(
+                  key: KeyHelper.playChainForwardButtonKey,
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.arrow_forward,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
