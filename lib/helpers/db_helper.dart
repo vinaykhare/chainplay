@@ -1,29 +1,25 @@
 import 'dart:convert';
 
 import 'package:chain_activities/helpers/constants.dart';
-import 'package:chain_activities/helpers/system_configuration.dart';
-import 'package:sqflite/sqflite.dart' as sql;
-import 'package:path/path.dart' as path;
-import 'package:sqflite/sqlite_api.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DBHelper {
-  static Future<Database> sqfLiteDatabase() async {
-    final dbPath = await sql.getDatabasesPath();
-    // if (await sql.databaseExists(path.join(dbPath, 'chainactivities.db'))) {
-    //   sql.deleteDatabase(path.join(dbPath, 'chainactivities.db'));
-    // }
-    return sql.openDatabase(path.join(dbPath, 'chainactivities.db'),
-        onCreate: (db, version) async {
-      for (var script in sqlInitScript) {
-        await db.execute(script);
-      }
-    }, version: sqfLiteDBVersion);
+  // Private constructor to prevent external instantiation.
+  DBHelper._();
+
+  // The single instance of the class.
+  static final DBHelper _dBHelperInstance = DBHelper._();
+
+  // Factory constructor to provide access to the singleton instance.
+  factory DBHelper() {
+    return _dBHelperInstance;
   }
 
-  static Future<SharedPreferencesAsync> sharedPrefDatabase() async {
-    final SharedPreferencesAsync asyncPrefs = SharedPreferencesAsync();
+  //Methods & Properties
+
+  SharedPreferencesAsync asyncPrefs = SharedPreferencesAsync();
+
+  Future<SharedPreferencesAsync> initializeSharedPrefDatabase() async {
     bool sharedPrefDBHasSetting = await asyncPrefs.containsKey("settings");
     bool sharedPrefDBHasActivity = await asyncPrefs.containsKey("activity");
     bool sharedPrefDBHasChain = await asyncPrefs.containsKey("chain");
@@ -73,60 +69,28 @@ class DBHelper {
     return asyncPrefs;
   }
 
-  static Future<void> insert(String table, Map<String, dynamic> data) async {
-    if (kIsWeb) {
-      insertInSharedPrefDatabase(table, data);
-    } else {
-      insertInSQFLiteDatabase(table, data);
-    }
+  Future<void> insert(String table, Map<String, dynamic> data) async {
+    insertInSharedPrefDatabase(table, data);
   }
 
-  static Future<void> insertInSharedPrefDatabase(
+  Future<void> insertInSharedPrefDatabase(
       String table, Map<String, dynamic> data) async {
-    final SharedPreferencesAsync asyncPrefs = await sharedPrefDatabase();
     List<String> tableContent = await asyncPrefs.getStringList(table) ?? [];
     tableContent.add(jsonEncode(data));
     asyncPrefs.setStringList(table, tableContent);
     return;
   }
 
-  static Future<void> insertInSQFLiteDatabase(
-      String table, Map<String, dynamic> data) async {
-    final db = await DBHelper.sqfLiteDatabase();
-    db.insert(
-      table,
-      data,
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+  Future<void> update(String table, Map<String, dynamic> data, String condition,
+      List<dynamic> conditionArgs) async {
+    updateInSharedPrefDatabase(table, data, condition, conditionArgs);
   }
 
-  static Future<void> update(String table, Map<String, dynamic> data,
-      String condition, List<dynamic> conditionArgs) async {
-    if (kIsWeb) {
-      updateInSharedPrefDatabase(table, data, condition, conditionArgs);
-    } else {
-      updateInSQFLite(table, data, condition, conditionArgs);
-    }
-  }
-
-  static Future<void> updateInSQFLite(String table, Map<String, dynamic> data,
-      String condition, List<dynamic> conditionArgs) async {
-    final db = await DBHelper.sqfLiteDatabase();
-    await db.update(
-      table,
-      data,
-      where: condition,
-      whereArgs: conditionArgs,
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  }
-
-  static Future<void> updateInSharedPrefDatabase(
+  Future<void> updateInSharedPrefDatabase(
       String table,
       Map<String, dynamic> data,
       String condition,
       List<dynamic> conditionArgs) async {
-    final SharedPreferencesAsync asyncPrefs = await sharedPrefDatabase();
     List<String> tableContent = await asyncPrefs.getStringList(table) ?? [];
     int requrestedRow = tableContent.indexWhere((String entry) {
       Map<String, dynamic> objectEntry = jsonDecode(entry);
@@ -147,45 +111,19 @@ class DBHelper {
     return;
   }
 
-  static Future<List<Map<String, dynamic>>> getData(
-      String table, String orderBy,
+  Future<List<Map<String, dynamic>>> getData(String table, String orderBy,
       [String condition = "", List<dynamic> conditionArgs = const []]) async {
     List<Map<String, dynamic>> result = [];
-    if (kIsWeb) {
-      result =
-          await getDataFromSharedPref(table, orderBy, condition, conditionArgs);
-    } else {
-      result =
-          await getDataFromSQFLite(table, orderBy, condition, conditionArgs);
-    }
+    result =
+        await getDataFromSharedPref(table, orderBy, condition, conditionArgs);
     return result;
   }
 
-  static Future<List<Map<String, dynamic>>> getDataFromSQFLite(
-      String table, String orderBy,
-      [String condition = "", List<dynamic> conditionArgs = const []]) async {
-    final db = await DBHelper.sqfLiteDatabase();
-
-    if (condition == "") {
-      return db.query(
-        table,
-        orderBy: orderBy, //"pinned DESC, lastUpdatedAt DESC",
-      );
-    } else {
-      return db.query(
-        table,
-        orderBy: orderBy, //"pinned DESC, lastUpdatedAt DESC",
-        where: condition,
-        whereArgs: conditionArgs,
-      );
-    }
-  }
-
-  static Future<List<Map<String, dynamic>>> getDataFromSharedPref(
+  Future<List<Map<String, dynamic>>> getDataFromSharedPref(
       String table, String orderBy,
       [String condition = "", List<dynamic> conditionArgs = const []]) async {
     List<Map<String, dynamic>> result = [];
-    final SharedPreferencesAsync asyncPrefs = await sharedPrefDatabase();
+
     List<String> tableContent = await asyncPrefs.getStringList(table) ?? [];
 
     List<String> conditionParams = condition.split("= ?");
@@ -217,20 +155,12 @@ class DBHelper {
     return result;
   }
 
-  static Future<List<Map<String, dynamic>>> getDataBySQL(
-      String sql, List<dynamic> conditionArgs) async {
-    final db = await DBHelper.sqfLiteDatabase();
-    return db.rawQuery(sql, conditionArgs);
-  }
-
-  static Future<List<Map<String, dynamic>>> getJointResultFromSharedPref(
+  Future<List<Map<String, dynamic>>> getJointResultFromSharedPref(
       List<String> tables,
       String joinBy,
       List<String> conditionParams,
       List<dynamic> conditionArgs,
       String orderBy) async {
-    final SharedPreferencesAsync asyncPrefs = await sharedPrefDatabase();
-
     List<String> primaryTableRawContent =
         await asyncPrefs.getStringList(tables[0]) ?? [];
     List<Map<String, dynamic>> jointTableContent = [];
@@ -271,7 +201,7 @@ class DBHelper {
     return jointTableContent;
   }
 
-  static Future<List<Map<String, dynamic>>> getJointResult(
+  Future<List<Map<String, dynamic>>> getJointResult(
       List<String> tables,
       String joinBy,
       List<String> conditionParams,
@@ -279,78 +209,20 @@ class DBHelper {
       String orderBy) async {
     List<Map<String, dynamic>> result = [];
 
-    if (kIsWeb) {
-      result = await getJointResultFromSharedPref(
-          tables, joinBy, conditionParams, conditionArgs, orderBy);
-    } else {
-      String selectStatement = "",
-          fromTable = tables[0],
-          joinStatement = "",
-          whereStatement = "";
-
-      for (int tableIndex = 0; tableIndex < tables.length; tableIndex++) {
-        selectStatement = "$selectStatement${tables[tableIndex]}.*";
-        if (tableIndex < tables.length - 1) {
-          selectStatement = "$selectStatement, ";
-        } else {
-          selectStatement = "$selectStatement ";
-        }
-        if (tableIndex > 0 && tableIndex < tables.length) {
-          if (joinStatement != "") {
-            joinStatement = "$joinStatement ";
-          }
-          joinStatement =
-              "${joinStatement}JOIN ${tables[tableIndex]} ON (${tables[tableIndex]}.$joinBy = ${tables[tableIndex - 1]}.$joinBy)";
-        }
-      }
-
-      for (int i = 0; i < conditionParams.length; i++) {
-        if (whereStatement != "") {
-          whereStatement = "$whereStatement AND ";
-        }
-        whereStatement =
-            "$whereStatement${tables[0]}.${conditionParams[i]} ='${conditionArgs[i]}'";
-      }
-
-      String sql = '''
-      SELECT $selectStatement
-      FROM $fromTable
-      $joinStatement
-      WHERE $whereStatement
-      ORDER BY $fromTable.$orderBy
-      ''';
-      result = await getDataBySQL(
-        sql,
-        conditionArgs,
-      );
-    }
+    result = await getJointResultFromSharedPref(
+        tables, joinBy, conditionParams, conditionArgs, orderBy);
 
     return result;
   }
 
-  static Future<void> removeData(
+  Future<void> removeData(
       String table, String condition, List<dynamic> conditionArgs) async {
-    if (kIsWeb) {
-      return removeDataFromSharedPref(table, condition, conditionArgs);
-    } else {
-      return removeDataFromSQFLite(table, condition, conditionArgs);
-    }
+    return removeDataFromSharedPref(table, condition, conditionArgs);
   }
 
-  static Future<void> removeDataFromSQFLite(
-      String table, String condition, List<dynamic> conditionArgs) async {
-    final db = await DBHelper.sqfLiteDatabase();
-    if (condition != "") {
-      db.delete(table, where: condition, whereArgs: conditionArgs);
-    } else {
-      db.delete(table);
-    }
-  }
-
-  static Future<void> removeDataFromSharedPref(
+  Future<void> removeDataFromSharedPref(
       String table, String condition, List<dynamic> conditionArgs) async {
     try {
-      final SharedPreferencesAsync asyncPrefs = await sharedPrefDatabase();
       List<String> tableContent = await asyncPrefs.getStringList(table) ?? [];
       tableContent.removeWhere((String entry) {
         Map<String, dynamic> objectEntry = jsonDecode(entry);

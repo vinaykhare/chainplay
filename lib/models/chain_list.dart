@@ -76,6 +76,8 @@ class ChainList with ChangeNotifier {
   InterstitialAd? interstitialAd;
   late AdState adState;
 
+  DBHelper dbHelper = DBHelper();
+
   ChainList(
     this.context,
     //this.notificationHelper,
@@ -86,7 +88,7 @@ class ChainList with ChangeNotifier {
     if (loaded) {
       return;
     }
-
+    await dbHelper.initializeSharedPrefDatabase();
     await fetchSettings();
     if (!kIsWeb) {
       Future<InitializationStatus> initMobileAds =
@@ -321,7 +323,7 @@ class ChainList with ChangeNotifier {
     if (activityIndex == -1) {
       activities.add(chainActivity.activity);
       chainActivity.activity.lastUpdatedAt = DateTime.now();
-      await DBHelper.insert(
+      await dbHelper.insert(
         "activity",
         {
           "activityId": chainActivity.activity.activityId,
@@ -343,7 +345,7 @@ class ChainList with ChangeNotifier {
     }
 
     if (chainIndex == -1) {
-      await DBHelper.insert(
+      await dbHelper.insert(
         "chain",
         {
           "title": chain.title,
@@ -368,7 +370,7 @@ class ChainList with ChangeNotifier {
         },
       );
     }
-    await DBHelper.insert(
+    await dbHelper.insert(
       "chain_activity",
       {
         "title": chain.title,
@@ -407,17 +409,17 @@ class ChainList with ChangeNotifier {
     for (Chain chainExec in chain.chainHistory) {
       await cancelScheduledNotificationExecution(chainExec);
     }
-    await DBHelper.removeData(
+    await dbHelper.removeData(
       "chain_activity",
       "title = ?",
       [chain.title],
     );
-    await DBHelper.removeData(
+    await dbHelper.removeData(
       "chain_execution",
       "title = ?",
       [chain.title],
     );
-    await DBHelper.removeData(
+    await dbHelper.removeData(
       "chain",
       "title = ?",
       [chain.title],
@@ -427,10 +429,10 @@ class ChainList with ChangeNotifier {
   }
 
   Future<bool> nameExistInDB(String title) async {
-    // List<Map<String, dynamic>> result = await DBHelper.getDataBySQL(
+    // List<Map<String, dynamic>> result = await dbHelper.getDataBySQL(
     //     'Select title, editChain from chain where editChain = 0 and title = ?',
     //     [title]);
-    List<Map<String, dynamic>> result = await DBHelper.getData(
+    List<Map<String, dynamic>> result = await dbHelper.getData(
       'chain',
       'chainIndex DESC',
       'editChain = ? and title = ?',
@@ -443,7 +445,7 @@ class ChainList with ChangeNotifier {
   }
 
   Future<void> renameChain(String oldChainTitle, String newChainTitle) async {
-    await DBHelper.update(
+    await dbHelper.update(
       "chain",
       {
         "title": newChainTitle,
@@ -453,7 +455,7 @@ class ChainList with ChangeNotifier {
       [oldChainTitle],
     );
 
-    await DBHelper.update(
+    await dbHelper.update(
       "chain_activity",
       {
         "title": newChainTitle,
@@ -462,7 +464,7 @@ class ChainList with ChangeNotifier {
       [oldChainTitle],
     );
 
-    await DBHelper.update(
+    await dbHelper.update(
       "chain_execution",
       {
         "title": newChainTitle,
@@ -471,7 +473,7 @@ class ChainList with ChangeNotifier {
       [oldChainTitle],
     );
 
-    await DBHelper.update(
+    await dbHelper.update(
       "chain_activity_execution",
       {
         "title": newChainTitle,
@@ -484,7 +486,7 @@ class ChainList with ChangeNotifier {
   }
 
   Future<void> addChainToHistory(Chain chainExecution) async {
-    await DBHelper.insert(
+    await dbHelper.insert(
       "chain_execution",
       {
         "chainExecutionId": chainExecution.chainExecutionId,
@@ -505,7 +507,7 @@ class ChainList with ChangeNotifier {
     //int chainActivityIndex = 0;
 
     for (ChainActivity chainActivity in chainExecution.activities) {
-      await DBHelper.insert(
+      await dbHelper.insert(
         "chain_activity_execution",
         {
           "chainExecutionId": chainExecution.chainExecutionId,
@@ -754,7 +756,7 @@ class ChainList with ChangeNotifier {
         updateLastUpdateDate ? DateTime.now() : chain.lastUpdatedAt;
     chains[chainIndex] = chain;
 
-    await DBHelper.update(
+    await dbHelper.update(
       "chain",
       {
         "lastUpdatedAt": chain.lastUpdatedAt.millisecondsSinceEpoch,
@@ -782,7 +784,7 @@ class ChainList with ChangeNotifier {
   }
 
   Future<void> updateChainExecution(Chain chainExecution) async {
-    await DBHelper.update(
+    await dbHelper.update(
       "chain_execution",
       {
         "title": chainExecution.title,
@@ -810,7 +812,7 @@ class ChainList with ChangeNotifier {
 
   Future<void> updateChainActivityByActivityId(
       Chain chain, ChainActivity chainActivity) async {
-    await DBHelper.update(
+    await dbHelper.update(
       "chain_activity",
       {
         "activityDone": chainActivity.activityDone ? trueInDB : falseInDB,
@@ -852,7 +854,7 @@ class ChainList with ChangeNotifier {
     for (int i = 0; i < chain.activities.length; i++) {
       chain.activities[i].edit = false;
     }
-    await DBHelper.update(
+    await dbHelper.update(
       "chain_activity",
       {
         // "activityDone": chain.chainStatus,
@@ -867,7 +869,7 @@ class ChainList with ChangeNotifier {
 
   Future<void> updateChainActivityExecutionByActivityId(
       Chain chain, ChainActivity chainActivity) async {
-    await DBHelper.update(
+    await dbHelper.update(
       "chain_activity_execution",
       {
         "activityDone": chainActivity.activityDone ? trueInDB : falseInDB,
@@ -912,7 +914,7 @@ class ChainList with ChangeNotifier {
       activity.endedAt = null;
     }
 
-    await DBHelper.update(
+    await dbHelper.update(
       "chain_activity",
       {
         "activityDone": statusNotStarted,
@@ -946,9 +948,9 @@ class ChainList with ChangeNotifier {
     chains[indexOfChain].chainHistory.removeWhere(
         (schEx) => schEx.chainExecutionId == chainExecution.chainExecutionId);
 
-    await DBHelper.removeData("chain_activity_execution",
+    await dbHelper.removeData("chain_activity_execution",
         "chainExecutionId = ?", [chainExecution.chainExecutionId]);
-    await DBHelper.removeData("chain_execution", "chainExecutionId = ?",
+    await dbHelper.removeData("chain_execution", "chainExecutionId = ?",
         [chainExecution.chainExecutionId]);
     notifyListeners();
   }
@@ -968,12 +970,12 @@ class ChainList with ChangeNotifier {
           .cancelNotificationById(chainActivity.endActivityNotificationId);
     }
 
-    await DBHelper.removeData(
+    await dbHelper.removeData(
       "chain_activity",
       "title = ? and activityId = ? and activityIndex = ?",
       [chain.title, chainActivity.activity.activityId, chainActivity.index],
     );
-    await DBHelper.removeData(
+    await dbHelper.removeData(
       "chain_activity",
       "title = ? and activityIndex = ?",
       [
@@ -990,7 +992,7 @@ class ChainList with ChangeNotifier {
 
     if (chain.activities.length == 1) {
       ChainActivity startChainActivity = chain.activities[0];
-      await DBHelper.removeData(
+      await dbHelper.removeData(
         "chain_activity",
         "title = ? and activityIndex = ?",
         [
@@ -1065,7 +1067,7 @@ class ChainList with ChangeNotifier {
 
   Future<void> removeActivity(Activity activity) async {
     activities.removeWhere((act) => act.title == activity.title);
-    DBHelper.removeData(
+    dbHelper.removeData(
       "activity",
       "activityId = ?",
       [activity.activityId],
@@ -1075,7 +1077,7 @@ class ChainList with ChangeNotifier {
 
   Future<void> updateActivity(Activity activity) async {
     activity.lastUpdatedAt = DateTime.now();
-    await DBHelper.update(
+    await dbHelper.update(
       "activity",
       {
         "title": activity.title,
@@ -1096,26 +1098,26 @@ class ChainList with ChangeNotifier {
 
   /* Just for testing */
   Future<void> clearDataBase() async {
-    await DBHelper.removeData('chain_activity_execution', "", []);
-    await DBHelper.removeData('chain_execution', "", []);
-    await DBHelper.removeData('chain_activity', "", []);
-    await DBHelper.removeData('activity', "", []);
-    await DBHelper.removeData('chain', "", []);
+    await dbHelper.removeData('chain_activity_execution', "", []);
+    await dbHelper.removeData('chain_execution', "", []);
+    await dbHelper.removeData('chain_activity', "", []);
+    await dbHelper.removeData('activity', "", []);
+    await dbHelper.removeData('chain', "", []);
     setSetting(darkThemeSettingKey, falseSettingValue);
     setSetting(appSoundSettingKey, trueSettingValue);
     setSetting(showHelpOnNextBootKey, trueSettingValue);
     // setSetting(showHelpOnNextBootKey, trueSettingValue);
-    // await DBHelper.insert("settings", {
+    // await dbHelper.insert("settings", {
     //   "key": "DARK THEME",
     //   "value": falseSettingValue,
     //   "type": "BOOL",
     // });
-    // await DBHelper.insert("settings", {
+    // await dbHelper.insert("settings", {
     //   "key": "Notification Type",
     //   "value": "App Notification,None",
     //   "type": "LIST",
     // });
-    // await DBHelper.insert("settings", {
+    // await dbHelper.insert("settings", {
     //   "key": "App Sound",
     //   "value": trueSettingValue,
     //   "type": "BOOL",
@@ -1209,7 +1211,7 @@ class ChainList with ChangeNotifier {
       // if (chainActivity.activity.title == systemWaitActivityTitle) {
       //   continue;
       // }
-      await DBHelper.update(
+      await dbHelper.update(
         "chain_activity",
         {
           "activityIndex": dbIndex,
@@ -1229,7 +1231,7 @@ class ChainList with ChangeNotifier {
       // if (chain.adBanner != null) {
       //   continue;
       // }
-      await DBHelper.update(
+      await dbHelper.update(
         "chain",
         {
           "chainIndex": dbIndex,
@@ -1412,13 +1414,13 @@ class ChainList with ChangeNotifier {
       newSetting.value = newSetting.value;
       newSetting.type = type;
       systemSettings.add(newSetting);
-      await DBHelper.insert(
+      await dbHelper.insert(
         'settings',
         newSetting.toJson(),
       );
     } else {
       systemSettings[keyIndex].value = value;
-      await DBHelper.update(
+      await dbHelper.update(
         'settings',
         {
           'value': value,
@@ -1434,7 +1436,7 @@ class ChainList with ChangeNotifier {
 
   Future<List<SystemSetting>> fetchSettings() async {
     List<Map<String, dynamic>> loadedSettings =
-        await DBHelper.getData("settings", "type ASC");
+        await dbHelper.getData("settings", "type ASC");
     systemSettings = [];
     for (var loadedSetting in loadedSettings) {
       SystemSetting setting = SystemSetting();
@@ -1519,14 +1521,14 @@ class ChainList with ChangeNotifier {
 
   Future<List<ChainActivity>> loadActivities(Chain chain) async {
     List<Map<String, dynamic>> loadedChainActivity =
-        await DBHelper.getJointResult(
+        await dbHelper.getJointResult(
       ["chain_activity", "activity"],
       "activityId",
       ["title"],
       [chain.title],
       "activityIndex",
     );
-    //     await DBHelper.getDataBySQL(
+    //     await dbHelper.getDataBySQL(
     //   '''
     //   SELECT chain_activity.*, activity.*
     //   FROM chain_activity
@@ -1584,8 +1586,8 @@ class ChainList with ChangeNotifier {
   }
 
   Future<Activity?> getActivityByActivityId(String activityId) async {
-    List<Map<String, dynamic>> activityFromDB = await DBHelper.getData(
-        'activity', 'activityId', 'activityId = ?', [activityId]);
+    List<Map<String, dynamic>> activityFromDB = await dbHelper
+        .getData('activity', 'activityId', 'activityId = ?', [activityId]);
     if (activityFromDB.isEmpty) {
       return null;
     }
@@ -1702,7 +1704,7 @@ class ChainList with ChangeNotifier {
   Future<List<ChainActivity>> loadChainActivityHistory(
       Chain chainExecution) async {
     List<Map<String, dynamic>> loadedChainActivityHistory =
-        await DBHelper.getData(
+        await dbHelper.getData(
       "chain_activity_execution",
       "activityIndex",
       "chainExecutionId = ?",
@@ -1750,7 +1752,7 @@ class ChainList with ChangeNotifier {
   }
 
   Future<List<Chain>> loadChainHistory(Chain chain) async {
-    List<Map<String, dynamic>> loadedChainHistory = await DBHelper.getData(
+    List<Map<String, dynamic>> loadedChainHistory = await dbHelper.getData(
         "chain_execution", "startedAt DESC", "title = ?", [chain.title]);
     List<Chain> result = [];
     for (var chainHistory in loadedChainHistory) {
@@ -1778,7 +1780,7 @@ class ChainList with ChangeNotifier {
 
   Future<List<Chain>> fetchChains() async {
     List<Map<String, dynamic>> loadedChain =
-        await DBHelper.getData("chain", "chainIndex DESC");
+        await dbHelper.getData("chain", "chainIndex DESC");
     chains = [];
     for (var chain in loadedChain) {
       Chain tempChain = Chain();
@@ -1820,7 +1822,7 @@ class ChainList with ChangeNotifier {
 
   Future<List<Activity>> fetchActivities() async {
     List<Map<String, dynamic>> loadedActivities =
-        await DBHelper.getData("activity", "activityId");
+        await dbHelper.getData("activity", "activityId");
 
     activities = [];
 
@@ -1935,7 +1937,7 @@ class ChainList with ChangeNotifier {
       await updateChainActivityExecutionByActivityId(chain, chainActivity);
     }
 
-    // await DBHelper.update(
+    // await dbHelper.update(
     //   "chain_activity",
     //   {
     //     "notificationId": noValueInDB.toString(),
