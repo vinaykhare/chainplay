@@ -1993,8 +1993,12 @@ class ChainList with ChangeNotifier {
     //const String path = '/storage/emulated/0/Download/';
     File chainFile = File('$path/${chain.title}.json');
     await chainFile.writeAsString(jsonEncode(chain));
-    await Share.shareXFiles([XFile('$path/${chain.title}.json')],
-        text: chain.title);
+    await SharePlus.instance.share(
+      ShareParams(
+        files: [XFile('$path/${chain.title}.json')],
+        text: chain.title,
+      ),
+    );
     await chainFile.delete();
   }
 

@@ -9,7 +9,6 @@ import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:chain_activities/tutorial/screens/add_chain_screen_tutorial.dart';
 import 'package:chain_activities/tutorial/screens/play_chain_screen_tutorial.dart';
 import 'package:chain_activities/tutorial/screens/view_chain_screen_tutorial.dart';
-import 'package:chain_activities/tutorial/widgets/skip_button.dart';
 import 'package:flutter/material.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
@@ -91,17 +90,24 @@ class TutorialCoach {
     tutorialCoachMark = TutorialCoachMark(
       targets: targets,
       colorShadow: Colors.amber,
-      skipWidget: const ListTile(
-        tileColor: Colors.transparent,
-        title: SkipButton(
-          onPressed: null,
-        ),
-        // subtitle: Text(
-        //   "You can Tap Anywhere on the screen to move to the Next Slide",
-        //   textAlign: TextAlign.center,
-        //   style: Theme.of(context).textTheme.titleSmall,
-        // ),
+      textSkip: "[X] Exit Tutorial",
+      disableBackButton: false,
+      textStyleSkip: TextStyle(
+        color: Theme.of(context).colorScheme.error,
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
       ),
+      // skipWidget: ListTile(
+      //   tileColor: Colors.transparent,
+      //   title: SkipButton(
+      //     onPressed: null,
+      //   ),
+      //   subtitle: Text(
+      //     "You can Tap Anywhere on the screen to move to the Next Slide",
+      //     textAlign: TextAlign.center,
+      //     style: Theme.of(context).textTheme.titleSmall,
+      //   ),
+      // ),
       paddingFocus: 10,
       opacityShadow: 0.1,
       imageFilter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),

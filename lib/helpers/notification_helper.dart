@@ -16,10 +16,10 @@ class NotificationHelper {
   bool speakerInitialized = false;
   TtsState ttsState = TtsState.stopped;
 
-  get isTtsPlaying => ttsState == TtsState.playing;
-  get isTtsStopped => ttsState == TtsState.stopped;
-  get isTtsPaused => ttsState == TtsState.paused;
-  get isTtsContinued => ttsState == TtsState.continued;
+  bool get isTtsPlaying => ttsState == TtsState.playing;
+  bool get isTtsStopped => ttsState == TtsState.stopped;
+  bool get isTtsPaused => ttsState == TtsState.paused;
+  bool get isTtsContinued => ttsState == TtsState.continued;
 
   set systemSetting(List<SystemSetting> newSystemSettings) {
     systemSettings = newSystemSettings;
