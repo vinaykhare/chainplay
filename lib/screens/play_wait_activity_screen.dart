@@ -10,6 +10,7 @@ import 'package:chain_activities/helpers/helper_functions.dart';
 import 'package:chain_activities/models/chain_activity.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/models/system_setting.dart';
+import 'package:flutter/services.dart';
 
 class PlayWaitActivity extends StatefulWidget {
   static String routename = "run_activity";
@@ -29,7 +30,8 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
   bool running = true,
       showPlayPause = true,
       appSoundEnabled = true,
-      speechPlayed = false;
+      speechPlayed = false,
+      orientationLandScape = false;
   //isNotPlaying = false;
   String? screenImage, title;
   // String? textToSpeak;
@@ -48,6 +50,12 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
   @override
   void dispose() {
     if (countdownTimer != null) countdownTimer?.cancel();
+    SystemChrome.setPreferredOrientations(
+      [
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ],
+    );
     super.dispose();
   }
 
@@ -76,7 +84,10 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
 
     if (seconds < 1) {
       stopTimer();
-      nav.pop();
+      nav.pop({
+        "orientationLandScape": orientationLandScape,
+        "completionMessage": chainActivityCompletionMessageDone,
+      });
     } else {
       setState(() {
         waitDuration = Duration(seconds: seconds);
@@ -113,13 +124,17 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
         .playNotificationSound();
     stopTimer();
     nav.pop(waitDuration.inSeconds <= 0
-        ? null
+        ? {
+            "orientationLandScape": orientationLandScape,
+            "completionMessage": chainActivityCompletionMessageDone,
+          }
         : {
             "running": running,
             "waitDuration": waitDuration,
             "interruptAndCompleted": true,
             "resumedAt": resumedAt,
-            "completionMessage": null,
+            "completionMessage": chainActivityCompletionMessageDone,
+            "orientationLandScape": orientationLandScape,
           });
   }
 
@@ -129,6 +144,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
         .playNotificationSound();
     nav.pop({
       "completionMessage": completionMessage,
+      "orientationLandScape": orientationLandScape,
     });
   }
 
@@ -153,6 +169,9 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
       playScreenType = input["playScreenType"];
       running = input["running"];
       screenImage = input["screenImage"];
+      orientationLandScape = input["orientationLandScape"] ?? false;
+
+      setOrietation(orientationLandScape);
       // textToSpeak = input["textToSpeak"];
       switch (playScreenType) {
         case systemWaitActivityInDB:
@@ -174,13 +193,13 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
       }
       initializing = false;
     }
-    String timeLeft = "Done";
+    String timeLeft = chainActivityCompletionMessageDone;
     //if (waitDuration.inSeconds > 0) {
     final int hours = waitDuration.inHours.remainder(60);
     final int minutes = waitDuration.inMinutes.remainder(60);
     final int seconds = waitDuration.inSeconds.remainder(60);
     final String displaySeconds = waitDuration.inSeconds <= 1
-        ? "Done"
+        ? chainActivityCompletionMessageDone
         : strDigits(waitDuration.inSeconds.remainder(60));
     // timeLeft = "$hours:$minutes:$displaySeconds";
     timeLeft = hours == 0 && minutes == 0 && seconds != 0
@@ -202,137 +221,164 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
         label: "Play Timer Screen",
         child: Scaffold(
           body: SafeArea(
-            child: Column(
-              // crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(50),
-                    child: Container(
-                      margin: const EdgeInsets.all(5),
-                      child: screenImage == null || screenImage == ""
-                          ? Image.asset(
-                              assetMap['logoImage']!,
-                              fit: BoxFit.fitHeight,
-                              //height: appHeight * 0.45,
-                            )
-                          : screenImage!.startsWith("http")
-                              ? FadeInImage.assetNetwork(
-                                  placeholder: assetMap["logoImage"]!,
-                                  image: screenImage!,
-                                  // height: appHeight * 0.45,
-                                  fit: BoxFit.cover,
-                                  imageErrorBuilder:
-                                      (context, error, stackTrace) =>
-                                          Image.asset(
-                                    assetMap['logoImage']!,
-                                    fit: BoxFit.cover,
-                                  ),
-                                )
-                              : Image.file(
-                                  File(screenImage!),
-                                  // height: appHeight * 0.45,
-                                  fit: BoxFit.cover,
-                                ),
-                    ),
-                  ),
-                ),
-                Text(
-                  title ?? "Generic Activity",
-                  style: Theme.of(context).textTheme.headlineMedium,
-                  textAlign: TextAlign.center,
-                ),
-                if (playScreenType != systemEndActivityInDB)
+            child: OrientationBuilder(builder: (context, orientation) {
+              Widget activityContent = Column(
+                children: [
                   Text(
-                    "will compelte\n$timeLeft\n${(hours != 0 || minutes != 0) && seconds != 0 ? 'and' : ''}",
-                    style: Theme.of(context).textTheme.headlineSmall,
+                    title ?? "Generic Activity",
+                    style: Theme.of(context).textTheme.headlineMedium,
                     textAlign: TextAlign.center,
                   ),
-                if (playScreenType != systemEndActivityInDB)
-                  InkWell(
-                    onTap: interruptAndCompleteActivity,
-                    child: CircleAvatar(
-                      radius: 50,
-                      backgroundColor: playScreenType == systemWaitActivityInDB
-                          ? Theme.of(context).focusColor
-                          : Theme.of(context).canvasColor,
-                      child: FittedBox(
-                        child: Text(
-                          displaySeconds,
-                          style: Theme.of(context).textTheme.headlineMedium,
-                          textAlign: TextAlign.center,
+                  if (playScreenType != systemEndActivityInDB)
+                    Text(
+                      "will compelte\n$timeLeft\n${(hours != 0 || minutes != 0) && seconds != 0 ? 'and' : ''}",
+                      style: Theme.of(context).textTheme.headlineSmall,
+                      textAlign: TextAlign.center,
+                    ),
+                  if (playScreenType != systemEndActivityInDB)
+                    InkWell(
+                      onTap: interruptAndCompleteActivity,
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundColor:
+                            playScreenType == systemWaitActivityInDB
+                                ? Theme.of(context).focusColor
+                                : Theme.of(context).canvasColor,
+                        child: FittedBox(
+                          child: Text(
+                            displaySeconds,
+                            style: Theme.of(context).textTheme.headlineMedium,
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ),
+                    )
+                  else
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        //mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              CatButton(
+                                buttonLabel: "Restart this Chian",
+                                buttonIcon: Icons.restart_alt,
+                                buttonAction: () async {
+                                  await completeTheChain(
+                                    chainActivityCompletionMessageRestart,
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              CatButton(
+                                buttonLabel: "Just Mark it Complete",
+                                buttonIcon: Icons.done,
+                                buttonAction: interruptAndCompleteActivity,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  )
-                else
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      //mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.max,
+                  if (waitDuration.inSeconds != 0)
+                    Text(
+                      "Seconds.",
+                      style: Theme.of(context).textTheme.headlineSmall,
+                      textAlign: TextAlign.center,
+                    ),
+                  if (!orientationLandScape && waitDuration.inSeconds != 0)
+                    ElevatedButton.icon(
+                      label: const Text("Go Back & Notify when done"),
+                      onPressed: () {
+                        Navigator.of(context).pop({
+                          "running": false, //running,
+                          "waitDuration": waitDuration,
+                          "interruptAndCompleted": false,
+                          "resumedAt": resumedAt,
+                          "notify": true,
+                          "orientationLandScape": orientationLandScape,
+                          "completionMessage": null,
+                        });
+                      },
+                      icon: Icon(
+                        Icons.notification_add,
+                      ),
+                    ),
+                  if (!orientationLandScape)
+                    Container(
+                      margin: const EdgeInsets.all(5),
+                      padding: const EdgeInsets.only(bottom: 5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Theme.of(context).cardColor,
+                      ),
+                      child: const ShowBannerAd(),
+                    ),
+                ],
+              );
+              Widget activityImage = InkWell(
+                onTap: () => setState(() {
+                  orientationLandScape = !orientationLandScape;
+                  setOrietation(orientationLandScape);
+                }),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(50),
+                  child: Container(
+                    margin: const EdgeInsets.all(5),
+                    child: screenImage == null || screenImage == ""
+                        ? Image.asset(
+                            assetMap['logoImage']!,
+                            fit: BoxFit.fitHeight,
+                            //height: appHeight * 0.45,
+                          )
+                        : screenImage!.startsWith("http")
+                            ? FadeInImage.assetNetwork(
+                                placeholder: assetMap["logoImage"]!,
+                                image: screenImage!,
+                                // height: appHeight * 0.45,
+                                fit: BoxFit.cover,
+                                imageErrorBuilder:
+                                    (context, error, stackTrace) => Image.asset(
+                                  assetMap['logoImage']!,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Image.file(
+                                File(screenImage!),
+                                // height: appHeight * 0.45,
+                                fit: BoxFit.fitWidth,
+                              ),
+                  ),
+                ),
+              );
+              return orientation == Orientation.landscape
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            CatButton(
-                              buttonLabel: "Restart this Chian",
-                              buttonIcon: Icons.restart_alt,
-                              buttonAction: () async {
-                                await completeTheChain(
-                                  chainCompletionMessageRestart,
-                                );
-                              },
-                            ),
-                          ],
+                        Expanded(
+                          child: activityImage,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            CatButton(
-                              buttonLabel: "Just Mark it Complete",
-                              buttonIcon: Icons.done,
-                              buttonAction: interruptAndCompleteActivity,
-                            ),
-                          ],
+                        Expanded(
+                          child: activityContent,
                         ),
                       ],
-                    ),
-                  ),
-                if (waitDuration.inSeconds != 0)
-                  Text(
-                    "Seconds.",
-                    style: Theme.of(context).textTheme.headlineSmall,
-                    textAlign: TextAlign.center,
-                  ),
-                if (waitDuration.inSeconds != 0)
-                  ElevatedButton.icon(
-                    label: const Text("Go Back & Notify when done"),
-                    onPressed: () {
-                      Navigator.of(context).pop({
-                        "running": false, //running,
-                        "waitDuration": waitDuration,
-                        "interruptAndCompleted": false,
-                        "resumedAt": resumedAt,
-                        "notify": true,
-                      });
-                    },
-                    icon: Icon(
-                      Icons.notification_add,
-                    ),
-                  ),
-                Container(
-                  margin: const EdgeInsets.all(5),
-                  padding: const EdgeInsets.only(bottom: 5),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Theme.of(context).cardColor,
-                  ),
-                  child: const ShowBannerAd(),
-                ),
-              ],
-            ),
+                    )
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Expanded(child: activityImage),
+                        activityContent,
+                      ],
+                    );
+            }),
           ),
           bottomNavigationBar: SafeArea(
             child: Row(
@@ -344,6 +390,8 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                       "waitDuration": waitDuration,
                       "interruptAndCompleted": false,
                       "resumedAt": resumedAt,
+                      "orientationLandScape": orientationLandScape,
+                      "completionMessage": chainActivityCompletionMessageDone,
                     });
                   },
                   child: Row(
@@ -367,6 +415,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                 //       "waitDuration": waitDuration,
                 //       "interruptAndCompleted": false,
                 //       "resumedAt": resumedAt,
+                //       "orientationLandScape": orientationLandScape,
                 //     });
                 //   },
                 //   icon: const Icon(
@@ -432,6 +481,24 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
           ),
         ),
       ),
+    );
+  }
+}
+
+void setOrietation(bool orientationLandScape) {
+  if (orientationLandScape) {
+    SystemChrome.setPreferredOrientations(
+      [
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ],
+    );
+  } else {
+    SystemChrome.setPreferredOrientations(
+      [
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ],
     );
   }
 }

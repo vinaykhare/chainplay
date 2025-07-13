@@ -1,3 +1,4 @@
+import 'package:chain_activities/screens/schedule_chain.dart';
 import 'package:chain_activities/screens/view_chain_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -79,6 +80,34 @@ class ChainTileView extends StatelessWidget {
     }
   }
 
+  Future<void> navigateToScheduleChainOrPlayChain(BuildContext context) async {
+    NavigatorState nav = Navigator.of(context);
+    Chain? chainExecution =
+        Provider.of<ChainList>(context, listen: false).getRunningChain(chain);
+
+    if (chainExecution == null) {
+      await scheduleChain(context);
+    } else {
+      ChainList chainList = Provider.of<ChainList>(context, listen: false);
+      int runningChainActivityIndex =
+          chainList.getRunningChainActivityIndex(chainExecution);
+      // ChainActivity? chainActivityExecution = runningChainActivityIndex != -1
+      //     ? chainExecution.activities[runningChainActivityIndex]
+      //     : null;
+      await nav.pushNamed(
+        PlayChain.routename,
+        arguments: {
+          payLoadChainExecId: chainExecution.chainExecutionId,
+          payLoadChainName: chainExecution.title,
+          payLoadChainActivityIndex:
+              runningChainActivityIndex != -1 ? runningChainActivityIndex : 0,
+          payLoadChainActivityCount: chain.chainHistory.length,
+          payLoadChainAction: playChainActionPause,
+        },
+      );
+    }
+  }
+
   Future<void> viewChain(BuildContext context) async {
     NavigatorState nav = Navigator.of(context);
     await nav.pushNamed(
@@ -89,7 +118,17 @@ class ChainTileView extends StatelessWidget {
     );
   }
 
-  Widget getIconForChain(BuildContext context, Chain chain) {
+  Future<void> scheduleChain(BuildContext context) async {
+    NavigatorState nav = Navigator.of(context);
+    await nav.pushNamed(
+      ScheduleChainScreen.routename,
+      arguments: {
+        "chain": chain,
+      },
+    );
+  }
+
+  Widget getLeadingIconForChain(BuildContext context, Chain chain) {
     Chain? chainExecution =
         Provider.of<ChainList>(context, listen: false).getRunningChain(chain);
     if (chainExecution != null && chainExecution.notificationId == trueInDB) {
@@ -218,6 +257,7 @@ class ChainTileView extends StatelessWidget {
       label: "Chain Name: ${chain.title}",
       child: InkWell(
         onTap: () => navigateToViewChainOrPlayChain(context),
+        onLongPress: () => navigateToScheduleChainOrPlayChain(context),
         child: Container(
           margin: const EdgeInsets.symmetric(vertical: 5),
           decoration: BoxDecoration(
@@ -242,13 +282,16 @@ class ChainTileView extends StatelessWidget {
                   backgroundColor: Theme.of(context).primaryColor,
                   child: IconButton(
                     onPressed: () => playTheChain(context),
-                    icon: getIconForChain(context, chain),
+                    icon: getLeadingIconForChain(context, chain),
                   ),
                 ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (showHistory)
+                    if (showHistory &&
+                        Provider.of<ChainList>(context, listen: false)
+                                .getRunningChain(chain) ==
+                            null)
                       IconButton(
                         icon: const Icon(Icons.share),
                         onPressed: () async {

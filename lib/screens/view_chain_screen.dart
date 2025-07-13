@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:chain_activities/screens/add_chain_screen.dart';
-import 'package:chain_activities/screens/chain_execution_screen.dart';
 import 'package:chain_activities/screens/play_chain_screen.dart';
+import 'package:chain_activities/screens/schedule_chain.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -400,13 +400,15 @@ class _ViewChainState extends State<ViewChain> {
                                 bool allWell = await onPopOut(false);
                                 if (allWell) {
                                   nav.pushNamed(
-                                    ChainExecutionScreen.routename,
-                                    arguments: chain,
+                                    ScheduleChainScreen.routename,
+                                    arguments: {
+                                      "chain": chain,
+                                    },
                                   );
                                 }
                               },
                               child: const CircleAvatar(
-                                child: Icon(Icons.history),
+                                child: Icon(Icons.alarm_outlined),
                               ),
                             ),
                           ),

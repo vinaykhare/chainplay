@@ -139,10 +139,10 @@ class _ListOfChainsState extends State<ListOfChains> {
         Expanded(
           child: Stack(
             children: [
-              ReorderableListView.builder(
-                onReorder: (oldIndex, newIndex) =>
-                    Provider.of<ChainList>(context, listen: false)
-                        .rearrangeChains(oldIndex, newIndex),
+              ListView.builder(
+                // onReorder: (oldIndex, newIndex) =>
+                //     Provider.of<ChainList>(context, listen: false)
+                //         .rearrangeChains(oldIndex, newIndex),
                 itemCount: allChains.length,
                 reverse: widget.showChainInReverse != null &&
                     widget.showChainInReverse == true,

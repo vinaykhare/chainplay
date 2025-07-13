@@ -26,11 +26,12 @@ class _PlayChainState extends State<PlayChain> {
   late ChainList chainList;
   int invokeCounter = 0;
   ChainActivity? chainActivityPaused;
-  bool initializing = true;
+  bool initializing = true, isLandScape = false;
   String? playChainAction;
 
   Future<void> playTheChain() async {
     dynamic popResponse;
+    bool orientationLandScape = isLandScape;
     NavigatorState nav = Navigator.of(context);
     await chainList.loadInterstitialAd();
     for (invokeCounter = 0;
@@ -101,12 +102,15 @@ class _PlayChainState extends State<PlayChain> {
           "playScreenType": playScreenType,
           "running": running,
           "screenImage": screenImage,
+          "orientationLandScape": orientationLandScape,
           // "textToSpeak": textToSpeak,
         },
       );
       await chainList.stopSpeech();
 
       if (popResponse != null) {
+        isLandScape =
+            orientationLandScape = popResponse["orientationLandScape"];
         if (popResponse["interruptAndCompleted"] == false) {
           chainActivity.activityDurationLeft = popResponse["running"] == false
               ? popResponse["waitDuration"]
@@ -143,42 +147,44 @@ class _PlayChainState extends State<PlayChain> {
       );
     }
 
-    if (popResponse != null && popResponse["interruptAndCompleted"] == false) {
-      // await chainList.scheduleNotification(
-      //     chain, DateTime.now(), invokeCounter);
-      if (popResponse["running"] == false &&
-          popResponse["waitDuration"] != null) {
-        chain.pivotDate = chain.pivotDate!.add(popResponse["waitDuration"]);
-        await chainList.updateChainExecution(chain);
-      }
-    } else {
-      // Chain parentChain =
-      //     chainList.chains.firstWhere((sch) => sch.title == chain.title);
-
-      chain.chainStatus = statusDone;
-      //parentChain.chainStatus = statusNotStarted;
-      chain.endedAt = DateTime.now();
-      //parentChain.endedAt = null;
-
-      //await chainList.updateChain(parentChain);
-      await chainList.updateChainExecution(chain);
-
-      await chainList.completeTheChain(chain);
-
-      if (popResponse != null &&
-          popResponse["completionMessage"] == chainCompletionMessageRestart) {
-        popResponse = null;
-        chain = await chainList.startChainExecution(parentChain);
-        invokeCounter = 0;
-        playChainAction = playChainActionPlay;
-        playTheChain();
+    if (popResponse != null) {
+      if (popResponse["interruptAndCompleted"] == false) {
+        // await chainList.scheduleNotification(
+        //     chain, DateTime.now(), invokeCounter);
+        if (popResponse["running"] == false &&
+            popResponse["waitDuration"] != null) {
+          chain.pivotDate = chain.pivotDate!.add(popResponse["waitDuration"]);
+          await chainList.updateChainExecution(chain);
+        }
       } else {
-        if (chainList.interstitialAd != null) {
-          await chainList.interstitialAd!.show();
+        // Chain parentChain =
+        //     chainList.chains.firstWhere((sch) => sch.title == chain.title);
+
+        chain.chainStatus = statusDone;
+        //parentChain.chainStatus = statusNotStarted;
+        chain.endedAt = DateTime.now();
+        //parentChain.endedAt = null;
+
+        //await chainList.updateChain(parentChain);
+        await chainList.updateChainExecution(chain);
+
+        await chainList.completeTheChain(chain);
+
+        if (popResponse["completionMessage"] ==
+            chainActivityCompletionMessageRestart) {
+          popResponse = null;
+          chain = await chainList.startChainExecution(parentChain);
+          invokeCounter = 0;
+          playChainAction = playChainActionPlay;
+          playTheChain();
+        } else {
+          if (chainList.interstitialAd != null) {
+            await chainList.interstitialAd!.show();
+          }
         }
       }
+      //nav.pop();
     }
-    //nav.pop();
   }
 
   Future<void> cancelNotificationAndCompleteActivity(
