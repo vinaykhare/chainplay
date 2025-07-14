@@ -49,14 +49,9 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
 
   @override
   void dispose() {
-    if (countdownTimer != null) countdownTimer?.cancel();
-    SystemChrome.setPreferredOrientations(
-      [
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown,
-      ],
-    );
     super.dispose();
+    // setOrietation(false);
+    if (countdownTimer != null) countdownTimer?.cancel();
   }
 
   // Future<void> speak() async {
@@ -70,6 +65,26 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
   //   );
   //   isNotPlaying = chainList.isTtsPlaying();
   // }
+
+  Future<void> setOrietation(bool isLandscape) async {
+    if (isLandscape) {
+      await SystemChrome.setPreferredOrientations(
+        [
+          DeviceOrientation.landscapeLeft,
+          DeviceOrientation.landscapeRight,
+        ],
+      );
+      orientationLandScape = true;
+    } else {
+      await SystemChrome.setPreferredOrientations(
+        [
+          DeviceOrientation.portraitUp,
+          DeviceOrientation.portraitDown,
+        ],
+      );
+      orientationLandScape = false;
+    }
+  }
 
   Future<void> setCountDown() async {
     final seconds = waitDuration.inSeconds - 1;
@@ -264,7 +279,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               CatButton(
-                                buttonLabel: "Restart this Chian",
+                                buttonLabel: "Restart this Chain",
                                 buttonIcon: Icons.restart_alt,
                                 buttonAction: () async {
                                   await completeTheChain(
@@ -293,7 +308,8 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                       style: Theme.of(context).textTheme.headlineSmall,
                       textAlign: TextAlign.center,
                     ),
-                  if (!orientationLandScape && waitDuration.inSeconds != 0)
+                  if (orientation == Orientation.portrait &&
+                      waitDuration.inSeconds != 0)
                     ElevatedButton.icon(
                       label: const Text("Go Back & Notify when done"),
                       onPressed: () {
@@ -311,7 +327,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                         Icons.notification_add,
                       ),
                     ),
-                  if (!orientationLandScape)
+                  if (orientation == Orientation.portrait)
                     Container(
                       margin: const EdgeInsets.all(5),
                       padding: const EdgeInsets.only(bottom: 5),
@@ -325,8 +341,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
               );
               Widget activityImage = InkWell(
                 onTap: () => setState(() {
-                  orientationLandScape = !orientationLandScape;
-                  setOrietation(orientationLandScape);
+                  setOrietation(!orientationLandScape);
                 }),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(50),
@@ -481,24 +496,6 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
           ),
         ),
       ),
-    );
-  }
-}
-
-void setOrietation(bool orientationLandScape) {
-  if (orientationLandScape) {
-    SystemChrome.setPreferredOrientations(
-      [
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight,
-      ],
-    );
-  } else {
-    SystemChrome.setPreferredOrientations(
-      [
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown,
-      ],
     );
   }
 }

@@ -22,8 +22,8 @@ class KeyHelper {
 
   static GlobalKey chainControlSummaryKey = GlobalKey();
   static GlobalKey minmaxChainControlSummaryKey = GlobalKey();
-  static GlobalKey chianListScreenAppBarkey = GlobalKey();
-  static GlobalKey chianListSearchkey = GlobalKey();
+  static GlobalKey chainListScreenAppBarkey = GlobalKey();
+  static GlobalKey chainListSearchkey = GlobalKey();
   static GlobalKey chainFiltersKey = GlobalKey();
   static GlobalKey activeChainFilterKey = GlobalKey();
   static GlobalKey favoriteChainFilterKey = GlobalKey();

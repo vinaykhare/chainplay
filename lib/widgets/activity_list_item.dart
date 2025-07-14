@@ -48,7 +48,7 @@ class ActivityListItem extends StatelessWidget {
         MediaQuery.of(context).viewPadding.top -
         MediaQuery.of(context).viewPadding.bottom;
     double appWidth = MediaQuery.of(context).size.width - 16;
-    List<Chain> chiansUsingThisActivity =
+    List<Chain> chainsUsingThisActivity =
         chainList.getChainsUsingThisActivity(activity);
     return Dismissible(
       direction: DismissDirection.startToEnd,
@@ -64,7 +64,7 @@ class ActivityListItem extends StatelessWidget {
         await chainList.removeActivity(activity);
       },
       confirmDismiss: (DismissDirection direction) async {
-        if (chiansUsingThisActivity.isEmpty) {
+        if (chainsUsingThisActivity.isEmpty) {
           return await showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -102,7 +102,7 @@ class ActivityListItem extends StatelessWidget {
                 return AlertDialog(
                   title: Text("${activity.title}\nis in use by"),
                   content: Text(
-                    chiansUsingThisActivity.map((Chain chain) {
+                    chainsUsingThisActivity.map((Chain chain) {
                       return chain.title;
                     }).toString(),
                     style: Theme.of(context).textTheme.bodyLarge,
@@ -140,7 +140,7 @@ class ActivityListItem extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleLarge,
                       //softWrap: true,
                     ),
-                    Text(chiansUsingThisActivity.isEmpty
+                    Text(chainsUsingThisActivity.isEmpty
                         ? "Not in use"
                         : "In Use"),
                   ],

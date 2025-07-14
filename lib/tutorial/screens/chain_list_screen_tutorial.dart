@@ -44,10 +44,10 @@ class _ChainListScreenTutorialState extends State<ChainListScreenTutorial> {
 
     final appBarWidget = AppBar(
       backgroundColor: Theme.of(context).primaryColor,
-      key: KeyHelper.chianListScreenAppBarkey,
+      key: KeyHelper.chainListScreenAppBarkey,
       centerTitle: true,
       title: TextField(
-        key: KeyHelper.chianListSearchkey,
+        key: KeyHelper.chainListSearchkey,
         keyboardType: TextInputType.none,
         cursorColor: Theme.of(context).cardColor,
         showCursor: false,

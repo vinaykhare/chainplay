@@ -4,6 +4,7 @@ import 'package:chain_activities/helpers/helper_functions.dart';
 import 'package:chain_activities/screens/view_chain_screen.dart';
 import 'package:chain_activities/widgets/cat_text_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/models/chain.dart';
@@ -238,6 +239,12 @@ class _PlayChainState extends State<PlayChain> {
   void dispose() {
     super.dispose();
     chainList.disposeAds();
+    SystemChrome.setPreferredOrientations(
+      [
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ],
+    );
   }
 
   //Build Function
