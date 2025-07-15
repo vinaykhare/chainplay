@@ -633,7 +633,30 @@ class ChainList with ChangeNotifier {
       return chainExecution;
     }
     //End: Workaround to avoid addition of unwanted chains under execution.
-    chainExecution.activities[0].activityDone = true;
+
+    int chainNotificationId = noValueInDB;
+
+    if (chainExecution.at != null) {
+      String? scheduleResponse;
+      if (chainExecution.at!.isAfter(DateTime.now())) {
+        chainExecution.activities[0].activityDurationLeft = chainExecution
+            .activities[0]
+            .activityDuration = chainExecution.at!.difference(DateTime.now());
+        scheduleResponse = await scheduleNotificationForActivityCompletion(
+          chainExecution,
+          chainExecution.activities[0],
+          chainExecution.at!,
+        );
+        chainNotificationId = scheduleResponse != null ? noValueInDB : trueInDB;
+
+        int chainIndex = chains.indexWhere((sch) => sch.title == chain.title);
+        chains[chainIndex].notificationId = chainNotificationId;
+      } else {
+        chainExecution.at = null;
+      }
+    } else {
+      chainExecution.activities[0].activityDone = true;
+    }
     await addChainToHistory(chainExecution);
     int chainIndex = chains.indexWhere((sch) => sch.title == chain.title);
 
@@ -655,7 +678,7 @@ class ChainList with ChangeNotifier {
     //   chains[chainIndex].at = null;
     // }
 
-    chains[chainIndex].notificationId = noValueInDB;
+    chains[chainIndex].notificationId = chainNotificationId;
     chains[chainIndex].chainStatus = statusExecuting;
     await updateChain(chains[chainIndex]);
     notifyListeners();

@@ -4,9 +4,10 @@ import 'dart:io';
 
 import 'package:chain_activities/screens/add_chain_screen.dart';
 import 'package:chain_activities/screens/play_chain_screen.dart';
-import 'package:chain_activities/screens/schedule_chain.dart';
+// import 'package:chain_activities/screens/schedule_chain.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/models/chain.dart';
@@ -27,6 +28,7 @@ class _ViewChainState extends State<ViewChain> {
   late ChainList chainList;
   int invokeCounter = 0;
   bool initializing = true, savedInDb = true, invalidChain = false;
+
   //bool buildDone = false;
 
   // @override
@@ -63,6 +65,182 @@ class _ViewChainState extends State<ViewChain> {
           payLoadChainActivityCount: chain.chainHistory.length,
           payLoadChainAction: playChainActionPlay,
         },
+      );
+    }
+  }
+
+  Future<void> scheduleTheChain(BuildContext context) async {
+    ScaffoldMessengerState scms = ScaffoldMessenger.of(context);
+    DateTime? chainStartTime;
+
+    // NavigatorState nav = Navigator.of(context);
+
+    chainList = Provider.of<ChainList>(context, listen: false);
+
+    chainStartTime = await showDialog<DateTime>(
+        context: context,
+        builder: (ctx) {
+          final TextEditingController addStartDateController =
+              TextEditingController();
+          final TextEditingController addStartTimeController =
+              TextEditingController();
+          TimeOfDay selectedTime = TimeOfDay.fromDateTime(
+              DateTime.now().add(const Duration(minutes: 1)));
+
+          DateTime chainStartDate = DateTime.now();
+          addStartDateController.text =
+              DateFormat.yMEd().format(chainStartDate);
+          chainStartTime = DateTime(
+            chainStartDate.year,
+            chainStartDate.month,
+            chainStartDate.day,
+            selectedTime.hour,
+            selectedTime.minute,
+          );
+          addStartTimeController.text =
+              DateFormat.jms().format(chainStartTime!);
+          return AlertDialog(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text("Schedule Chain"),
+                IconButton(
+                  icon: Icon(Icons.cancel,
+                      color: Theme.of(context).colorScheme.error),
+                  onPressed: () => Navigator.of(ctx).pop(null),
+                ),
+              ],
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Select the date & time when you want to start this chain.",
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: addStartDateController,
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      labelText: "Start Date",
+                      border: const OutlineInputBorder(),
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.calendar_today),
+                        onPressed: () async {
+                          chainStartDate = await showDatePicker(
+                                context: ctx,
+                                initialDate: chainStartDate,
+                                firstDate: DateTime.now(),
+                                lastDate: DateTime(2100),
+                              ) ??
+                              chainStartDate;
+                          addStartDateController.text =
+                              DateFormat.yMEd().format(chainStartDate);
+                          chainStartTime = DateTime(
+                            chainStartDate.year,
+                            chainStartDate.month,
+                            chainStartDate.day,
+                            selectedTime.hour,
+                            selectedTime.minute,
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  TextField(
+                    controller: addStartTimeController,
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      labelText: "Start Time",
+                      border: const OutlineInputBorder(),
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.access_time),
+                        onPressed: () async {
+                          selectedTime = await showTimePicker(
+                                context: context,
+                                initialTime: selectedTime,
+                              ) ??
+                              selectedTime;
+                          chainStartTime = DateTime(
+                            chainStartDate.year,
+                            chainStartDate.month,
+                            chainStartDate.day,
+                            selectedTime.hour,
+                            selectedTime.minute,
+                          );
+                          addStartTimeController.text =
+                              DateFormat.jms().format(chainStartTime!);
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  chainStartDate = DateTime.now().subtract(Duration(days: 1));
+                  chainStartTime = DateTime(
+                    chainStartDate.year,
+                    chainStartDate.month,
+                    chainStartDate.day,
+                    selectedTime.hour,
+                    selectedTime.minute,
+                  );
+                  Navigator.of(ctx).pop(chainStartTime);
+                },
+                child: const Text("Clear"),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop(chainStartTime);
+                },
+                child: const Text("Schedule"),
+              ),
+            ],
+          );
+        });
+
+    if (chainStartTime == null) {
+      return;
+    }
+
+    if (chainStartTime!.isBefore(DateTime.now())) {
+      chain.at = null;
+      return;
+    }
+
+    chain.at = chainStartTime;
+    Chain chainExecution = await chainList.startChainExecution(chain);
+    int chainIndex =
+        chainList.chains.indexWhere((sch) => sch.title == chainExecution.title);
+    if (chainExecution.at != null &&
+        chainList.chains[chainIndex].notificationId == noValueInDB) {
+      chainExecution.at = null;
+      chainList.chains[chainIndex].at = null;
+      await chainList.updateChain(
+        chainList.chains[chainIndex],
+      );
+      await chainList.updateChainExecution(
+        chainExecution,
+      );
+
+      scms.showSnackBar(
+        SnackBar(
+          content: Text(
+            "Unable to Schedule the Chain: ${chainExecution.title}.\n",
+          ),
+          action: SnackBarAction(
+            //textColor: Colors.white,
+            label: 'OK',
+            onPressed: () {},
+          ),
+        ),
       );
     }
   }
@@ -395,18 +573,19 @@ class _ViewChainState extends State<ViewChain> {
                           Semantics(
                             label: "Check chain execution history.",
                             child: InkWell(
-                              onTap: () async {
-                                NavigatorState nav = Navigator.of(context);
-                                bool allWell = await onPopOut(false);
-                                if (allWell) {
-                                  nav.pushNamed(
-                                    ScheduleChainScreen.routename,
-                                    arguments: {
-                                      "chain": chain,
-                                    },
-                                  );
-                                }
-                              },
+                              onTap: () => scheduleTheChain(context),
+                              // onTap: () async {
+                              //   NavigatorState nav = Navigator.of(context);
+                              //   bool allWell = await onPopOut(false);
+                              //   if (allWell) {
+                              //     nav.pushNamed(
+                              //       ScheduleChainScreen.routename,
+                              //       arguments: {
+                              //         "chain": chain,
+                              //       },
+                              //     );
+                              //   }
+                              // },
                               child: const CircleAvatar(
                                 child: Icon(Icons.alarm_outlined),
                               ),

@@ -1,7 +1,6 @@
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/screens/pixabay_selection_screen.dart';
-import 'package:chain_activities/screens/schedule_chain.dart';
 import 'package:chain_activities/screens/view_chain_screen.dart';
 import 'package:chain_activities/tutorial/screens/add_chain_screen_tutorial.dart';
 import 'package:chain_activities/tutorial/screens/chain_list_screen_tutorial.dart';
@@ -345,7 +344,6 @@ class ChainActivities extends StatelessWidget {
         LoadScreen.routename: (context) => const LoadScreen(),
         HowItWorks.routename: (context) => const HowItWorks(),
         ViewChain.routename: (context) => const ViewChain(),
-        ScheduleChainScreen.routename: (context) => const ScheduleChainScreen(),
         ViewChainTutorial.routename: (context) => const ViewChainTutorial(),
         PixabaySelectionScreen.routename: (context) =>
             const PixabaySelectionScreen(),

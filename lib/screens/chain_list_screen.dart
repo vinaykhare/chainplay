@@ -3,6 +3,7 @@ import 'package:chain_activities/widgets/chain_list_header.dart';
 import 'package:chain_activities/widgets/list_of_chains.dart';
 import 'package:chain_activities/widgets/no_chains_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
@@ -21,6 +22,14 @@ class ChainListScreen extends StatefulWidget {
 class _ChainListScreenState extends State<ChainListScreen> {
   late ChainList chainList;
   bool showFavorites = false, showRunning = false;
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
 
   // late ChainList chainList;
   @override
