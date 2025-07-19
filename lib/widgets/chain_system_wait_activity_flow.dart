@@ -1,5 +1,5 @@
 import 'package:chain_activities/helpers/constants.dart';
-import 'package:chain_activities/helpers/helper_functions.dart';
+import 'package:chain_activities/helpers/content_transformer.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:chain_activities/models/chain.dart';
@@ -89,7 +89,7 @@ class ChainSystemWaitActivityFlow extends StatelessWidget {
                                         0)
                                   Expanded(
                                     child: Text(
-                                      "You will be notified for the next activity on ${DateFormat.yMMMEd().format(activities[index].endedAt!)} at ${DateFormat.jms().format(activities[index].endedAt!)}\ni.e. after ${HelperFunctions.durationToString(
+                                      "You will be notified for the next activity on ${DateFormat.yMMMEd().format(activities[index].endedAt!)} at ${DateFormat.jms().format(activities[index].endedAt!)}\ni.e. after ${ContentTransformer.durationToString(
                                         chainActivity.endedAt!.difference(
                                           DateTime.now(),
                                         ),
@@ -107,7 +107,7 @@ class ChainSystemWaitActivityFlow extends StatelessWidget {
                               else
                                 Expanded(
                                   child: Text(
-                                    "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? 'before scheduled duration' : HelperFunctions.durationToString(activities[index].activityDurationLeft ?? chainActivity.activityDuration)}${activities[index].activityDurationLeft != null ? '\nafter resuming.' : '.'}  ",
+                                    "${activities[index].endedAt != null ? 'Rest Ended ' : 'Rest will end '}${activities[index].isInterrupted ? 'before scheduled duration' : ContentTransformer.durationToString(activities[index].activityDurationLeft ?? chainActivity.activityDuration)}${activities[index].activityDurationLeft != null ? '\nafter resuming.' : '.'}  ",
                                     textAlign: TextAlign.center,
                                   ),
                                 ),

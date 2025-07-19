@@ -6,7 +6,7 @@ import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:chain_activities/helpers/helper_functions.dart';
+import 'package:chain_activities/helpers/content_transformer.dart';
 import 'package:chain_activities/models/chain_activity.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/models/system_setting.dart';
@@ -160,7 +160,7 @@ class _PlayWaitActivityTutorialState extends State<PlayWaitActivityTutorial> {
     // timeLeft = "$hours:$minutes:$displaySeconds";
     timeLeft = hours == 0 && minutes == 0 && seconds != 0
         ? " in "
-        : HelperFunctions.durationToString(
+        : ContentTransformer.durationToString(
             Duration(
               hours: hours,
               minutes: minutes,

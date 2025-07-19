@@ -1,4 +1,4 @@
-class HelperFunctions {
+class ContentTransformer {
   static String durationToString(Duration activityDuration) {
     String drStr = "in ";
     int activityDurationHour = activityDuration.inHours;

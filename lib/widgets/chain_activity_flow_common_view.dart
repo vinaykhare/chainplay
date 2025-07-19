@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:chain_activities/helpers/constants.dart';
-import 'package:chain_activities/helpers/helper_functions.dart';
+import 'package:chain_activities/helpers/content_transformer.dart';
 import 'package:flutter/material.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_activity.dart';
@@ -44,7 +44,7 @@ class ChainActivityFlowCommonView extends StatelessWidget {
                   .inSeconds >
               0) {
         subtitleText +=
-            "You will be notified for activity completion\n${HelperFunctions.durationToString(
+            "You will be notified for activity completion\n${ContentTransformer.durationToString(
           chainActivity.endedAt!.difference(
             DateTime.now(),
           ),
@@ -63,7 +63,7 @@ class ChainActivityFlowCommonView extends StatelessWidget {
       if (activities[index].isInterrupted) {
         subtitleText += "before the scheduled duration";
       } else {
-        subtitleText += HelperFunctions.durationToString(
+        subtitleText += ContentTransformer.durationToString(
             chainActivity.activityDurationLeft ??
                 chainActivity.activityDuration);
       }

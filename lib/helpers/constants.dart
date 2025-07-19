@@ -81,7 +81,7 @@ const String payLoadChainAction = "action";
 const String playChainActionPlay = "play";
 const String playChainActionPause = "pause";
 const String playChainActionStop = "stop";
-const String chainActivityCompletionMessageRestart = "restart";
+const String chainActivityCompletionMessageRestart = "Restart";
 const String chainActivityCompletionMessageDone = "Done";
 
 //Schedule Repeat Types

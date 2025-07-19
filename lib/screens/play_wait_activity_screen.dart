@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:chain_activities/helpers/common_ui.dart';
 import 'package:chain_activities/helpers/constants.dart';
+import 'package:chain_activities/helpers/notification_helper.dart';
 import 'package:chain_activities/widgets/cat_button.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:chain_activities/helpers/helper_functions.dart';
+import 'package:chain_activities/helpers/content_transformer.dart';
 import 'package:chain_activities/models/chain_activity.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/models/system_setting.dart';
@@ -133,7 +135,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
     setState(() => waitDuration = initialWaitDuration);
   }
 
-  void interruptAndCompleteActivity() async {
+  Future<void> interruptAndCompleteActivity() async {
     NavigatorState nav = Navigator.of(context);
     await Provider.of<ChainList>(context, listen: false)
         .playNotificationSound();
@@ -153,13 +155,15 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
           });
   }
 
-  Future<void> completeTheChain(String completionMessage) async {
+  Future<void> completeTheChain(String completionMessage,
+      [DateTime? chainStartTime]) async {
     NavigatorState nav = Navigator.of(context);
     await Provider.of<ChainList>(context, listen: false)
         .playNotificationSound();
     nav.pop({
       "completionMessage": completionMessage,
       "orientationLandScape": orientationLandScape,
+      "nextChainStartTime": chainStartTime,
     });
   }
 
@@ -219,7 +223,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
     // timeLeft = "$hours:$minutes:$displaySeconds";
     timeLeft = hours == 0 && minutes == 0 && seconds != 0
         ? " in "
-        : HelperFunctions.durationToString(
+        : ContentTransformer.durationToString(
             Duration(
               hours: hours,
               minutes: minutes,
@@ -229,6 +233,8 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
     // double appHeight = MediaQuery.of(context).size.height -
     //     MediaQuery.of(context).viewPadding.top -
     //     MediaQuery.of(context).viewPadding.bottom;
+
+    // double appWidth = MediaQuery.of(context).size.width;
 
     return PopScope(
       canPop: false,
@@ -272,8 +278,9 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(
-                        //mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        // mainAxisSize: MainAxisSize.min,
                         children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -283,8 +290,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                                 buttonIcon: Icons.restart_alt,
                                 buttonAction: () async {
                                   await completeTheChain(
-                                    chainActivityCompletionMessageRestart,
-                                  );
+                                      chainActivityCompletionMessageRestart);
                                 },
                               ),
                             ],
@@ -293,7 +299,54 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               CatButton(
-                                buttonLabel: "Just Mark it Complete",
+                                buttonLabel: "Start it a Little Later",
+                                buttonIcon: Icons.schedule,
+                                buttonAction: () async {
+                                  ScaffoldMessengerState scms =
+                                      ScaffoldMessenger.of(context);
+
+                                  DateTime? chainStartTime;
+                                  chainStartTime =
+                                      await CommonUI().getDateTimeDialog(
+                                    context,
+                                    chainStartTime,
+                                  );
+                                  if (chainStartTime == null) {
+                                    return;
+                                  }
+                                  if (chainStartTime.isBefore(DateTime.now())) {
+                                    chainStartTime = null;
+                                    return;
+                                  }
+
+                                  bool permissionGranted =
+                                      await NotificationHelper()
+                                          .localNotificationService
+                                          .askNotificationPermission();
+                                  if (permissionGranted) {
+                                    await completeTheChain(
+                                      chainActivityCompletionMessageRestart,
+                                      chainStartTime,
+                                    );
+                                  } else {
+                                    scms.showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          "Please allow notification permission to schedule the next activity.",
+                                        ),
+                                      ),
+                                    );
+                                    return;
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              CatButton(
+                                buttonLabel: "Done for now",
                                 buttonIcon: Icons.done,
                                 buttonAction: interruptAndCompleteActivity,
                               ),
@@ -471,8 +524,10 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                         margin: EdgeInsets.only(
                           right: 5,
                         ),
-                        child: const Text(
-                          "Next Activity",
+                        child: Text(
+                          playScreenType == systemEndActivityInDB
+                              ? "Complete"
+                              : "Next Activity",
                         ),
                       ),
                       Icon(

@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:chain_activities/helpers/helper_functions.dart';
+import 'package:chain_activities/helpers/common_ui.dart';
+import 'package:chain_activities/helpers/content_transformer.dart';
 import 'package:chain_activities/screens/view_chain_screen.dart';
 import 'package:chain_activities/widgets/cat_text_button.dart';
 import 'package:flutter/material.dart';
@@ -81,9 +82,9 @@ class _PlayChainState extends State<PlayChain> {
 
       String textToSpeak = chainActivity.activity.type == systemWaitActivityInDB
           ? invokeCounter < chain.activities.length - 1
-              ? "Take Rest. Next Activity will start ${HelperFunctions.durationToString(waitDuration)}."
+              ? "Take Rest. Next Activity will start ${ContentTransformer.durationToString(waitDuration)}."
               : "Congratulations, all the chain activities are executed. Please choose, if you want to restart this chain, or, just mark it complete."
-          : "Activity ${chainActivity.activity.title} has started. It will complete ${HelperFunctions.durationToString(waitDuration)}.";
+          : "Activity ${chainActivity.activity.title} has started. It will complete ${ContentTransformer.durationToString(waitDuration)}.";
       if (chainActivity.activityDurationLeft != null &&
           waitDuration.inSeconds > 0 &&
           playChainAction == playChainActionPause) {
@@ -173,11 +174,14 @@ class _PlayChainState extends State<PlayChain> {
 
         if (popResponse["completionMessage"] ==
             chainActivityCompletionMessageRestart) {
+          parentChain.at = popResponse["nextChainStartTime"];
           popResponse = null;
           chain = await chainList.startChainExecution(parentChain);
           invokeCounter = 0;
           playChainAction = playChainActionPlay;
-          playTheChain();
+          if (chain.notificationId != trueInDB) {
+            playTheChain();
+          }
         } else {
           if (chainList.interstitialAd != null) {
             await chainList.interstitialAd!.show();
@@ -222,6 +226,31 @@ class _PlayChainState extends State<PlayChain> {
           ),
         ),
       );
+    }
+  }
+
+  Future<void> cancelSchedule() async {
+    bool? dialogResponse = await CommonUI().confirmScheduleCancelation(context);
+
+    if (dialogResponse == false) {
+      // nav.pop();
+      return;
+    } else {
+      chainActivityPaused!.isInterrupted = true;
+      chainActivityPaused!.endedAt = DateTime.now();
+      await cancelNotificationAndCompleteActivity(
+        chain,
+        chainActivityPaused!,
+      );
+
+      chain.at = DateTime.now();
+      await chainList.updateChainExecution(chain);
+
+      setState(() {
+        chainActivityPaused = null;
+        invokeCounter++;
+      });
+      playTheChain();
     }
   }
 
@@ -408,7 +437,24 @@ class _PlayChainState extends State<PlayChain> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              if (chainActivityPaused != null &&
+                              if (invokeCounter <= 0)
+                                CatTextButton(
+                                  buttonLabel: "Cancel Schedule & Start Now",
+                                  buttonAction: (chain.notificationId ==
+                                              noValueInDB &&
+                                          (chainActivityPaused == null ||
+                                              chainActivityPaused!.endedAt ==
+                                                  null))
+                                      ? () {
+                                          chainActivityPaused = null;
+                                          playTheChain();
+                                        }
+                                      : () async {
+                                          await cancelSchedule();
+                                        },
+                                  buttonIcon: Icons.play_circle,
+                                )
+                              else if (chainActivityPaused != null &&
                                   chainActivityPaused!.endedAt == null &&
                                   chain.notificationId == noValueInDB)
                                 CatTextButton(
@@ -494,61 +540,7 @@ class _PlayChainState extends State<PlayChain> {
                             playTheChain();
                           }
                         : () async {
-                            bool? dialogResponse = await showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text(
-                                      "Chain is running in background"),
-                                  content: const Text(
-                                      "Are you sure about force completing the current activity and go to the next one?"),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(true),
-                                      child: Text(
-                                        "Yes, Do it!",
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .error,
-                                        ),
-                                      ),
-                                    ),
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(false),
-                                      child: Text(
-                                        "No, my bad!",
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .inverseSurface,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-
-                            if (dialogResponse == false) {
-                              // nav.pop();
-                              return;
-                            } else {
-                              chainActivityPaused!.isInterrupted = true;
-                              chainActivityPaused!.endedAt = DateTime.now();
-                              await cancelNotificationAndCompleteActivity(
-                                chain,
-                                chainActivityPaused!,
-                              );
-
-                              setState(() {
-                                chainActivityPaused = null;
-                                invokeCounter++;
-                              });
-                              playTheChain();
-                            }
+                            await cancelSchedule();
                           }
                     : null,
                 icon: const Icon(

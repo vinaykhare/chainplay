@@ -636,24 +636,22 @@ class ChainList with ChangeNotifier {
 
     int chainNotificationId = noValueInDB;
 
-    if (chainExecution.at != null) {
+    if (chainExecution.at != null &&
+        chainExecution.at!.isAfter(DateTime.now())) {
       String? scheduleResponse;
-      if (chainExecution.at!.isAfter(DateTime.now())) {
-        chainExecution.activities[0].activityDurationLeft = chainExecution
-            .activities[0]
-            .activityDuration = chainExecution.at!.difference(DateTime.now());
-        scheduleResponse = await scheduleNotificationForActivityCompletion(
-          chainExecution,
-          chainExecution.activities[0],
-          chainExecution.at!,
-        );
-        chainNotificationId = scheduleResponse != null ? noValueInDB : trueInDB;
 
-        int chainIndex = chains.indexWhere((sch) => sch.title == chain.title);
-        chains[chainIndex].notificationId = chainNotificationId;
-      } else {
-        chainExecution.at = null;
-      }
+      chainExecution.activities[0].activityDurationLeft = chainExecution
+          .activities[0]
+          .activityDuration = chainExecution.at!.difference(DateTime.now());
+      scheduleResponse = await scheduleNotificationForActivityCompletion(
+        chainExecution,
+        chainExecution.activities[0],
+        chainExecution.at!,
+      );
+      chainNotificationId = scheduleResponse != null ? noValueInDB : trueInDB;
+
+      int chainIndex = chains.indexWhere((sch) => sch.title == chain.title);
+      chains[chainIndex].notificationId = chainNotificationId;
     } else {
       chainExecution.activities[0].activityDone = true;
     }
@@ -1894,7 +1892,9 @@ class ChainList with ChangeNotifier {
         chain.title,
         chainActivity.activity.type == systemWaitActivityInDB
             ? "Rest is Over, lets start your next Activity."
-            : "$activityTitle is Completed.",
+            : chainActivity.activity.type == systemStartActivityInDB
+                ? "Time to Start the Chain ${chain.title}"
+                : "$activityTitle is Completed.",
         {
           payLoadChainName: chain.title,
           payLoadChainExecId: chain.chainExecutionId,
