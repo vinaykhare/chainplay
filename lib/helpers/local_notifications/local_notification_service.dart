@@ -132,6 +132,14 @@ class LocalNotificationService {
       importance: Importance.max,
       priority: Priority.high,
       ticker: 'ChainPlay',
+      // actions: <AndroidNotificationAction>[
+      //   AndroidNotificationAction(
+      //     progressVal.toString(),
+      //     'Snooze',
+      //     icon: DrawableResourceAndroidBitmap('@mipmap/launcher_icon'),
+      //     contextual: true,
+      //   ),
+      // ],
       playSound: true,
       sound: const RawResourceAndroidNotificationSound(
         'chain_activity_alarm',

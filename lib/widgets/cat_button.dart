@@ -37,7 +37,7 @@ class CatButton extends StatelessWidget {
       child: TextButton.icon(
         icon: Icon(
           buttonIcon,
-          color: Theme.of(context).shadowColor,
+          color: Theme.of(context).colorScheme.onPrimary,
         ),
         label: Text(
           buttonLabel,

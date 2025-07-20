@@ -123,13 +123,23 @@ class CommonUI {
                   );
                   Navigator.of(ctx).pop(chainStartTime);
                 },
-                child: const Text("Clear"),
+                child: Text(
+                  "Cancel",
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                ),
               ),
               TextButton(
                 onPressed: () {
                   Navigator.of(ctx).pop(chainStartTime);
                 },
-                child: const Text("Schedule"),
+                child: Text(
+                  "Schedule",
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.inverseSurface,
+                  ),
+                ),
               ),
             ],
           );
