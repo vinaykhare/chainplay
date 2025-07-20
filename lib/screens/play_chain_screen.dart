@@ -82,20 +82,20 @@ class _PlayChainState extends State<PlayChain> {
 
       String textToSpeak = chainActivity.activity.type == systemWaitActivityInDB
           ? invokeCounter < chain.activities.length - 1
-              ? "Take Rest. Next Activity will start ${ContentTransformer.durationToString(waitDuration)}."
+              ? waitDuration.inSeconds > 0 && waitDuration.inSeconds <= 10
+                  ? "Take Rest"
+                  : "Take Rest. Next Activity will start ${ContentTransformer.durationToString(waitDuration)}."
               : "Congratulations, all the chain activities are executed. Please choose, if you want to restart this chain, or, just mark it complete."
-          : "Activity ${chainActivity.activity.title} has started. It will complete ${ContentTransformer.durationToString(waitDuration)}.";
+          : waitDuration.inSeconds > 0 && waitDuration.inSeconds <= 10
+              ? chainActivity.activity.title
+              : "Activity ${chainActivity.activity.title} has started. It will complete ${ContentTransformer.durationToString(waitDuration)}.";
       if (chainActivity.activityDurationLeft != null &&
-          waitDuration.inSeconds > 0 &&
+          waitDuration.inSeconds > 10 &&
           playChainAction == playChainActionPause) {
         textToSpeak += " after resuming.";
       }
+
       await chainList.speakTextWithoutWait(textToSpeak);
-      // while (!buildDone) {
-      //   Future.delayed(
-      //     const Duration(microseconds: 1),
-      //   );
-      // }
       popResponse = await nav.pushNamed(
         PlayWaitActivity.routename,
         arguments: {

@@ -90,7 +90,7 @@ class TutorialCoach {
     tutorialCoachMark = TutorialCoachMark(
       targets: targets,
       colorShadow: Colors.amber,
-      textSkip: "[X] Exit Tutorial",
+      textSkip: "[X] Close",
       disableBackButton: false,
       textStyleSkip: TextStyle(
         color: Theme.of(context).colorScheme.error,

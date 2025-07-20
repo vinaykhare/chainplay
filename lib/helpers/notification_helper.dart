@@ -55,16 +55,14 @@ class NotificationHelper {
   }
 
   Future<void> playNotificationSound() async {
-    if (isAppSoundEnabled()) {
-      //await FlutterRingtonePlayer.playNotification();
-      // await FlutterRingtonePlayer.play(
-      //   fromAsset: assetMap['beepAudio']!,
-      // );
-      final player = AudioPlayer();
-      player.setAsset(assetMap['beepAudio']!);
+    //await FlutterRingtonePlayer.playNotification();
+    // await FlutterRingtonePlayer.play(
+    //   fromAsset: assetMap['beepAudio']!,
+    // );
+    final player = AudioPlayer();
+    player.setAsset(assetMap['beepAudio']!);
 
-      player.play();
-    }
+    player.play();
   }
 
   Future<void> initTts() async {

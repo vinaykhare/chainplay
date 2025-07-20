@@ -1,8 +1,9 @@
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/screens/chain_list_screen.dart';
+
 import 'package:chain_activities/tutorial/widgets/help_header.dart';
-import 'package:chain_activities/tutorial/widgets/skip_button.dart';
+
 import 'package:flutter/material.dart';
 import 'package:chain_activities/widgets/app_drawer.dart';
 import 'package:provider/provider.dart';
@@ -58,7 +59,7 @@ class _HowItWorksState extends State<HowItWorks> {
                 right: 0,
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
-                  child: SkipButton(
+                  child: TextButton(
                     onPressed: () async {
                       NavigatorState nav = Navigator.of(context);
                       //await chainList.dontShowHelpOnNextLoad();
@@ -67,7 +68,24 @@ class _HowItWorksState extends State<HowItWorks> {
                       await chainList.stopSpeech();
                       nav.pushReplacementNamed(ChainListScreen.routename);
                     },
+                    child: Text(
+                      "[X] Close",
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                    ),
                   ),
+                  // child: SkipButton(
+                  //   onPressed: () async {
+                  //     NavigatorState nav = Navigator.of(context);
+                  //     //await chainList.dontShowHelpOnNextLoad();
+                  //     await chainList.setSetting(
+                  //         showHelpOnNextBootKey, falseSettingValue);
+                  //     await chainList.stopSpeech();
+                  //     nav.pushReplacementNamed(ChainListScreen.routename);
+                  //   },
+                  // ),
+
                   // child: IconButton(
                   //   icon: const Icon(
                   //     Icons.cancel,

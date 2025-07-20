@@ -91,12 +91,15 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
   Future<void> setCountDown() async {
     final seconds = waitDuration.inSeconds - 1;
     NavigatorState nav = Navigator.of(context);
+    ChainList chainList = Provider.of<ChainList>(context, listen: false);
 
-    if (seconds == 1) {
-      // FlutterRingtonePlayer.play(
-      //     fromAsset: assetMap['beepAudio']!, ios: IosSounds.glass);
-      await Provider.of<ChainList>(context, listen: false)
-          .playNotificationSound();
+    if (seconds == 3) {
+      await chainList.speakTextWithoutWait("3");
+    } else if (seconds == 2) {
+      await chainList.speakTextWithoutWait("2");
+    } else if (seconds == 1) {
+      await chainList.speakTextWithoutWait("1");
+      await chainList.playNotificationSound();
     }
 
     if (seconds < 1) {

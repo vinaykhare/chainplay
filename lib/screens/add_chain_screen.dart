@@ -1354,7 +1354,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
           const CircleAvatar(
             radius: 50,
             child: Text(
-              "You can modify this Alarm Title",
+              "You can modify this Chain Title",
               textAlign: TextAlign.center,
             ),
           ),
