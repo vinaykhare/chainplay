@@ -16,7 +16,7 @@ import 'package:provider/provider.dart';
 
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/screens/add_chain_screen.dart';
-import 'package:chain_activities/tutorial/screens/how_it_works.dart';
+import 'package:chain_activities/screens/first_boot_screen.dart';
 import 'package:chain_activities/screens/load_screen.dart';
 import 'package:chain_activities/screens/play_chain_screen.dart';
 import 'package:chain_activities/screens/play_wait_activity_screen.dart';
@@ -342,7 +342,7 @@ class ChainActivities extends StatelessWidget {
         PlayWaitActivityTutorial.routename: (context) =>
             const PlayWaitActivityTutorial(),
         LoadScreen.routename: (context) => const LoadScreen(),
-        HowItWorks.routename: (context) => const HowItWorks(),
+        FirstBootScreen.routename: (context) => const FirstBootScreen(),
         ViewChain.routename: (context) => const ViewChain(),
         ViewChainTutorial.routename: (context) => const ViewChainTutorial(),
         PixabaySelectionScreen.routename: (context) =>

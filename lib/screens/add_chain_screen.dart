@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:chain_activities/helpers/common_ui.dart';
 import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:chain_activities/screens/pixabay_selection_screen.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
@@ -507,6 +508,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
       //       .updateChain(tempChain);
       // }
     } else {
+      List<String?>? pixabayLinks = await getPixabayImageLinks();
       addActivity(
         ChainActivity(
           activity: Activity(
@@ -518,7 +520,12 @@ class _AddChainScreenState extends State<AddChainScreen> {
                 ? {
                     activitySpecImagePath: activityImageController.text,
                   }
-                : {},
+                : {
+                    activitySpecImagePath:
+                        pixabayLinks != null && pixabayLinks[0] != null
+                            ? pixabayLinks[0]
+                            : "",
+                  },
           ),
           activityDuration: Duration(
             hours: activityDurationHour,
@@ -546,6 +553,22 @@ class _AddChainScreenState extends State<AddChainScreen> {
       addingImageToActivity = false;
       processingRequest = false;
     });
+  }
+
+  Future<List<String?>?> getPixabayImageLinks() async {
+    PixabayMediaProvider api = PixabayMediaProvider(
+      apiKey: pixaBayApiKey,
+      language: "en",
+    );
+    PixabayResponse? result = await api.requestImagesWithKeyword(
+        keyword: addActivityController.text, resultsPerPage: 100);
+
+    if (result != null && result.hits != null && result.hits!.isNotEmpty) {
+      return result.hits!.map((hit) {
+        return hit.getDownloadLink();
+      }).toList();
+    }
+    return null;
   }
 
   String? validateMinuteOrSecond(String? value) {
@@ -838,22 +861,10 @@ class _AddChainScreenState extends State<AddChainScreen> {
 
                   try {
                     if (dialogResponse == true) {
-                      PixabayMediaProvider api = PixabayMediaProvider(
-                        apiKey: pixaBayApiKey,
-                        language: "en",
-                      );
-                      PixabayResponse? result =
-                          await api.requestImagesWithKeyword(
-                              keyword: addActivityController.text,
-                              resultsPerPage: 100);
+                      List<String?>? pixabayLinks =
+                          await getPixabayImageLinks();
 
-                      if (result != null &&
-                          result.hits != null &&
-                          result.hits!.isNotEmpty) {
-                        List<String?> pixabayLinks = result.hits!.map((hit) {
-                          return hit.getDownloadLink();
-                        }).toList();
-
+                      if (pixabayLinks != null) {
                         int? chosenPictureIndex = await nav.pushNamed(
                           PixabaySelectionScreen.routename,
                           arguments: {
@@ -953,65 +964,98 @@ class _AddChainScreenState extends State<AddChainScreen> {
         if (activityFormErrorString == "" &&
             activityImageController.text != "" &&
             activityImageController.text.startsWith("http"))
-          Container(
-            height: appWidth * 0.135,
-            width: appWidth * 0.135,
-            padding: EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              border: Border.all(),
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: activityImageController.text == ""
-                ? Image.asset(
-                    assetMap['noImagePlaceholder']!,
-                    fit: BoxFit.fitHeight,
-                  )
-                : activityImageController.text.startsWith("http")
-                    ? FadeInImage.assetNetwork(
-                        placeholder: assetMap["noImagePlaceholder"]!,
-                        image: activityImageController.text,
-                        fit: BoxFit.cover,
-                        imageErrorBuilder: (context, error, stackTrace) =>
-                            Image.asset(
-                          assetMap['noImagePlaceholder']!,
-                          fit: BoxFit.cover,
+          InkWell(
+            onTap: () async {
+              await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text(addActivityController.text),
+                    content:
+                        CommonUI().getImageByPath(activityImageController.text),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: Text(
+                          "Close",
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
                         ),
-                      )
-                    : Image.file(
-                        File(activityImageController.text),
-                        fit: BoxFit.cover,
                       ),
+                    ],
+                  );
+                },
+              );
+            },
+            child: Container(
+              height: appWidth * 0.135,
+              width: appWidth * 0.135,
+              padding: EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                border: Border.all(),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: CommonUI().getImageByPath(activityImageController.text),
+              // activityImageController.text == ""
+              //     ? Image.asset(
+              //         assetMap['noImagePlaceholder']!,
+              //         fit: BoxFit.fitHeight,
+              //       )
+              //     : activityImageController.text.startsWith("http")
+              //         ? FadeInImage.assetNetwork(
+              //             placeholder: assetMap["noImagePlaceholder"]!,
+              //             image: activityImageController.text,
+              //             fit: BoxFit.cover,
+              //             imageErrorBuilder: (context, error, stackTrace) =>
+              //                 Image.asset(
+              //               assetMap['noImagePlaceholder']!,
+              //               fit: BoxFit.cover,
+              //             ),
+              //           )
+              //         : Image.file(
+              //             File(activityImageController.text),
+              //             fit: BoxFit.cover,
+              //           ),
+            ),
           ),
         Expanded(
           child: activityImageController.text.startsWith("/")
-              ? Container(
-                  height: appWidth * 0.135,
-                  width: appWidth * 0.135,
-                  padding: EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    border: Border.all(),
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: activityImageController.text == ""
-                      ? Image.asset(
-                          assetMap['noImagePlaceholder']!,
-                          fit: BoxFit.fitHeight,
-                        )
-                      : activityImageController.text.startsWith("http")
-                          ? FadeInImage.assetNetwork(
-                              placeholder: assetMap["noImagePlaceholder"]!,
-                              image: activityImageController.text,
-                              fit: BoxFit.contain,
-                              imageErrorBuilder: (context, error, stackTrace) =>
-                                  Image.asset(
-                                assetMap['noImagePlaceholder']!,
-                                fit: BoxFit.contain,
+              ? InkWell(
+                  onTap: () async {
+                    await showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text(addActivityController.text),
+                          content: CommonUI()
+                              .getImageByPath(activityImageController.text),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: Text(
+                                "Close",
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
                               ),
-                            )
-                          : Image.file(
-                              File(activityImageController.text),
-                              fit: BoxFit.contain,
                             ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  child: Container(
+                    height: appWidth * 0.135,
+                    width: appWidth * 0.135,
+                    padding: EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      border: Border.all(),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child:
+                        CommonUI().getImageByPath(activityImageController.text),
+                  ),
                 )
               : TextFormField(
                   key: ValueKey(

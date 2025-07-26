@@ -4,10 +4,10 @@ import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/screens/add_chain_screen.dart';
 import 'package:chain_activities/screens/settings_screen.dart';
 import 'package:chain_activities/screens/view_chain_screen.dart';
+import 'package:chain_activities/tutorial/screens/chain_list_screen_tutorial.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:chain_activities/tutorial/screens/how_it_works.dart';
 import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -51,15 +51,15 @@ class AppDrawer extends StatelessWidget {
                 ListTile(
                   leading: const Icon(Icons.help),
                   title: Text(
-                    'What is ChainPlay?',
+                    'How it Works?',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   onTap: () {
                     while (Navigator.of(context).canPop()) {
                       Navigator.of(context).pop();
                     }
-                    Navigator.of(context)
-                        .pushReplacementNamed(HowItWorks.routename);
+                    Navigator.of(context).pushReplacementNamed(
+                        ChainListScreenTutorial.routename);
                   },
                 ),
                 //const Divider(),

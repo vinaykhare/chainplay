@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:chain_activities/helpers/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -177,5 +180,27 @@ class CommonUI {
         );
       },
     );
+  }
+
+  Widget getImageByPath(String imagePath) {
+    return imagePath == ""
+        ? Image.asset(
+            assetMap['noImagePlaceholder']!,
+            fit: BoxFit.fitHeight,
+          )
+        : imagePath.startsWith("http")
+            ? FadeInImage.assetNetwork(
+                placeholder: assetMap["noImagePlaceholder"]!,
+                image: imagePath,
+                fit: BoxFit.cover,
+                imageErrorBuilder: (context, error, stackTrace) => Image.asset(
+                  assetMap['noImagePlaceholder']!,
+                  fit: BoxFit.cover,
+                ),
+              )
+            : Image.file(
+                File(imagePath),
+                //fit: BoxFit.cover,
+              );
   }
 }
