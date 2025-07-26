@@ -1392,6 +1392,10 @@ class ChainList with ChangeNotifier {
   bool isTtsPlaying() {
     return notificationHelper.isTtsPlaying;
   }
+
+  bool isAppSoundEnabled() {
+    return notificationHelper.isAppSoundEnabled();
+  }
   // disposeAds() {
   //   for (int i = 0; i < adIndexInChains.length; i++) {
   //     chains[adIndexInChains[i]].dispose();

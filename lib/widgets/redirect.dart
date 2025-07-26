@@ -3,7 +3,7 @@
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/screens/chain_list_screen.dart';
-import 'package:chain_activities/tutorial/screens/how_it_works.dart';
+import 'package:chain_activities/screens/first_boot_screen.dart';
 import 'package:chain_activities/screens/load_screen.dart';
 import 'package:chain_activities/screens/play_chain_screen.dart';
 import 'package:chain_activities/screens/view_chain_screen.dart';
@@ -24,7 +24,7 @@ class Redirect extends StatelessWidget {
       builder: (context, snapshot) {
         // List<SystemSetting> systemSettings = chainList.systemSettings;
         // int showHelpEntryIndex = systemSettings.indexWhere(
-        //   (set) => set.key == showHelpOnNextBootKey,
+        //   (set) => set.key == firstBootKey,
         // );
 
         if (!chainList.configUpdated) {
@@ -34,7 +34,7 @@ class Redirect extends StatelessWidget {
             return const ViewChain();
           } else if (chainList.getSettingByKey(showHelpOnNextBootKey).value ==
               trueSettingValue) {
-            return const HowItWorks();
+            return const FirstBootScreen();
           } else if (chainList.notificationCameAs != null) {
             return const PlayChain();
           } else {

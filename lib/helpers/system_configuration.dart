@@ -7,7 +7,7 @@ import 'package:chain_activities/widgets/cat_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
-const int sqfLiteDBVersion = 1;
+const int sqfLiteDBVersion = 2;
 
 const sqlInitScript = [
   '''CREATE TABLE activity (
@@ -120,27 +120,6 @@ const sqlInitScript = [
       '$settingDataTypeHiddenBool'
     )
   ''',
-];
-
-// Constant Header Content
-
-List<Map<String, String>> headerSlideContent = [
-  {
-    "imageAsset": assetMap["logoImage"]!,
-    "imageNetwork": "",
-    "title": "ChainPlay",
-    "subtitle": "Chain the Activities and Play it",
-    "speech":
-        "Thanks for choosing Chain Play. Chain Play is a tool to Chain your activities and Play it. Lets undestand the major functions of Chain Play App with a quick tutorial. You have the option to skip this tutorial by pressing the Close button.",
-  },
-  // {
-  //   "imageAsset": assetMap["chains"]!,
-  //   "imageNetwork": "",
-  //   "title": "CHAINS",
-  //   "subtitle": "Runs in Background or Foreground",
-  //   "speech":
-  //       "Chain Play has multiple features to streamline your activities with chains.",
-  // },
 ];
 
 List<Map<String, dynamic>> getTutorialItemsByType(

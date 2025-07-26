@@ -126,8 +126,8 @@ class LocalNotificationService {
       int maxProgressVal, int progressVal) async {
     AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
-      "CAT_TEST_CHANNEL_2",
-      "CAT_TEST_CHANNEL_N2",
+      "CAT_PROD_CHANNEL_2",
+      "CAT_PROD_CHANNEL_N2",
       channelDescription: 'ChainPlay Channel',
       importance: Importance.max,
       priority: Priority.high,

@@ -97,17 +97,6 @@ class TutorialCoach {
         fontSize: 16,
         fontWeight: FontWeight.bold,
       ),
-      // skipWidget: ListTile(
-      //   tileColor: Colors.transparent,
-      //   title: SkipButton(
-      //     onPressed: null,
-      //   ),
-      //   subtitle: Text(
-      //     "You can Tap Anywhere on the screen to move to the Next Slide",
-      //     textAlign: TextAlign.center,
-      //     style: Theme.of(context).textTheme.titleSmall,
-      //   ),
-      // ),
       paddingFocus: 10,
       opacityShadow: 0.1,
       imageFilter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),

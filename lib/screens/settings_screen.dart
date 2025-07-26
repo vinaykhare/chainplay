@@ -1,6 +1,5 @@
 import 'package:chain_activities/helpers/constants.dart';
-import 'package:chain_activities/screens/activity_list_screen.dart';
-import 'package:chain_activities/tutorial/screens/how_it_works.dart';
+import 'package:chain_activities/tutorial/screens/chain_list_screen_tutorial.dart';
 import 'package:chain_activities/widgets/db_settings.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
@@ -113,7 +112,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           if (chainList.getSettingByKey(showHelpOnNextBootKey).value ==
               trueSettingValue) {
             await Navigator.of(context)
-                .pushReplacementNamed(HowItWorks.routename);
+                .pushReplacementNamed(ChainListScreenTutorial.routename);
           }
         },
         child: Scaffold(
@@ -125,6 +124,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 // const ResetApp(),
                 //const ShowBannerAd(),
+                Expanded(
+                  child: Center(
+                    child: Image.asset(
+                      assetMap["logoImage"]!,
+                      //fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Text(
@@ -136,24 +143,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text("Explore all User Activites"),
-                          ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    //fullscreenDialog: true,
-                                    builder: (context) {
-                                      return const ActivityListScreen();
-                                    },
-                                  ),
-                                );
-                              },
-                              child: const Icon(Icons.arrow_forward)),
-                        ],
-                      ),
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //   children: [
+                      //     const Text("Explore all User Activites"),
+                      //     ElevatedButton(
+                      //         onPressed: () {
+                      //           Navigator.of(context).push(
+                      //             MaterialPageRoute(
+                      //               //fullscreenDialog: true,
+                      //               builder: (context) {
+                      //                 return const ActivityListScreen();
+                      //               },
+                      //             ),
+                      //           );
+                      //         },
+                      //         child: const Icon(Icons.arrow_forward)),
+                      //   ],
+                      // ),
                       Divider(
                         color: Theme.of(context).primaryColor,
                       ),
@@ -188,9 +195,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
-                DbSettings(
-                  settings: settings,
-                  chainList: chainList,
+                Expanded(
+                  child: DbSettings(
+                      // settings: settings,
+                      // chainList: chainList,
+                      ),
                 ),
                 const ShowBannerAd(),
                 AppBar(
