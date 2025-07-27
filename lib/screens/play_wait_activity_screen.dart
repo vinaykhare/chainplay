@@ -395,39 +395,53 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                     ),
                 ],
               );
-              Widget activityImage = InkWell(
-                onTap: () => setState(() {
-                  setOrietation(!orientationLandScape);
-                }),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(50),
-                  child: Container(
-                    margin: const EdgeInsets.all(5),
-                    child: screenImage == null || screenImage == ""
-                        ? Image.asset(
-                            assetMap['logoImage']!,
-                            fit: BoxFit.fitHeight,
-                            //height: appHeight * 0.45,
-                          )
-                        : screenImage!.startsWith("http")
-                            ? FadeInImage.assetNetwork(
-                                placeholder: assetMap["logoImage"]!,
-                                image: screenImage!,
-                                // height: appHeight * 0.45,
-                                fit: BoxFit.cover,
-                                imageErrorBuilder:
-                                    (context, error, stackTrace) => Image.asset(
-                                  assetMap['logoImage']!,
+              Widget activityImage = Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(50),
+                    child: Container(
+                      margin: const EdgeInsets.all(5),
+                      child: screenImage == null || screenImage == ""
+                          ? Image.asset(
+                              assetMap['logoImage']!,
+                              fit: BoxFit.fitHeight,
+                              //height: appHeight * 0.45,
+                            )
+                          : screenImage!.startsWith("http")
+                              ? FadeInImage.assetNetwork(
+                                  placeholder: assetMap["logoImage"]!,
+                                  image: screenImage!,
+                                  // height: appHeight * 0.45,
                                   fit: BoxFit.cover,
+                                  imageErrorBuilder:
+                                      (context, error, stackTrace) =>
+                                          Image.asset(
+                                    assetMap['logoImage']!,
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                              : Image.file(
+                                  File(screenImage!),
+                                  // height: appHeight * 0.45,
+                                  fit: BoxFit.fitWidth,
                                 ),
-                              )
-                            : Image.file(
-                                File(screenImage!),
-                                // height: appHeight * 0.45,
-                                fit: BoxFit.fitWidth,
-                              ),
+                    ),
                   ),
-                ),
+                  Positioned(
+                    bottom: 10,
+                    right: 10,
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.screen_rotation,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          setOrietation(!orientationLandScape);
+                        });
+                      },
+                    ),
+                  ),
+                ],
               );
               return orientation == Orientation.landscape
                   ? Row(

@@ -60,8 +60,8 @@ class NotificationHelper {
     //   fromAsset: assetMap['beepAudio']!,
     // );
     final player = AudioPlayer();
-    player.setAsset(assetMap['beepAudio']!);
-
+    // player.setAsset(assetMap['beepAudio']!);
+    player.setAudioSource(AudioSource.asset(assetMap['beepAudio']!));
     player.play();
   }
 

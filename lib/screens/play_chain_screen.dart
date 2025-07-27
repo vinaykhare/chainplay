@@ -437,7 +437,9 @@ class _PlayChainState extends State<PlayChain> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              if (invokeCounter <= 0)
+                              if (invokeCounter <= 0 &&
+                                  chain.at != null &&
+                                  chain.at!.isAfter(DateTime.now()))
                                 CatTextButton(
                                   buttonLabel: "Cancel Schedule & Start Now",
                                   buttonAction: (chain.notificationId ==
