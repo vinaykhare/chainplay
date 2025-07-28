@@ -3,7 +3,6 @@ import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/screens/pixabay_selection_screen.dart';
 import 'package:chain_activities/screens/view_chain_screen.dart';
 import 'package:chain_activities/tutorial/screens/add_chain_screen_tutorial.dart';
-import 'package:chain_activities/tutorial/screens/chain_list_screen_tutorial.dart';
 import 'package:chain_activities/tutorial/screens/play_chain_screen_tutorial.dart';
 import 'package:chain_activities/tutorial/screens/play_wait_activity_screen_tutorial.dart';
 import 'package:chain_activities/tutorial/screens/view_chain_screen_tutorial.dart';
@@ -329,8 +328,6 @@ class ChainActivities extends StatelessWidget {
       navigatorKey: KeyHelper.navigatorKey,
       routes: {
         ChainListScreen.routename: (context) => const ChainListScreen(),
-        ChainListScreenTutorial.routename: (context) =>
-            const ChainListScreenTutorial(),
         AddChainScreen.routename: (context) => const AddChainScreen(),
         AddChainScreenTutorial.routename: (context) =>
             const AddChainScreenTutorial(),

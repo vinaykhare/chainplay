@@ -1,14 +1,18 @@
+import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/screens/search_chain_screen.dart';
+import 'package:chain_activities/tutorial/tutorial_coach.dart';
+import 'package:chain_activities/tutorial/widgets/list_of_chains_tutorial.dart';
 import 'package:chain_activities/widgets/chain_list_header.dart';
 import 'package:chain_activities/widgets/list_of_chains.dart';
 import 'package:chain_activities/widgets/no_chains_view.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/services.dart' hide KeyHelper;
 import 'package:provider/provider.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/widgets/app_drawer.dart';
 //import 'package:chain_activities/widgets/app_drawer.dart';
+import 'package:chain_activities/helpers/key_helper.dart';
 
 class ChainListScreen extends StatefulWidget {
   static String routename = "/chains";
@@ -21,7 +25,8 @@ class ChainListScreen extends StatefulWidget {
 
 class _ChainListScreenState extends State<ChainListScreen> {
   late ChainList chainList;
-  bool showFavorites = false, showRunning = false;
+  late List<Chain> chains;
+  bool showFavorites = false, showRunning = false, initPage = true;
   @override
   void initState() {
     super.initState();
@@ -34,13 +39,36 @@ class _ChainListScreenState extends State<ChainListScreen> {
   // late ChainList chainList;
   @override
   Widget build(BuildContext context) {
-    ChainList chainList = Provider.of<ChainList>(context, listen: true);
-    List<Chain> chains = chainList.chains;
+    if (initPage) {
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
+      chainList = Provider.of<ChainList>(context, listen: true);
+      chains = chainList.chains;
+
+      //tutorial
+
+      if (chainList.getSettingByKey(showHelpOnNextBootKey).value ==
+          trueSettingValue) {
+        TutorialCoach tutorialCoach = TutorialCoach(
+          chainList: chainList,
+          tutorialType: showHelpOnNextBootKey,
+        );
+        tutorialCoach.createTutorial(context);
+        chainList.speakText(
+            "This is the App's header with a Logo and Couple of Buttons to the right. Now press on the highlighted section over this and the following screens to move to the next slide of this tutorial.");
+        tutorialCoach.showTutorial(context);
+      }
+      initPage = false;
+    }
 
     final appBarWidget = AppBar(
       backgroundColor: Theme.of(context).primaryColor,
+      key: KeyHelper.chainListScreenAppBarkey,
       centerTitle: true,
       title: TextField(
+        key: KeyHelper.chainListSearchkey,
         keyboardType: TextInputType.none,
         cursorColor: Theme.of(context).cardColor,
         showCursor: false,
@@ -138,18 +166,32 @@ class _ChainListScreenState extends State<ChainListScreen> {
                     ),
                     child: Column(
                       children: [
-                        (chains.isNotEmpty)
-                            ? Expanded(
-                                child: ListOfChains(
+                        (chainList
+                                    .getSettingByKey(showHelpOnNextBootKey)
+                                    .value ==
+                                trueSettingValue)
+                            ? const Expanded(
+                                child: ListOfChainsTutorial(
                                   textFilter: null,
                                   showAd: true,
                                   showChainControlSummary: true,
                                   showChainInReverse: false,
-                                  showFavorites: showFavorites,
-                                  showRunning: showRunning,
+                                  showFavorites: false,
+                                  showRunning: false,
                                 ),
                               )
-                            : const Expanded(child: NoChainsView()),
+                            : (chains.isNotEmpty)
+                                ? Expanded(
+                                    child: ListOfChains(
+                                      textFilter: null,
+                                      showAd: true,
+                                      showChainControlSummary: true,
+                                      showChainInReverse: false,
+                                      showFavorites: showFavorites,
+                                      showRunning: showRunning,
+                                    ),
+                                  )
+                                : const Expanded(child: NoChainsView()),
                       ],
                     ),
                   ),
