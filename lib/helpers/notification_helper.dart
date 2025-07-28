@@ -6,7 +6,7 @@ import 'package:chain_activities/helpers/tts_state.dart';
 
 import 'package:chain_activities/models/system_setting.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:just_audio/just_audio.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class NotificationHelper {
   LocalNotificationService localNotificationService =
@@ -41,10 +41,20 @@ class NotificationHelper {
     return responsePayload;
   }
 
-  Future<int> scheduleNotification(DateTime chainAt, int notificationId,
-      String title, String body, Map<String, dynamic> payload) async {
+  Future<int> scheduleNotification(
+    DateTime chainAt,
+    int notificationId,
+    String title,
+    String body,
+    Map<String, dynamic> payload,
+  ) async {
     if (await localNotificationService.scheduleNotification(
-        chainAt, notificationId, title, body, payload)) {
+      chainAt,
+      notificationId,
+      title,
+      body,
+      payload,
+    )) {
       return notificationId;
     }
     return noValueInDB;
@@ -60,9 +70,9 @@ class NotificationHelper {
     //   fromAsset: assetMap['beepAudio']!,
     // );
     final player = AudioPlayer();
-    // player.setAsset(assetMap['beepAudio']!);
-    player.setAudioSource(AudioSource.asset(assetMap['beepAudio']!));
-    player.play();
+    // player.setAsset(assetMap['beepAudio']!); //just_audio
+    // player.setAudioSource(AudioSource.asset(assetMap['beepAudio']!)); //just_audio
+    await player.play(AssetSource(assetMap['beepAudio']!)); //audioplayers
   }
 
   Future<void> initTts() async {

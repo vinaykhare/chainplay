@@ -121,10 +121,7 @@ class _ViewChainTutorialState extends State<ViewChainTutorial> {
                             ),
                           ),
                           CircleAvatar(
-                            child: IconButton(
-                              onPressed: () {},
-                              icon: const Icon(Icons.history),
-                            ),
+                            child: Icon(Icons.alarm_outlined),
                           ),
                           CircleAvatar(
                             child: IconButton(
