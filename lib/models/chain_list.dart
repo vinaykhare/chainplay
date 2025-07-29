@@ -415,6 +415,10 @@ class ChainList with ChangeNotifier {
       [chain.title],
     );
 
+    await removeAllUnusedActivities(activities
+        .where((activity) => activity.type == waitActivityInDB)
+        .toList());
+
     notifyListeners();
   }
 
@@ -1012,6 +1016,12 @@ class ChainList with ChangeNotifier {
     updateActivityIndex(chain);
     chain.lastUpdatedAt = DateTime.now();
     await updateChain(chain);
+
+    //workaround to avoid leftover activities
+    await removeAllUnusedActivities(activities
+        .where((activity) => activity.type == waitActivityInDB)
+        .toList());
+
     notifyListeners();
   }
 
@@ -1035,6 +1045,9 @@ class ChainList with ChangeNotifier {
     int inUseCount = 0, notInUseCount = 0;
 
     for (Activity activity in activities) {
+      if (activity.type != waitActivityInDB) {
+        continue;
+      }
       bool activityFound = false;
       for (Chain chain in chains) {
         for (ChainActivity chainActivity in chain.activities) {

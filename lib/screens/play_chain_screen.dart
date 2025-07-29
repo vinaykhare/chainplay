@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:chain_activities/helpers/common_logic.dart';
 import 'package:chain_activities/helpers/common_ui.dart';
 import 'package:chain_activities/helpers/content_transformer.dart';
 import 'package:chain_activities/screens/view_chain_screen.dart';
@@ -30,6 +31,11 @@ class _PlayChainState extends State<PlayChain> {
   ChainActivity? chainActivityPaused;
   bool initializing = true, isLandScape = false;
   String? playChainAction;
+
+  Future<void> setOrietation(bool orientationLandScape) async {
+    await CommonLogic().setOrietation(orientationLandScape);
+    isLandScape = orientationLandScape;
+  }
 
   Future<void> playTheChain() async {
     dynamic popResponse;
@@ -79,20 +85,30 @@ class _PlayChainState extends State<PlayChain> {
       //     waitDuration.inSeconds > 0) {
       //   break;
       // }
+      String textToSpeak = chainActivity.activity.title;
 
-      String textToSpeak = chainActivity.activity.type == systemWaitActivityInDB
-          ? invokeCounter < chain.activities.length - 1
-              ? waitDuration.inSeconds > 0 && waitDuration.inSeconds <= 10
-                  ? "Take Rest"
-                  : "Take Rest. Next Activity will start ${ContentTransformer.durationToString(waitDuration)}."
-              : "Congratulations, all the chain activities are executed. Please choose, if you want to restart this chain, or, just mark it complete."
-          : waitDuration.inSeconds > 0 && waitDuration.inSeconds <= 10
-              ? chainActivity.activity.title
-              : "Activity ${chainActivity.activity.title} has started. It will complete ${ContentTransformer.durationToString(waitDuration)}.";
-      if (chainActivity.activityDurationLeft != null &&
-          waitDuration.inSeconds > 10 &&
-          playChainAction == playChainActionPause) {
-        textToSpeak += " after resuming.";
+      if (chainList.notificationHelper.isAppSoundEnabled()) {
+        textToSpeak = chainActivity.activity.type == systemWaitActivityInDB
+            ? invokeCounter < chain.activities.length - 1
+                ? waitDuration.inSeconds > 0 && waitDuration.inSeconds <= 10
+                    ? "Take Rest"
+                    : "Take Rest. Next Activity will start ${ContentTransformer.durationToString(waitDuration)}."
+                : "Congratulations, all the chain activities are executed. Please choose, if you want to restart this chain, or, just mark it complete."
+            : waitDuration.inSeconds > 0 && waitDuration.inSeconds <= 10
+                ? chainActivity.activity.title
+                : "Activity ${chainActivity.activity.title} has started. It will complete ${ContentTransformer.durationToString(waitDuration)}.";
+
+        if (chainActivity.activityDurationLeft != null &&
+            waitDuration.inSeconds > 10 &&
+            playChainAction == playChainActionPause) {
+          textToSpeak += " after resuming.";
+        }
+      } else {
+        textToSpeak = chainActivity.activity.type == systemWaitActivityInDB
+            ? invokeCounter < chain.activities.length - 1
+                ? "Take Rest"
+                : "Done"
+            : chainActivity.activity.title;
       }
 
       await chainList.speakTextWithoutWait(textToSpeak);
@@ -330,7 +346,7 @@ class _PlayChainState extends State<PlayChain> {
     double appHeight = MediaQuery.of(context).size.height -
         MediaQuery.of(context).viewPadding.top -
         MediaQuery.of(context).viewPadding.bottom;
-    double appWidth = MediaQuery.of(context).size.width - 16;
+    // double appWidth = MediaQuery.of(context).size.width - 16;
     return Semantics(
       label: "Play Chain Screen",
       child: Scaffold(
@@ -356,81 +372,75 @@ class _PlayChainState extends State<PlayChain> {
                   ),
                 ),
                 if (invokeCounter < chain.activities.length)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      CatTextButton(
-                        buttonLabel: "Stop",
-                        buttonAction: () async {
-                          NavigatorState nav = Navigator.of(context);
-                          bool? dialogResponse = await showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text("Confirm to Stop"),
-                                content: const Text(
-                                    "Are you sure about stopping this chain execution?"),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(true),
-                                    child: Text(
-                                      "Yes, I am Sure!",
-                                      style: TextStyle(
-                                        color:
-                                            Theme.of(context).colorScheme.error,
-                                      ),
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(false),
-                                    child: Text(
-                                      "No, my bad!",
-                                      style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .inverseSurface,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-
-                          if (dialogResponse == true) {
-                            chainList.stopChainExecution(parentChain);
-                            nav.pushReplacementNamed(
-                              ViewChain.routename,
-                              arguments: {
-                                "chain": parentChain,
-                              },
-                            );
-                          }
-                        },
-                        buttonIcon: Icons.stop_circle,
-                      ),
-                      Container(
-                        width: appWidth * 0.75,
-                        height: appHeight * 0.06,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context)
-                              .primaryColor
-                              .withValues(alpha: 0.3),
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(
-                              30,
-                            ),
-                            bottomLeft: Radius.circular(
-                              30,
+                  Container(
+                    decoration: BoxDecoration(
+                      color:
+                          Theme.of(context).primaryColor.withValues(alpha: 0.3),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                          // buttonLabel: "Stop",
+                          style: ButtonStyle(
+                            iconColor: WidgetStateProperty.resolveWith(
+                              (states) => Theme.of(context).colorScheme.error,
                             ),
                           ),
+                          // buttonAction :
+                          onPressed: () async {
+                            NavigatorState nav = Navigator.of(context);
+                            bool? dialogResponse = await showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text("Confirm to Stop"),
+                                  content: const Text(
+                                      "Are you sure about stopping this chain execution?"),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(true),
+                                      child: Text(
+                                        "Yes, I am Sure!",
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .error,
+                                        ),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(false),
+                                      child: Text(
+                                        "No, my bad!",
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .inverseSurface,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+
+                            if (dialogResponse == true) {
+                              chainList.stopChainExecution(parentChain);
+                              nav.pushReplacementNamed(
+                                ViewChain.routename,
+                                arguments: {
+                                  "chain": parentChain,
+                                },
+                              );
+                            }
+                          },
+                          // buttonIcon: Icons.stop_circle,
+                          icon: Icon(Icons.stop_circle),
                         ),
-                        child: SingleChildScrollView(
+                        SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
                             mainAxisSize: MainAxisSize.max,
@@ -494,8 +504,23 @@ class _PlayChainState extends State<PlayChain> {
                             ],
                           ),
                         ),
-                      )
-                    ],
+                        IconButton(
+                          style: ButtonStyle(
+                            iconColor: WidgetStateProperty.resolveWith(
+                              (states) => Theme.of(context).colorScheme.error,
+                            ),
+                          ),
+                          icon: Icon(
+                            Icons.screen_rotation_outlined,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              setOrietation(!isLandScape);
+                            });
+                          },
+                        ),
+                      ],
+                    ),
                   ),
               ],
             ),

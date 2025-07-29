@@ -54,12 +54,14 @@ class AppDrawer extends StatelessWidget {
                     'How it Works?',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  onTap: () {
+                  onTap: () async {
                     while (Navigator.of(context).canPop()) {
                       Navigator.of(context).pop();
                     }
-                    Navigator.of(context).pushReplacementNamed(
-                        ChainListScreenTutorial.routename);
+                    NavigatorState nav = Navigator.of(context);
+                    await Provider.of<ChainList>(context, listen: false)
+                        .loadSampleChainsFromAssets();
+                    nav.pushReplacementNamed(ChainListScreenTutorial.routename);
                   },
                 ),
                 //const Divider(),

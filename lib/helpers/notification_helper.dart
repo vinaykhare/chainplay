@@ -113,17 +113,16 @@ class NotificationHelper {
   }
 
   Future<void> speakTextWithoutWait(String text) async {
-    if (isAppSoundEnabled() && !speakerInitialized) {
+    if (!speakerInitialized) {
       await initTts();
       speakerInitialized = true;
     }
-    if (isAppSoundEnabled()) {
-      flutterTts!.speak(text);
-    }
+
+    flutterTts!.speak(text);
   }
 
   Future<dynamic> stopSpeech() async {
-    if (isAppSoundEnabled() && flutterTts != null) {
+    if (flutterTts != null) {
       var result = await flutterTts!.stop();
       if (result == 1) {
         ttsState = TtsState.stopped;

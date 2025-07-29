@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:chain_activities/helpers/common_logic.dart';
 import 'package:chain_activities/helpers/common_ui.dart';
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/helpers/notification_helper.dart';
@@ -12,7 +13,6 @@ import 'package:chain_activities/helpers/content_transformer.dart';
 import 'package:chain_activities/models/chain_activity.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/models/system_setting.dart';
-import 'package:flutter/services.dart';
 
 class PlayWaitActivity extends StatefulWidget {
   static String routename = "run_activity";
@@ -39,53 +39,15 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
   // String? textToSpeak;
   int playScreenType = waitActivityInDB;
 
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-
-  //   if (!speechPlayed && textToSpeak != null && textToSpeak!.isNotEmpty) {
-  //     speak();
-  //     speechPlayed = true;
-  //   }
-  // }
-
   @override
   void dispose() {
     super.dispose();
-    // setOrietation(false);
     if (countdownTimer != null) countdownTimer?.cancel();
   }
 
-  // Future<void> speak() async {
-  //   chainList = Provider.of<ChainList>(context, listen: false);
-  //   isNotPlaying = chainList.isTtsPlaying();
-  //   isNotPlaying = await chainList.stopSpeech();
-
-  //   isNotPlaying = chainList.isTtsPlaying();
-  //   isNotPlaying = await chainList.speakText(
-  //     textToSpeak!,
-  //   );
-  //   isNotPlaying = chainList.isTtsPlaying();
-  // }
-
   Future<void> setOrietation(bool isLandscape) async {
-    if (isLandscape) {
-      await SystemChrome.setPreferredOrientations(
-        [
-          DeviceOrientation.landscapeLeft,
-          DeviceOrientation.landscapeRight,
-        ],
-      );
-      orientationLandScape = true;
-    } else {
-      await SystemChrome.setPreferredOrientations(
-        [
-          DeviceOrientation.portraitUp,
-          DeviceOrientation.portraitDown,
-        ],
-      );
-      orientationLandScape = false;
-    }
+    await CommonLogic().setOrietation(isLandscape);
+    orientationLandScape = isLandscape;
   }
 
   Future<void> setCountDown() async {
@@ -93,13 +55,19 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
     NavigatorState nav = Navigator.of(context);
     ChainList chainList = Provider.of<ChainList>(context, listen: false);
 
-    if (seconds == 3) {
-      await chainList.speakTextWithoutWait("3");
-    } else if (seconds == 2) {
-      await chainList.speakTextWithoutWait("2");
-    } else if (seconds == 1) {
-      await chainList.speakTextWithoutWait("1");
-      await chainList.playNotificationSound();
+    if (chainList.notificationHelper.isAppSoundEnabled()) {
+      if (seconds == 3) {
+        await chainList.speakTextWithoutWait("3");
+      } else if (seconds == 2) {
+        await chainList.speakTextWithoutWait("2");
+      } else if (seconds == 1) {
+        await chainList.speakTextWithoutWait("1");
+        await chainList.playNotificationSound();
+      }
+    } else {
+      if (seconds == 1) {
+        await chainList.playNotificationSound();
+      }
     }
 
     if (seconds < 1) {
@@ -175,15 +143,6 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
   @override
   Widget build(BuildContext context) {
     if (initializing) {
-      // systemSettings =
-      //     Provider.of<ChainList>(context, listen: false).systemSettings;
-      // SystemSetting appSoundSetting =
-      //     systemSettings.firstWhere((set) => set.key == appSoundSettingKey);
-      // appSoundEnabled = appSoundSetting.value == trueSettingValue;
-      // chain = ModalRoute.of(context)?.settings.arguments as Chain;
-      // activities = chain.activities.toList();
-      // updateWaitDuration();
-      // nextActivity();
       Map<String, dynamic> input =
           ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
       initialWaitDuration = waitDuration = input["waitDuration"];
@@ -194,7 +153,6 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
       orientationLandScape = input["orientationLandScape"] ?? false;
 
       setOrietation(orientationLandScape);
-      // textToSpeak = input["textToSpeak"];
       switch (playScreenType) {
         case systemWaitActivityInDB:
           title = "Rest";
@@ -237,7 +195,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
     //     MediaQuery.of(context).viewPadding.top -
     //     MediaQuery.of(context).viewPadding.bottom;
 
-    // double appWidth = MediaQuery.of(context).size.width;
+    double appWidth = MediaQuery.of(context).size.width;
 
     return PopScope(
       canPop: false,
@@ -246,165 +204,167 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
         child: Scaffold(
           body: SafeArea(
             child: OrientationBuilder(builder: (context, orientation) {
-              Widget activityContent = Column(
-                children: [
-                  Text(
-                    title ?? "Generic Activity",
-                    style: Theme.of(context).textTheme.headlineMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  if (playScreenType != systemEndActivityInDB)
+              Widget activityContent = SingleChildScrollView(
+                child: Column(
+                  children: [
                     Text(
-                      "will compelte\n$timeLeft\n${(hours != 0 || minutes != 0) && seconds != 0 ? 'and' : ''}",
-                      style: Theme.of(context).textTheme.headlineSmall,
+                      title ?? "Generic Activity",
+                      style: Theme.of(context).textTheme.headlineMedium,
                       textAlign: TextAlign.center,
                     ),
-                  if (playScreenType != systemEndActivityInDB)
-                    InkWell(
-                      onTap: interruptAndCompleteActivity,
-                      child: CircleAvatar(
-                        radius: 50,
-                        backgroundColor:
-                            playScreenType == systemWaitActivityInDB
-                                ? Theme.of(context).focusColor
-                                : Theme.of(context).canvasColor,
-                        child: FittedBox(
-                          child: Text(
-                            displaySeconds,
-                            style: Theme.of(context).textTheme.headlineMedium,
-                            textAlign: TextAlign.center,
+                    if (playScreenType != systemEndActivityInDB)
+                      Text(
+                        "will compelte\n$timeLeft\n${(hours != 0 || minutes != 0) && seconds != 0 ? 'and' : ''}",
+                        style: Theme.of(context).textTheme.headlineSmall,
+                        textAlign: TextAlign.center,
+                      ),
+                    if (playScreenType != systemEndActivityInDB)
+                      InkWell(
+                        onTap: interruptAndCompleteActivity,
+                        child: CircleAvatar(
+                          radius: 50,
+                          backgroundColor:
+                              playScreenType == systemWaitActivityInDB
+                                  ? Theme.of(context).focusColor
+                                  : Theme.of(context).canvasColor,
+                          child: FittedBox(
+                            child: Text(
+                              displaySeconds,
+                              style: Theme.of(context).textTheme.headlineMedium,
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                         ),
-                      ),
-                    )
-                  else
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        // mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              CatButton(
-                                buttonLabel: "Restart this Chain",
-                                buttonIcon: Icons.restart_alt,
-                                buttonAction: () async {
-                                  await completeTheChain(
-                                      chainActivityCompletionMessageRestart);
-                                },
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              CatButton(
-                                buttonLabel: "Start it a Little Later",
-                                buttonIcon: Icons.schedule,
-                                buttonAction: () async {
-                                  ScaffoldMessengerState scms =
-                                      ScaffoldMessenger.of(context);
-
-                                  DateTime? chainStartTime;
-                                  chainStartTime =
-                                      await CommonUI().getDateTimeDialog(
-                                    context,
-                                    chainStartTime,
-                                  );
-                                  if (chainStartTime == null) {
-                                    return;
-                                  }
-                                  if (chainStartTime.isBefore(DateTime.now())) {
-                                    chainStartTime = null;
-                                    return;
-                                  }
-
-                                  bool permissionGranted =
-                                      await NotificationHelper()
-                                          .localNotificationService
-                                          .askNotificationPermission();
-                                  if (permissionGranted) {
+                      )
+                    else
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          // mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                CatButton(
+                                  buttonLabel: "Restart this Chain",
+                                  buttonIcon: Icons.restart_alt,
+                                  buttonAction: () async {
                                     await completeTheChain(
-                                      chainActivityCompletionMessageRestart,
+                                        chainActivityCompletionMessageRestart);
+                                  },
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                CatButton(
+                                  buttonLabel: "Start it a Little Later",
+                                  buttonIcon: Icons.schedule,
+                                  buttonAction: () async {
+                                    ScaffoldMessengerState scms =
+                                        ScaffoldMessenger.of(context);
+
+                                    DateTime? chainStartTime;
+                                    chainStartTime =
+                                        await CommonUI().getDateTimeDialog(
+                                      context,
                                       chainStartTime,
                                     );
-                                  } else {
-                                    scms.showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          "Please allow notification permission to schedule the next activity.",
+                                    if (chainStartTime == null) {
+                                      return;
+                                    }
+                                    if (chainStartTime
+                                        .isBefore(DateTime.now())) {
+                                      chainStartTime = null;
+                                      return;
+                                    }
+
+                                    bool permissionGranted =
+                                        await NotificationHelper()
+                                            .localNotificationService
+                                            .askNotificationPermission();
+                                    if (permissionGranted) {
+                                      await completeTheChain(
+                                        chainActivityCompletionMessageRestart,
+                                        chainStartTime,
+                                      );
+                                    } else {
+                                      scms.showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            "Please allow notification permission to schedule the next activity.",
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                    return;
-                                  }
-                                },
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              CatButton(
-                                buttonLabel: "Done for now",
-                                buttonIcon: Icons.done,
-                                buttonAction: interruptAndCompleteActivity,
-                              ),
-                            ],
-                          ),
-                        ],
+                                      );
+                                      return;
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                CatButton(
+                                  buttonLabel: "Done for now",
+                                  buttonIcon: Icons.done,
+                                  buttonAction: interruptAndCompleteActivity,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  if (waitDuration.inSeconds != 0)
-                    Text(
-                      "Seconds.",
-                      style: Theme.of(context).textTheme.headlineSmall,
-                      textAlign: TextAlign.center,
-                    ),
-                  if (orientation == Orientation.portrait &&
-                      waitDuration.inSeconds != 0)
-                    ElevatedButton.icon(
-                      label: const Text("Go Back & Notify when done"),
-                      onPressed: () {
-                        Navigator.of(context).pop({
-                          "running": false, //running,
-                          "waitDuration": waitDuration,
-                          "interruptAndCompleted": false,
-                          "resumedAt": resumedAt,
-                          "notify": true,
-                          "orientationLandScape": orientationLandScape,
-                          "completionMessage": null,
-                        });
-                      },
-                      icon: Icon(
-                        Icons.notification_add,
+                    if (waitDuration.inSeconds != 0)
+                      Text(
+                        "Seconds.",
+                        style: Theme.of(context).textTheme.headlineSmall,
+                        textAlign: TextAlign.center,
                       ),
-                    ),
-                  if (orientation == Orientation.portrait)
-                    Container(
-                      margin: const EdgeInsets.all(5),
-                      padding: const EdgeInsets.only(bottom: 5),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Theme.of(context).cardColor,
+                    if (waitDuration.inSeconds != 0)
+                      ElevatedButton.icon(
+                        label: const Text("Go Back & Notify when done"),
+                        onPressed: () {
+                          Navigator.of(context).pop({
+                            "running": false, //running,
+                            "waitDuration": waitDuration,
+                            "interruptAndCompleted": false,
+                            "resumedAt": resumedAt,
+                            "notify": true,
+                            "orientationLandScape": orientationLandScape,
+                            "completionMessage": null,
+                          });
+                        },
+                        icon: Icon(
+                          Icons.notification_add,
+                        ),
                       ),
-                      child: const ShowBannerAd(),
-                    ),
-                ],
+                    if (orientation == Orientation.portrait)
+                      Container(
+                        margin: const EdgeInsets.all(5),
+                        padding: const EdgeInsets.only(bottom: 5),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Theme.of(context).cardColor,
+                        ),
+                        child: const ShowBannerAd(),
+                      ),
+                  ],
+                ),
               );
-              Widget activityImage = Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(50),
-                    child: Container(
-                      margin: const EdgeInsets.all(5),
+              Widget activityImage = Container(
+                margin: const EdgeInsets.all(5),
+                width: appWidth,
+                child: Stack(
+                  children: [
+                    Center(
                       child: screenImage == null || screenImage == ""
                           ? Image.asset(
                               assetMap['logoImage']!,
-                              fit: BoxFit.fitHeight,
+                              // fit: BoxFit.fitHeight,
                               //height: appHeight * 0.45,
                             )
                           : screenImage!.startsWith("http")
@@ -412,36 +372,39 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                                   placeholder: assetMap["logoImage"]!,
                                   image: screenImage!,
                                   // height: appHeight * 0.45,
-                                  fit: BoxFit.cover,
+                                  //fit: BoxFit.cover,
                                   imageErrorBuilder:
                                       (context, error, stackTrace) =>
                                           Image.asset(
                                     assetMap['logoImage']!,
-                                    fit: BoxFit.cover,
+                                    // fit: BoxFit.cover,
                                   ),
                                 )
                               : Image.file(
                                   File(screenImage!),
                                   // height: appHeight * 0.45,
-                                  fit: BoxFit.fitWidth,
+                                  // fit: BoxFit.fitWidth,
                                 ),
                     ),
-                  ),
-                  Positioned(
-                    bottom: 10,
-                    right: 10,
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.screen_rotation,
+                    Positioned(
+                      bottom: 10,
+                      right: 10,
+                      child: IconButton(
+                        style: IconButton.styleFrom(
+                          backgroundColor: Theme.of(context).cardColor,
+                        ),
+                        icon: Icon(
+                          Icons.screen_rotation,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            setOrietation(!orientationLandScape);
+                          });
+                        },
                       ),
-                      onPressed: () {
-                        setState(() {
-                          setOrietation(!orientationLandScape);
-                        });
-                      },
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
               return orientation == Orientation.landscape
                   ? Row(
@@ -451,9 +414,16 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                         Expanded(
                           child: activityImage,
                         ),
-                        Expanded(
-                          child: activityContent,
-                        ),
+                        if (playScreenType != systemEndActivityInDB)
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: appWidth * 0.05),
+                            child: activityContent,
+                          )
+                        else
+                          Expanded(
+                            child: activityContent,
+                          ),
                       ],
                     )
                   : Column(
@@ -493,20 +463,6 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                     ],
                   ),
                 ),
-                // IconButton(
-                //   onPressed: () {
-                //     Navigator.of(context).pop({
-                //       "running": false, //running,
-                //       "waitDuration": waitDuration,
-                //       "interruptAndCompleted": false,
-                //       "resumedAt": resumedAt,
-                //       "orientationLandScape": orientationLandScape,
-                //     });
-                //   },
-                //   icon: const Icon(
-                //     Icons.arrow_back,
-                //   ),
-                // ),
                 if (showPlayPause)
                   Expanded(
                     child: IconButton(
@@ -555,14 +511,6 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                     ],
                   ),
                 ),
-                // IconButton(
-                //   onPressed: interruptAndCompleteActivity,
-                //   icon: Icon(
-                //     playScreenType == systemEndActivityInDB
-                //         ? Icons.done
-                //         : Icons.arrow_forward,
-                //   ),
-                // ),
               ],
             ),
           ),

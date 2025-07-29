@@ -21,70 +21,70 @@ class _SettingsScreenState extends State<SettingsScreen> {
   late Map<String, int> activitiesCount;
   List<SystemSetting> settings = [];
 
-  Future<void> clearUnusedActivities() async {
-    {
-      //NavigatorState nav = Navigator.of(context);
-      ScaffoldMessengerState scms = ScaffoldMessenger.of(context);
+  // Future<void> clearUnusedActivities() async {
+  //   {
+  //     //NavigatorState nav = Navigator.of(context);
+  //     ScaffoldMessengerState scms = ScaffoldMessenger.of(context);
 
-      bool? dialogResponse = await showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text("Confirm Deletion"),
-            content: const Text(
-                "Are you sure about clearing all unused activities?"),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text(
-                  "Yes!",
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.error,
-                  ),
-                ),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text(
-                  "No, chose this option by mistake.",
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.inverseSurface,
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
-      );
+  //     bool? dialogResponse = await showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return AlertDialog(
+  //           title: const Text("Confirm Deletion"),
+  //           content: const Text(
+  //               "Are you sure about clearing all unused activities?"),
+  //           actions: <Widget>[
+  //             TextButton(
+  //               onPressed: () => Navigator.of(context).pop(true),
+  //               child: Text(
+  //                 "Yes!",
+  //                 style: TextStyle(
+  //                   color: Theme.of(context).colorScheme.error,
+  //                 ),
+  //               ),
+  //             ),
+  //             TextButton(
+  //               onPressed: () => Navigator.of(context).pop(false),
+  //               child: Text(
+  //                 "No, chose this option by mistake.",
+  //                 style: TextStyle(
+  //                   color: Theme.of(context).colorScheme.inverseSurface,
+  //                 ),
+  //               ),
+  //             ),
+  //           ],
+  //         );
+  //       },
+  //     );
 
-      if (dialogResponse == true) {
-        bool removed = await chainList.removeAllUnusedActivities(chainList
-            .activities
-            .where((activity) => activity.type == waitActivityInDB)
-            .toList());
+  //     if (dialogResponse == true) {
+  //       bool removed = await chainList.removeAllUnusedActivities(chainList
+  //           .activities
+  //           .where((activity) => activity.type == waitActivityInDB)
+  //           .toList());
 
-        scms.showSnackBar(
-          SnackBar(
-            // backgroundColor: theme.primaryColor,
-            content: Text(
-              //e.toString(),
-              removed
-                  ? "All Unused User Created Activities are deleted"
-                  : "Failed to delete the Unused User created activities",
-              // style: theme.textTheme.titleMedium,
-              textAlign: TextAlign.center,
-            ),
-            duration: const Duration(seconds: 10),
-            action: SnackBarAction(
-              //textColor: Colors.white,
-              label: 'OK',
-              onPressed: () {},
-            ),
-          ),
-        );
-      }
-    }
-  }
+  //       scms.showSnackBar(
+  //         SnackBar(
+  //           // backgroundColor: theme.primaryColor,
+  //           content: Text(
+  //             //e.toString(),
+  //             removed
+  //                 ? "All Unused User Created Activities are deleted"
+  //                 : "Failed to delete the Unused User created activities",
+  //             // style: theme.textTheme.titleMedium,
+  //             textAlign: TextAlign.center,
+  //           ),
+  //           duration: const Duration(seconds: 10),
+  //           action: SnackBarAction(
+  //             //textColor: Colors.white,
+  //             label: 'OK',
+  //             onPressed: () {},
+  //           ),
+  //         ),
+  //       );
+  //     }
+  //   }
+  // }
 
   @override
   void didChangeDependencies() {
@@ -132,62 +132,62 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Text(
-                    "Manage Activities",
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    children: [
-                      // Row(
-                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      //   children: [
-                      //     const Text("Explore all User Activites"),
-                      //     ElevatedButton(
-                      //         onPressed: () {
-                      //           Navigator.of(context).push(
-                      //             MaterialPageRoute(
-                      //               //fullscreenDialog: true,
-                      //               builder: (context) {
-                      //                 return const ActivityListScreen();
-                      //               },
-                      //             ),
-                      //           );
-                      //         },
-                      //         child: const Icon(Icons.arrow_forward)),
-                      //   ],
-                      // ),
-                      Divider(
-                        color: Theme.of(context).primaryColor,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(activitiesCount[notInUse]! > 0
-                              ? "Clear ${activitiesCount[notInUse]} User Created Activities\nthat are not in use"
-                              : "All User Created activites\nare in use."),
-                          if (activitiesCount[notInUse]! > 0)
-                            ElevatedButton(
-                              onPressed: clearUnusedActivities,
-                              child: const Icon(Icons.clear_all),
-                            )
-                          else
-                            const ElevatedButton(
-                              onPressed: null,
-                              child: Icon(Icons.done),
-                            ),
-                        ],
-                      ),
-                      Divider(
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ],
-                  ),
-                ),
+                // Padding(
+                //   padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                //   child: Text(
+                //     "Manage Activities",
+                //     style: Theme.of(context).textTheme.titleMedium,
+                //   ),
+                // ),
+                // Padding(
+                //   padding: const EdgeInsets.symmetric(horizontal: 20),
+                //   child: Column(
+                //     children: [
+                //       // Row(
+                //       //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //       //   children: [
+                //       //     const Text("Explore all User Activites"),
+                //       //     ElevatedButton(
+                //       //         onPressed: () {
+                //       //           Navigator.of(context).push(
+                //       //             MaterialPageRoute(
+                //       //               //fullscreenDialog: true,
+                //       //               builder: (context) {
+                //       //                 return const ActivityListScreen();
+                //       //               },
+                //       //             ),
+                //       //           );
+                //       //         },
+                //       //         child: const Icon(Icons.arrow_forward)),
+                //       //   ],
+                //       // ),
+                //       Divider(
+                //         color: Theme.of(context).primaryColor,
+                //       ),
+                //       Row(
+                //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //         children: [
+                //           Text(activitiesCount[notInUse]! > 0
+                //               ? "Clear ${activitiesCount[notInUse]} User Created Activities\nthat are not in use"
+                //               : "All User Created activites\nare in use."),
+                //           if (activitiesCount[notInUse]! > 0)
+                //             ElevatedButton(
+                //               onPressed: clearUnusedActivities,
+                //               child: const Icon(Icons.clear_all),
+                //             )
+                //           else
+                //             const ElevatedButton(
+                //               onPressed: null,
+                //               child: Icon(Icons.done),
+                //             ),
+                //         ],
+                //       ),
+                //       Divider(
+                //         color: Theme.of(context).primaryColor,
+                //       ),
+                //     ],
+                //   ),
+                // ),
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Text(
