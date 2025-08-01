@@ -119,40 +119,45 @@ class _ChainListScreenTutorialState extends State<ChainListScreenTutorial> {
         child: Scaffold(
           drawer: const AppDrawer(),
           body: SafeArea(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const ChainListHeaderTutorial(),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(5),
-                    margin: const EdgeInsets.symmetric(horizontal: 8),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
-                      borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(30),
-                          topRight: Radius.circular(30)),
-                    ),
-                    child: Column(
-                      children: [
-                        (chains.isNotEmpty)
-                            ? const Expanded(
-                                child: ListOfChainsTutorial(
-                                  textFilter: null,
-                                  showAd: true,
-                                  showChainControlSummary: true,
-                                  showChainInReverse: false,
-                                  showFavorites: false,
-                                  showRunning: false,
-                                ),
-                              )
-                            : const Expanded(child: NoChainsView()),
-                      ],
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const ChainListHeaderTutorial(),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(5),
+                      margin: const EdgeInsets.symmetric(horizontal: 8),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor,
+                        borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(30),
+                            topRight: Radius.circular(30)),
+                      ),
+                      child: Column(
+                        children: [
+                          (chains.isNotEmpty)
+                              ? const Expanded(
+                                  child: ListOfChainsTutorial(
+                                    textFilter: null,
+                                    showAd: true,
+                                    showChainControlSummary: true,
+                                    showChainInReverse: false,
+                                    showFavorites: false,
+                                    showRunning: false,
+                                  ),
+                                )
+                              : const Expanded(child: NoChainsView()),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                appBarWidget,
-              ],
+                  appBarWidget,
+                ],
+              ),
             ),
           ),
         ),

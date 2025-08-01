@@ -34,7 +34,7 @@ class _FirstBootScreenState extends State<FirstBootScreen> {
     if (initConfig) {
       chainList = Provider.of<ChainList>(context, listen: false);
       // chainList.showHelpOnNextLoad();
-      chainList.loadSampleChainsFromAssets();
+      //  chainList.loadSampleChainsForTutorial();
       initConfig = false;
     }
     double appHeight = MediaQuery.of(context).size.height -
@@ -96,6 +96,7 @@ class _FirstBootScreenState extends State<FirstBootScreen> {
                         await chainList.setSetting(
                             showHelpOnNextBootKey, falseSettingValue);
                         await chainList.stopSpeech();
+                        await chainList.loadSampleChainsForTutorial();
                         nav.pushReplacementNamed(
                             ChainListScreenTutorial.routename);
                       },

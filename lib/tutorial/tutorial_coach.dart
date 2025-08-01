@@ -137,10 +137,8 @@ class TutorialCoach {
   void endTutorial(BuildContext context) {
     chainList.stopSpeech();
     chainList.setSetting(tutorialType, falseSettingValue);
-    // chainList.dontShowHelpOnNextLoad();
-    // chainList.showHelpOnNextLoad();
-    chainList.stopChainExecution(sampleWorkoutChain);
-    chainList.loadSampleChainsFromAssets();
+    chainList.stopChainExecution(sampleWorkoutChain, false);
+    chainList.refresh();
     while (Navigator.of(context).canPop()) {
       Navigator.of(context).pop();
     }
@@ -180,6 +178,9 @@ class TutorialCoach {
           break;
         }
         navToViewChainCompleted = true;
+        sampleWorkoutChain = chainList.chains.firstWhere(
+            (chainElement) => chainElement.title == sampleWorkoutChainTitle,
+            orElse: () => Chain());
         Navigator.of(context)
             .pushNamed(ViewChainTutorial.routename, arguments: {
           "chain": sampleWorkoutChain,
@@ -193,7 +194,7 @@ class TutorialCoach {
         navToAddChainCompleted = true;
         NavigatorState nav = Navigator.of(context);
         sampleWorkoutChain.edit = true;
-        await chainList.updateChain(sampleWorkoutChain, false);
+        await chainList.updateChain(sampleWorkoutChain, false, false);
         await nav.pushNamed(
           AddChainScreenTutorial.routename,
           arguments: sampleWorkoutChain,
@@ -206,7 +207,7 @@ class TutorialCoach {
         navBackToViewChainCompleted = true;
         NavigatorState nav = Navigator.of(context);
         sampleWorkoutChain.edit = false;
-        await chainList.updateChain(sampleWorkoutChain, false);
+        await chainList.updateChain(sampleWorkoutChain, false, false);
         nav.pop();
         break;
       case idToPlayChain:
@@ -216,7 +217,7 @@ class TutorialCoach {
         navToPlayChainCompleted = true;
         NavigatorState nav = Navigator.of(context);
         Chain chainExecution =
-            await chainList.startChainExecution(sampleWorkoutChain);
+            await chainList.startChainExecution(sampleWorkoutChain, false);
         int runningChainActivityIndex =
             chainList.getRunningChainActivityIndex(chainExecution);
         await nav.pushNamed(
@@ -279,7 +280,7 @@ class TutorialCoach {
           break;
         }
         navToComeBackToHome = true;
-        await chainList.stopChainExecution(sampleWorkoutChain);
+        await chainList.stopChainExecution(sampleWorkoutChain, false);
         break;
       default:
       // NavigatorState nav = Navigator.of(context);

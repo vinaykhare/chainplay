@@ -84,8 +84,8 @@ Add, Chain, Execute, Custom, Run, Sequence, Clock, Timer, Schedule, Activities, 
 
 # Release Notes:
 
-1. App is renamed to ChainPlay from CAT.
-2. Color themeing is update to make the App light.
-3. Add Chain screen is improvised in many aspects including the support og pixabay to choose images, popup ui to select the timer etc.
+1. Android Target Level Update
+2. Schedule Chain option is added
+3. Inroduced the option to play chain in landsacpe mode too.
 4. Upgraded the app to Latest Flutter version along with latest compatible dependencies.
 5. Bug Fixes

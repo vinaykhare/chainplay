@@ -21,18 +21,22 @@ class ChainListHeaderTutorial extends StatelessWidget {
       children: [
         Expanded(
           child: ListTile(
-            leading: Image.asset(
-              assetMap["logoImage"]!,
-              key: KeyHelper.chainAndPlayTitle,
-            ),
-            title: const Text(
-              "ChainPlay",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
+            leading: InkWell(
+              child: Image.asset(
+                key: KeyHelper.chainAndPlayTitle,
+                assetMap["logoImage"]!,
               ),
+              onTap: () {},
             ),
-            subtitle: const Text(
+            title: Text(
+              "ChainPlay",
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            subtitle: Text(
               "CHAIN THE ACTIVITIES\n& PLAY IT",
+              style: Theme.of(context).textTheme.titleSmall,
             ),
           ),
         ),

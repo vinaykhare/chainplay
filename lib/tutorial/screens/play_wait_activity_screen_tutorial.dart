@@ -187,30 +187,50 @@ class _PlayWaitActivityTutorialState extends State<PlayWaitActivityTutorial> {
                     borderRadius: BorderRadius.circular(50),
                     child: Container(
                       margin: const EdgeInsets.all(5),
-                      child: screenImage == null || screenImage == ""
-                          ? Image.asset(
-                              assetMap['logoImage']!,
-                              fit: BoxFit.fitHeight,
-                              height: appHeight * 0.45,
-                            )
-                          : screenImage!.startsWith("http")
-                              ? FadeInImage.assetNetwork(
-                                  placeholder: assetMap["logoImage"]!,
-                                  image: screenImage!,
-                                  height: appHeight * 0.45,
-                                  fit: BoxFit.cover,
-                                  imageErrorBuilder:
-                                      (context, error, stackTrace) =>
-                                          Image.asset(
+                      child: Stack(
+                        children: [
+                          Center(
+                            child: screenImage == null || screenImage == ""
+                                ? Image.asset(
                                     assetMap['logoImage']!,
-                                    fit: BoxFit.cover,
-                                  ),
-                                )
-                              : Image.file(
-                                  File(screenImage!),
-                                  height: appHeight * 0.45,
-                                  fit: BoxFit.cover,
-                                ),
+                                    fit: BoxFit.fitHeight,
+                                    height: appHeight * 0.45,
+                                  )
+                                : screenImage!.startsWith("http")
+                                    ? FadeInImage.assetNetwork(
+                                        placeholder: assetMap["logoImage"]!,
+                                        image: screenImage!,
+                                        height: appHeight * 0.45,
+                                        fit: BoxFit.cover,
+                                        imageErrorBuilder:
+                                            (context, error, stackTrace) =>
+                                                Image.asset(
+                                          assetMap['logoImage']!,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : Image.file(
+                                        File(screenImage!),
+                                        height: appHeight * 0.45,
+                                        fit: BoxFit.cover,
+                                      ),
+                          ),
+                          Positioned(
+                            bottom: 10,
+                            right: 10,
+                            child: IconButton(
+                              key: KeyHelper.playWaitRotateScreenKey,
+                              style: IconButton.styleFrom(
+                                backgroundColor: Theme.of(context).cardColor,
+                              ),
+                              icon: Icon(
+                                Icons.screen_rotation,
+                              ),
+                              onPressed: () {},
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   Text(

@@ -35,8 +35,9 @@ class HomeButtonWidget extends StatelessWidget {
                   .pushReplacementNamed(AddChainScreen.routename);
               break;
             case "navigateToHelpScreen":
-              Navigator.of(context)
-                  .pushReplacementNamed(ChainListScreenTutorial.routename);
+              NavigatorState nav = Navigator.of(context);
+              await chainList.loadSampleChainsForTutorial();
+              nav.pushReplacementNamed(ChainListScreenTutorial.routename);
               break;
             case "uploadChain":
               NavigatorState nav = Navigator.of(context);

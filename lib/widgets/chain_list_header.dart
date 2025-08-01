@@ -24,8 +24,7 @@ class ChainListHeader extends StatelessWidget {
               onTap: () {
                 ChainList chainList =
                     Provider.of<ChainList>(context, listen: false);
-                chainList.loaded = false;
-                chainList.initialize();
+                chainList.refresh();
               },
             ),
             title: Text(

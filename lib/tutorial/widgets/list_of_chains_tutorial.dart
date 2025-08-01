@@ -37,14 +37,24 @@ class _ListOfChainsTutorialState extends State<ListOfChainsTutorial> {
   @override
   Widget build(BuildContext context) {
     // ChainList chainList = Provider.of<ChainList>(context, listen: true);
-    // List<Chain> chains = chainList.chains;
+
     bool showFavorites = widget.showFavorites, showRunning = widget.showRunning;
-    Chain sampleWorkoutChain = chainList.getChainsByFilters(
-        "Sample Workout Chain", showFavorites, showRunning)[0];
-    Chain sampleDietChain = chainList.getChainsByFilters(
-        "Sample Diet Routine Chain", showFavorites, showRunning)[0];
-    Chain sampleMedicineChain = chainList.getChainsByFilters(
-        "Sample Medicine Routine Chain", showFavorites, showRunning)[0];
+    Chain? sampleWorkoutChain, sampleDietChain, sampleMedicineChain;
+    List<Chain> chains = chainList.getChainsByFilters(
+        "Sample Workout Chain", showFavorites, showRunning);
+    if (chains.isNotEmpty) {
+      sampleWorkoutChain = chains[0];
+    }
+    chains = chainList.getChainsByFilters(
+        "Sample Diet Routine Chain", showFavorites, showRunning);
+    if (chains.isNotEmpty) {
+      sampleDietChain = chains[0];
+    }
+    chains = chainList.getChainsByFilters(
+        "Sample Medicine Routine Chain", showFavorites, showRunning);
+    if (chains.isNotEmpty) {
+      sampleMedicineChain = chains[0];
+    }
     return Column(
       //crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -127,33 +137,36 @@ class _ListOfChainsTutorialState extends State<ListOfChainsTutorial> {
         Column(
           key: KeyHelper.chainListKey,
           children: [
-            ChainListItem(
-              tutorialChain: sampleWorkoutChain.title,
-              //adChain: adChain,
-              chain: sampleWorkoutChain,
-              showHistory: true,
-              allowFlag: true,
-              key: KeyHelper.sampleWorkoutChainListItemKey,
-              index: sampleWorkoutChain.index,
-            ),
-            ChainListItem(
-              tutorialChain: sampleDietChain.title,
-              //adChain: adChain,
-              chain: sampleDietChain,
-              showHistory: true,
-              allowFlag: true,
-              key: KeyHelper.sampleDietChainListItemKey,
-              index: sampleDietChain.index,
-            ),
-            ChainListItem(
-              tutorialChain: sampleMedicineChain.title,
-              //adChain: adChain,
-              chain: sampleMedicineChain,
-              showHistory: true,
-              allowFlag: true,
-              key: KeyHelper.sampleMedicineChainListItemKey,
-              index: sampleMedicineChain.index,
-            ),
+            if (sampleWorkoutChain != null)
+              ChainListItem(
+                tutorialChain: sampleWorkoutChain.title,
+                //adChain: adChain,
+                chain: sampleWorkoutChain,
+                showHistory: true,
+                allowFlag: true,
+                key: KeyHelper.sampleWorkoutChainListItemKey,
+                index: sampleWorkoutChain.index,
+              ),
+            if (sampleDietChain != null)
+              ChainListItem(
+                tutorialChain: sampleDietChain.title,
+                //adChain: adChain,
+                chain: sampleDietChain,
+                showHistory: true,
+                allowFlag: true,
+                key: KeyHelper.sampleDietChainListItemKey,
+                index: sampleDietChain.index,
+              ),
+            if (sampleMedicineChain != null)
+              ChainListItem(
+                tutorialChain: sampleMedicineChain.title,
+                //adChain: adChain,
+                chain: sampleMedicineChain,
+                showHistory: true,
+                allowFlag: true,
+                key: KeyHelper.sampleMedicineChainListItemKey,
+                index: sampleMedicineChain.index,
+              ),
           ],
         ),
         const Divider(),

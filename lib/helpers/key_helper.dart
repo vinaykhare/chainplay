@@ -42,9 +42,11 @@ class KeyHelper {
   static GlobalKey addChainSaveAndExitKey = GlobalKey();
 
   static GlobalKey viewChainPlayChainKey = GlobalKey();
+  static GlobalKey viewChainScheduleChainKey = GlobalKey();
 
   static GlobalKey playChainKey = GlobalKey();
   static GlobalKey playChainRunInBackgroundKey = GlobalKey();
+  static GlobalKey playChainRotateScreenKey = GlobalKey();
   static GlobalKey playChainStopChainKey = GlobalKey();
   static GlobalKey playChainForwardButtonKey = GlobalKey();
   static GlobalKey playChainBackwardButtonKey = GlobalKey();
@@ -55,4 +57,5 @@ class KeyHelper {
   static GlobalKey playWaitTimerKey = GlobalKey();
   static GlobalKey playWaitPlayPauseKey = GlobalKey();
   static GlobalKey playWaitForwardKey = GlobalKey();
+  static GlobalKey playWaitRotateScreenKey = GlobalKey();
 }

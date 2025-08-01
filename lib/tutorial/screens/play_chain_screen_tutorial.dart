@@ -202,70 +202,94 @@ class _PlayChainTutorialState extends State<PlayChainTutorial> {
                     ),
                   ),
                   if (invokeCounter < chain.activities.length)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        CatTextButton(
-                          key: KeyHelper.playChainStopChainKey,
-                          buttonLabel: "Stop",
-                          buttonAction: () {},
-                          buttonIcon: Icons.stop_circle,
-                        ),
-                        Container(
-                          key: KeyHelper.playChainRunInBackgroundKey,
-                          width: appWidth * 0.75,
-                          height: appHeight * 0.06,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context)
-                                .primaryColor
-                                .withValues(alpha: 0.3),
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(
-                                30,
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .primaryColor
+                            .withValues(alpha: 0.3),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconButton(
+                            key: KeyHelper.playChainStopChainKey,
+                            style: ButtonStyle(
+                              iconColor: WidgetStateProperty.resolveWith(
+                                (states) => Theme.of(context).colorScheme.error,
                               ),
-                              bottomLeft: Radius.circular(
-                                30,
+                            ),
+                            // buttonAction :
+                            onPressed: () {},
+                            icon: Icon(Icons.stop_circle),
+                          ),
+                          Container(
+                            key: KeyHelper.playChainRunInBackgroundKey,
+                            width: appWidth * 0.75,
+                            height: appHeight * 0.06,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .primaryColor
+                                  .withValues(alpha: 0.3),
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(
+                                  30,
+                                ),
+                                bottomLeft: Radius.circular(
+                                  30,
+                                ),
+                              ),
+                            ),
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  if (chainActivityPaused != null &&
+                                      chainActivityPaused!.endedAt == null &&
+                                      chain.notificationId == noValueInDB)
+                                    CatTextButton(
+                                      buttonLabel:
+                                          "Play the Chain, in Background",
+                                      buttonAction: () {},
+                                      buttonIcon: Icons.play_circle,
+                                    )
+                                  else if (chain.notificationId != noValueInDB)
+                                    CatTextButton(
+                                      buttonLabel:
+                                          "Refresh, for the latest status",
+                                      buttonAction: () {},
+                                      buttonIcon: Icons.refresh_outlined,
+                                    )
+                                  else
+                                    CatTextButton(
+                                      buttonLabel:
+                                          "Play the Chain, Interactively",
+                                      buttonAction: () {},
+                                      buttonIcon: Icons.arrow_forward_outlined,
+                                    ),
+                                ],
                               ),
                             ),
                           ),
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                if (chainActivityPaused != null &&
-                                    chainActivityPaused!.endedAt == null &&
-                                    chain.notificationId == noValueInDB)
-                                  CatTextButton(
-                                    buttonLabel:
-                                        "Play the Chain, in Background",
-                                    buttonAction: () {},
-                                    buttonIcon: Icons.play_circle,
-                                  )
-                                else if (chain.notificationId != noValueInDB)
-                                  CatTextButton(
-                                    buttonLabel:
-                                        "Refresh, for the latest status",
-                                    buttonAction: () {},
-                                    buttonIcon: Icons.refresh_outlined,
-                                  )
-                                else
-                                  CatTextButton(
-                                    buttonLabel:
-                                        "Play the Chain, Interactively",
-                                    buttonAction: () {},
-                                    buttonIcon: Icons.arrow_forward_outlined,
-                                  ),
-                              ],
+                          IconButton(
+                            key: KeyHelper.playChainRotateScreenKey,
+                            style: ButtonStyle(
+                              iconColor: WidgetStateProperty.resolveWith(
+                                (states) => Theme.of(context).colorScheme.error,
+                              ),
                             ),
+                            icon: Icon(
+                              Icons.screen_rotation_outlined,
+                            ),
+                            onPressed: () {},
                           ),
-                        )
-                      ],
+                        ],
+                      ),
                     ),
                 ],
               ),

@@ -121,6 +121,7 @@ class _ViewChainTutorialState extends State<ViewChainTutorial> {
                             ),
                           ),
                           CircleAvatar(
+                            key: KeyHelper.viewChainScheduleChainKey,
                             child: Icon(Icons.alarm_outlined),
                           ),
                           CircleAvatar(

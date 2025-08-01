@@ -106,7 +106,6 @@ const Map<String, String> assetMap = {
   'noImagePlaceholder': 'assets/AppIcons/no-Image-placeholder.png',
   'pixabaylogo': 'assets/AppIcons/pixabaylogo.png',
   'beepAudio': 'Sounds/chain_activity_beep.mp3',
-  'app_drawer': 'assets/WhatIsChainAndPlay/app_drawer.jpeg',
   'chain_file_view': 'assets/WhatIsChainAndPlay/chain_file_view.jpeg',
   'sample_diet_routine_chain':
       'assets/SampleChains/Sample_Diet_Routine_Chain.json',

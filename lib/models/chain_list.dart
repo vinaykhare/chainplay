@@ -80,17 +80,21 @@ class ChainList with ChangeNotifier {
     //this.adState,
   );
 
-  Future<void> initialize() async {
-    if (loaded) {
-      return;
-    }
+  Future<void> refresh() async {
     await fetchSettings();
     Future<InitializationStatus> initMobileAds =
         MobileAds.instance.initialize();
     adState = AdState(initMobileAds);
     await fetchActivities();
     await fetchChains();
+    notifyListeners();
+  }
 
+  Future<void> initialize() async {
+    if (loaded) {
+      return;
+    }
+    await refresh();
     loaded = true;
     notifyListeners();
   }
@@ -291,7 +295,8 @@ class ChainList with ChangeNotifier {
     }
   }
 
-  Future<void> addChain(Chain chain, ChainActivity chainActivity) async {
+  Future<void> addChain(Chain chain, ChainActivity chainActivity,
+      [bool storeInDb = true]) async {
     chain.lastUpdatedAt = DateTime.now();
     int chainIndex = chains.indexWhere((sch) => sch.title == chain.title);
 
@@ -313,28 +318,31 @@ class ChainList with ChangeNotifier {
     if (activityIndex == -1) {
       activities.add(chainActivity.activity);
       chainActivity.activity.lastUpdatedAt = DateTime.now();
-      await DBHelper.insert(
-        "activity",
-        {
-          "activityId": chainActivity.activity.activityId,
-          "title": chainActivity.activity.title,
-          "type": chainActivity.activity.type,
-          "createdAt": chainActivity.activity.createdAt.millisecondsSinceEpoch,
-          "lastUpdatedAt":
-              chainActivity.activity.lastUpdatedAt.millisecondsSinceEpoch,
-          "edit": chainActivity.activity.edit ? 1 : 0,
-          "specifications": chainActivity.activity.specification != null
-              ? jsonEncode(chainActivity.activity.specification)
-              : jsonEncode({
-                  activitySpecImagePath: "",
-                }),
-        },
-      );
+      if (storeInDb) {
+        await DBHelper.insert(
+          "activity",
+          {
+            "activityId": chainActivity.activity.activityId,
+            "title": chainActivity.activity.title,
+            "type": chainActivity.activity.type,
+            "createdAt":
+                chainActivity.activity.createdAt.millisecondsSinceEpoch,
+            "lastUpdatedAt":
+                chainActivity.activity.lastUpdatedAt.millisecondsSinceEpoch,
+            "edit": chainActivity.activity.edit ? 1 : 0,
+            "specifications": chainActivity.activity.specification != null
+                ? jsonEncode(chainActivity.activity.specification)
+                : jsonEncode({
+                    activitySpecImagePath: "",
+                  }),
+          },
+        );
+      }
     } else {
       chainActivity.activity = activities[activityIndex];
     }
 
-    if (chainIndex == -1) {
+    if (chainIndex == -1 && storeInDb) {
       await DBHelper.insert(
         "chain",
         {
@@ -360,36 +368,39 @@ class ChainList with ChangeNotifier {
         },
       );
     }
-    await DBHelper.insert(
-      "chain_activity",
-      {
-        "title": chain.title,
-        "activityId": chainActivity.activity.activityId,
-        "activityIndex": chainActivity.index,
-        "activityDone": chainActivity.activityDone ? trueInDB : falseInDB,
-        "isInterrupted": chainActivity.isInterrupted ? trueInDB : falseInDB,
-        "notificationId": jsonEncode({
-          "startActivityNotificationId":
-              chainActivity.startActivityNotificationId,
-          "endActivityNotificationId": chainActivity.endActivityNotificationId,
-        }),
-        "activityDuration": chainActivity.activityDuration.inSeconds,
-        "repeatType": chainActivity.repeatType,
-        "repeatTypeGap": chainActivity.repeatTypeGap,
-        "repeatCount": chainActivity.repeatCount,
-        "startedAt": chainActivity.at == null
-            ? noValueInDB
-            : chainActivity.at!.millisecondsSinceEpoch,
-        "activityDurationLeft": chainActivity.activityDurationLeft == null
-            ? noValueInDB
-            : chainActivity.activityDurationLeft!.inSeconds,
-        "endedAt": chainActivity.endedAt == null
-            ? noValueInDB
-            : chainActivity.endedAt!.millisecondsSinceEpoch,
-        "editChainActivity": chainActivity.edit ? 1 : 0,
-      },
-    );
-    // }
+    if (storeInDb) {
+      await DBHelper.insert(
+        "chain_activity",
+        {
+          "title": chain.title,
+          "activityId": chainActivity.activity.activityId,
+          "activityIndex": chainActivity.index,
+          "activityDone": chainActivity.activityDone ? trueInDB : falseInDB,
+          "isInterrupted": chainActivity.isInterrupted ? trueInDB : falseInDB,
+          "notificationId": jsonEncode({
+            "startActivityNotificationId":
+                chainActivity.startActivityNotificationId,
+            "endActivityNotificationId":
+                chainActivity.endActivityNotificationId,
+          }),
+          "activityDuration": chainActivity.activityDuration.inSeconds,
+          "repeatType": chainActivity.repeatType,
+          "repeatTypeGap": chainActivity.repeatTypeGap,
+          "repeatCount": chainActivity.repeatCount,
+          "startedAt": chainActivity.at == null
+              ? noValueInDB
+              : chainActivity.at!.millisecondsSinceEpoch,
+          "activityDurationLeft": chainActivity.activityDurationLeft == null
+              ? noValueInDB
+              : chainActivity.activityDurationLeft!.inSeconds,
+          "endedAt": chainActivity.endedAt == null
+              ? noValueInDB
+              : chainActivity.endedAt!.millisecondsSinceEpoch,
+          "editChainActivity": chainActivity.edit ? 1 : 0,
+        },
+      );
+    }
+
     notifyListeners();
   }
 
@@ -592,7 +603,10 @@ class ChainList with ChangeNotifier {
     return newStartDate;
   }
 
-  Future<Chain> moveChainToHistory(Chain chain) async {
+  Future<Chain> moveChainToHistory(
+    Chain chain, [
+    bool storeInDb = true,
+  ]) async {
     Chain chainExecution = Chain();
     chainExecution.chainExecutionId = const Uuid().v1();
     chainExecution.title = chain.title;
@@ -659,7 +673,9 @@ class ChainList with ChangeNotifier {
     } else {
       chainExecution.activities[0].activityDone = true;
     }
-    await addChainToHistory(chainExecution);
+    if (storeInDb) {
+      await addChainToHistory(chainExecution);
+    }
     int chainIndex = chains.indexWhere((sch) => sch.title == chain.title);
 
     chains[chainIndex].chainHistory.insert(0, chainExecution);
@@ -682,16 +698,22 @@ class ChainList with ChangeNotifier {
 
     chains[chainIndex].notificationId = chainNotificationId;
     chains[chainIndex].chainStatus = statusExecuting;
-    await updateChain(chains[chainIndex]);
+    if (storeInDb) {
+      await updateChain(chains[chainIndex]);
+    }
     notifyListeners();
     return chainExecution;
   }
 
-  Future<Chain> startChainExecution(Chain chain) async {
+  Future<Chain> startChainExecution(Chain chain,
+      [bool storeInDb = true]) async {
     int executingChainIndex = chain.chainHistory
         .indexWhere((sch) => sch.chainStatus == statusExecuting);
     if (executingChainIndex == -1) {
-      return await moveChainToHistory(chain);
+      return await moveChainToHistory(
+        chain,
+        storeInDb,
+      );
     }
     return chain.chainHistory[executingChainIndex];
   }
@@ -742,19 +764,33 @@ class ChainList with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> stopChainExecution(Chain chain) async {
+  Future<void> stopChainExecution(
+    Chain chain, [
+    bool storeInDb = true,
+  ]) async {
     int executingChainIndex = chain.chainHistory
         .indexWhere((sch) => sch.chainStatus == statusExecuting);
     if (executingChainIndex != -1) {
-      await cancelScheduledNotificationExecution(
-          chain.chainHistory[executingChainIndex]);
-      await resetChainExecution(chain.chainHistory[executingChainIndex]);
+      // await cancelScheduledNotificationExecution(
+      //   chain.chainHistory[executingChainIndex],
+      //   storeInDb,
+      // );
+      await resetChainExecution(
+        chain.chainHistory[executingChainIndex],
+        storeInDb,
+      );
     }
-    await resetChain(chain);
+    await resetChain(
+      chain,
+      storeInDb,
+    );
   }
 
-  Future<void> updateChain(Chain chain,
-      [bool updateLastUpdateDate = true]) async {
+  Future<void> updateChain(
+    Chain chain, [
+    bool updateLastUpdateDate = true,
+    bool storeInDb = true,
+  ]) async {
     int chainIndex = chains.indexWhere((sch) => sch.title == chain.title);
 
     if (chainIndex == -1) {
@@ -764,30 +800,31 @@ class ChainList with ChangeNotifier {
     chain.lastUpdatedAt =
         updateLastUpdateDate ? DateTime.now() : chain.lastUpdatedAt;
     chains[chainIndex] = chain;
-
-    await DBHelper.update(
-      "chain",
-      {
-        "lastUpdatedAt": chain.lastUpdatedAt.millisecondsSinceEpoch,
-        "pinned": chain.pinned,
-        "startedAt":
-            chain.at != null ? chain.at!.millisecondsSinceEpoch : noValueInDB,
-        "pivotDate": chain.pivotDate != null
-            ? chain.pivotDate!.millisecondsSinceEpoch
-            : noValueInDB,
-        "endedAt": chain.endedAt != null
-            ? chain.endedAt!.millisecondsSinceEpoch
-            : noValueInDB,
-        "chainStatus": chain.chainStatus,
-        "notificationId": chain.notificationId.toString(),
-        "editChain": chain.edit ? 1 : 0,
-        "repeatType": chain.repeatType,
-        "repeatTypeGap": chain.repeatTypeGap,
-        "repeatCount": chain.repeatCount,
-      },
-      "title = ?",
-      [chain.title],
-    );
+    if (storeInDb) {
+      await DBHelper.update(
+        "chain",
+        {
+          "lastUpdatedAt": chain.lastUpdatedAt.millisecondsSinceEpoch,
+          "pinned": chain.pinned,
+          "startedAt":
+              chain.at != null ? chain.at!.millisecondsSinceEpoch : noValueInDB,
+          "pivotDate": chain.pivotDate != null
+              ? chain.pivotDate!.millisecondsSinceEpoch
+              : noValueInDB,
+          "endedAt": chain.endedAt != null
+              ? chain.endedAt!.millisecondsSinceEpoch
+              : noValueInDB,
+          "chainStatus": chain.chainStatus,
+          "notificationId": chain.notificationId.toString(),
+          "editChain": chain.edit ? 1 : 0,
+          "repeatType": chain.repeatType,
+          "repeatTypeGap": chain.repeatTypeGap,
+          "repeatCount": chain.repeatCount,
+        },
+        "title = ?",
+        [chain.title],
+      );
+    }
 
     notifyListeners();
   }
@@ -913,8 +950,11 @@ class ChainList with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> resetChain(Chain chain) async {
-    await cancelScheduledNotification(chain);
+  Future<void> resetChain(
+    Chain chain, [
+    bool storeInDb = true,
+  ]) async {
+    await cancelScheduledNotification(chain, storeInDb);
     for (ChainActivity activity in chain.activities) {
       activity.edit = false;
       activity.activityDone = false;
@@ -923,19 +963,21 @@ class ChainList with ChangeNotifier {
       activity.endedAt = null;
     }
 
-    await DBHelper.update(
-      "chain_activity",
-      {
-        "activityDone": statusNotStarted,
-        "isInterrupted": statusNotStarted,
-        "startedAt": noValueInDB,
-        "activityDurationLeft": noValueInDB,
-        "endedAt": noValueInDB,
-        "editChainActivity": 0,
-      },
-      "title = ?",
-      [chain.title],
-    );
+    if (storeInDb) {
+      await DBHelper.update(
+        "chain_activity",
+        {
+          "activityDone": statusNotStarted,
+          "isInterrupted": statusNotStarted,
+          "startedAt": noValueInDB,
+          "activityDurationLeft": noValueInDB,
+          "endedAt": noValueInDB,
+          "editChainActivity": 0,
+        },
+        "title = ?",
+        [chain.title],
+      );
+    }
 
     chain.at = chain.endedAt = chain.pivotDate = null;
     chain.notificationId = noValueInDB;
@@ -944,23 +986,32 @@ class ChainList with ChangeNotifier {
     chain.repeatTypeGap = repeatTypeDefaultGap;
     chain.repeatCount = repeatTypeDefaultCount;
     chain.lastUpdatedAt = DateTime.now();
-    await updateChain(chain);
-
+    if (storeInDb) {
+      await updateChain(chain);
+    }
     notifyListeners();
   }
 
-  Future<void> resetChainExecution(Chain chainExecution) async {
-    await cancelScheduledNotificationExecution(chainExecution);
+  Future<void> resetChainExecution(
+    Chain chainExecution, [
+    bool storeInDb = true,
+  ]) async {
+    await cancelScheduledNotificationExecution(
+      chainExecution,
+      storeInDb,
+    );
     int indexOfChain =
         chains.indexWhere((sch) => sch.title == chainExecution.title);
 
     chains[indexOfChain].chainHistory.removeWhere(
         (schEx) => schEx.chainExecutionId == chainExecution.chainExecutionId);
 
-    await DBHelper.removeData("chain_activity_execution",
-        "chainExecutionId = ?", [chainExecution.chainExecutionId]);
-    await DBHelper.removeData("chain_execution", "chainExecutionId = ?",
-        [chainExecution.chainExecutionId]);
+    if (storeInDb) {
+      await DBHelper.removeData("chain_activity_execution",
+          "chainExecutionId = ?", [chainExecution.chainExecutionId]);
+      await DBHelper.removeData("chain_execution", "chainExecutionId = ?",
+          [chainExecution.chainExecutionId]);
+    }
     notifyListeners();
   }
 
@@ -1467,35 +1518,6 @@ class ChainList with ChangeNotifier {
     return systemSettings;
   }
 
-  // Future<void> removeSampleChainsNotNeededForTutorial() async {
-  //   //Remove Sample Chains if already exists
-  //   for (String chainTitle in [
-  //     sampleMedicineRoutineChainTitle,
-  //     // sampleWorkoutChainTitle,
-  //     sampleDietRoutineChainTitle
-  //   ]) {
-  //     int chainIndex =
-  //         chains.indexWhere((chainElement) => chainElement.title == chainTitle);
-  //     if (chainIndex != -1) {
-  //       await removeChain(chains[chainIndex]);
-  //     }
-  //   }
-
-  //   // String sampleChain =
-  //   //     await defaultAssetBundle.loadString(assetMap['sample_workout_chain']!);
-  //   // final sampleChainJson = jsonDecode(sampleChain);
-  //   // Chain loadedChain = Chain.fromJson(sampleChainJson);
-
-  //   // int chainIndex = chains
-  //   //     .indexWhere((chainElement) => chainElement.title == loadedChain.title);
-  //   // if (chainIndex != -1) {
-  //   //   await removeChain(loadedChain);
-  //   // }
-  //   // for (var chainActivity in loadedChain.activities) {
-  //   //   await addChain(loadedChain, chainActivity);
-  //   // }
-  // }
-
   Future<void> loadSampleChainsFromAssets() async {
     AssetBundle defaultAssetBundle = DefaultAssetBundle.of(context);
     for (String sampleChainFileName in [
@@ -1511,10 +1533,29 @@ class ChainList with ChangeNotifier {
       int chainIndex = chains.indexWhere(
           (chainElement) => chainElement.title == loadedChain.title);
       if (chainIndex != -1) {
-        await removeChain(loadedChain);
+        continue;
       }
       for (var chainActivity in loadedChain.activities) {
         await addChain(loadedChain, chainActivity);
+      }
+    }
+  }
+
+  Future<void> loadSampleChainsForTutorial() async {
+    chains = [];
+    AssetBundle defaultAssetBundle = DefaultAssetBundle.of(context);
+    for (String sampleChainFileName in [
+      'sample_workout_chain',
+      'sample_diet_routine_chain',
+      'sample_medicine_routine_chain',
+    ]) {
+      String sampleChain =
+          await defaultAssetBundle.loadString(assetMap[sampleChainFileName]!);
+      final sampleChainJson = jsonDecode(sampleChain);
+      Chain loadedChain = Chain.fromJson(sampleChainJson);
+
+      for (var chainActivity in loadedChain.activities) {
+        await addChain(loadedChain, chainActivity, false);
       }
     }
   }
@@ -1933,7 +1974,10 @@ class ChainList with ChangeNotifier {
     return scheduleNotificationResponse;
   }
 
-  Future<void> cancelScheduledNotificationExecution(Chain chain) async {
+  Future<void> cancelScheduledNotificationExecution(
+    Chain chain, [
+    bool storeInDb = true,
+  ]) async {
     //Cancel Notifications
     //await cancelScheduledNotification(chain);
     for (ChainActivity chainActivity in chain.activities) {
@@ -1947,7 +1991,9 @@ class ChainList with ChangeNotifier {
             .cancelNotificationById(chainActivity.endActivityNotificationId);
         chainActivity.endActivityNotificationId = noValueInDB;
       }
-      await updateChainActivityExecutionByActivityId(chain, chainActivity);
+      if (storeInDb) {
+        await updateChainActivityExecutionByActivityId(chain, chainActivity);
+      }
     }
 
     // await DBHelper.update(
@@ -1958,17 +2004,26 @@ class ChainList with ChangeNotifier {
     //   "title = ?",
     //   [chain.title],
     // );
-    notifyListeners();
+    if (storeInDb) {
+      notifyListeners();
+    }
   }
 
-  Future<void> cancelScheduledNotification(Chain chain) async {
+  Future<void> cancelScheduledNotification(
+    Chain chain, [
+    bool storeInDb = true,
+  ]) async {
     //Cancel Notifications
     if (chain.notificationId != noValueInDB) {
       //await notificationHelper.cancelNotificationById(chain.notificationId);
       chain.notificationId = noValueInDB;
-      await updateChainExecution(chain);
+      if (storeInDb) {
+        await updateChainExecution(chain);
+      }
     }
-    notifyListeners();
+    if (storeInDb) {
+      notifyListeners();
+    }
   }
 
   void printAllNotifications() {
@@ -2130,6 +2185,8 @@ class ChainList with ChangeNotifier {
 
       if (jsonData['title'] != null && jsonData['activities'] != null) {
         chain = Chain.fromJson(jsonData);
+
+        chain.title = getValidTitle(chain.title);
       } else {
         chain = null;
         // Navigator.of(context).pushReplacementNamed("");

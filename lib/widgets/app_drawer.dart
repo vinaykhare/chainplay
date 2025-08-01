@@ -18,6 +18,7 @@ class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ChainList chainList = Provider.of<ChainList>(context, listen: false);
     return SafeArea(
       //top: false,
       child: Drawer(
@@ -55,12 +56,11 @@ class AppDrawer extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   onTap: () async {
-                    while (Navigator.of(context).canPop()) {
-                      Navigator.of(context).pop();
-                    }
                     NavigatorState nav = Navigator.of(context);
-                    await Provider.of<ChainList>(context, listen: false)
-                        .loadSampleChainsFromAssets();
+                    while (nav.canPop()) {
+                      nav.pop();
+                    }
+                    await chainList.loadSampleChainsForTutorial();
                     nav.pushReplacementNamed(ChainListScreenTutorial.routename);
                   },
                 ),
