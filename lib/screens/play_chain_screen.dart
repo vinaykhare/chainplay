@@ -464,7 +464,7 @@ class _PlayChainState extends State<PlayChain> {
                                       : () async {
                                           await cancelSchedule();
                                         },
-                                  buttonIcon: Icons.play_circle,
+                                  buttonIcon: Icons.free_cancellation_outlined,
                                 )
                               else if (chainActivityPaused != null &&
                                   chainActivityPaused!.endedAt == null &&
