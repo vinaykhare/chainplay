@@ -1,7 +1,8 @@
+import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/screens/add_chain_screen.dart';
-import 'package:chain_activities/tutorial/screens/chain_list_screen_tutorial.dart';
+import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:chain_activities/screens/view_chain_screen.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -36,8 +37,9 @@ class HomeButtonWidget extends StatelessWidget {
               break;
             case "navigateToHelpScreen":
               NavigatorState nav = Navigator.of(context);
-              await chainList.loadSampleChainsForTutorial();
-              nav.pushReplacementNamed(ChainListScreenTutorial.routename);
+              await chainList.setSetting(
+                  tutorialChainListScreen, trueSettingValue);
+              nav.pushReplacementNamed(ChainListScreen.routename);
               break;
             case "uploadChain":
               NavigatorState nav = Navigator.of(context);

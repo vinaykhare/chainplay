@@ -784,6 +784,7 @@ class ChainList with ChangeNotifier {
       chain,
       storeInDb,
     );
+    notifyListeners();
   }
 
   Future<void> updateChain(

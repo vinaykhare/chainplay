@@ -1,5 +1,4 @@
 import 'package:chain_activities/helpers/constants.dart';
-import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:chain_activities/widgets/db_settings.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
@@ -108,11 +107,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         onPopInvokedWithResult: (didPop, result) async {
           if (didPop) {
             return;
-          }
-          if (chainList.getSettingByKey(showHelpOnNextBootKey).value ==
-              trueSettingValue) {
-            await Navigator.of(context)
-                .pushReplacementNamed(ChainListScreen.routename);
           }
         },
         child: Scaffold(

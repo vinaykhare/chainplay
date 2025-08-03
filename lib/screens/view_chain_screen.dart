@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:chain_activities/helpers/common_ui.dart';
+import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/screens/add_chain_screen.dart';
 import 'package:chain_activities/screens/play_chain_screen.dart';
+import 'package:chain_activities/tutorial/tutorial_coach.dart';
 // import 'package:chain_activities/screens/schedule_chain.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
@@ -185,11 +187,6 @@ class _ViewChainState extends State<ViewChain> {
     if (initializing) {
       chainList = Provider.of<ChainList>(context, listen: false);
 
-      // if (chainList.notificationCameForChain != null) {
-      //   chain = chainList.notificationCameForChain!;
-      //   chainList.notificationCameForChain = null;
-      // } else {
-
       if (chainList.sharedFile != null) {
         savedInDb = false;
         try {
@@ -215,10 +212,23 @@ class _ViewChainState extends State<ViewChain> {
         chain = viewArgs['chain'];
         savedInDb = viewArgs['savedInDb'] ?? true;
         invalidChain = viewArgs['invalidChain'] ?? false;
+        if (chainList.getSettingByKey(tutorialViewChainScreen).value ==
+            trueSettingValue) {
+          TutorialCoach tutorialCoach = TutorialCoach(
+            tutorialType: tutorialViewChainScreen,
+            context: context,
+          );
+          tutorialCoach.createTutorial();
+          chainList.speakText(
+            "This is a Quick tutorial to Brief you with View Chain screen functions.",
+          );
+          tutorialCoach.showTutorial();
+        }
       }
       if (!savedInDb) {
         chain.title = chainList.getValidTitle(chain.title);
       }
+
       initializing = false;
     }
     double appHeight = MediaQuery.of(context).size.height -
@@ -244,6 +254,7 @@ class _ViewChainState extends State<ViewChain> {
                       if (chain.activities.length >= 3)
                         Expanded(
                           child: Padding(
+                            key: KeyHelper.viewChainKey,
                             padding: const EdgeInsets.all(8.0),
                             child: ChainActivitiesWidget(
                               tempChain: chain,
@@ -352,6 +363,7 @@ class _ViewChainState extends State<ViewChain> {
                         invalidChain == false &&
                         chain.activities.length >= 3)
                       Row(
+                        key: KeyHelper.viewChainOptionsKey,
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           Semantics(
@@ -478,7 +490,8 @@ class _ViewChainState extends State<ViewChain> {
                                 //     );
                                 //   }
                                 // },
-                                child: const CircleAvatar(
+                                child: CircleAvatar(
+                                  key: KeyHelper.viewChainScheduleChainKey,
                                   child: Icon(Icons.alarm_outlined),
                                 ),
                               ),
@@ -487,7 +500,9 @@ class _ViewChainState extends State<ViewChain> {
                             label: "Play this chain.",
                             child: InkWell(
                               onTap: () => playTheChain(context),
+                              onLongPress: () => scheduleTheChain(context),
                               child: CircleAvatar(
+                                key: KeyHelper.viewChainPlayChainKey,
                                 child: getIconForChain(chain),
                               ),
                             ),
@@ -546,6 +561,7 @@ class _ViewChainState extends State<ViewChain> {
                         ],
                       ),
                     Row(
+                      key: KeyHelper.viewChainBottomBarKey,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         IconButton(
@@ -553,6 +569,7 @@ class _ViewChainState extends State<ViewChain> {
                           icon: const Icon(Icons.arrow_back),
                         ),
                         Expanded(
+                          key: KeyHelper.viewChainTitleKey,
                           child: Text(
                             chain.title,
                             style: Theme.of(context).textTheme.titleLarge,
@@ -560,6 +577,7 @@ class _ViewChainState extends State<ViewChain> {
                           ),
                         ),
                         IconButton(
+                          key: KeyHelper.viewChainEditButtonKey,
                           onPressed: editChain,
                           icon: Icon(
                             Icons.edit,

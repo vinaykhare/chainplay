@@ -182,6 +182,40 @@ class CommonUI {
     );
   }
 
+  Future<bool?> dialogCheckPlayTutorialAgain(
+      BuildContext context, String tutorialType) async {
+    return await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("$tutorialType AGAIN?"),
+          content: const Text(
+              "Do you want this tutorial to load again on next screen launch?"),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(
+                "Yes, show me again.",
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(
+                "No, I know how it works.",
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.inverseSurface,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget getImageByPath(String imagePath) {
     return imagePath == ""
         ? Image.asset(

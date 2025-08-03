@@ -7,25 +7,8 @@ const String sampleDietRoutineChainTitle = "Sample Diet Routine Chain";
 const String sampleMedicineRoutineChainTitle = "Sample Medicine Routine Chain";
 
 // For Tutorial
-
-// const String idToShowHideAppDrawer =
-//     "You can hide it or keep it, just by clicking this expand shrink button";
-const String idToLoadSampleChainForTutorial =
-    "If both the filters are selected then app will display both active and favorite chains. For example, if one chain is Favorite but not active and other chain is active but not favorite, then selecting both filters will disply both the chains.";
-const String idToStartViewChain =
-    "Now Lets take this Sample Workout Chain as an example to understand a Chain and its features";
-const String idToStartAddChain =
-    "Now Lets press this edit button and check how add or edit chain screen looks.";
-const String idToGoBackToViewChain =
-    "Just press this back button when you are done with Chain Editing. It will automatically save the changes and exit from this screen.";
-const String idToPlayChain =
-    "Now we will see that how a chain can be played. We can play by pressing this button. This button is avialable on the Chain tile at Home screen too.";
-const String idToPauseTheChain =
-    "We can pause the chain activity and resume it back with this button and hence the chain.";
-const String idToGoToChainExecutionStatusScreen =
-    "Press the back button to pause the Chain (if running) and go to the Screen where we can see the Chain Execution Status and take actions on the Chain.";
-const String idToComeBackToHome =
-    "This quick tutorial has covered the major features of the app. Now explore yourself and reach out to us for any help. We hope that you will make the most out of this App. Lets press the back button to end this tutorial and go back to the home screen.";
+const String idToEndChainListScreenTutorial =
+    "Do you want to reload this tutorial on loading the home screen again?";
 
 // Activity Specifications
 const String activitySpecImagePath = "imagePath";
@@ -59,6 +42,12 @@ const int setFailedDueToAppPermission = 2;
 const String appSoundSettingKey = "GUIDED VOICE";
 const String darkThemeSettingKey = "DARK THEME";
 const String showHelpOnNextBootKey = "Need ChainPlay Introduction?";
+const String tutorialFull = "Show full tutorial";
+const String tutorialChainListScreen = "SHOW GUIDE ON HOME SCREEN";
+const String tutorialViewChainScreen = "SHOW GUIDE ON VIEW CHAIN SCREEN";
+const String tutorialAddChainScreen = "SHOW GUIDE ON ADD CHAIN SCREEN";
+const String tutorialPlayChainScreen = "SHOW GUIDE ON PLAY CHAIN SCREEN";
+// const String tutorialPlayWaitScreen = "SHOW GUIDE ON PLAY ACTIVITY SCREEN";
 const String catClockModeKey = "ChainPlay Clock Mode";
 const String catClockModeValue = "HH:MM:SS,HH:MM,AM/PM";
 const String trueSettingValue = "TRUE";

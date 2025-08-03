@@ -1,9 +1,14 @@
+import 'package:chain_activities/helpers/constants.dart';
+import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/screens/search_chain_screen.dart';
+import 'package:chain_activities/tutorial/tutorial_coach.dart';
+import 'package:chain_activities/tutorial/widgets/chain_list_header_tutorial.dart';
+import 'package:chain_activities/tutorial/widgets/list_of_chains_tutorial.dart';
 import 'package:chain_activities/widgets/chain_list_header.dart';
 import 'package:chain_activities/widgets/list_of_chains.dart';
 import 'package:chain_activities/widgets/no_chains_view.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/services.dart' hide KeyHelper;
 import 'package:provider/provider.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
@@ -20,8 +25,8 @@ class ChainListScreen extends StatefulWidget {
 }
 
 class _ChainListScreenState extends State<ChainListScreen> {
+  bool showFavorites = false, showRunning = false, initialize = true;
   late ChainList chainList;
-  bool showFavorites = false, showRunning = false;
   @override
   void initState() {
     super.initState();
@@ -34,13 +39,31 @@ class _ChainListScreenState extends State<ChainListScreen> {
   // late ChainList chainList;
   @override
   Widget build(BuildContext context) {
-    ChainList chainList = Provider.of<ChainList>(context, listen: true);
-    List<Chain> chains = chainList.chains;
+    if (initialize) {
+      chainList = Provider.of<ChainList>(context, listen: true);
 
+      if (chainList.getSettingByKey(tutorialChainListScreen).value ==
+          trueSettingValue) {
+        TutorialCoach tutorialCoach = TutorialCoach(
+          tutorialType: tutorialChainListScreen,
+          context: context,
+        );
+        chainList.loadSampleChainsForTutorial().then((value) {
+          tutorialCoach.createTutorial();
+          chainList.speakText(
+              "This is the App's header with a Logo and Couple of Buttons to the right. Now press on the highlighted section over this and the following screens to move to the next slide of this tutorial.");
+          tutorialCoach.showTutorial();
+        });
+      }
+      initialize = false;
+    }
+    List<Chain> chains = chainList.chains;
     final appBarWidget = AppBar(
+      key: KeyHelper.chainListScreenAppBarkey,
       backgroundColor: Theme.of(context).primaryColor,
       centerTitle: true,
       title: TextField(
+        key: KeyHelper.chainListSearchkey,
         keyboardType: TextInputType.none,
         cursorColor: Theme.of(context).cardColor,
         showCursor: false,
@@ -97,18 +120,6 @@ class _ChainListScreenState extends State<ChainListScreen> {
           fillColor: Theme.of(context).scaffoldBackgroundColor,
         ),
       ),
-      // actions: [
-      //   IconButton(
-      //     onPressed: () async {
-      //       setState(() {
-      //         showFavorites = !showFavorites;
-      //       });
-      //     },
-      //     icon: Icon(
-      //       showFavorites ? Icons.favorite : Icons.favorite_outline,
-      //     ),
-      //   ),
-      // ],
     );
     // double appHeight =
     //     MediaQuery.of(context).size.height - appBarWidget.preferredSize.height;
@@ -124,7 +135,11 @@ class _ChainListScreenState extends State<ChainListScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const ChainListHeader(),
+                if (chainList.getSettingByKey(tutorialChainListScreen).value ==
+                    trueSettingValue)
+                  const ChainListHeaderTutorial()
+                else
+                  const ChainListHeader(),
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.all(5),
@@ -139,16 +154,31 @@ class _ChainListScreenState extends State<ChainListScreen> {
                     child: Column(
                       children: [
                         (chains.isNotEmpty)
-                            ? Expanded(
-                                child: ListOfChains(
-                                  textFilter: null,
-                                  showAd: true,
-                                  showChainControlSummary: true,
-                                  showChainInReverse: false,
-                                  showFavorites: showFavorites,
-                                  showRunning: showRunning,
-                                ),
-                              )
+                            ? chainList
+                                        .getSettingByKey(
+                                            tutorialChainListScreen)
+                                        .value ==
+                                    trueSettingValue
+                                ? const Expanded(
+                                    child: ListOfChainsTutorial(
+                                      textFilter: null,
+                                      showAd: true,
+                                      showChainControlSummary: true,
+                                      showChainInReverse: false,
+                                      showFavorites: false,
+                                      showRunning: false,
+                                    ),
+                                  )
+                                : Expanded(
+                                    child: ListOfChains(
+                                      textFilter: null,
+                                      showAd: true,
+                                      showChainControlSummary: true,
+                                      showChainInReverse: false,
+                                      showFavorites: showFavorites,
+                                      showRunning: showRunning,
+                                    ),
+                                  )
                             : const Expanded(child: NoChainsView()),
                       ],
                     ),

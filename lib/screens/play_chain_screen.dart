@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:chain_activities/helpers/common_logic.dart';
 import 'package:chain_activities/helpers/common_ui.dart';
 import 'package:chain_activities/helpers/content_transformer.dart';
+import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/screens/view_chain_screen.dart';
+import 'package:chain_activities/tutorial/tutorial_coach.dart';
 import 'package:chain_activities/widgets/cat_text_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/services.dart' hide KeyHelper;
 import 'package:provider/provider.dart';
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/models/chain.dart';
@@ -331,13 +333,26 @@ class _PlayChainState extends State<PlayChain> {
         }
       }
 
-      if (chain.chainStatus == statusExecuting &&
-          playChainAction == playChainActionPlay) {
-        playTheChain();
-      } else if (chain.chainStatus != statusExecuting) {
-        invokeCounter = chain.activities.length;
+      if (chainList.getSettingByKey(tutorialPlayChainScreen).value ==
+          trueSettingValue) {
+        TutorialCoach tutorialCoach = TutorialCoach(
+          tutorialType: tutorialPlayChainScreen,
+          context: context,
+        );
+        tutorialCoach.createTutorial();
+        chainList.speakText(
+          "This is a Quick tutorial to Brief you with Chain Execution Status screen functions.",
+        );
+        tutorialCoach.showTutorial();
       } else {
-        //
+        if (chain.chainStatus == statusExecuting &&
+            playChainAction == playChainActionPlay) {
+          playTheChain();
+        } else if (chain.chainStatus != statusExecuting) {
+          invokeCounter = chain.activities.length;
+        } else {
+          //
+        }
       }
 
       initializing = false;
@@ -363,6 +378,7 @@ class _PlayChainState extends State<PlayChain> {
               children: [
                 Expanded(
                   child: Padding(
+                    key: KeyHelper.playChainKey,
                     padding: const EdgeInsets.all(8.0),
                     child: ChainActivitiesWidget(
                       tempChain: chain,
@@ -382,6 +398,7 @@ class _PlayChainState extends State<PlayChain> {
                       children: [
                         IconButton(
                           // buttonLabel: "Stop",
+                          key: KeyHelper.playChainStopChainKey,
                           style: ButtonStyle(
                             iconColor: WidgetStateProperty.resolveWith(
                               (states) => Theme.of(context).colorScheme.error,
@@ -441,6 +458,7 @@ class _PlayChainState extends State<PlayChain> {
                           icon: Icon(Icons.stop_circle),
                         ),
                         SingleChildScrollView(
+                          key: KeyHelper.playChainRunInBackgroundKey,
                           scrollDirection: Axis.horizontal,
                           child: Row(
                             mainAxisSize: MainAxisSize.max,
@@ -505,6 +523,7 @@ class _PlayChainState extends State<PlayChain> {
                           ),
                         ),
                         IconButton(
+                          key: KeyHelper.playChainRotateScreenKey,
                           style: ButtonStyle(
                             iconColor: WidgetStateProperty.resolveWith(
                               (states) => Theme.of(context).colorScheme.error,
@@ -545,6 +564,7 @@ class _PlayChainState extends State<PlayChain> {
                 ),
               ),
               Expanded(
+                key: KeyHelper.playChainTitleKey,
                 child: TextFormField(
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.titleLarge,
@@ -558,6 +578,7 @@ class _PlayChainState extends State<PlayChain> {
                 ),
               ),
               IconButton(
+                key: KeyHelper.playChainForwardButtonKey,
                 onPressed: invokeCounter < chain.activities.length
                     ? (chain.notificationId == noValueInDB &&
                             (chainActivityPaused == null ||

@@ -1,6 +1,6 @@
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/models/chain_list.dart';
-import 'package:chain_activities/tutorial/screens/chain_list_screen_tutorial.dart';
+import 'package:chain_activities/screens/chain_list_screen.dart';
 
 import 'package:chain_activities/widgets/db_settings.dart';
 
@@ -34,7 +34,7 @@ class _FirstBootScreenState extends State<FirstBootScreen> {
     if (initConfig) {
       chainList = Provider.of<ChainList>(context, listen: false);
       // chainList.showHelpOnNextLoad();
-      //  chainList.loadSampleChainsForTutorial();
+      chainList.loadSampleChainsFromAssets();
       initConfig = false;
     }
     double appHeight = MediaQuery.of(context).size.height -
@@ -64,7 +64,7 @@ class _FirstBootScreenState extends State<FirstBootScreen> {
                       child: Column(children: [
                         Image.asset(
                           assetMap["logoImage"]!,
-                          height: appHeight * 0.40,
+                          height: appHeight * 0.10,
                         ),
                         Text(
                           "ChainPlay",
@@ -95,10 +95,7 @@ class _FirstBootScreenState extends State<FirstBootScreen> {
                         //await chainList.dontShowHelpOnNextLoad();
                         await chainList.setSetting(
                             showHelpOnNextBootKey, falseSettingValue);
-                        await chainList.stopSpeech();
-                        await chainList.loadSampleChainsForTutorial();
-                        nav.pushReplacementNamed(
-                            ChainListScreenTutorial.routename);
+                        nav.pushReplacementNamed(ChainListScreen.routename);
                       },
                       label: const Text("Let's Chain & Play!"),
                     ),

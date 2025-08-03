@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:chain_activities/helpers/common_ui.dart';
+import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:chain_activities/screens/pixabay_selection_screen.dart';
+import 'package:chain_activities/tutorial/tutorial_coach.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -725,6 +727,21 @@ class _AddChainScreenState extends State<AddChainScreen> {
           }
         });
       });
+      ChainList chainList = Provider.of<ChainList>(context, listen: true);
+      if (chainList.getSettingByKey(tutorialAddChainScreen).value ==
+          trueSettingValue) {
+        addingDurationToActivity = true;
+        addingImageToActivity = true;
+        TutorialCoach tutorialCoach = TutorialCoach(
+          tutorialType: tutorialAddChainScreen,
+          context: context,
+        );
+        tutorialCoach.createTutorial();
+        chainList.speakText(
+          "This is a Quick tutorial to brief you with Edit Chain Screen. Same screen is for adding a new chain too.",
+        );
+        tutorialCoach.showTutorial();
+      }
       pageInit = false;
       //FocusScope.of(context).requestFocus(addActivityFocus);
     }
@@ -1346,6 +1363,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
     );
 
     final chainInputForm = Column(
+      key: KeyHelper.addChainTitleKey,
       children: [
         Form(
           key: chainFormKey,
@@ -1438,6 +1456,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
               ),
             Expanded(
               child: Padding(
+                key: KeyHelper.addChainKey,
                 padding: const EdgeInsets.all(8.0),
                 child: Semantics(
                   label: "Editable Chain of Activities",
@@ -1460,7 +1479,10 @@ class _AddChainScreenState extends State<AddChainScreen> {
             ),
             if ((addingDurationToActivity || addingImageToActivity) &&
                 tempChain.title.isNotEmpty)
-              activitySpecificationForm,
+              Container(
+                key: KeyHelper.addChainAddActivitySpecificationBarKey,
+                child: activitySpecificationForm,
+              ),
             Container(
               decoration: BoxDecoration(
                 color: Theme.of(context).primaryColor,
@@ -1473,6 +1495,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
                     child: SizedBox(
                       // width: appWidth * 0.21,
                       child: IconButton(
+                        key: KeyHelper.addChainSaveAndExitKey,
                         onPressed: saveAndExit,
                         icon: const Icon(Icons.arrow_back),
                       ),
@@ -1494,6 +1517,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
                   if (!updatingSystemWaitActivityInDB &&
                       tempChain.title.isNotEmpty)
                     Expanded(
+                      key: KeyHelper.addChainAddActivityBarKey,
                       child: TextField(
                         cursorColor: Theme.of(context).shadowColor,
                         focusNode: addActivityFocus,

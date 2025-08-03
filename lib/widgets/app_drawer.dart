@@ -4,7 +4,6 @@ import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/screens/add_chain_screen.dart';
 import 'package:chain_activities/screens/settings_screen.dart';
 import 'package:chain_activities/screens/view_chain_screen.dart';
-import 'package:chain_activities/tutorial/screens/chain_list_screen_tutorial.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -60,8 +59,9 @@ class AppDrawer extends StatelessWidget {
                     while (nav.canPop()) {
                       nav.pop();
                     }
-                    await chainList.loadSampleChainsForTutorial();
-                    nav.pushReplacementNamed(ChainListScreenTutorial.routename);
+                    await chainList.setSetting(
+                        tutorialChainListScreen, trueSettingValue);
+                    nav.pushReplacementNamed(ChainListScreen.routename);
                   },
                 ),
                 //const Divider(),
