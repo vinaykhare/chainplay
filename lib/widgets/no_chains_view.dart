@@ -23,7 +23,7 @@ class NoChainsView extends StatelessWidget {
           buttonText: "Create",
           buttonSubText: "Your Own Chain of Timers.",
           logo: Icon(
-            Icons.create_outlined,
+            Icons.add_box_outlined,
             size: 50,
           ),
         ),
