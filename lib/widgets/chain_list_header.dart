@@ -1,4 +1,5 @@
 import 'package:chain_activities/helpers/constants.dart';
+import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/screens/add_chain_screen.dart';
@@ -15,12 +16,16 @@ class ChainListHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      key: KeyHelper.homeChainAndPlayKey,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
           child: ListTile(
             leading: InkWell(
-              child: Image.asset(assetMap["logoImage"]!),
+              child: Image.asset(
+                key: KeyHelper.chainAndPlayTitle,
+                assetMap["logoImage"]!,
+              ),
               onTap: () {
                 ChainList chainList =
                     Provider.of<ChainList>(context, listen: false);
@@ -42,6 +47,7 @@ class ChainListHeader extends StatelessWidget {
         Semantics(
           label: "Create New Chain",
           child: IconButton(
+            key: KeyHelper.createNewChainButtonKey,
             onPressed: () {
               Navigator.of(context)
                   .pushReplacementNamed(AddChainScreen.routename);
@@ -55,6 +61,7 @@ class ChainListHeader extends StatelessWidget {
         Semantics(
           label: "Upload a chain in json format.",
           child: IconButton(
+            key: KeyHelper.uploadChainButtonKey,
             onPressed: () async {
               NavigatorState nav = Navigator.of(context);
               ChainList chainList =

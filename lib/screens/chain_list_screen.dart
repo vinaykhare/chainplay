@@ -2,7 +2,6 @@ import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/screens/search_chain_screen.dart';
 import 'package:chain_activities/tutorial/tutorial_coach.dart';
-import 'package:chain_activities/tutorial/widgets/chain_list_header_tutorial.dart';
 import 'package:chain_activities/tutorial/widgets/list_of_chains_tutorial.dart';
 import 'package:chain_activities/widgets/chain_list_header.dart';
 import 'package:chain_activities/widgets/list_of_chains.dart';
@@ -135,11 +134,7 @@ class _ChainListScreenState extends State<ChainListScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (chainList.getSettingByKey(tutorialChainListScreen).value ==
-                    trueSettingValue)
-                  const ChainListHeaderTutorial()
-                else
-                  const ChainListHeader(),
+                const ChainListHeader(),
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.all(5),

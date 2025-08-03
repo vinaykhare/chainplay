@@ -100,6 +100,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     settings = chainList.systemSettings;
+    double appHeight = MediaQuery.of(context).size.height -
+        // (appBarWidget.preferredSize.height * 1) -
+        MediaQuery.of(context).viewPadding.top;
     return Semantics(
       label: "App Settings Screen",
       child: PopScope(
@@ -118,11 +121,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 // const ResetApp(),
                 //const ShowBannerAd(),
-                Expanded(
-                  child: Center(
-                    child: Image.asset(
-                      assetMap["logoImage"]!,
-                      //fit: BoxFit.cover,
+                SizedBox(
+                  height: appHeight * 0.1,
+                  child: ListTile(
+                    leading: InkWell(
+                      child: Image.asset(
+                        assetMap["logoImage"]!,
+                      ),
+                      onTap: () {
+                        ChainList chainList =
+                            Provider.of<ChainList>(context, listen: false);
+                        chainList.refresh();
+                      },
+                    ),
+                    title: Text(
+                      "ChainPlay",
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    subtitle: Text(
+                      "CHAIN THE ACTIVITIES\n& PLAY IT",
+                      style: Theme.of(context).textTheme.titleSmall,
                     ),
                   ),
                 ),
