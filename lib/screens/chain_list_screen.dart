@@ -1,8 +1,6 @@
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/helpers/key_helper.dart';
-import 'package:chain_activities/screens/search_chain_screen.dart';
 import 'package:chain_activities/tutorial/tutorial_coach.dart';
-import 'package:chain_activities/tutorial/widgets/chain_list_header_tutorial.dart';
 import 'package:chain_activities/tutorial/widgets/list_of_chains_tutorial.dart';
 import 'package:chain_activities/widgets/chain_list_header.dart';
 import 'package:chain_activities/widgets/list_of_chains.dart';
@@ -58,75 +56,76 @@ class _ChainListScreenState extends State<ChainListScreen> {
       initialize = false;
     }
     List<Chain> chains = chainList.chains;
-    final appBarWidget = AppBar(
-      key: KeyHelper.chainListScreenAppBarkey,
-      backgroundColor: Theme.of(context).primaryColor,
-      centerTitle: true,
-      title: TextField(
-        key: KeyHelper.chainListSearchkey,
-        keyboardType: TextInputType.none,
-        cursorColor: Theme.of(context).cardColor,
-        showCursor: false,
-        onTap: () =>
-            Navigator.of(context).pushNamed(SearchChainScreen.routename),
-        decoration: InputDecoration(
-          floatingLabelBehavior: FloatingLabelBehavior.never,
-          label: const Text("Search Chains"),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.onPrimary,
-              width: 0,
-            ),
-            // borderSide: BorderSide.none,
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.error,
-              width: 0,
-            ),
-            // borderSide: BorderSide.none,
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-          ),
-          disabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.onPrimary,
-              width: 0,
-            ),
-            // borderSide: BorderSide.none,
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.onPrimary,
-              width: 0,
-            ),
-            // borderSide: BorderSide.none,
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-          ),
-          border: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.onPrimary,
-              width: 0,
-            ),
-            // borderSide: BorderSide.none,
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-          ),
-          filled: true,
-          prefixIcon: Icon(
-            Icons.search,
-            color: Theme.of(context).iconTheme.color,
-          ),
-          fillColor: Theme.of(context).scaffoldBackgroundColor,
-        ),
-      ),
-    );
+    // final appBarWidget = AppBar(
+    //   key: KeyHelper.chainListScreenAppBarkey,
+    //   backgroundColor: Theme.of(context).primaryColor,
+    //   centerTitle: true,
+    //   title: TextField(
+    //     key: KeyHelper.chainListSearchkey,
+    //     keyboardType: TextInputType.none,
+    //     cursorColor: Theme.of(context).cardColor,
+    //     showCursor: false,
+    //     onTap: () =>
+    //         Navigator.of(context).pushNamed(SearchChainScreen.routename),
+    //     decoration: InputDecoration(
+    //       floatingLabelBehavior: FloatingLabelBehavior.never,
+    //       label: const Text("Search Chains"),
+    //       enabledBorder: OutlineInputBorder(
+    //         borderSide: BorderSide(
+    //           color: Theme.of(context).colorScheme.onPrimary,
+    //           width: 0,
+    //         ),
+    //         // borderSide: BorderSide.none,
+    //         borderRadius: BorderRadius.all(Radius.circular(10)),
+    //       ),
+    //       errorBorder: OutlineInputBorder(
+    //         borderSide: BorderSide(
+    //           color: Theme.of(context).colorScheme.error,
+    //           width: 0,
+    //         ),
+    //         // borderSide: BorderSide.none,
+    //         borderRadius: BorderRadius.all(Radius.circular(10)),
+    //       ),
+    //       disabledBorder: OutlineInputBorder(
+    //         borderSide: BorderSide(
+    //           color: Theme.of(context).colorScheme.onPrimary,
+    //           width: 0,
+    //         ),
+    //         // borderSide: BorderSide.none,
+    //         borderRadius: BorderRadius.all(Radius.circular(10)),
+    //       ),
+    //       focusedBorder: OutlineInputBorder(
+    //         borderSide: BorderSide(
+    //           color: Theme.of(context).colorScheme.onPrimary,
+    //           width: 0,
+    //         ),
+    //         // borderSide: BorderSide.none,
+    //         borderRadius: BorderRadius.all(Radius.circular(10)),
+    //       ),
+    //       border: OutlineInputBorder(
+    //         borderSide: BorderSide(
+    //           color: Theme.of(context).colorScheme.onPrimary,
+    //           width: 0,
+    //         ),
+    //         // borderSide: BorderSide.none,
+    //         borderRadius: BorderRadius.all(Radius.circular(10)),
+    //       ),
+    //       filled: true,
+    //       prefixIcon: Icon(
+    //         Icons.search,
+    //         color: Theme.of(context).iconTheme.color,
+    //       ),
+    //       fillColor: Theme.of(context).scaffoldBackgroundColor,
+    //     ),
+    //   ),
+    // );
     // double appHeight =
     //     MediaQuery.of(context).size.height - appBarWidget.preferredSize.height;
     return Semantics(
       label: "Home Screen with list of chains and other options.",
       child: Scaffold(
-        drawer: const AppDrawer(),
+        key: KeyHelper.scaffoldChainListKey,
+        endDrawer: AppDrawer(),
         body: SafeArea(
           child: Container(
             decoration: BoxDecoration(
@@ -135,11 +134,7 @@ class _ChainListScreenState extends State<ChainListScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (chainList.getSettingByKey(tutorialChainListScreen).value ==
-                    trueSettingValue)
-                  const ChainListHeaderTutorial()
-                else
-                  const ChainListHeader(),
+                const ChainListHeader(),
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.all(5),
@@ -184,7 +179,7 @@ class _ChainListScreenState extends State<ChainListScreen> {
                     ),
                   ),
                 ),
-                appBarWidget,
+                // appBarWidget,
               ],
             ),
           ),

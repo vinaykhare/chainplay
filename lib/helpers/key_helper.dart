@@ -4,10 +4,16 @@ class KeyHelper {
   // Notification Routing
   static GlobalKey<NavigatorState>? navigatorKey =
       GlobalKey<NavigatorState>(debugLabel: "Chain_Activities_Debug_NavState");
+  //ScaffoldState for App Drawer
+  static GlobalKey<ScaffoldState> scaffoldChainListKey =
+      GlobalKey<ScaffoldState>();
+  static GlobalKey<ScaffoldState> scaffoldSettingsKey =
+      GlobalKey<ScaffoldState>();
 
-  // ChainListScreen
+  // ChainListHeader under Chain List Screen
   static GlobalKey chainListScreenAppBarkey = GlobalKey();
   static GlobalKey chainListSearchkey = GlobalKey();
+  static GlobalKey chainListAppDrwaerkey = GlobalKey();
 
   //View Chain Screen
   static GlobalKey viewChainKey = GlobalKey();

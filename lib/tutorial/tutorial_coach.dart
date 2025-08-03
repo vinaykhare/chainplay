@@ -453,8 +453,8 @@ class TutorialCoach {
               ),
             ),
             "globalKey": KeyHelper.chainListSearchkey,
-            "focusAlign": Alignment.topCenter,
-            "contentAlign": ContentAlign.top,
+            "focusAlign": Alignment.bottomCenter,
+            "contentAlign": ContentAlign.bottom,
           },
           {
             "title":

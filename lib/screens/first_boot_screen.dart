@@ -57,6 +57,7 @@ class _FirstBootScreenState extends State<FirstBootScreen> {
                   Container(
                       margin: const EdgeInsets.all(10),
                       padding: const EdgeInsets.all(10),
+                      width: double.infinity,
                       decoration: BoxDecoration(
                         color: Theme.of(context).scaffoldBackgroundColor,
                         borderRadius: BorderRadius.circular(30),

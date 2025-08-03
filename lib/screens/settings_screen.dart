@@ -1,5 +1,6 @@
-import 'package:chain_activities/helpers/constants.dart';
+import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/widgets/db_settings.dart';
+import 'package:chain_activities/widgets/settings_header.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -110,7 +111,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           }
         },
         child: Scaffold(
-          drawer: const AppDrawer(),
+          key: KeyHelper.scaffoldSettingsKey,
+          endDrawer: const AppDrawer(),
           body: SafeArea(
             child: Column(
               //mainAxisAlignment: MainAxisAlignment.end,
@@ -118,14 +120,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 // const ResetApp(),
                 //const ShowBannerAd(),
-                Expanded(
-                  child: Center(
-                    child: Image.asset(
-                      assetMap["logoImage"]!,
-                      //fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
+                const SettingsHeader(),
                 // Padding(
                 //   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 //   child: Text(
@@ -193,10 +188,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: DbSettings(),
                 ),
                 const ShowBannerAd(),
-                AppBar(
-                  centerTitle: true,
-                  title: const Text("Settings"),
-                )
+                // AppBar(
+                //   centerTitle: true,
+                //   title: const Text("Settings"),
+                // )
               ],
             ),
           ),
