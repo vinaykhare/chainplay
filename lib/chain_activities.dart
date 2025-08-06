@@ -2,6 +2,7 @@ import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/screens/pixabay_selection_screen.dart';
 import 'package:chain_activities/screens/view_chain_screen.dart';
+import 'package:chain_activities/tutorial/screens/play_wait_activity_screen_tutorial.dart';
 import 'package:chain_activities/widgets/my_error_widget.dart';
 import 'package:chain_activities/widgets/palette_dark.dart';
 import 'package:chain_activities/widgets/palette_light_amber.dart';
@@ -329,6 +330,8 @@ class ChainActivities extends StatelessWidget {
         SearchChainScreen.routename: (context) => const SearchChainScreen(),
         SettingsScreen.routename: (context) => const SettingsScreen(),
         PlayWaitActivity.routename: (context) => const PlayWaitActivity(),
+        PlayWaitActivityScreenTutorial.routename: (context) =>
+            const PlayWaitActivityScreenTutorial(),
         LoadScreen.routename: (context) => const LoadScreen(),
         FirstBootScreen.routename: (context) => const FirstBootScreen(),
         ViewChain.routename: (context) => const ViewChain(),

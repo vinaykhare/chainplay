@@ -729,7 +729,8 @@ class _AddChainScreenState extends State<AddChainScreen> {
       });
       ChainList chainList = Provider.of<ChainList>(context, listen: true);
       if (chainList.getSettingByKey(tutorialAddChainScreen).value ==
-          trueSettingValue) {
+              trueSettingValue &&
+          tempChain.activities.isNotEmpty) {
         addingDurationToActivity = true;
         addingImageToActivity = true;
         TutorialCoach tutorialCoach = TutorialCoach(

@@ -452,7 +452,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                   child: Row(
                     children: [
                       const Icon(
-                        Icons.arrow_back,
+                        Icons.timeline,
                       ),
                       Container(
                         margin: EdgeInsets.only(

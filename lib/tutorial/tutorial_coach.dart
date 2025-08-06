@@ -5,6 +5,7 @@ import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/helpers/key_helper.dart';
 
 import 'package:chain_activities/models/chain_list.dart';
+import 'package:chain_activities/tutorial/screens/play_wait_activity_screen_tutorial.dart';
 import 'package:chain_activities/widgets/cat_text_button.dart';
 import 'package:chain_activities/widgets/home_button_widget.dart';
 import 'package:flutter/material.dart';
@@ -26,13 +27,7 @@ class TutorialCoach {
 
   List<TargetFocus> targets = [];
   late TutorialCoachMark tutorialCoachMark;
-  bool navToViewChainCompleted = false,
-      navToAddChainCompleted = false,
-      navBackToViewChainCompleted = false,
-      navToPlayChainCompleted = false,
-      navToPausedChainCompleted = false,
-      navToChainExecutionStatusScreen = false,
-      navToComeBackToHome = false;
+  bool navToPlayChainCompleted = false, navToPlayWaitCompleted = false;
 
   TutorialCoachMark createTutorial() {
     // Start Load Sample Chains
@@ -142,19 +137,11 @@ class TutorialCoach {
     chainList.stopSpeech();
     // chainList.setSetting(tutorialType, falseSettingValue);
     chainList.refresh();
-    bool? repeatThisTutorial =
-        await CommonUI().dialogCheckPlayTutorialAgain(context, tutorialType);
-    if (repeatThisTutorial != null && repeatThisTutorial == true) {
-      await chainList.setSetting(
-        tutorialType,
-        trueSettingValue,
-      );
-    } else {
-      await chainList.setSetting(
-        tutorialType,
-        falseSettingValue,
-      );
-    }
+    await CommonUI().dialogCheckPlayTutorialAgain(context, tutorialType);
+    await chainList.setSetting(
+      tutorialType,
+      falseSettingValue,
+    );
   }
 
   void showTutorial() {
@@ -177,6 +164,35 @@ class TutorialCoach {
   Future<void> navigateToNexScreen(
       BuildContext context, TargetFocus target) async {
     switch (target.identify) {
+      case idToGoToPlayWaitTutorialScreen:
+        if (navToPlayWaitCompleted == true) {
+          break;
+        }
+        navToPlayWaitCompleted = true;
+        NavigatorState nav = Navigator.of(context);
+
+        try {
+          nav.pushNamed(
+            PlayWaitActivityScreenTutorial.routename,
+          );
+        } catch (e) {
+          endTutorial(context);
+        }
+
+        break;
+      case idToGoToPlayChainScreen:
+        if (navToPlayChainCompleted == true) {
+          break;
+        }
+        navToPlayChainCompleted = true;
+        NavigatorState nav = Navigator.of(context);
+        try {
+          nav.pop();
+        } catch (e) {
+          endTutorial(context);
+        }
+
+        break;
       default:
       // NavigatorState nav = Navigator.of(context);
       // nav.pop();
@@ -551,32 +567,33 @@ class TutorialCoach {
             "focusAlign": Alignment.bottomCenter,
             "contentAlign": ContentAlign.bottom,
           },
-          {
-            "title": idToEndChainListScreenTutorial,
-            "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50),
-                color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
-              ),
-              child: ListView(
-                shrinkWrap: true,
-                children: [
-                  Text(
-                    "Sample Workout Chain",
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  Text(
-                    "Lets take this Sample Workout Chain as an example to understand a Chain and its features.",
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                ],
-              ),
-            ),
-            "globalKey": KeyHelper.sampleWorkoutChainListItemKey,
-            "focusAlign": Alignment.bottomCenter,
-            "contentAlign": ContentAlign.bottom,
-          },
+          // {
+          //   "title":
+          //       "Do you want to reload this tutorial on loading the home screen again?",
+          //   "widgetToShow": Container(
+          //     padding: EdgeInsets.symmetric(horizontal: 10),
+          //     decoration: BoxDecoration(
+          //       borderRadius: BorderRadius.circular(50),
+          //       color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
+          //     ),
+          //     child: ListView(
+          //       shrinkWrap: true,
+          //       children: [
+          //         Text(
+          //           "Sample Workout Chain",
+          //           style: Theme.of(context).textTheme.headlineSmall,
+          //         ),
+          //         Text(
+          //           "Lets take this Sample Workout Chain as an example to understand a Chain and its features.",
+          //           style: Theme.of(context).textTheme.bodyLarge,
+          //         ),
+          //       ],
+          //     ),
+          //   ),
+          //   "globalKey": KeyHelper.sampleWorkoutChainListItemKey,
+          //   "focusAlign": Alignment.bottomCenter,
+          //   "contentAlign": ContentAlign.bottom,
+          // },
         ];
         break;
       case tutorialViewChainScreen:
@@ -1216,8 +1233,7 @@ class TutorialCoach {
             "contentAlign": ContentAlign.top,
           },
           {
-            "title":
-                "Press the forward button to go back to Chain Activity Execution screen, where we can resume the Chain Activity Interactively. If the chain is running in background, and refresh button is also visible on the page then you will get the option to force complete the activity running in background and enter the interactive view of chain.",
+            "title": idToGoToPlayWaitTutorialScreen,
             "widgetToShow": Container(
               padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
@@ -1242,283 +1258,278 @@ class TutorialCoach {
             "focusAlign": Alignment.topCenter,
             "contentAlign": ContentAlign.top,
           },
+          {
+            "title":
+                "This is a Quick tutorial to Brief you with Play Activity Screen and its functions.",
+            "widgetToShow": Container(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
+              ),
+              child: SingleChildScrollView(
+                child: ListView(
+                  shrinkWrap: true,
+                  children: [
+                    Text(
+                      "Play Chain Activity",
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    Text(
+                      "This is a Quick tutorial to Brief you with Play Activity Screen and its functions.",
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(8.0),
+                      margin: const EdgeInsets.only(top: 8.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50),
+                        color: Theme.of(context)
+                            .scaffoldBackgroundColor
+                            .withValues(alpha: 0.5),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Tap the ",
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                              Text(
+                                "Highlighted Area",
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color:
+                                          Theme.of(context).colorScheme.error,
+                                    ),
+                              ),
+                              Text(
+                                " to move ahead",
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Tap on ",
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                              Text(
+                                "[X] Close",
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color:
+                                          Theme.of(context).colorScheme.error,
+                                    ),
+                              ),
+                              Text(
+                                " to end this tutorial.",
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            "globalKey": KeyHelper.playWaitTitleKey,
+            "focusAlign": Alignment.topCenter,
+            "contentAlign": ContentAlign.top,
+          },
+          {
+            "title":
+                "Chain Plays interactively activity by activity. This screen runs an individual activity of a chain interactively.",
+            "widgetToShow": Text(
+              "An activity of a Chain runs interactively on this screen.",
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            "globalKey": KeyHelper.playWaitKey,
+            "focusAlign": Alignment.topCenter,
+            "contentAlign": ContentAlign.bottom,
+          },
+          {
+            "title":
+                "We can play the chain in Landscape view too. use this button to switch between Portrait and Landscape.",
+            "widgetToShow": Container(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
+              ),
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  Text(
+                    "Switch between Landscape & Portrait",
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  Text(
+                    "use this button to switch between Portrait and Landscape.",
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+            ),
+            "globalKey": KeyHelper.playWaitRotateScreenKey,
+            "focusAlign": Alignment.topCenter,
+            "contentAlign": ContentAlign.top,
+          },
+          {
+            "title":
+                "We can pause the chain activity and resume it back with this button and hence the chain.",
+            "widgetToShow": Container(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
+              ),
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  Text(
+                    "Pause or Resume the Chain Activity",
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  Text(
+                    "We can pause the chain activity and resume it back with this button and hence the chain.",
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+            ),
+            "globalKey": KeyHelper.playWaitPlayPauseKey,
+            "focusAlign": Alignment.topCenter,
+            "contentAlign": ContentAlign.top,
+          },
+          {
+            "title":
+                "If Timer is taking long and you can't keep looking at the screen for so long, then use this button to Go Back to Chain Execution Status Screen and Notify when Activity is done.",
+            "widgetToShow": Container(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
+              ),
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  Text(
+                    "Go Back to Chain Execution Status & Run in Background",
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  Text(
+                    "If Timer is taking long and you can't keep looking at the screen for so long, then use this buttong to Go Back to Chain Execution Status Screen and Notify when Activity is done.",
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+            ),
+            "globalKey": KeyHelper.playWaitGoBackAndNotifyKey,
+            "focusAlign": Alignment.topCenter,
+            "contentAlign": ContentAlign.top,
+          },
+          {
+            "title":
+                "Timer keeps ticking for the activity with Timer duration here. If the activity does not have timer then we get an option to press Done and complete the activty.",
+            "widgetToShow": Container(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
+              ),
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  Text(
+                    "Acitivty Timer or Button to complete the Activty",
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  Text(
+                    "This section of screen shows the timer running in reverse. Activity will auto complete on completion of this Timer. For the Activities without Duration, we get the option to mark the activity as done here.",
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+            ),
+            "globalKey": KeyHelper.playWaitTimerKey,
+            "focusAlign": Alignment.topCenter,
+            "contentAlign": ContentAlign.top,
+          },
+          {
+            "title":
+                "This button helps you to force complete the current activity and move to the next activity.",
+            "widgetToShow": Container(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
+              ),
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  Text(
+                    "Go to next Activity of this Chain",
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  Text(
+                    "This button helps you to force complete the current activity and move to the next activity.",
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+            ),
+            "globalKey": KeyHelper.playWaitForwardKey,
+            "focusAlign": Alignment.topCenter,
+            "contentAlign": ContentAlign.top,
+          },
+          {
+            "title": idToGoToPlayChainScreen,
+            "widgetToShow": Container(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
+              ),
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  Text(
+                    "Pause Chain and Go to Chain Execution Status screen.",
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  Text(
+                    "Press the back button to pause the Chain (if running) and go to the Screen where we can see the Chain Execution Status and take actions on the Chain.",
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+            ),
+            "globalKey": KeyHelper.playWaitBackwardKey,
+            "focusAlign": Alignment.topCenter,
+            "contentAlign": ContentAlign.top,
+          },
         ];
         break;
-      // case tutorialPlayWaitScreen:
-      //   tutorialItemType = [
-      //     {
-      //       "title":
-      //           "This is a Quick tutorial to Brief you with Play Activity Screen and its functions.",
-      //       "widgetToShow": Container(
-      //         padding: EdgeInsets.symmetric(horizontal: 10),
-      //         decoration: BoxDecoration(
-      //           borderRadius: BorderRadius.circular(50),
-      //           color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
-      //         ),
-      //         child: SingleChildScrollView(
-      //           child: ListView(
-      //             shrinkWrap: true,
-      //             children: [
-      //               Text(
-      //                 "Play Chain Activity",
-      //                 style: Theme.of(context).textTheme.headlineSmall,
-      //               ),
-      //               Text(
-      //                 "This is a Quick tutorial to Brief you with Play Activity Screen and its functions.",
-      //                 style: Theme.of(context).textTheme.bodyLarge,
-      //               ),
-      //               Container(
-      //                 padding: const EdgeInsets.all(8.0),
-      //                 margin: const EdgeInsets.only(top: 8.0),
-      //                 decoration: BoxDecoration(
-      //                   borderRadius: BorderRadius.circular(50),
-      //                   color: Theme.of(context)
-      //                       .scaffoldBackgroundColor
-      //                       .withValues(alpha: 0.5),
-      //                 ),
-      //                 child: Column(
-      //                   mainAxisAlignment: MainAxisAlignment.center,
-      //                   children: [
-      //                     Row(
-      //                       mainAxisAlignment: MainAxisAlignment.center,
-      //                       children: [
-      //                         Text(
-      //                           "Tap the ",
-      //                           textAlign: TextAlign.center,
-      //                           style: Theme.of(context).textTheme.bodyLarge,
-      //                         ),
-      //                         Text(
-      //                           "Highlighted Area",
-      //                           textAlign: TextAlign.center,
-      //                           style: Theme.of(context)
-      //                               .textTheme
-      //                               .bodyLarge!
-      //                               .copyWith(
-      //                                 fontWeight: FontWeight.bold,
-      //                                 color:
-      //                                     Theme.of(context).colorScheme.error,
-      //                               ),
-      //                         ),
-      //                         Text(
-      //                           " to move ahead",
-      //                           textAlign: TextAlign.center,
-      //                           style: Theme.of(context).textTheme.bodyLarge,
-      //                         ),
-      //                       ],
-      //                     ),
-      //                     Row(
-      //                       mainAxisAlignment: MainAxisAlignment.center,
-      //                       children: [
-      //                         Text(
-      //                           "Tap on ",
-      //                           textAlign: TextAlign.center,
-      //                           style: Theme.of(context).textTheme.bodyLarge,
-      //                         ),
-      //                         Text(
-      //                           "[X] Close",
-      //                           textAlign: TextAlign.center,
-      //                           style: Theme.of(context)
-      //                               .textTheme
-      //                               .bodyLarge!
-      //                               .copyWith(
-      //                                 fontWeight: FontWeight.bold,
-      //                                 color:
-      //                                     Theme.of(context).colorScheme.error,
-      //                               ),
-      //                         ),
-      //                         Text(
-      //                           " to end this tutorial.",
-      //                           textAlign: TextAlign.center,
-      //                           style: Theme.of(context).textTheme.bodyLarge,
-      //                         ),
-      //                       ],
-      //                     ),
-      //                   ],
-      //                 ),
-      //               ),
-      //             ],
-      //           ),
-      //         ),
-      //       ),
-      //       "globalKey": KeyHelper.playWaitTitleKey,
-      //       "focusAlign": Alignment.topCenter,
-      //       "contentAlign": ContentAlign.top,
-      //     },
-      //     {
-      //       "title":
-      //           "Chain Plays interactively activity by activity. This screen runs an individual activity of a chain interactively.",
-      //       "widgetToShow": Text(
-      //         "An activity of a Chain runs interactively on this screen.",
-      //         style: Theme.of(context).textTheme.headlineSmall,
-      //       ),
-      //       "globalKey": KeyHelper.playWaitKey,
-      //       "focusAlign": Alignment.topCenter,
-      //       "contentAlign": ContentAlign.bottom,
-      //     },
-      //     {
-      //       "title":
-      //           "We can play the chain in Landscape view too. use this button to switch between Portrait and Landscape.",
-      //       "widgetToShow": Container(
-      //         padding: EdgeInsets.symmetric(horizontal: 10),
-      //         decoration: BoxDecoration(
-      //           borderRadius: BorderRadius.circular(50),
-      //           color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
-      //         ),
-      //         child: ListView(
-      //           shrinkWrap: true,
-      //           children: [
-      //             Text(
-      //               "Switch between Landscape & Portrait",
-      //               style: Theme.of(context).textTheme.headlineSmall,
-      //             ),
-      //             Text(
-      //               "use this button to switch between Portrait and Landscape.",
-      //               style: Theme.of(context).textTheme.bodyLarge,
-      //             ),
-      //           ],
-      //         ),
-      //       ),
-      //       "globalKey": KeyHelper.playWaitRotateScreenKey,
-      //       "focusAlign": Alignment.topCenter,
-      //       "contentAlign": ContentAlign.top,
-      //     },
-      //     {
-      //       "title":
-      //           "We can pause the chain activity and resume it back with this button and hence the chain.",
-      //       "widgetToShow": Container(
-      //         padding: EdgeInsets.symmetric(horizontal: 10),
-      //         decoration: BoxDecoration(
-      //           borderRadius: BorderRadius.circular(50),
-      //           color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
-      //         ),
-      //         child: ListView(
-      //           shrinkWrap: true,
-      //           children: [
-      //             Text(
-      //               "Pause or Resume the Chain Activity",
-      //               style: Theme.of(context).textTheme.headlineSmall,
-      //             ),
-      //             Text(
-      //               "We can pause the chain activity and resume it back with this button and hence the chain.",
-      //               style: Theme.of(context).textTheme.bodyLarge,
-      //             ),
-      //           ],
-      //         ),
-      //       ),
-      //       "globalKey": KeyHelper.playWaitPlayPauseKey,
-      //       "focusAlign": Alignment.topCenter,
-      //       "contentAlign": ContentAlign.top,
-      //     },
-      //     {
-      //       "title":
-      //           "If Timer is taking long and you can't keep looking at the screen for so long, then use this button to Go Back to Chain Execution Status Screen and Notify when Activity is done.",
-      //       "widgetToShow": Container(
-      //         padding: EdgeInsets.symmetric(horizontal: 10),
-      //         decoration: BoxDecoration(
-      //           borderRadius: BorderRadius.circular(50),
-      //           color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
-      //         ),
-      //         child: ListView(
-      //           shrinkWrap: true,
-      //           children: [
-      //             Text(
-      //               "Go Back to Chain Execution Status & Run in Background",
-      //               style: Theme.of(context).textTheme.headlineSmall,
-      //             ),
-      //             Text(
-      //               "If Timer is taking long and you can't keep looking at the screen for so long, then use this buttong to Go Back to Chain Execution Status Screen and Notify when Activity is done.",
-      //               style: Theme.of(context).textTheme.bodyLarge,
-      //             ),
-      //           ],
-      //         ),
-      //       ),
-      //       "globalKey": KeyHelper.playWaitGoBackAndNotifyKey,
-      //       "focusAlign": Alignment.topCenter,
-      //       "contentAlign": ContentAlign.top,
-      //     },
-      //     {
-      //       "title":
-      //           "Timer keeps ticking for the activity with Timer duration here. If the activity does not have timer then we get an option to press Done and complete the activty.",
-      //       "widgetToShow": Container(
-      //         padding: EdgeInsets.symmetric(horizontal: 10),
-      //         decoration: BoxDecoration(
-      //           borderRadius: BorderRadius.circular(50),
-      //           color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
-      //         ),
-      //         child: ListView(
-      //           shrinkWrap: true,
-      //           children: [
-      //             Text(
-      //               "Acitivty Timer or Button to complete the Activty",
-      //               style: Theme.of(context).textTheme.headlineSmall,
-      //             ),
-      //             Text(
-      //               "This section of screen shows the timer running in reverse. Activity will auto complete on completion of this Timer. For the Activities without Duration, we get the option to mark the activity as done here.",
-      //               style: Theme.of(context).textTheme.bodyLarge,
-      //             ),
-      //           ],
-      //         ),
-      //       ),
-      //       "globalKey": KeyHelper.playWaitTimerKey,
-      //       "focusAlign": Alignment.topCenter,
-      //       "contentAlign": ContentAlign.top,
-      //     },
-      //     {
-      //       "title":
-      //           "This button helps you to force complete the current activity and move to the next activity.",
-      //       "widgetToShow": Container(
-      //         padding: EdgeInsets.symmetric(horizontal: 10),
-      //         decoration: BoxDecoration(
-      //           borderRadius: BorderRadius.circular(50),
-      //           color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
-      //         ),
-      //         child: ListView(
-      //           shrinkWrap: true,
-      //           children: [
-      //             Text(
-      //               "Go to next Activity of this Chain",
-      //               style: Theme.of(context).textTheme.headlineSmall,
-      //             ),
-      //             Text(
-      //               "This button helps you to force complete the current activity and move to the next activity.",
-      //               style: Theme.of(context).textTheme.bodyLarge,
-      //             ),
-      //           ],
-      //         ),
-      //       ),
-      //       "globalKey": KeyHelper.playWaitForwardKey,
-      //       "focusAlign": Alignment.topCenter,
-      //       "contentAlign": ContentAlign.top,
-      //     },
-      //     {
-      //       "title":
-      //           "Press the back button to pause the Chain (if running) and go to the Screen where we can see the Chain Execution Status and take actions on the Chain.",
-      //       "widgetToShow": Container(
-      //         padding: EdgeInsets.symmetric(horizontal: 10),
-      //         decoration: BoxDecoration(
-      //           borderRadius: BorderRadius.circular(50),
-      //           color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
-      //         ),
-      //         child: ListView(
-      //           shrinkWrap: true,
-      //           children: [
-      //             Text(
-      //               "Pause Chain and Go to Chain Execution Status screen.",
-      //               style: Theme.of(context).textTheme.headlineSmall,
-      //             ),
-      //             Text(
-      //               "Press the back button to pause the Chain (if running) and go to the Screen where we can see the Chain Execution Status and take actions on the Chain.",
-      //               style: Theme.of(context).textTheme.bodyLarge,
-      //             ),
-      //           ],
-      //         ),
-      //       ),
-      //       "globalKey": KeyHelper.playWaitBackwardKey,
-      //       "focusAlign": Alignment.topCenter,
-      //       "contentAlign": ContentAlign.top,
-      //     },
-      //   ];
-      //   break;
       case tutorialAddChainScreen:
         tutorialItemType = [
           {

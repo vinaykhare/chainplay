@@ -188,25 +188,16 @@ class CommonUI {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("$tutorialType AGAIN?"),
-          content: const Text(
-              "Do you want this tutorial to load again on next screen launch?"),
+          title: Text("LAUNCH THIS TUTORIAL AGAIN?"),
+          content: Text(
+              "To Launch this tutorial again, Enable \n$tutorialType\nunder the settings."),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
               child: Text(
-                "Yes, show me again.",
+                "Ok",
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.error,
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text(
-                "No, I know how it works.",
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.inverseSurface,
                 ),
               ),
             ),
