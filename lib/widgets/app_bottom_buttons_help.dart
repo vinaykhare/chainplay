@@ -18,7 +18,7 @@ class AppBottomButtonsHelp extends StatelessWidget {
             ),
             Expanded(
               child: Text(
-                "Opens the App Drawer, with options to navigate to Chain List, How it Works and other options.",
+                "Opens the App Drawer with options to create the chain and change settings.",
                 style: Theme.of(context).textTheme.labelLarge,
               ),
             ),

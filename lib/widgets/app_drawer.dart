@@ -17,163 +17,157 @@ class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ChainList chainList = Provider.of<ChainList>(context, listen: false);
+    // ChainList chainList = Provider.of<ChainList>(context, listen: false);
     return SafeArea(
       //top: false,
       child: Drawer(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            ListTile(
-              onTap: () {
-                // while (Navigator.of(context).canPop()) {
-                //   Navigator.of(context).pop();
-                // }
-                Navigator.of(context)
-                    .pushReplacementNamed(ChainListScreen.routename);
-              },
-              leading: Image.asset(assetMap["logoImage"]!),
-              title: Text(
-                "ChainPlay",
-                style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-              subtitle: Text(
-                "CHAIN THE ACTIVITIES\n& PLAY IT",
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
-            ),
-
-            Column(
-              children: [
-                const Divider(),
-                ListTile(
-                  leading: const Icon(Icons.help),
-                  title: Text(
-                    'How it Works?',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  onTap: () async {
-                    NavigatorState nav = Navigator.of(context);
-                    while (nav.canPop()) {
-                      nav.pop();
-                    }
-                    await chainList.setSetting(
-                        tutorialChainListScreen, trueSettingValue);
-                    nav.pushReplacementNamed(ChainListScreen.routename);
-                  },
-                ),
-                //const Divider(),
-                ListTile(
-                  leading: const Icon(Icons.add_circle),
-                  title: Text(
-                    'Add Sample Chains',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  subtitle: Text(
-                    "made of Timer & Manual Tasks",
-                    style: Theme.of(context).textTheme.labelSmall,
-                  ),
-                  onTap: () async {
-                    NavigatorState nav = Navigator.of(context);
-                    while (Navigator.of(context).canPop()) {
-                      Navigator.of(context).pop();
-                    }
-                    await Provider.of<ChainList>(context, listen: false)
-                        .loadSampleChainsFromAssets();
-                    nav.pushReplacementNamed(ChainListScreen.routename);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.create,
-                    size: 30,
-                  ),
-                  title: Text(
-                    'Create Your Own Chain',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  subtitle: Text(
-                    "of Timer & Manual Tasks",
-                    style: Theme.of(context).textTheme.labelSmall,
-                  ),
-                  onTap: () {
-                    while (Navigator.of(context).canPop()) {
-                      Navigator.of(context).pop();
-                    }
+        child: Builder(builder: (ctx) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              ListTile(
+                onTap: () async {
+                  // while (Navigator.of(context).canPop()) {
+                  //   Navigator.of(context).pop();
+                  // }
+                  ModalRoute? modalRoute = ModalRoute.of(ctx);
+                  if (modalRoute != null &&
+                      (modalRoute.settings.name == ChainListScreen.routename ||
+                          modalRoute.settings.name == "/")) {
+                    Navigator.of(context).pop();
+                  } else {
                     Navigator.of(context)
-                        .pushReplacementNamed(AddChainScreen.routename);
-                  },
+                        .pushReplacementNamed(ChainListScreen.routename);
+                  }
+                },
+                leading: Image.asset(assetMap["logoImage"]!),
+                title: Text(
+                  "ChainPlay",
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.upload,
-                    size: 30,
-                  ),
-                  title: Text(
-                    'Upload a Chain',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  subtitle: Text(
-                    "shared or downloaded from ChainPlay",
-                    style: Theme.of(context).textTheme.labelSmall,
-                  ),
-                  onTap: () async {
-                    NavigatorState nav = Navigator.of(context);
-                    ChainList chainList =
-                        Provider.of<ChainList>(context, listen: false);
-                    FilePickerResult? result =
-                        await FilePicker.platform.pickFiles(
-                      type: FileType.custom,
-                      allowedExtensions: ["json"],
-                    );
+                subtitle: Text(
+                  "CHAIN THE ACTIVITIES\n& PLAY IT",
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+              ),
 
-                    if (result != null) {
-                      Chain? chain = await chainList
-                          .uploadChain(result.files.single.path!);
-                      nav.pushNamed(
-                        ViewChain.routename,
-                        arguments: {
-                          "chain": chain ?? Chain(),
-                          "savedInDb": false,
-                          "invalidChain": chain == null,
-                        },
-                      );
-                    } else {
-                      // User canceled the picker
-                    }
-                  },
-                ),
-              ],
-            ),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
+              Column(
                 children: [
                   const Divider(),
-                  const ShowBannerAd(),
-                  const Divider(),
+                  //const Divider(),
                   ListTile(
-                    leading: const Icon(Icons.settings),
+                    leading: const Icon(Icons.add_circle),
                     title: Text(
-                      'Settings',
+                      'Add Sample Chains',
                       style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    subtitle: Text(
+                      "made of Timer & Manual Tasks",
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
+                    onTap: () async {
+                      NavigatorState nav = Navigator.of(context);
+                      while (Navigator.of(context).canPop()) {
+                        Navigator.of(context).pop();
+                      }
+
+                      await Provider.of<ChainList>(context, listen: false)
+                          .loadSampleChainsFromAssets();
+                      nav.pushReplacementNamed(ChainListScreen.routename);
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(
+                      Icons.create,
+                      size: 30,
+                    ),
+                    title: Text(
+                      'Create Your Own Chain',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    subtitle: Text(
+                      "of Timer & Manual Tasks",
+                      style: Theme.of(context).textTheme.labelSmall,
                     ),
                     onTap: () {
                       while (Navigator.of(context).canPop()) {
                         Navigator.of(context).pop();
                       }
                       Navigator.of(context)
-                          .pushReplacementNamed(SettingsScreen.routename);
+                          .pushReplacementNamed(AddChainScreen.routename);
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(
+                      Icons.upload,
+                      size: 30,
+                    ),
+                    title: Text(
+                      'Upload a Chain',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    subtitle: Text(
+                      "shared or downloaded from ChainPlay",
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
+                    onTap: () async {
+                      NavigatorState nav = Navigator.of(context);
+                      ChainList chainList =
+                          Provider.of<ChainList>(context, listen: false);
+                      FilePickerResult? result =
+                          await FilePicker.platform.pickFiles(
+                        type: FileType.custom,
+                        allowedExtensions: ["json"],
+                      );
+
+                      if (result != null) {
+                        Chain? chain = await chainList
+                            .uploadChain(result.files.single.path!);
+                        nav.pushNamed(
+                          ViewChain.routename,
+                          arguments: {
+                            "chain": chain ?? Chain(),
+                            "savedInDb": false,
+                            "invalidChain": chain == null,
+                          },
+                        );
+                      } else {
+                        // User canceled the picker
+                      }
                     },
                   ),
                 ],
               ),
-            ),
-            //const Divider(),
-          ],
-        ),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    const Divider(),
+                    const ShowBannerAd(),
+                    const Divider(),
+                    ListTile(
+                      leading: const Icon(Icons.settings),
+                      title: Text(
+                        'Settings',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      onTap: () {
+                        while (Navigator.of(context).canPop()) {
+                          Navigator.of(context).pop();
+                        }
+                        Navigator.of(context)
+                            .pushReplacementNamed(SettingsScreen.routename);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              //const Divider(),
+            ],
+          );
+        }),
       ),
     );
   }

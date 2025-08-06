@@ -45,15 +45,15 @@ class NoChainsView extends StatelessWidget {
             size: 50,
           ),
         ),
-        HomeButtonWidget(
-          chainListFunction: "navigateToHelpScreen",
-          buttonText: "Know",
-          buttonSubText: "more about ChainPlay.",
-          logo: Icon(
-            Icons.help_outline,
-            size: 50,
-          ),
-        ),
+        // HomeButtonWidget(
+        //   chainListFunction: "navigateToHelpScreen",
+        //   buttonText: "Know",
+        //   buttonSubText: "more about ChainPlay.",
+        //   logo: Icon(
+        //     Icons.help_outline,
+        //     size: 50,
+        //   ),
+        // ),
       ],
     );
   }

@@ -1,6 +1,5 @@
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/models/chain_list.dart';
-import 'package:chain_activities/screens/chain_list_screen.dart';
 
 import 'package:chain_activities/widgets/db_settings.dart';
 
@@ -91,11 +90,11 @@ class _FirstBootScreenState extends State<FirstBootScreen> {
                         size: 35,
                       ),
                       onPressed: () async {
-                        NavigatorState nav = Navigator.of(context);
+                        // NavigatorState nav = Navigator.of(context);
                         //await chainList.dontShowHelpOnNextLoad();
                         await chainList.setSetting(
                             showHelpOnNextBootKey, falseSettingValue);
-                        nav.pushReplacementNamed(ChainListScreen.routename);
+                        // nav.pushReplacementNamed(ChainListScreen.routename);
                       },
                       label: const Text("Let's Chain & Play!"),
                     ),

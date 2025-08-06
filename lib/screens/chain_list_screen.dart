@@ -58,7 +58,6 @@ class _ChainListScreenState extends State<ChainListScreen> {
     }
     List<Chain> chains = chainList.chains;
     final appBarWidget = AppBar(
-      key: KeyHelper.chainListScreenAppBarkey,
       backgroundColor: Theme.of(context).primaryColor,
       centerTitle: true,
       title: TextField(

@@ -6,8 +6,26 @@ class KeyHelper {
       GlobalKey<NavigatorState>(debugLabel: "Chain_Activities_Debug_NavState");
 
   // ChainListScreen
-  static GlobalKey chainListScreenAppBarkey = GlobalKey();
   static GlobalKey chainListSearchkey = GlobalKey();
+
+  // ListOfChainsTutorial
+  static GlobalKey chainControlSummaryKey = GlobalKey();
+  static GlobalKey chainFiltersKey = GlobalKey();
+  static GlobalKey chainListKey = GlobalKey();
+  static GlobalKey sampleWorkoutChainListItemKey = GlobalKey();
+  static GlobalKey sampleDietChainListItemKey = GlobalKey();
+  static GlobalKey sampleMedicineChainListItemKey = GlobalKey();
+
+  // ChainListItem
+  static GlobalKey sampleWorkoutChainViewKey = GlobalKey();
+  static GlobalKey sampleDietChainViewKey = GlobalKey();
+  static GlobalKey sampleMedicineChainViewKey = GlobalKey();
+
+  //ChainListHeaderTutorial
+  static GlobalKey homeChainAndPlayKey = GlobalKey();
+  static GlobalKey chainAndPlayTitle = GlobalKey();
+  static GlobalKey uploadChainButtonKey = GlobalKey();
+  static GlobalKey createNewChainButtonKey = GlobalKey();
 
   //View Chain Screen
   static GlobalKey viewChainKey = GlobalKey();
@@ -42,23 +60,4 @@ class KeyHelper {
   static GlobalKey addChainTitleKey = GlobalKey();
   static GlobalKey addChainSaveAndExitKey = GlobalKey();
   static GlobalKey addChainAddActivityBarKey = GlobalKey();
-
-  // ListOfChainsTutorial
-  static GlobalKey chainControlSummaryKey = GlobalKey();
-  static GlobalKey chainFiltersKey = GlobalKey();
-  static GlobalKey chainListKey = GlobalKey();
-  static GlobalKey sampleWorkoutChainListItemKey = GlobalKey();
-  static GlobalKey sampleDietChainListItemKey = GlobalKey();
-  static GlobalKey sampleMedicineChainListItemKey = GlobalKey();
-
-  // ChainListItem
-  static GlobalKey sampleWorkoutChainViewKey = GlobalKey();
-  static GlobalKey sampleDietChainViewKey = GlobalKey();
-  static GlobalKey sampleMedicineChainViewKey = GlobalKey();
-
-  //ChainListHeaderTutorial
-  static GlobalKey homeChainAndPlayKey = GlobalKey();
-  static GlobalKey chainAndPlayTitle = GlobalKey();
-  static GlobalKey uploadChainButtonKey = GlobalKey();
-  static GlobalKey createNewChainButtonKey = GlobalKey();
 }

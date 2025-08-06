@@ -172,6 +172,18 @@ class _ViewChainState extends State<ViewChain> {
     }
   }
 
+  void launchTutorial() {
+    TutorialCoach tutorialCoach = TutorialCoach(
+      tutorialType: tutorialViewChainScreen,
+      context: context,
+    );
+    tutorialCoach.createTutorial();
+    chainList.speakText(
+      "This is a Quick tutorial to Brief you with View Chain screen functions.",
+    );
+    tutorialCoach.showTutorial();
+  }
+
   Future<bool> onPopOut(bool didPop) async {
     if (didPop) {
       return true;
@@ -213,16 +225,9 @@ class _ViewChainState extends State<ViewChain> {
         savedInDb = viewArgs['savedInDb'] ?? true;
         invalidChain = viewArgs['invalidChain'] ?? false;
         if (chainList.getSettingByKey(tutorialViewChainScreen).value ==
-            trueSettingValue) {
-          TutorialCoach tutorialCoach = TutorialCoach(
-            tutorialType: tutorialViewChainScreen,
-            context: context,
-          );
-          tutorialCoach.createTutorial();
-          chainList.speakText(
-            "This is a Quick tutorial to Brief you with View Chain screen functions.",
-          );
-          tutorialCoach.showTutorial();
+                trueSettingValue &&
+            savedInDb) {
+          launchTutorial();
         }
       }
       if (!savedInDb) {
@@ -550,6 +555,13 @@ class _ViewChainState extends State<ViewChain> {
                                   setState(() {
                                     savedInDb = true;
                                   });
+                                  if (chainList
+                                          .getSettingByKey(
+                                              tutorialViewChainScreen)
+                                          .value ==
+                                      trueSettingValue) {
+                                    launchTutorial();
+                                  }
                                 },
                                 icon: Icon(
                                   Icons.save,
