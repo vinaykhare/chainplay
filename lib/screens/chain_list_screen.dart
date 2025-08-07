@@ -50,7 +50,7 @@ class _ChainListScreenState extends State<ChainListScreen> {
         chainList.loadSampleChainsForTutorial().then((value) {
           tutorialCoach.createTutorial();
           chainList.speakText(
-              "This is the App's header with a Logo and Couple of Buttons to the right. Now press on the highlighted section over this and the following screens to move to the next slide of this tutorial.");
+              "Chain Play is a tool to Chain your activities and Play it. Press on the highlighted section to move ahead, and close to end this tutorial.");
           tutorialCoach.showTutorial();
         });
       }

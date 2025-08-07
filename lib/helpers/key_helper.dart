@@ -27,6 +27,24 @@ class KeyHelper {
   static GlobalKey uploadChainButtonKey = GlobalKey();
   static GlobalKey createNewChainButtonKey = GlobalKey();
 
+  // Chain Tile View
+  //Chain Title index 0
+  static GlobalKey sampleWorkoutChainTileTitleKey = GlobalKey();
+  static GlobalKey sampleDietChainTileTitleKey = GlobalKey();
+  static GlobalKey sampleMedicineChainTileTitleKey = GlobalKey();
+  //Chain Description index 1
+  static GlobalKey sampleWorkoutChainTileDescriptionKey = GlobalKey();
+  static GlobalKey sampleDietChainTileDescriptionKey = GlobalKey();
+  static GlobalKey sampleMedicineChainTileDescriptionKey = GlobalKey();
+  //Play Chain Button index 2
+  static GlobalKey sampleWorkoutChainTilePlayChainButtonKey = GlobalKey();
+  static GlobalKey sampleDietChainTilePlayChainButtonKey = GlobalKey();
+  static GlobalKey sampleMedicineChainTilePlayChainButtonKey = GlobalKey();
+  //Quick Button index 3
+  static GlobalKey sampleWorkoutChainTileQuickButtonKey = GlobalKey();
+  static GlobalKey sampleDietChainTileQuickButtonKey = GlobalKey();
+  static GlobalKey sampleMedicineChainTileQuickButtonKey = GlobalKey();
+
   //View Chain Screen
   static GlobalKey viewChainKey = GlobalKey();
   static GlobalKey viewChainOptionsKey = GlobalKey();

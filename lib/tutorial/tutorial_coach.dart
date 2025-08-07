@@ -207,7 +207,8 @@ class TutorialCoach {
       case tutorialChainListScreen:
         tutorialItemType = [
           {
-            "title": "ChainPlay",
+            "title":
+                "This is the App's header with a Logo and Couple of Buttons to the right.",
             "widgetToShow": Container(
               padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
@@ -567,33 +568,184 @@ class TutorialCoach {
             "focusAlign": Alignment.bottomCenter,
             "contentAlign": ContentAlign.bottom,
           },
-          // {
-          //   "title":
-          //       "Do you want to reload this tutorial on loading the home screen again?",
-          //   "widgetToShow": Container(
-          //     padding: EdgeInsets.symmetric(horizontal: 10),
-          //     decoration: BoxDecoration(
-          //       borderRadius: BorderRadius.circular(50),
-          //       color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
-          //     ),
-          //     child: ListView(
-          //       shrinkWrap: true,
-          //       children: [
-          //         Text(
-          //           "Sample Workout Chain",
-          //           style: Theme.of(context).textTheme.headlineSmall,
-          //         ),
-          //         Text(
-          //           "Lets take this Sample Workout Chain as an example to understand a Chain and its features.",
-          //           style: Theme.of(context).textTheme.bodyLarge,
-          //         ),
-          //       ],
-          //     ),
-          //   ),
-          //   "globalKey": KeyHelper.sampleWorkoutChainListItemKey,
-          //   "focusAlign": Alignment.bottomCenter,
-          //   "contentAlign": ContentAlign.bottom,
-          // },
+          {
+            "title":
+                "Let understand a tile view of a chain and the controls available on it.",
+            "widgetToShow": Container(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
+              ),
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  Text(
+                    "Sample Workout Chain",
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  Text(
+                    "Lets take this Sample Workout Chain as an example to understand a Chain and its features.",
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+            ),
+            "globalKey": KeyHelper.sampleWorkoutChainListItemKey,
+            "focusAlign": Alignment.bottomCenter,
+            "contentAlign": ContentAlign.bottom,
+          },
+          {
+            "title":
+                "Title of the Chain is kept here to signify that it is a Chain made up of Activities.",
+            "widgetToShow": Container(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
+              ),
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  Text(
+                    "Chain Tile: Title",
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  Text(
+                    "Title of the Chain is kept here over the a Chain Image to easily identify the chain.",
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+            ),
+            "globalKey": KeyHelper.sampleWorkoutChainTileTitleKey,
+            "focusAlign": Alignment.bottomCenter,
+            "contentAlign": ContentAlign.bottom,
+          },
+          {
+            "title":
+                "This section of Tile holds the information related to the Chain like Number of Activities, Number of Executions, Chain Status if it is running and the Last Updated Date if it is not running.",
+            "widgetToShow": Container(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
+              ),
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  Text(
+                    "Chain Tile: Status",
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  Text(
+                    "This section of Tile holds the information related to the Chain.",
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  Text(
+                    "If the Chain is Running then it will show the Current Activity and its stauts",
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  Text(
+                    "If the Chain is NOT Running then it will show other chain information like Number of Activites, Number of Executions and the Last Updated Date.",
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+            ),
+            "globalKey": KeyHelper.sampleWorkoutChainTileDescriptionKey,
+            "focusAlign": Alignment.bottomCenter,
+            "contentAlign": ContentAlign.bottom,
+          },
+          {
+            "title":
+                "You can play this chain by pressing this button. Long Pressing this play button gives the option to Schedule the chain.",
+            "widgetToShow": Container(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
+              ),
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  Text(
+                    "Chain Tile: Play or Schedule Chain",
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  Text(
+                    "You can play this chain by pressing this button.",
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  Text(
+                    " Long Pressing this play button gives the option to Schedule the chain.",
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+            ),
+            "globalKey": KeyHelper.sampleWorkoutChainTilePlayChainButtonKey,
+            "focusAlign": Alignment.bottomCenter,
+            "contentAlign": ContentAlign.bottom,
+          },
+          {
+            "title":
+                "Here we have kept a Quick Button to perform the quick actions on this chain like Sharing it as a file, marking it as favorite.",
+            "widgetToShow": Container(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
+              ),
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  Text(
+                    "Chain Tile: Quick Actions",
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  Text(
+                    "You can marke the Chain as Favorite",
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  Text(
+                    "You can share the Chain as a file with others.",
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+            ),
+            "globalKey": KeyHelper.sampleWorkoutChainTileQuickButtonKey,
+            "focusAlign": Alignment.bottomCenter,
+            "contentAlign": ContentAlign.bottom,
+          },
+          {
+            "title":
+                "More chain actions and detailed of the Activities in it can be explored by opening the chain by tapping on this Chain Tile.",
+            "widgetToShow": Container(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
+              ),
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  Text(
+                    "Open Chain by Tapping on it",
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  Text(
+                    "More chain actions and detailed of the Activities in it can be explored by opening the chain by tapping on this Chain Tile.",
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+            ),
+            "globalKey": KeyHelper.sampleWorkoutChainListItemKey,
+            "focusAlign": Alignment.bottomCenter,
+            "contentAlign": ContentAlign.bottom,
+          },
         ];
         break;
       case tutorialViewChainScreen:

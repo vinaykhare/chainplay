@@ -1,4 +1,5 @@
 import 'package:chain_activities/helpers/common_ui.dart';
+import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/screens/view_chain_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -13,6 +14,7 @@ class ChainTileView extends StatelessWidget {
   final Chain chain;
   final bool showHistory, allowFlag;
   final int index;
+  final String? tutorialChain;
 
   const ChainTileView({
     required super.key,
@@ -20,6 +22,7 @@ class ChainTileView extends StatelessWidget {
     required this.showHistory,
     required this.allowFlag,
     required this.index,
+    this.tutorialChain,
   });
 
   Future<void> playTheChain(BuildContext context) async {
@@ -277,6 +280,34 @@ class ChainTileView extends StatelessWidget {
     }
   }
 
+  Key? getGlobaleKey(String? tutorialChain, int index) {
+    switch (tutorialChain) {
+      case sampleWorkoutChainTitle:
+        return [
+          KeyHelper.sampleWorkoutChainTileTitleKey,
+          KeyHelper.sampleWorkoutChainTileDescriptionKey,
+          KeyHelper.sampleWorkoutChainTilePlayChainButtonKey,
+          KeyHelper.sampleWorkoutChainTileQuickButtonKey,
+        ][index];
+      case sampleDietRoutineChainTitle:
+        return [
+          KeyHelper.sampleDietChainTileTitleKey,
+          KeyHelper.sampleDietChainTileDescriptionKey,
+          KeyHelper.sampleDietChainTilePlayChainButtonKey,
+          KeyHelper.sampleDietChainTileQuickButtonKey,
+        ][index];
+      case sampleMedicineRoutineChainTitle:
+        return [
+          KeyHelper.sampleMedicineChainTileTitleKey,
+          KeyHelper.sampleMedicineChainTileDescriptionKey,
+          KeyHelper.sampleMedicineChainTilePlayChainButtonKey,
+          KeyHelper.sampleMedicineChainTileQuickButtonKey,
+        ][index];
+      default:
+        return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Semantics(
@@ -298,19 +329,36 @@ class ChainTileView extends StatelessWidget {
                 //     ? Theme.of(context).disabledColor
                 //     : Theme.of(context).cardColor,
                 // subtitle: Text(chain.title),
-                title: getChainTileTitle(
-                  context,
-                  chain,
+                title: Container(
+                  key: getGlobaleKey(
+                        tutorialChain,
+                        1,
+                      ) ??
+                      key,
+                  child: getChainTileTitle(
+                    context,
+                    chain,
+                  ),
                 ),
 
                 leading: InkWell(
                   onTap: () => playTheChain(context),
                   onLongPress: () => scheduleTheChain(context),
                   child: CircleAvatar(
+                      key: getGlobaleKey(
+                            tutorialChain,
+                            2,
+                          ) ??
+                          key,
                       backgroundColor: Theme.of(context).primaryColor,
                       child: getLeadingIconForChain(context, chain)),
                 ),
                 trailing: Row(
+                  key: getGlobaleKey(
+                        tutorialChain,
+                        3,
+                      ) ??
+                      key,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (showHistory)
@@ -359,6 +407,11 @@ class ChainTileView extends StatelessWidget {
                   ),
                   FittedBox(
                     child: Text(
+                      key: getGlobaleKey(
+                            tutorialChain,
+                            0,
+                          ) ??
+                          key,
                       chain.title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,

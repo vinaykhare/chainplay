@@ -28,7 +28,7 @@ class ChainListItem extends StatelessWidget {
     this.tutorialChain,
   });
 
-  Key getGlobaleKey(String tutorialChain, Key defaultKey) {
+  Key? getGlobalKey(String? tutorialChain) {
     switch (tutorialChain) {
       case sampleWorkoutChainTitle:
         return KeyHelper.sampleWorkoutChainViewKey;
@@ -37,7 +37,7 @@ class ChainListItem extends StatelessWidget {
       case sampleMedicineRoutineChainTitle:
         return KeyHelper.sampleMedicineChainViewKey;
       default:
-        return defaultKey;
+        return null;
     }
   }
 
@@ -93,8 +93,9 @@ class ChainListItem extends StatelessWidget {
         chain: chain,
         showHistory: showHistory,
         allowFlag: allowFlag,
-        key: tutorialChain != null ? getGlobaleKey(tutorialChain!, key!) : key,
+        key: getGlobalKey(tutorialChain) ?? key,
         index: index,
+        tutorialChain: tutorialChain,
       ),
     );
   }
