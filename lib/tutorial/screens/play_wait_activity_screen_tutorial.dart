@@ -115,13 +115,30 @@ class PlayWaitActivityScreenTutorial extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          "Sample Screen to guide you",
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge!
-                              .copyWith(
-                                  color: Theme.of(context).colorScheme.error),
+                        // Text(
+                        //   "Sample Screen for Tutorial",
+                        //   style: Theme.of(context)
+                        //       .textTheme
+                        //       .titleLarge!
+                        //       .copyWith(
+                        //           color: Theme.of(context).colorScheme.error),
+                        // ),
+                        Expanded(
+                          child: ListTile(
+                            key: KeyHelper.playWaitTitleKey,
+                            title: Text(
+                              "Sample Screen for Tutorial",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge!
+                                  .copyWith(
+                                      color:
+                                          Theme.of(context).colorScheme.error),
+                            ),
+                            subtitle: Text(
+                              "Just close this screen to continue",
+                            ),
+                          ),
                         ),
                         IconButton(
                           icon: Icon(

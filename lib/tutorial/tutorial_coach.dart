@@ -187,7 +187,9 @@ class TutorialCoach {
         navToPlayChainCompleted = true;
         NavigatorState nav = Navigator.of(context);
         try {
-          nav.pop();
+          Future.delayed(const Duration(milliseconds: 500), () {
+            nav.pop();
+          });
         } catch (e) {
           endTutorial(context);
         }

@@ -314,6 +314,71 @@ class _AddChainScreenState extends State<AddChainScreen> {
     return false;
   }
 
+  Future<void> updateDurationForAllWaitActivity() async {
+    setState(() {
+      errorString = "";
+      activityFormErrorString = "";
+    });
+
+    final resultingDuration = await showDurationPicker(
+      context: context,
+      initialTime: const Duration(seconds: 30),
+      baseUnit: BaseUnit.second,
+      upperBound: const Duration(seconds: 60),
+      lowerBound: const Duration(seconds: 10),
+    );
+    if (resultingDuration != null) {
+      durationHourController.text = resultingDuration.inHours.toString();
+      durationMinuteController.text =
+          (resultingDuration.inMinutes - resultingDuration.inHours * 60)
+              .toString();
+      durationSecondController.text =
+          (resultingDuration.inSeconds - (resultingDuration.inMinutes * 60))
+              .toString();
+    }
+    activityDurationHour = durationHourController.text == ""
+        ? 0
+        : int.parse(durationHourController.text);
+    activityDurationMinute = durationMinuteController.text == ""
+        ? 0
+        : int.parse(durationMinuteController.text);
+    activityDurationSecond = durationSecondController.text == ""
+        ? 0
+        : int.parse(durationSecondController.text);
+    setState(() {
+      processingRequest = true;
+    });
+    for (var chainActivity in tempChain.activities) {
+      if (chainActivity.activity.type == waitActivityInDB) {
+        chainActivityInEditMode = chainActivity;
+        chainActivityInEditMode!.edit = false;
+        chainActivityInEditMode!.activityDuration = Duration(
+          hours: activityDurationHour,
+          minutes: activityDurationMinute,
+          seconds: activityDurationSecond,
+        );
+
+        await updateActivity(chainActivityInEditMode!);
+      }
+    }
+
+    addActivityController.clear();
+    activityImageController.clear();
+
+    durationHourController.clear();
+    durationMinuteController.clear();
+    durationSecondController.clear();
+
+    setState(() {
+      activityDurationHour = 0;
+      activityDurationMinute = 0;
+      activityDurationSecond = 0;
+      addingDurationToActivity = false;
+      addingImageToActivity = false;
+      processingRequest = false;
+    });
+  }
+
   Future<void> updateDurationForAllSystemWaitActivity() async {
     setState(() {
       errorString = "";
@@ -1465,6 +1530,8 @@ class _AddChainScreenState extends State<AddChainScreen> {
                     tempChain: tempChain,
                     editActivity: editActivity,
                     undoEdit: undoEdit,
+                    updateDurationForAllWaitActivity:
+                        updateDurationForAllWaitActivity,
                   ),
                 ),
               ),

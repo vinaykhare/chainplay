@@ -1,5 +1,6 @@
 import 'package:chain_activities/widgets/chain_system_wait_activity_flow.dart';
 import 'package:chain_activities/widgets/scroll_button.dart';
+import 'package:chain_activities/widgets/shaded_button.dart';
 import 'package:chain_activities/widgets/system_wait_activity.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -15,13 +16,14 @@ import 'package:chain_activities/widgets/chain_activity_flow_view.dart';
 
 class ChainActivitiesWidget extends StatefulWidget {
   final Chain tempChain;
-  final Function? editActivity, undoEdit;
+  final Function? editActivity, undoEdit, updateDurationForAllWaitActivity;
 
   const ChainActivitiesWidget({
     super.key,
     required this.tempChain,
     required this.editActivity,
     required this.undoEdit,
+    this.updateDurationForAllWaitActivity,
   });
 
   @override
@@ -156,7 +158,35 @@ class _ChainActivitiesWidgetState extends State<ChainActivitiesWidget> {
             child: ScrollButton(
               scrollController: scrollController,
             ),
-          )
+          ),
+        if (widget.updateDurationForAllWaitActivity != null)
+          Positioned(
+            left: 0,
+            bottom: 0,
+            child: ShadedButton(
+              onPressAction: () {
+                widget.updateDurationForAllWaitActivity!();
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        "Set",
+                      ),
+                      const SizedBox(width: 10),
+                      const Icon(Icons.access_time_sharp),
+                    ],
+                  ),
+                  Text(
+                    "for all activities",
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+          ),
       ],
     );
     //);
