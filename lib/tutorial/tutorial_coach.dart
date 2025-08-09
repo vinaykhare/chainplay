@@ -477,7 +477,7 @@ class TutorialCoach {
           },
           {
             "title":
-                "You can check the quick Summary of Chain Controls like play, open, delete etcitra.",
+                "You can check the quick Summary of Chain Controls on the home screen here.",
             "widgetToShow": Container(
               padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
@@ -723,7 +723,7 @@ class TutorialCoach {
           },
           {
             "title":
-                "More chain actions and detailed of the Activities in it can be explored by opening the chain by tapping on this Chain Tile.",
+                "Open this Chain by Tapping on this Chain Tile where you will see more chain actions and details of the activities in this chain.",
             "widgetToShow": Container(
               padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
@@ -738,7 +738,7 @@ class TutorialCoach {
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   Text(
-                    "More chain actions and detailed of the Activities in it can be explored by opening the chain by tapping on this Chain Tile.",
+                    "Open this Chain by Tapping on this Chain Tile where you will see more chain actions and details of the activities in this chain.",
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],
@@ -877,7 +877,7 @@ class TutorialCoach {
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   Text(
-                    "Series of buttons to take actions on this chain like Play Chain, Check its execution history, mark it favorite, share or download it in file format and delete this chain.",
+                    "Series of buttons to take actions on this chain like Play or Scedhule the Chain, mark it as a favorite chain, share it, download it and delete it.",
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],
@@ -1402,7 +1402,7 @@ class TutorialCoach {
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   Text(
-                    "Press the forward button to go back to Chain Activity Execution screen, where we can resume the Chain Activity Interactively.\nIf the chain is running in background, and refresh button is also visible on the page then you will get the option to force complete the activity running in background and enter the interactive view of chain.",
+                    "Press the forward button to go back to Chain Activity Execution screen, where we can resume the Chain Activity Interactively.\nIf the chain is running in background then you will be asked if you really need to force complete the background activity and enter the interactive view of chain activity.",
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],

@@ -8,7 +8,7 @@ const String sampleMedicineRoutineChainTitle = "Sample Medicine Routine Chain";
 
 // For Tutorial
 const String idToGoToPlayWaitTutorialScreen =
-    "Press the forward button to go back to Chain Activity Execution screen, where we can resume the Chain Activity Interactively.\nIf the chain is running in background, and refresh button is also visible on the page then you will get the option to force complete the activity running in background and enter the interactive view of chain.";
+    "Press the forward button to go back to Chain Activity Execution screen, where we can resume the Chain Activity Interactively.\nIf the chain is running in background then you will be asked if you really need to force complete the background activity and enter the interactive view of chain activity.";
 const String idToGoToPlayChainScreen =
     "Press the back button to pause the Chain (if running) and go to the Screen where we can see the Chain Execution Status and take actions on the Chain.";
 

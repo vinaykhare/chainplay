@@ -88,4 +88,6 @@ Add, Chain, Execute, Custom, Run, Sequence, Clock, Timer, Schedule, Activities, 
 2. Schedule Chain option is added
 3. Inroduced the option to play chain in landsacpe mode too.
 4. Upgraded the app to Latest Flutter version along with latest compatible dependencies.
-5. Bug Fixes
+5. Fix for Crashes due to Duplicate Keys
+6. Bulk Update of Duration for all Activities in a Chain
+7. Tutorial is added for the Chain Tile.
