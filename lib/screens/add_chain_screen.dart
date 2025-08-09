@@ -1531,7 +1531,9 @@ class _AddChainScreenState extends State<AddChainScreen> {
                     editActivity: editActivity,
                     undoEdit: undoEdit,
                     updateDurationForAllWaitActivity:
-                        updateDurationForAllWaitActivity,
+                        tempChain.activities.length > 3
+                            ? updateDurationForAllWaitActivity
+                            : null,
                   ),
                 ),
               ),
