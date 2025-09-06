@@ -29,6 +29,7 @@ dependencies:
   flutter_tts: ^4.0.2
   google_mobile_ads: ^6.0.0
   tutorial_coach_mark: ^1.2.11
+  wakelock_plus: ^1.3.2
   pixabay_picker: ^1.0.7
 
   firebase_core: ^4.0.0
