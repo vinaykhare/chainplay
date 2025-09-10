@@ -199,10 +199,10 @@ class ThemeFactory {
           primarySwatch: paletteBlackAndWhite,
           scaffoldBackgroundColor: paletteBlackAndWhite.shade600,
           cardColor: paletteBlackAndWhite.shade900,
-          canvasColor: paletteBlackAndWhite.shade700,
+          canvasColor: paletteBlackAndWhite.shade600,
           colorScheme: ColorScheme.dark(
             surface: paletteBlackAndWhite.shade700,
-            primary: paletteBlackAndWhite.shade600,
+            primary: paletteBlackAndWhite.shade400,
             onPrimary: Colors.white,
           ),
           elevatedButtonTheme: ElevatedButtonThemeData(
