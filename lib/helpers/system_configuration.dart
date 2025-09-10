@@ -99,8 +99,8 @@ const sqlInitScript = [
   ''',
   '''INSERT INTO settings(key, value, type) VALUES (
       '$darkThemeSettingKey',
-      '$falseSettingValue',
-      '$settingDataTypeBool'
+      '$themeValueList',
+      '$settingDataTypeList'
     )
   ''',
   '''INSERT INTO settings(key, value, type) VALUES (
