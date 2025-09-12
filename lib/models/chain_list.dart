@@ -90,10 +90,33 @@ class ChainList with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> migrateDatabase() async {
+    // Migrating Settings for Theme
+    List<Map<String, dynamic>> themeRowFromSettings = await DBHelper.getData(
+        "settings", "type ASC", "key = ?", ["DARK THEME"]);
+    if (themeRowFromSettings.isEmpty) {
+      return;
+    }
+    await DBHelper.removeData("settings", "key = ?", ["DARK THEME"]);
+    await DBHelper.insert(
+      "settings",
+      {
+        'key': themeSettingKey,
+        'value': themeValueList,
+        'type': settingDataTypeList
+      },
+    );
+  }
+
   Future<void> initialize() async {
     if (loaded) {
       return;
     }
+    // final db = await DBHelper.database();
+    // int dbVersion = await db.getVersion();
+    // if (dbVersion != sqfLiteDBVersion) {
+    await migrateDatabase();
+    // }
     await refresh();
     loaded = true;
     notifyListeners();
@@ -1173,7 +1196,7 @@ class ChainList with ChangeNotifier {
     await DBHelper.removeData('chain_activity', "", []);
     await DBHelper.removeData('activity', "", []);
     await DBHelper.removeData('chain', "", []);
-    setSetting(darkThemeSettingKey, falseSettingValue);
+    setSetting(themeSettingKey, falseSettingValue);
     setSetting(appSoundSettingKey, trueSettingValue);
     setSetting(showHelpOnNextBootKey, trueSettingValue);
     // setSetting(showHelpOnNextBootKey, trueSettingValue);

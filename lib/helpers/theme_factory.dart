@@ -51,7 +51,7 @@ class ThemeFactory {
   );
   ThemeData getTheme(BuildContext context, String chosenTheme) {
     switch (chosenTheme) {
-      case themeLightAmber:
+      case themeAmber:
         return ThemeData(
           // useMaterial3: false,
           primarySwatch: paletteLigthAmber,

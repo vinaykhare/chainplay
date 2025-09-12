@@ -42,7 +42,7 @@ const int setFailedDueToAppPermission = 2;
 
 //Settings
 const String appSoundSettingKey = "GUIDED VOICE";
-const String darkThemeSettingKey = "THEME";
+const String themeSettingKey = "THEME";
 const String showHelpOnNextBootKey = "Need ChainPlay Introduction?";
 const String tutorialFull = "Show full tutorial";
 const String tutorialChainListScreen = "SHOW GUIDE ON HOME SCREEN";
@@ -58,10 +58,11 @@ const String settingDataTypeBool = "BOOL";
 const String settingDataTypeHiddenBool = "HIDDENBOOL";
 const String settingDataTypeList = "LIST";
 const String settingDataTypeHiddenList = "HIDDENLIST";
-const String themeLightAmber = "LIGHT AMBER";
+//Themes
+const String themeAmber = "AMBER";
 const String themeBlack = "BLACK";
 const String themeWhite = "WHITE";
-const String themeValueList = "$themeLightAmber,$themeBlack,$themeWhite";
+const String themeValueList = "$themeAmber,$themeBlack,$themeWhite";
 
 //Notification Payload fields
 

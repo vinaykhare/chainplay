@@ -27,12 +27,15 @@ class ChainActivities extends StatelessWidget {
   Widget build(BuildContext context) {
     ChainList chainList = Provider.of<ChainList>(context, listen: true);
     int themeIndex = chainList.systemSettings.indexWhere(
-      (set) => set.key == darkThemeSettingKey,
+      (set) => set.key == themeSettingKey,
     );
 
     String chosenTheme = themeIndex == -1
-        ? themeLightAmber
+        ? themeAmber
         : chainList.systemSettings[themeIndex].value.split(",").first;
+    // bool darkTheme = themeIndex == -1
+    //     ? false
+    //     : chainList.systemSettings[themeIndex].value == trueSettingValue;
     return MaterialApp(
       title: 'ChainPlay',
       builder: (context, widget) {
@@ -51,6 +54,8 @@ class ChainActivities extends StatelessWidget {
       //darkTheme: darkTheme ? ThemeData.dark() : null,
       debugShowCheckedModeBanner: false,
       theme: ThemeFactory().getTheme(context, chosenTheme),
+      // theme:
+      //     ThemeFactory().getTheme(context, darkTheme ? themeBlack : themeAmber),
       home: FutureBuilder(
         future: Provider.of<ChainList>(context, listen: false).initialize(),
         builder: (ctx, snap) {

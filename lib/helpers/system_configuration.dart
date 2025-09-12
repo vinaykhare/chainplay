@@ -2,7 +2,7 @@
 
 import 'package:chain_activities/helpers/constants.dart';
 
-const int sqfLiteDBVersion = 1;
+const int sqfLiteDBVersion = 2;
 
 const sqlInitScript = [
   '''CREATE TABLE activity (
@@ -98,11 +98,17 @@ const sqlInitScript = [
     )
   ''',
   '''INSERT INTO settings(key, value, type) VALUES (
-      '$darkThemeSettingKey',
+      '$themeSettingKey',
       '$themeValueList',
       '$settingDataTypeList'
     )
   ''',
+  // '''INSERT INTO settings(key, value, type) VALUES (
+  //     '$themeSettingKey',
+  //     '$trueSettingValue',
+  //     '$settingDataTypeBool'
+  //   )
+  // ''',
   '''INSERT INTO settings(key, value, type) VALUES (
       '$appSoundSettingKey',
       '$trueSettingValue',

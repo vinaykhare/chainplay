@@ -1,3 +1,4 @@
+import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/helpers/system_configuration.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 import 'package:path/path.dart' as path;
@@ -9,12 +10,32 @@ class DBHelper {
     // if (await sql.databaseExists(path.join(dbPath, 'chainactivities.db'))) {
     //   sql.deleteDatabase(path.join(dbPath, 'chainactivities.db'));
     // }
-    return sql.openDatabase(path.join(dbPath, 'chainactivities.db'),
-        onCreate: (db, version) async {
-      for (var script in sqlInitScript) {
-        await db.execute(script);
-      }
-    }, version: sqfLiteDBVersion);
+    return sql.openDatabase(
+      path.join(dbPath, 'chainactivities.db'),
+      onCreate: (db, version) async {
+        for (var script in sqlInitScript) {
+          await db.execute(script);
+        }
+      },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        // Migration logic
+        if (oldVersion == 1) {
+          // 1 -> latest version: Dark Theme (Boolean) Settings are replace with Theme (List) Settings
+          String table = "settings";
+          await db.delete(table, where: 'key = ?', whereArgs: ["DARK THEME"]);
+          await db.insert(
+            table,
+            {
+              'key': themeSettingKey,
+              'value': themeValueList,
+              'type': settingDataTypeList
+            },
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+      },
+      version: sqfLiteDBVersion,
+    );
   }
 
   static Future<void> insert(String table, Map<String, Object> data) async {
