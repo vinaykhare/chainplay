@@ -2,7 +2,7 @@ name: chain_activities
 description: Flutter project to Chain the Activites with Timers.
 
 publish_to: "play.google.com"
-version: 1.0.0+17
+version: 1.0.0+18
 
 environment:
   sdk: ">=3.3.3 <4.0.0"
@@ -30,6 +30,7 @@ dependencies:
   google_mobile_ads: ^6.0.0
   tutorial_coach_mark: ^1.2.11
   pixabay_picker: ^1.0.7
+  wakelock_plus: ^1.3.2
 
   firebase_core: ^4.0.0
   firebase_crashlytics: ^5.0.0

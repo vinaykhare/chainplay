@@ -13,6 +13,7 @@ import 'package:chain_activities/helpers/content_transformer.dart';
 import 'package:chain_activities/models/chain_activity.dart';
 import 'package:chain_activities/models/chain_list.dart';
 import 'package:chain_activities/models/system_setting.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 class PlayWaitActivity extends StatefulWidget {
   static String routename = "run_activity";
@@ -40,9 +41,16 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
   int playScreenType = waitActivityInDB;
 
   @override
+  void initState() {
+    super.initState();
+    WakelockPlus.enable();
+  }
+
+  @override
   void dispose() {
     super.dispose();
     if (countdownTimer != null) countdownTimer?.cancel();
+    WakelockPlus.disable();
   }
 
   Future<void> setOrietation(bool isLandscape) async {

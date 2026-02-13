@@ -2,10 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:chain_activities/helpers/common_logic.dart';
 import 'package:chain_activities/helpers/common_ui.dart';
 import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/screens/add_chain_screen.dart';
-import 'package:chain_activities/screens/play_chain_screen.dart';
 import 'package:chain_activities/tutorial/tutorial_coach.dart';
 // import 'package:chain_activities/screens/schedule_chain.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
@@ -40,113 +40,6 @@ class _ViewChainState extends State<ViewChain> {
   //     buildDone = true;
   //   });
   // }
-
-  Future<void> playTheChain(BuildContext context) async {
-    NavigatorState nav = Navigator.of(context);
-
-    chainList = Provider.of<ChainList>(context, listen: false);
-    Chain chainExecution = await chainList.startChainExecution(chain);
-
-    if (chainExecution.notificationId == trueInDB) {
-      await chainList.stopChainExecution(chain);
-    } else {
-      //await Provider.of<ChainList>(context, listen: false).loadActivities(chain);
-      int runningChainActivityIndex =
-          chainList.getRunningChainActivityIndex(chainExecution);
-      // ChainActivity? chainActivityExecution = runningChainActivityIndex != -1
-      //     ? chainExecution.activities[runningChainActivityIndex]
-      //     : null;
-
-      await nav.pushReplacementNamed(
-        PlayChain.routename,
-        arguments: {
-          payLoadChainExecId: chainExecution.chainExecutionId,
-          payLoadChainName: chainExecution.title,
-          payLoadChainActivityIndex:
-              runningChainActivityIndex != -1 ? runningChainActivityIndex : 0,
-          payLoadChainActivityCount: chain.chainHistory.length,
-          payLoadChainAction: playChainActionPlay,
-        },
-      );
-    }
-  }
-
-  Future<void> scheduleTheChain(BuildContext context) async {
-    NavigatorState nav = Navigator.of(context);
-    ScaffoldMessengerState scms = ScaffoldMessenger.of(context);
-    DateTime? chainStartTime;
-
-    // NavigatorState nav = Navigator.of(context);
-
-    chainList = Provider.of<ChainList>(context, listen: false);
-
-    chainStartTime = await CommonUI().getDateTimeDialog(
-      context,
-      chainStartTime,
-    );
-
-    if (chainStartTime == null) {
-      return;
-    }
-
-    if (chainStartTime.isBefore(DateTime.now())) {
-      chain.at = null;
-      return;
-    }
-
-    chain.at = chainStartTime;
-    Chain chainExecution = await chainList.startChainExecution(chain);
-    int chainIndex =
-        chainList.chains.indexWhere((sch) => sch.title == chainExecution.title);
-    if (chainExecution.at != null &&
-        chainList.chains[chainIndex].notificationId == noValueInDB) {
-      chainExecution.at = null;
-      chainList.chains[chainIndex].at = null;
-      await chainList.updateChain(
-        chainList.chains[chainIndex],
-      );
-      await chainList.updateChainExecution(
-        chainExecution,
-      );
-
-      scms.showSnackBar(
-        SnackBar(
-          content: Text(
-            "Unable to Schedule the Chain: ${chainExecution.title}.\n",
-          ),
-          action: SnackBarAction(
-            //textColor: Colors.white,
-            label: 'OK',
-            onPressed: () {},
-          ),
-        ),
-      );
-    } else {
-      int runningChainActivityIndex =
-          chainList.getRunningChainActivityIndex(chainExecution);
-      await nav.pushReplacementNamed(
-        PlayChain.routename,
-        arguments: {
-          payLoadChainExecId: chainExecution.chainExecutionId,
-          payLoadChainName: chainExecution.title,
-          payLoadChainActivityIndex:
-              runningChainActivityIndex != -1 ? runningChainActivityIndex : 0,
-          payLoadChainActivityCount: chain.chainHistory.length,
-          payLoadChainAction: playChainActionPause,
-        },
-      );
-    }
-  }
-
-  Widget getIconForChain(Chain chain) {
-    if (chain.notificationId == trueInDB) {
-      return const Icon(Icons.stop_circle_outlined);
-    }
-    if (chain.chainStatus == statusExecuting) {
-      return const Icon(Icons.pause_circle_outline_rounded);
-    }
-    return const Icon(Icons.play_arrow_outlined);
-  }
 
   Future<void> exitScreen() async {
     NavigatorState nav = Navigator.of(context);
@@ -482,7 +375,8 @@ class _ViewChainState extends State<ViewChain> {
                             Semantics(
                               label: "Schedule the Chain",
                               child: InkWell(
-                                onTap: () => scheduleTheChain(context),
+                                onTap: () => CommonLogic()
+                                    .scheduleTheChain(context, chain),
                                 // onTap: () async {
                                 //   NavigatorState nav = Navigator.of(context);
                                 //   bool allWell = await onPopOut(false);
@@ -504,11 +398,13 @@ class _ViewChainState extends State<ViewChain> {
                           Semantics(
                             label: "Play this chain.",
                             child: InkWell(
-                              onTap: () => playTheChain(context),
-                              onLongPress: () => scheduleTheChain(context),
+                              onTap: () =>
+                                  CommonLogic().playTheChain(context, chain),
+                              onLongPress: () => CommonLogic()
+                                  .scheduleTheChain(context, chain),
                               child: CircleAvatar(
                                 key: KeyHelper.viewChainPlayChainKey,
-                                child: getIconForChain(chain),
+                                child: CommonUI().getIconForChain(chain),
                               ),
                             ),
                           ),

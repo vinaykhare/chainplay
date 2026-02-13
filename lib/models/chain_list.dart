@@ -2072,8 +2072,11 @@ class ChainList with ChangeNotifier {
       final path = directory.path;
       //const String path = '/storage/emulated/0/Download/';
       File chainFile = File('$path/${chain.title}.json');
+      for (int i = 1; await chainFile.exists(); i++) {
+        chainFile = File('$path/${chain.title} ($i).json');
+      }
       await chainFile.writeAsString(jsonEncode(chain));
-      return "${chain.title}.json is saved under Downloads";
+      return "${chain.title} is saved under Downloads";
     } on Exception {
       return "Cannot download the Chain on this Platform. Try sharing the chain instead.";
     }

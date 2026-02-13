@@ -1,4 +1,4 @@
-import 'package:chain_activities/helpers/common_ui.dart';
+import 'package:chain_activities/helpers/common_logic.dart';
 import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/screens/view_chain_screen.dart';
 import 'package:flutter/material.dart';
@@ -24,89 +24,6 @@ class ChainTileView extends StatelessWidget {
     required this.index,
     this.tutorialChain,
   });
-
-  Future<void> playTheChain(BuildContext context) async {
-    NavigatorState nav = Navigator.of(context);
-
-    ChainList chainList = Provider.of<ChainList>(context, listen: false);
-    Chain chainExecution = await chainList.startChainExecution(chain);
-
-    if (chainExecution.notificationId == trueInDB) {
-      await chainList.stopChainExecution(chain);
-    } else {
-      //await Provider.of<ChainList>(context, listen: false).loadActivities(chain);
-      int runningChainActivityIndex =
-          chainList.getRunningChainActivityIndex(chainExecution);
-      // ChainActivity? chainActivityExecution = runningChainActivityIndex != -1
-      //     ? chainExecution.activities[runningChainActivityIndex]
-      //     : null;
-
-      await nav.pushNamed(
-        PlayChain.routename,
-        arguments: {
-          payLoadChainExecId: chainExecution.chainExecutionId,
-          payLoadChainName: chainExecution.title,
-          payLoadChainActivityIndex:
-              runningChainActivityIndex != -1 ? runningChainActivityIndex : 0,
-          payLoadChainActivityCount: chain.chainHistory.length,
-          payLoadChainAction: playChainActionPlay,
-        },
-      );
-    }
-  }
-
-  Future<void> scheduleTheChain(BuildContext context) async {
-    ScaffoldMessengerState scms = ScaffoldMessenger.of(context);
-    DateTime? chainStartTime;
-
-    // NavigatorState nav = Navigator.of(context);
-
-    ChainList chainList = Provider.of<ChainList>(context, listen: false);
-
-    chainStartTime = await CommonUI().getDateTimeDialog(
-      context,
-      chainStartTime,
-    );
-
-    if (chainStartTime == null) {
-      return;
-    }
-
-    if (chainStartTime.isBefore(DateTime.now())) {
-      chain.at = null;
-      return;
-    }
-
-    chain.at = chainStartTime;
-
-    Chain chainExecution = await chainList.startChainExecution(chain);
-    int chainIndex =
-        chainList.chains.indexWhere((sch) => sch.title == chainExecution.title);
-    if (chainExecution.at != null &&
-        chainList.chains[chainIndex].notificationId == noValueInDB) {
-      chainExecution.at = null;
-      chainList.chains[chainIndex].at = null;
-      await chainList.updateChain(
-        chainList.chains[chainIndex],
-      );
-      await chainList.updateChainExecution(
-        chainExecution,
-      );
-
-      scms.showSnackBar(
-        SnackBar(
-          content: Text(
-            "Unable to Schedule the Chain: ${chainExecution.title}.\n",
-          ),
-          action: SnackBarAction(
-            //textColor: Colors.white,
-            label: 'OK',
-            onPressed: () {},
-          ),
-        ),
-      );
-    }
-  }
 
   Future<void> navigateToViewChainOrPlayChain(BuildContext context) async {
     NavigatorState nav = Navigator.of(context);
@@ -342,8 +259,9 @@ class ChainTileView extends StatelessWidget {
                 ),
 
                 leading: InkWell(
-                  onTap: () => playTheChain(context),
-                  onLongPress: () => scheduleTheChain(context),
+                  onTap: () => CommonLogic().playTheChain(context, chain),
+                  onLongPress: () =>
+                      CommonLogic().scheduleTheChain(context, chain),
                   child: CircleAvatar(
                       key: getGlobaleKey(
                             tutorialChain,

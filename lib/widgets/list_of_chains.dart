@@ -1,9 +1,9 @@
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
-import 'package:chain_activities/widgets/app_bottom_buttons_help.dart';
-import 'package:chain_activities/widgets/app_header_buttons_help.dart';
+// import 'package:chain_activities/widgets/app_bottom_buttons_help.dart';
+// import 'package:chain_activities/widgets/app_header_buttons_help.dart';
 import 'package:chain_activities/widgets/chain_list_item.dart';
-import 'package:chain_activities/widgets/chain_tile_help.dart';
+// import 'package:chain_activities/widgets/chain_tile_help.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -74,14 +74,14 @@ class _ListOfChainsState extends State<ListOfChains> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                IconButton(
-                  icon: Icon(Icons.help),
-                  onPressed: () {
-                    setState(() {
-                      showChainControlSummary = !showChainControlSummary;
-                    });
-                  },
-                ),
+                // IconButton(
+                //   icon: Icon(Icons.help),
+                //   onPressed: () {
+                //     setState(() {
+                //       showChainControlSummary = !showChainControlSummary;
+                //     });
+                //   },
+                // ),
                 TextButton(
                   onPressed: () {
                     setState(() {
@@ -137,133 +137,133 @@ class _ListOfChainsState extends State<ListOfChains> {
             ),
           ),
         Expanded(
-          child: Stack(
-            children: [
-              ListView.builder(
-                // onReorder: (oldIndex, newIndex) =>
-                //     Provider.of<ChainList>(context, listen: false)
-                //         .rearrangeChains(oldIndex, newIndex),
-                itemCount: allChains.length,
-                reverse: widget.showChainInReverse != null &&
-                    widget.showChainInReverse == true,
-                itemBuilder: (context, index) {
-                  Chain chain = allChains[index];
-                  //BannerAd? adChain = chain.adBanner;
-                  return ChainListItem(
-                    //adChain: adChain,
-                    chain: chain,
-                    showHistory: true,
-                    allowFlag: true,
-                    key: Key(
-                      index.toString(),
-                    ),
-                    index: index,
-                  );
-                },
-              ),
-              AnimatedContainer(
-                // height: showChainControlSummary ? 150 : 0,
-                width: showChainControlSummary ? 350 : 0,
-                // padding: EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  borderRadius: BorderRadius.circular(30),
+          // child: Stack(
+          //   children: [
+          child: ListView.builder(
+            // onReorder: (oldIndex, newIndex) =>
+            //     Provider.of<ChainList>(context, listen: false)
+            //         .rearrangeChains(oldIndex, newIndex),
+            itemCount: allChains.length,
+            reverse: widget.showChainInReverse != null &&
+                widget.showChainInReverse == true,
+            itemBuilder: (context, index) {
+              Chain chain = allChains[index];
+              //BannerAd? adChain = chain.adBanner;
+              return ChainListItem(
+                //adChain: adChain,
+                chain: chain,
+                showHistory: true,
+                allowFlag: true,
+                key: Key(
+                  index.toString(),
                 ),
-                duration: Duration(milliseconds: 500),
-                curve: Curves.easeInOutSine,
-                child: (showChainControlSummary &&
-                        (widget.showChainControlSummary == null ||
-                            widget.showChainControlSummary == true))
-                    ? SingleChildScrollView(
-                        child: Column(
-                          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: double.infinity,
-                              child: IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    showChainControlSummary =
-                                        !showChainControlSummary;
-                                  });
-                                },
-                                icon: Icon(
-                                  Icons.cancel,
-                                  color: Theme.of(context).colorScheme.error,
-                                ),
-                              ),
-                            ),
-                            Container(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              margin: const EdgeInsets.only(bottom: 10),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).focusColor,
-                                borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(30),
-                                  bottomRight: Radius.circular(30),
-                                ),
-                              ),
-                              child: Text(
-                                "1. App Header Controls",
-                                style: Theme.of(context).textTheme.titleMedium,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 10),
-                              child: const AppHeaderButtonsHelp(),
-                            ),
-                            Container(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              margin: const EdgeInsets.only(bottom: 10),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).focusColor,
-                                borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(30),
-                                  bottomRight: Radius.circular(30),
-                                ),
-                              ),
-                              child: Text(
-                                "2. Controls on a Chain Tile",
-                                style: Theme.of(context).textTheme.titleMedium,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 30),
-                              child: const ChainTileHelp(),
-                            ),
-                            Container(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              margin: const EdgeInsets.only(bottom: 10),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).focusColor,
-                                borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(30),
-                                  bottomRight: Radius.circular(30),
-                                ),
-                              ),
-                              child: Text(
-                                "3. Bottom Bar Controls",
-                                style: Theme.of(context).textTheme.titleMedium,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 10),
-                              child: const AppBottomButtonsHelp(),
-                            ),
-                          ],
-                        ),
-                      )
-                    : null,
-              ),
-            ],
+                index: index,
+              );
+            },
           ),
+          // AnimatedContainer(
+          //   // height: showChainControlSummary ? 150 : 0,
+          //   width: showChainControlSummary ? 350 : 0,
+          //   // padding: EdgeInsets.all(5),
+          //   decoration: BoxDecoration(
+          //     color: Theme.of(context).scaffoldBackgroundColor,
+          //     borderRadius: BorderRadius.circular(30),
+          //   ),
+          //   duration: Duration(milliseconds: 500),
+          //   curve: Curves.easeInOutSine,
+          //   child: (showChainControlSummary &&
+          //           (widget.showChainControlSummary == null ||
+          //               widget.showChainControlSummary == true))
+          //       ? SingleChildScrollView(
+          //           child: Column(
+          //             // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //             crossAxisAlignment: CrossAxisAlignment.start,
+          //             children: [
+          //               SizedBox(
+          //                 width: double.infinity,
+          //                 child: IconButton(
+          //                   onPressed: () {
+          //                     setState(() {
+          //                       showChainControlSummary =
+          //                           !showChainControlSummary;
+          //                     });
+          //                   },
+          //                   icon: Icon(
+          //                     Icons.cancel,
+          //                     color: Theme.of(context).colorScheme.error,
+          //                   ),
+          //                 ),
+          //               ),
+          //               Container(
+          //                 padding:
+          //                     const EdgeInsets.symmetric(horizontal: 10),
+          //                 margin: const EdgeInsets.only(bottom: 10),
+          //                 decoration: BoxDecoration(
+          //                   color: Theme.of(context).focusColor,
+          //                   borderRadius: BorderRadius.only(
+          //                     topRight: Radius.circular(30),
+          //                     bottomRight: Radius.circular(30),
+          //                   ),
+          //                 ),
+          //                 child: Text(
+          //                   "1. App Header Controls",
+          //                   style: Theme.of(context).textTheme.titleMedium,
+          //                   textAlign: TextAlign.center,
+          //                 ),
+          //               ),
+          //               Padding(
+          //                 padding: const EdgeInsets.only(bottom: 10),
+          //                 child: const AppHeaderButtonsHelp(),
+          //               ),
+          //               Container(
+          //                 padding:
+          //                     const EdgeInsets.symmetric(horizontal: 10),
+          //                 margin: const EdgeInsets.only(bottom: 10),
+          //                 decoration: BoxDecoration(
+          //                   color: Theme.of(context).focusColor,
+          //                   borderRadius: BorderRadius.only(
+          //                     topRight: Radius.circular(30),
+          //                     bottomRight: Radius.circular(30),
+          //                   ),
+          //                 ),
+          //                 child: Text(
+          //                   "2. Controls on a Chain Tile",
+          //                   style: Theme.of(context).textTheme.titleMedium,
+          //                   textAlign: TextAlign.center,
+          //                 ),
+          //               ),
+          //               Padding(
+          //                 padding: const EdgeInsets.only(bottom: 30),
+          //                 child: const ChainTileHelp(),
+          //               ),
+          //               Container(
+          //                 padding:
+          //                     const EdgeInsets.symmetric(horizontal: 10),
+          //                 margin: const EdgeInsets.only(bottom: 10),
+          //                 decoration: BoxDecoration(
+          //                   color: Theme.of(context).focusColor,
+          //                   borderRadius: BorderRadius.only(
+          //                     topRight: Radius.circular(30),
+          //                     bottomRight: Radius.circular(30),
+          //                   ),
+          //                 ),
+          //                 child: Text(
+          //                   "3. Bottom Bar Controls",
+          //                   style: Theme.of(context).textTheme.titleMedium,
+          //                   textAlign: TextAlign.center,
+          //                 ),
+          //               ),
+          //               Padding(
+          //                 padding: const EdgeInsets.only(bottom: 10),
+          //                 child: const AppBottomButtonsHelp(),
+          //               ),
+          //             ],
+          //           ),
+          //         )
+          //       : null,
+          // ),
+          //   ],
+          // ),
         ),
         const Divider(),
         if (widget.showAd == null || widget.showAd == true)

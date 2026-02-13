@@ -43,6 +43,8 @@ const int setFailedDueToAppPermission = 2;
 //Settings
 const String appSoundSettingKey = "GUIDED VOICE";
 const String darkThemeSettingKey = "DARK THEME";
+const String darkTheme = "DARK";
+const String lightTheme = "LIGHT";
 const String showHelpOnNextBootKey = "Need ChainPlay Introduction?";
 const String tutorialFull = "Show full tutorial";
 const String tutorialChainListScreen = "SHOW GUIDE ON HOME SCREEN";

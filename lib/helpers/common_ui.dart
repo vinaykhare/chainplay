@@ -1,8 +1,12 @@
 import 'dart:io';
 
+import 'package:chain_activities/helpers/common_logic.dart';
 import 'package:chain_activities/helpers/constants.dart';
+import 'package:chain_activities/models/chain.dart';
+import 'package:chain_activities/models/chain_list.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class CommonUI {
   Future<DateTime?> getDateTimeDialog(
@@ -227,5 +231,132 @@ class CommonUI {
                 File(imagePath),
                 //fit: BoxFit.cover,
               );
+  }
+
+  Widget getIconForChain(Chain chain) {
+    if (chain.notificationId == trueInDB) {
+      return const Icon(Icons.stop_circle_outlined);
+    }
+    if (chain.chainStatus == statusExecuting) {
+      return const Icon(Icons.pause_circle_outline_rounded);
+    }
+    return const Icon(Icons.play_arrow_outlined);
+  }
+
+  Row showChainActions(BuildContext context, Chain chain) {
+    ChainList chainList = Provider.of<ChainList>(context, listen: false);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Semantics(
+          label: "Delete this chain.",
+          child: InkWell(
+            onTap: () async {
+              NavigatorState nav = Navigator.of(context);
+              bool? dialogResponse = await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text("Confirm Deletion"),
+                    content:
+                        const Text("Are you sure about deleting this Chain?"),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(true),
+                        child: Text(
+                          "Yes, Delete the Chain!",
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(false),
+                        child: Text(
+                          "No, chose this option by mistake.",
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.inverseSurface,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              );
+
+              if (dialogResponse == true) {
+                await chainList.removeChain(chain);
+                nav.pop();
+              }
+            },
+            child: Icon(Icons.delete_forever_outlined),
+          ),
+        ),
+        Semantics(
+          label: "Download this chain.",
+          child: InkWell(
+            onTap: () async {
+              ScaffoldMessengerState scm = ScaffoldMessenger.of(context);
+              String downloadResponse =
+                  await Provider.of<ChainList>(context, listen: false)
+                      .checkAndDownloadChain(context, chain);
+
+              scm.showSnackBar(SnackBar(
+                content: Text(downloadResponse),
+                duration: const Duration(seconds: 5),
+                action: SnackBarAction(
+                  label: 'OK',
+                  onPressed: () {},
+                ),
+              ));
+            },
+            child: Icon(Icons.download),
+          ),
+        ),
+        Semantics(
+          label: "Share this chain.",
+          child: InkWell(
+            onTap: () async {
+              await Provider.of<ChainList>(context, listen: false)
+                  .checkAndShareChain(context, chain);
+            },
+            child: Icon(Icons.share_outlined),
+          ),
+        ),
+        Semantics(
+          label: "Mark this chain as Favorite.",
+          child: InkWell(
+            onTap: () async {
+              chain.pinned = !chain.pinned;
+              await Provider.of<ChainList>(context, listen: false)
+                  .updateChain(chain, false);
+            },
+            child: chain.pinned
+                ? const Icon(Icons.favorite)
+                : const Icon(Icons.favorite_border_outlined),
+          ),
+        ),
+        if (chain.notificationId != trueInDB)
+          Semantics(
+            label: "Schedule the Chain",
+            child: InkWell(
+              onTap: () => CommonLogic().scheduleTheChain(context, chain),
+              // onTap: () async {
+              //   NavigatorState nav = Navigator.of(context);
+              //   bool allWell = await onPopOut(false);
+              //   if (allWell) {
+              //     nav.pushNamed(
+              //       ScheduleChainScreen.routename,
+              //       arguments: {
+              //         "chain": chain,
+              //       },
+              //     );
+              //   }
+              // },
+              child: Icon(Icons.alarm_outlined),
+            ),
+          ),
+      ],
+    );
   }
 }

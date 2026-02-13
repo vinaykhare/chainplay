@@ -12,9 +12,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
-import 'package:chain_activities/widgets/app_bottom_buttons_help.dart';
-import 'package:chain_activities/widgets/app_header_buttons_help.dart';
-import 'package:chain_activities/widgets/chain_tile_help.dart';
+// import 'package:chain_activities/widgets/app_bottom_buttons_help.dart';
+// import 'package:chain_activities/widgets/app_header_buttons_help.dart';
+// import 'package:chain_activities/widgets/chain_tile_help.dart';
 
 class TutorialCoach {
   final String tutorialType;
@@ -475,101 +475,101 @@ class TutorialCoach {
             "focusAlign": Alignment.topCenter,
             "contentAlign": ContentAlign.top,
           },
-          {
-            "title":
-                "You can check the quick Summary of Chain Controls on the home screen here.",
-            "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50),
-                color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
-              ),
-              child: ListView(
-                shrinkWrap: true,
-                children: [
-                  Text(
-                    "Sumary of Chain Contorls",
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  Text(
-                    "This section is just kept for your help to understand the set of actions that you can perform for creating chains and playing with it.",
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  SingleChildScrollView(
-                    child: Column(
-                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          margin: const EdgeInsets.only(bottom: 10),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).focusColor,
-                            borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(30),
-                              bottomRight: Radius.circular(30),
-                            ),
-                          ),
-                          child: Text(
-                            "1. App Header Controls",
-                            style: Theme.of(context).textTheme.titleMedium,
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: const AppHeaderButtonsHelp(),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          margin: const EdgeInsets.only(bottom: 10),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).focusColor,
-                            borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(30),
-                              bottomRight: Radius.circular(30),
-                            ),
-                          ),
-                          child: Text(
-                            "2. Controls on a Chain Tile",
-                            style: Theme.of(context).textTheme.titleMedium,
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 30),
-                          child: const ChainTileHelp(),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          margin: const EdgeInsets.only(bottom: 10),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).focusColor,
-                            borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(30),
-                              bottomRight: Radius.circular(30),
-                            ),
-                          ),
-                          child: Text(
-                            "3. Bottom Bar Controls",
-                            style: Theme.of(context).textTheme.titleMedium,
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: const AppBottomButtonsHelp(),
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-            "globalKey": KeyHelper.chainControlSummaryKey,
-            "focusAlign": Alignment.bottomCenter,
-            "contentAlign": ContentAlign.bottom,
-          },
+          // {
+          //   "title":
+          //       "You can check the quick Summary of Chain Controls on the home screen here.",
+          //   "widgetToShow": Container(
+          //     padding: EdgeInsets.symmetric(horizontal: 10),
+          //     decoration: BoxDecoration(
+          //       borderRadius: BorderRadius.circular(50),
+          //       color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
+          //     ),
+          //     child: ListView(
+          //       shrinkWrap: true,
+          //       children: [
+          //         Text(
+          //           "Sumary of Chain Contorls",
+          //           style: Theme.of(context).textTheme.headlineSmall,
+          //         ),
+          //         Text(
+          //           "This section is just kept for your help to understand the set of actions that you can perform for creating chains and playing with it.",
+          //           style: Theme.of(context).textTheme.bodyLarge,
+          //         ),
+          //         SingleChildScrollView(
+          //           child: Column(
+          //             // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //             crossAxisAlignment: CrossAxisAlignment.start,
+          //             children: [
+          //               Container(
+          //                 padding: const EdgeInsets.symmetric(horizontal: 10),
+          //                 margin: const EdgeInsets.only(bottom: 10),
+          //                 decoration: BoxDecoration(
+          //                   color: Theme.of(context).focusColor,
+          //                   borderRadius: BorderRadius.only(
+          //                     topRight: Radius.circular(30),
+          //                     bottomRight: Radius.circular(30),
+          //                   ),
+          //                 ),
+          //                 child: Text(
+          //                   "1. App Header Controls",
+          //                   style: Theme.of(context).textTheme.titleMedium,
+          //                   textAlign: TextAlign.center,
+          //                 ),
+          //               ),
+          //               Padding(
+          //                 padding: const EdgeInsets.only(bottom: 10),
+          //                 child: const AppHeaderButtonsHelp(),
+          //               ),
+          //               Container(
+          //                 padding: const EdgeInsets.symmetric(horizontal: 10),
+          //                 margin: const EdgeInsets.only(bottom: 10),
+          //                 decoration: BoxDecoration(
+          //                   color: Theme.of(context).focusColor,
+          //                   borderRadius: BorderRadius.only(
+          //                     topRight: Radius.circular(30),
+          //                     bottomRight: Radius.circular(30),
+          //                   ),
+          //                 ),
+          //                 child: Text(
+          //                   "2. Controls on a Chain Tile",
+          //                   style: Theme.of(context).textTheme.titleMedium,
+          //                   textAlign: TextAlign.center,
+          //                 ),
+          //               ),
+          //               Padding(
+          //                 padding: const EdgeInsets.only(bottom: 30),
+          //                 child: const ChainTileHelp(),
+          //               ),
+          //               Container(
+          //                 padding: const EdgeInsets.symmetric(horizontal: 10),
+          //                 margin: const EdgeInsets.only(bottom: 10),
+          //                 decoration: BoxDecoration(
+          //                   color: Theme.of(context).focusColor,
+          //                   borderRadius: BorderRadius.only(
+          //                     topRight: Radius.circular(30),
+          //                     bottomRight: Radius.circular(30),
+          //                   ),
+          //                 ),
+          //                 child: Text(
+          //                   "3. Bottom Bar Controls",
+          //                   style: Theme.of(context).textTheme.titleMedium,
+          //                   textAlign: TextAlign.center,
+          //                 ),
+          //               ),
+          //               Padding(
+          //                 padding: const EdgeInsets.only(bottom: 10),
+          //                 child: const AppBottomButtonsHelp(),
+          //               ),
+          //             ],
+          //           ),
+          //         )
+          //       ],
+          //     ),
+          //   ),
+          //   "globalKey": KeyHelper.chainControlSummaryKey,
+          //   "focusAlign": Alignment.bottomCenter,
+          //   "contentAlign": ContentAlign.bottom,
+          // },
           {
             "title":
                 "Let understand a tile view of a chain and the controls available on it.",
@@ -645,7 +645,7 @@ class TutorialCoach {
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   Text(
-                    "If the Chain is Running then it will show the Current Activity and its stauts",
+                    "If the Chain is Running then it will show the Current Activity and its status",
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   Text(
