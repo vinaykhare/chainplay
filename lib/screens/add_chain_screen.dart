@@ -978,8 +978,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
                     //   });
                     // }
                     else if (dialogResponse == false) {
-                      FilePickerResult? result =
-                          await FilePicker.platform.pickFiles(
+                      FilePickerResult? result = await FilePicker.pickFiles(
                         type: FileType.custom,
                         allowedExtensions: [
                           'jpg',

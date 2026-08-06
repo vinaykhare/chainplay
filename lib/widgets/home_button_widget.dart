@@ -43,7 +43,7 @@ class HomeButtonWidget extends StatelessWidget {
               NavigatorState nav = Navigator.of(context);
               ChainList chainList =
                   Provider.of<ChainList>(context, listen: false);
-              FilePickerResult? result = await FilePicker.platform.pickFiles(
+              FilePickerResult? result = await FilePicker.pickFiles(
                 type: FileType.custom,
                 allowedExtensions: ["json"],
               );

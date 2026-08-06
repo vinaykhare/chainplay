@@ -136,7 +136,7 @@ class _ChainActivitiesWidgetState extends State<ChainActivitiesWidget> {
           reverse: true,
           buildDefaultDragHandles: true,
           scrollController: scrollController,
-          onReorder: (oldIndex, newIndex) {
+          onReorderItem: (oldIndex, newIndex) {
             if (widget.editActivity == null) {
               return;
             }

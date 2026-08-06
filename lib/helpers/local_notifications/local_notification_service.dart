@@ -30,12 +30,12 @@ class LocalNotificationService {
 
   Future<void> initialize() async {
     initializeTimeZones();
-    String timeZoneName = await FlutterTimezone.getLocalTimezone();
+    TimezoneInfo timeZoneName = await FlutterTimezone.getLocalTimezone();
     // Temp fix due to Asia/Calcutta rename issue
-    if (timeZoneName == "Asia/Calcutta") {
-      timeZoneName = "Asia/Kolkata";
-    }
-    setLocalLocation(getLocation(timeZoneName));
+    // if (timeZoneName == "Asia/Calcutta") {
+    //   timeZoneName = "Asia/Kolkata";
+    // }
+    setLocalLocation(getLocation(timeZoneName.identifier));
     //Android settings
     AndroidInitializationSettings androidInitializationSettings =
         const AndroidInitializationSettings('@mipmap/launcher_icon');
@@ -45,7 +45,7 @@ class LocalNotificationService {
     );
 
     flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
+      settings: initializationSettings,
       onDidReceiveNotificationResponse: notificationTapBackground,
       onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
     );
@@ -170,11 +170,11 @@ class LocalNotificationService {
         payLoad["chainActivityIndex"],
       );
       await flutterLocalNotificationsPlugin.zonedSchedule(
-        notificationId,
-        title,
-        body,
-        TZDateTime.from(chainAt, local),
-        details,
+        id: notificationId,
+        title: title,
+        body: body,
+        scheduledDate: TZDateTime.from(chainAt, local),
+        notificationDetails: details,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         payload: jsonEncode(payLoad),
       );
@@ -186,7 +186,7 @@ class LocalNotificationService {
 
   Future<bool> cancelScheduledNotification(int notificationId) async {
     try {
-      await flutterLocalNotificationsPlugin.cancel(notificationId);
+      await flutterLocalNotificationsPlugin.cancel(id: notificationId);
       return true;
     } catch (e) {
       return false;
