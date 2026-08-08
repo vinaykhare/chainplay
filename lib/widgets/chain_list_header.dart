@@ -21,6 +21,7 @@ class ChainListHeader extends StatelessWidget {
       children: [
         Expanded(
           child: ListTile(
+            tileColor: Theme.of(context).scaffoldBackgroundColor,
             leading: InkWell(
               child: Image.asset(
                 key: KeyHelper.chainAndPlayTitle,

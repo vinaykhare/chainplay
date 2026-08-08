@@ -126,10 +126,9 @@ class _ChainListScreenState extends State<ChainListScreen> {
       child: Scaffold(
         drawer: const AppDrawer(),
         body: SafeArea(
-          child: Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).scaffoldBackgroundColor,
-            ),
+          child: Material(
+            elevation: 5.0,
+            color: Theme.of(context).scaffoldBackgroundColor,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

@@ -233,120 +233,137 @@ class ChainTileView extends StatelessWidget {
         onTap: () => navigateToViewChainOrPlayChain(context),
         child: Container(
           margin: const EdgeInsets.symmetric(vertical: 5),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
+          child: Material(
             color: chain.at != null
                 ? Theme.of(context).cardColor.withValues(alpha: 0.7)
                 : Theme.of(context).cardColor,
-          ),
-          child: Column(
-            children: [
-              ListTile(
-                // tileColor: chain.chainStatus == statusDone
-                //     ? Theme.of(context).disabledColor
-                //     : Theme.of(context).cardColor,
-                // subtitle: Text(chain.title),
-                title: Container(
-                  key: getGlobaleKey(
-                        tutorialChain,
-                        1,
-                      ) ??
-                      key,
-                  child: getChainTileTitle(
-                    context,
-                    chain,
+            elevation: 2.0, // Adds shadow
+
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              side: BorderSide(
+                color: Colors.grey.shade300,
+                width: 1.0,
+              ),
+            ),
+            // margin: const EdgeInsets.symmetric(vertical: 5),
+            // decoration: BoxDecoration(
+            //   borderRadius: BorderRadius.circular(20),
+            //   color: chain.at != null
+            //       ? Theme.of(context).cardColor.withValues(alpha: 0.7)
+            //       : Theme.of(context).cardColor,
+            // ),
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              children: [
+                ListTile(
+                  // tileColor: chain.chainStatus == statusDone
+                  //     ? Theme.of(context).disabledColor
+                  //     : Theme.of(context).cardColor,
+                  // subtitle: Text(chain.title),
+                  title: Container(
+                    key: getGlobaleKey(
+                          tutorialChain,
+                          1,
+                        ) ??
+                        key,
+                    child: getChainTileTitle(
+                      context,
+                      chain,
+                    ),
+                  ),
+
+                  leading: InkWell(
+                    onTap: () => CommonLogic().playTheChain(context, chain),
+                    onLongPress: () =>
+                        CommonLogic().scheduleTheChain(context, chain),
+                    child: CircleAvatar(
+                        key: getGlobaleKey(
+                              tutorialChain,
+                              2,
+                            ) ??
+                            key,
+                        // backgroundColor: Theme.of(context).primaryColor,
+                        child: getLeadingIconForChain(context, chain)),
+                  ),
+                  trailing: Row(
+                    key: getGlobaleKey(
+                          tutorialChain,
+                          3,
+                        ) ??
+                        key,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (showHistory)
+                        IconButton(
+                          icon: const Icon(Icons.share),
+                          onPressed: () async {
+                            await Provider.of<ChainList>(context, listen: false)
+                                .checkAndShareChain(context, chain);
+                          },
+                        ),
+                      if (allowFlag)
+                        IconButton(
+                          icon: chain.pinned
+                              ? const Icon(Icons.favorite)
+                              : const Icon(Icons.favorite_border_outlined),
+                          onPressed: () async {
+                            chain.pinned = !chain.pinned;
+                            await Provider.of<ChainList>(context, listen: false)
+                                .updateChain(chain, false);
+                          },
+                        ),
+                      // if (showHistory)
+                      //   IconButton(
+                      //     onPressed: () async {
+                      //       NavigatorState navState = Navigator.of(context);
+
+                      //       navState.pushNamed(
+                      //         ChainExecutionScreen.routename,
+                      //         arguments: chain,
+                      //       );
+                      //     },
+                      //     icon: const Icon(Icons.arrow_forward),
+                      //   ),
+                    ],
                   ),
                 ),
-
-                leading: InkWell(
-                  onTap: () => CommonLogic().playTheChain(context, chain),
-                  onLongPress: () =>
-                      CommonLogic().scheduleTheChain(context, chain),
-                  child: CircleAvatar(
-                      key: getGlobaleKey(
-                            tutorialChain,
-                            2,
-                          ) ??
-                          key,
-                      backgroundColor: Theme.of(context).primaryColor,
-                      child: getLeadingIconForChain(context, chain)),
-                ),
-                trailing: Row(
-                  key: getGlobaleKey(
-                        tutorialChain,
-                        3,
-                      ) ??
-                      key,
-                  mainAxisSize: MainAxisSize.min,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    if (showHistory)
-                      IconButton(
-                        icon: const Icon(Icons.share),
-                        onPressed: () async {
-                          await Provider.of<ChainList>(context, listen: false)
-                              .checkAndShareChain(context, chain);
-                        },
+                    Expanded(
+                      child: Image.asset(
+                        assetMap["chainImage"]!,
+                        height: 20,
+                        fit: BoxFit.cover,
                       ),
-                    if (allowFlag)
-                      IconButton(
-                        icon: chain.pinned
-                            ? const Icon(Icons.favorite)
-                            : const Icon(Icons.favorite_border_outlined),
-                        onPressed: () async {
-                          chain.pinned = !chain.pinned;
-                          await Provider.of<ChainList>(context, listen: false)
-                              .updateChain(chain, false);
-                        },
+                    ),
+                    FittedBox(
+                      child: Text(
+                        key: getGlobaleKey(
+                              tutorialChain,
+                              0,
+                            ) ??
+                            key,
+                        chain.title,
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  //color: Theme.of(context).hintColor,
+                                ),
                       ),
-                    // if (showHistory)
-                    //   IconButton(
-                    //     onPressed: () async {
-                    //       NavigatorState navState = Navigator.of(context);
-
-                    //       navState.pushNamed(
-                    //         ChainExecutionScreen.routename,
-                    //         arguments: chain,
-                    //       );
-                    //     },
-                    //     icon: const Icon(Icons.arrow_forward),
-                    //   ),
+                    ),
+                    Expanded(
+                      child: Image.asset(
+                        assetMap["chainImage"]!,
+                        height: 20,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ],
                 ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Image.asset(
-                      assetMap["chainImage"]!,
-                      height: 20,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  FittedBox(
-                    child: Text(
-                      key: getGlobaleKey(
-                            tutorialChain,
-                            0,
-                          ) ??
-                          key,
-                      chain.title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            //color: Theme.of(context).hintColor,
-                          ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Image.asset(
-                      assetMap["chainImage"]!,
-                      height: 20,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

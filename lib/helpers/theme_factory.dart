@@ -54,13 +54,13 @@ class ThemeFactory {
       case lightTheme:
         return ThemeData(
           // useMaterial3: false,
-          primarySwatch: paletteLigthAmber,
+          primarySwatch: paletteWhiteAndBlack,
           scaffoldBackgroundColor: Colors.white,
-          cardColor: paletteLigthAmber.shade300,
-          canvasColor: paletteLigthAmber.shade100,
+          cardColor: paletteWhiteAndBlack.shade300,
+          canvasColor: paletteWhiteAndBlack.shade100,
           colorScheme: ColorScheme.light(
-            surface: paletteLigthAmber,
-            primary: paletteLigthAmber.shade100,
+            surface: paletteWhiteAndBlack,
+            primary: paletteWhiteAndBlack.shade100,
             onPrimary: Colors.black,
           ),
           elevatedButtonTheme: ElevatedButtonThemeData(
@@ -86,7 +86,7 @@ class ThemeFactory {
           textButtonTheme: TextButtonThemeData(
             style: ButtonStyle(
               backgroundColor: WidgetStateProperty.resolveWith<Color>(
-                  (states) => paletteLigthAmber.shade100),
+                  (states) => paletteWhiteAndBlack.shade100),
               foregroundColor: WidgetStateProperty.resolveWith<Color>(
                 (states) => Colors.black,
               ),
@@ -106,18 +106,19 @@ class ThemeFactory {
             thumbColor: WidgetStateProperty.resolveWith<Color>(
               (states) {
                 if (states.contains(WidgetState.selected)) {
-                  return Colors.white;
+                  return Colors.black;
                 } else {
-                  return paletteLigthAmber;
+                  return Colors.white;
                 }
               },
             ),
             trackColor: WidgetStateProperty.resolveWith<Color>((states) {
-              if (states.contains(WidgetState.selected)) {
-                return paletteLigthAmber;
-              } else {
-                return Colors.white;
-              }
+              return Colors.grey;
+              // if (states.contains(WidgetState.selected)) {
+              //   return paletteWhiteAndBlack;
+              // } else {
+              //   return Colors.grey;
+              // }
             }),
           ),
 
@@ -125,18 +126,18 @@ class ThemeFactory {
             backgroundColor: Colors.white,
           ),
           dividerTheme: DividerThemeData(
-            color: paletteLigthAmber.shade200,
+            color: paletteWhiteAndBlack.shade200,
           ),
           appBarTheme: AppBarTheme(
             backgroundColor: Colors.white,
           ),
           inputDecorationTheme: InputDecorationTheme(
-            fillColor: paletteLigthAmber.shade200,
+            fillColor: paletteWhiteAndBlack.shade200,
           ),
           textSelectionTheme: TextSelectionThemeData(
-            selectionColor: paletteLigthAmber.shade400,
+            selectionColor: paletteWhiteAndBlack.shade400,
             cursorColor: Colors.black,
-            selectionHandleColor: paletteLigthAmber,
+            selectionHandleColor: paletteWhiteAndBlack,
           ),
           snackBarTheme: const SnackBarThemeData(
             actionTextColor: Colors.white,

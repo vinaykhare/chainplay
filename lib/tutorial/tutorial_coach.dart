@@ -205,6 +205,70 @@ class TutorialCoach {
       BuildContext context, String tutorialType, ChainList chainList) {
     List<Map<String, dynamic>> tutorialItemType;
 
+    Widget commonMessage = SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Container(
+        padding: const EdgeInsets.all(8.0),
+        // margin: const EdgeInsets.only(top: 8.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(50),
+          color:
+              Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.5),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Tap the ",
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                Text(
+                  "Highlighted Area",
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                ),
+                Text(
+                  " to move ahead",
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Tap on ",
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                Text(
+                  "[X] Close",
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                ),
+                Text(
+                  " to end this tutorial.",
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+
     switch (tutorialType) {
       case tutorialChainListScreen:
         tutorialItemType = [
@@ -212,7 +276,6 @@ class TutorialCoach {
             "title":
                 "This is the App's header with a Logo and Couple of Buttons to the right.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -235,73 +298,7 @@ class TutorialCoach {
                     "Lets undestand the major functions of this Screen.",
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
-                  Container(
-                    padding: const EdgeInsets.all(8.0),
-                    margin: const EdgeInsets.only(top: 8.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      color: Theme.of(context)
-                          .scaffoldBackgroundColor
-                          .withValues(alpha: 0.5),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Tap the ",
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                            Text(
-                              "Highlighted Area",
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge!
-                                  .copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).colorScheme.error,
-                                  ),
-                            ),
-                            Text(
-                              " to move ahead",
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Tap on ",
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                            Text(
-                              "[X] Close",
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge!
-                                  .copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).colorScheme.error,
-                                  ),
-                            ),
-                            Text(
-                              " to end this tutorial.",
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
+                  commonMessage,
                 ],
               ),
             ),
@@ -312,7 +309,6 @@ class TutorialCoach {
           {
             "title": "Press here to Create a New Chain of Activities",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -339,7 +335,6 @@ class TutorialCoach {
             "title":
                 "And press this one to create a new chain by uploading a file",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -373,7 +368,6 @@ class TutorialCoach {
           {
             "title": "Refresh the page by tapping over the app logo here.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -399,7 +393,6 @@ class TutorialCoach {
           {
             "title": "All the Chains are listed here.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -425,7 +418,6 @@ class TutorialCoach {
           {
             "title": "which you can filter using these predefined filters.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -452,7 +444,6 @@ class TutorialCoach {
             "title":
                 "Or search the chains with the content like Chain Title or Title of Activities in it.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -479,7 +470,7 @@ class TutorialCoach {
           //   "title":
           //       "You can check the quick Summary of Chain Controls on the home screen here.",
           //   "widgetToShow": Container(
-          //     padding: EdgeInsets.symmetric(horizontal: 10),
+          //
           //     decoration: BoxDecoration(
           //       borderRadius: BorderRadius.circular(50),
           //       color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -574,7 +565,6 @@ class TutorialCoach {
             "title":
                 "Let understand a tile view of a chain and the controls available on it.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -601,7 +591,6 @@ class TutorialCoach {
             "title":
                 "Title of the Chain is kept here to signify that it is a Chain made up of Activities.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -628,7 +617,6 @@ class TutorialCoach {
             "title":
                 "This section of Tile holds the information related to the Chain like Number of Activities, Number of Executions, Chain Status if it is running and the Last Updated Date if it is not running.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -663,7 +651,6 @@ class TutorialCoach {
             "title":
                 "You can play this chain by pressing this button. Long Pressing this play button gives the option to Schedule the chain.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -694,7 +681,6 @@ class TutorialCoach {
             "title":
                 "Here we have kept a Quick Button to perform the quick actions on this chain like Sharing it as a file, marking it as favorite.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -725,7 +711,6 @@ class TutorialCoach {
             "title":
                 "Open this Chain by Tapping on this Chain Tile where you will see more chain actions and details of the activities in this chain.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -756,7 +741,6 @@ class TutorialCoach {
             "title":
                 "This is a Quick tutorial to Brief you with View Chain screen functions.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -773,75 +757,7 @@ class TutorialCoach {
                       "Quick tutorial to Brief you with View Chain screen functions.",
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
-                    Container(
-                      padding: const EdgeInsets.all(8.0),
-                      margin: const EdgeInsets.only(top: 8.0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        color: Theme.of(context)
-                            .scaffoldBackgroundColor
-                            .withValues(alpha: 0.5),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Tap the ",
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                              Text(
-                                "Highlighted Area",
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color:
-                                          Theme.of(context).colorScheme.error,
-                                    ),
-                              ),
-                              Text(
-                                " to move ahead",
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Tap on ",
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                              Text(
-                                "[X] Close",
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color:
-                                          Theme.of(context).colorScheme.error,
-                                    ),
-                              ),
-                              Text(
-                                " to end this tutorial.",
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                    commonMessage,
                   ],
                 ),
               ),
@@ -864,7 +780,6 @@ class TutorialCoach {
             "title":
                 "This section has series of buttons to take actions on this chain.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -891,7 +806,7 @@ class TutorialCoach {
           //   "title":
           //       "This bottom bar contains the title of the Chain at the Center, a button to go back to home screen at the left and a button to Edit this chain at the right.",
           //   "widgetToShow": Container(
-          //     padding: EdgeInsets.symmetric(horizontal: 10),
+          //
           //     decoration: BoxDecoration(
           //       borderRadius: BorderRadius.circular(50),
           //       color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -918,7 +833,6 @@ class TutorialCoach {
             "title":
                 "Schedule the Chain and get Notification to start the chain at the scheduled time.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -945,7 +859,6 @@ class TutorialCoach {
             "title":
                 "We can play this chain by pressing this button. This button is avialable on the Chain tile at Home screen too. Also Long Pressing this play button gives the option to Schedule the chain.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -1111,7 +1024,6 @@ class TutorialCoach {
             "title":
                 "This bottom bar contains the title of the Chain at the Center, a button to go back to home screen at the left and a button to Edit this chain at the right.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -1138,7 +1050,6 @@ class TutorialCoach {
             "title":
                 "This Button will take you to Edit Chain screen where you will be able to edit this Chain.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -1169,7 +1080,6 @@ class TutorialCoach {
             "title":
                 "This is a Quick tutorial to Brief you with Chain Execution Status screen functions.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -1186,75 +1096,7 @@ class TutorialCoach {
                       "Quick tutorial to Brief you with Chain Execution Status Screen functions.",
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
-                    Container(
-                      padding: const EdgeInsets.all(8.0),
-                      margin: const EdgeInsets.only(top: 8.0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        color: Theme.of(context)
-                            .scaffoldBackgroundColor
-                            .withValues(alpha: 0.5),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Tap the ",
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                              Text(
-                                "Highlighted Area",
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color:
-                                          Theme.of(context).colorScheme.error,
-                                    ),
-                              ),
-                              Text(
-                                " to move ahead",
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Tap on ",
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                              Text(
-                                "[X] Close",
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color:
-                                          Theme.of(context).colorScheme.error,
-                                    ),
-                              ),
-                              Text(
-                                " to end this tutorial.",
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                    commonMessage,
                   ],
                 ),
               ),
@@ -1278,7 +1120,6 @@ class TutorialCoach {
             "title":
                 "This section displays the relevant buttons to take action for running the chain. Button to resume the chain in background shall be displayed if the Current Activity is timer activity and it is paused. Button to refresh the page shall be displayed if the chain is running in background. And a button to go to the Interactive View to play the chain shall be displayed if neither the chain is running in backgroud nor it can be run.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -1337,7 +1178,6 @@ class TutorialCoach {
             "title":
                 "Press here to switch between Landscape and Portrait mode.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -1363,7 +1203,6 @@ class TutorialCoach {
           {
             "title": "We can use this option to stop the Chain Execution.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -1389,7 +1228,6 @@ class TutorialCoach {
           {
             "title": idToGoToPlayWaitTutorialScreen,
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -1416,7 +1254,6 @@ class TutorialCoach {
             "title":
                 "This is a Quick tutorial to Brief you with Play Activity Screen and its functions.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -1433,75 +1270,7 @@ class TutorialCoach {
                       "This is a Quick tutorial to Brief you with Play Activity Screen and its functions.",
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
-                    Container(
-                      padding: const EdgeInsets.all(8.0),
-                      margin: const EdgeInsets.only(top: 8.0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        color: Theme.of(context)
-                            .scaffoldBackgroundColor
-                            .withValues(alpha: 0.5),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Tap the ",
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                              Text(
-                                "Highlighted Area",
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color:
-                                          Theme.of(context).colorScheme.error,
-                                    ),
-                              ),
-                              Text(
-                                " to move ahead",
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Tap on ",
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                              Text(
-                                "[X] Close",
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color:
-                                          Theme.of(context).colorScheme.error,
-                                    ),
-                              ),
-                              Text(
-                                " to end this tutorial.",
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                    commonMessage,
                   ],
                 ),
               ),
@@ -1525,7 +1294,6 @@ class TutorialCoach {
             "title":
                 "We can play the chain in Landscape view too. use this button to switch between Portrait and Landscape.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -1552,7 +1320,6 @@ class TutorialCoach {
             "title":
                 "We can pause the chain activity and resume it back with this button and hence the chain.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -1579,7 +1346,6 @@ class TutorialCoach {
             "title":
                 "If Timer is taking long and you can't keep looking at the screen for so long, then use this button to Go Back to Chain Execution Status Screen and Notify when Activity is done.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -1606,7 +1372,6 @@ class TutorialCoach {
             "title":
                 "Timer keeps ticking for the activity with Timer duration here. If the activity does not have timer then we get an option to press Done and complete the activty.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -1633,7 +1398,6 @@ class TutorialCoach {
             "title":
                 "This button helps you to force complete the current activity and move to the next activity.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -1659,7 +1423,6 @@ class TutorialCoach {
           {
             "title": idToGoToPlayChainScreen,
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -1690,7 +1453,6 @@ class TutorialCoach {
             "title":
                 "This is a Quick tutorial to brief you with Edit Chain Screen. Same screen is for adding a new chain too.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -1720,75 +1482,7 @@ class TutorialCoach {
                       "This screen also loads up when we choose to Create the Chain from Home screen.",
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
-                    Container(
-                      padding: const EdgeInsets.all(8.0),
-                      margin: const EdgeInsets.only(top: 8.0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        color: Theme.of(context)
-                            .scaffoldBackgroundColor
-                            .withValues(alpha: 0.5),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Tap the ",
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                              Text(
-                                "Highlighted Area",
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color:
-                                          Theme.of(context).colorScheme.error,
-                                    ),
-                              ),
-                              Text(
-                                " to move ahead",
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Tap on ",
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                              Text(
-                                "[X] Close",
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color:
-                                          Theme.of(context).colorScheme.error,
-                                    ),
-                              ),
-                              Text(
-                                " to end this tutorial.",
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                    commonMessage,
                   ],
                 ),
               ),
@@ -1800,7 +1494,6 @@ class TutorialCoach {
           {
             "title": "This screen helps you to Create or Edit the chain.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -1822,7 +1515,6 @@ class TutorialCoach {
           {
             "title": "Here we have an Editable title of chain.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -1849,7 +1541,6 @@ class TutorialCoach {
             "title":
                 "Here we insert the name of activity to be added to the chain.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -1876,7 +1567,6 @@ class TutorialCoach {
             "title":
                 "Before submitting the activty, we can add duration to it, or an image to the activity.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -1907,7 +1597,6 @@ class TutorialCoach {
             "title":
                 "Just press this back button when you are done with Chain Editing. It will automatically save the changes and exit from this screen.",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),
@@ -1937,7 +1626,6 @@ class TutorialCoach {
           {
             "title": "Tutorial Not defined",
             "widgetToShow": Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: Theme.of(context).canvasColor.withValues(alpha: 0.3),

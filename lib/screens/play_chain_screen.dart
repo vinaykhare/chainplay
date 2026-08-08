@@ -457,69 +457,76 @@ class _PlayChainState extends State<PlayChain> {
                           // buttonIcon: Icons.stop_circle,
                           icon: Icon(Icons.stop_circle),
                         ),
-                        SingleChildScrollView(
-                          key: KeyHelper.playChainRunInBackgroundKey,
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              if (invokeCounter <= 0 &&
-                                  chain.at != null &&
-                                  chain.at!.isAfter(DateTime.now()))
-                                CatTextButton(
-                                  buttonLabel: "Cancel Schedule & Start Now",
-                                  buttonAction: (chain.notificationId ==
-                                              noValueInDB &&
-                                          (chainActivityPaused == null ||
-                                              chainActivityPaused!.endedAt ==
-                                                  null))
-                                      ? () {
-                                          chainActivityPaused = null;
-                                          playTheChain();
-                                        }
-                                      : () async {
-                                          await cancelSchedule();
-                                        },
-                                  buttonIcon: Icons.free_cancellation_outlined,
-                                )
-                              else if (chainActivityPaused != null &&
-                                  chainActivityPaused!.endedAt == null &&
-                                  chain.notificationId == noValueInDB)
-                                CatTextButton(
-                                  buttonLabel: "Play the Chain, in Background",
-                                  buttonAction: scheduleActivity,
-                                  buttonIcon: Icons.play_circle,
-                                )
-                              else if (chain.notificationId != noValueInDB)
-                                CatTextButton(
-                                  buttonLabel: "Refresh, for the latest status",
-                                  buttonAction: () async {
-                                    if (chainActivityPaused!.endedAt!.isBefore(
-                                      DateTime.now(),
-                                    )) {
-                                      await cancelNotificationAndCompleteActivity(
-                                          chain, chainActivityPaused!);
+                        Expanded(
+                          child: SingleChildScrollView(
+                            key: KeyHelper.playChainRunInBackgroundKey,
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if (invokeCounter <= 0 &&
+                                    chain.at != null &&
+                                    chain.at!.isAfter(DateTime.now()))
+                                  CatTextButton(
+                                    buttonLabel: "Cancel Schedule & Start Now",
+                                    buttonAction: (chain.notificationId ==
+                                                noValueInDB &&
+                                            (chainActivityPaused == null ||
+                                                chainActivityPaused!.endedAt ==
+                                                    null))
+                                        ? () {
+                                            chainActivityPaused = null;
+                                            playTheChain();
+                                          }
+                                        : () async {
+                                            await cancelSchedule();
+                                          },
+                                    buttonIcon:
+                                        Icons.free_cancellation_outlined,
+                                  )
+                                else if (chainActivityPaused != null &&
+                                    chainActivityPaused!.endedAt == null &&
+                                    chain.notificationId == noValueInDB)
+                                  CatTextButton(
+                                    buttonLabel:
+                                        "Play the Chain, in Background",
+                                    buttonAction: scheduleActivity,
+                                    buttonIcon: Icons.play_circle,
+                                  )
+                                else if (chain.notificationId != noValueInDB)
+                                  CatTextButton(
+                                    buttonLabel:
+                                        "Refresh, for the latest status",
+                                    buttonAction: () async {
+                                      if (chainActivityPaused!.endedAt!
+                                          .isBefore(
+                                        DateTime.now(),
+                                      )) {
+                                        await cancelNotificationAndCompleteActivity(
+                                            chain, chainActivityPaused!);
 
+                                        chainActivityPaused = null;
+                                        invokeCounter++;
+                                      } else {
+                                        setState(() {});
+                                      }
+                                    },
+                                    buttonIcon: Icons.refresh_outlined,
+                                  )
+                                else
+                                  CatTextButton(
+                                    buttonLabel:
+                                        "Play the Chain, Interactively",
+                                    buttonAction: () {
                                       chainActivityPaused = null;
-                                      invokeCounter++;
-                                    } else {
-                                      setState(() {});
-                                    }
-                                  },
-                                  buttonIcon: Icons.refresh_outlined,
-                                )
-                              else
-                                CatTextButton(
-                                  buttonLabel: "Play the Chain, Interactively",
-                                  buttonAction: () {
-                                    chainActivityPaused = null;
-                                    playTheChain();
-                                  },
-                                  buttonIcon: Icons.arrow_forward_outlined,
-                                ),
-                            ],
+                                      playTheChain();
+                                    },
+                                    buttonIcon: Icons.arrow_forward_outlined,
+                                  ),
+                              ],
+                            ),
                           ),
                         ),
                         IconButton(
