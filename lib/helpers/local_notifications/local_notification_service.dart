@@ -32,10 +32,12 @@ class LocalNotificationService {
     initializeTimeZones();
     TimezoneInfo timeZoneName = await FlutterTimezone.getLocalTimezone();
     // Temp fix due to Asia/Calcutta rename issue
-    // if (timeZoneName == "Asia/Calcutta") {
-    //   timeZoneName = "Asia/Kolkata";
+    // if (timeZoneName.identifier == "Asia/Calcutta") {
+    //   timeZoneName. = "Asia/Kolkata";
     // }
-    setLocalLocation(getLocation(timeZoneName.identifier));
+    setLocalLocation(getLocation(timeZoneName.identifier == "Asia/Calcutta"
+        ? "Asia/Kolkata"
+        : timeZoneName.identifier));
     //Android settings
     AndroidInitializationSettings androidInitializationSettings =
         const AndroidInitializationSettings('@mipmap/launcher_icon');
