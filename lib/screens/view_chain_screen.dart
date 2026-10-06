@@ -6,7 +6,6 @@ import 'package:chain_activities/helpers/common_logic.dart';
 import 'package:chain_activities/helpers/common_ui.dart';
 import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/screens/add_chain_screen.dart';
-import 'package:chain_activities/tutorial/tutorial_coach.dart';
 // import 'package:chain_activities/screens/schedule_chain.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
@@ -65,18 +64,6 @@ class _ViewChainState extends State<ViewChain> {
     }
   }
 
-  void launchTutorial() {
-    TutorialCoach tutorialCoach = TutorialCoach(
-      tutorialType: tutorialViewChainScreen,
-      context: context,
-    );
-    tutorialCoach.createTutorial();
-    chainList.speakText(
-      "This is a Quick tutorial to Brief you with View Chain screen functions.",
-    );
-    tutorialCoach.showTutorial();
-  }
-
   Future<bool> onPopOut(bool didPop) async {
     if (didPop) {
       return true;
@@ -117,11 +104,6 @@ class _ViewChainState extends State<ViewChain> {
         chain = viewArgs['chain'];
         savedInDb = viewArgs['savedInDb'] ?? true;
         invalidChain = viewArgs['invalidChain'] ?? false;
-        if (chainList.getSettingByKey(tutorialViewChainScreen).value ==
-                trueSettingValue &&
-            savedInDb) {
-          launchTutorial();
-        }
       }
       if (!savedInDb) {
         chain.title = chainList.getValidTitle(chain.title);
@@ -451,13 +433,6 @@ class _ViewChainState extends State<ViewChain> {
                                   setState(() {
                                     savedInDb = true;
                                   });
-                                  if (chainList
-                                          .getSettingByKey(
-                                              tutorialViewChainScreen)
-                                          .value ==
-                                      trueSettingValue) {
-                                    launchTutorial();
-                                  }
                                 },
                                 icon: Icon(
                                   Icons.save,

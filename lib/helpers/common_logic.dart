@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class CommonLogic {
-  Future<bool> setOrietation(bool isLandscape) async {
+  Future<bool> setOrientation(bool isLandscape) async {
     if (isLandscape) {
       await SystemChrome.setPreferredOrientations(
         [

@@ -4,7 +4,6 @@ import 'package:chain_activities/helpers/common_ui.dart';
 import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:chain_activities/screens/pixabay_selection_screen.dart';
-import 'package:chain_activities/tutorial/tutorial_coach.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -792,22 +791,6 @@ class _AddChainScreenState extends State<AddChainScreen> {
           }
         });
       });
-      ChainList chainList = Provider.of<ChainList>(context, listen: true);
-      if (chainList.getSettingByKey(tutorialAddChainScreen).value ==
-              trueSettingValue &&
-          tempChain.activities.isNotEmpty) {
-        addingDurationToActivity = true;
-        addingImageToActivity = true;
-        TutorialCoach tutorialCoach = TutorialCoach(
-          tutorialType: tutorialAddChainScreen,
-          context: context,
-        );
-        tutorialCoach.createTutorial();
-        chainList.speakText(
-          "This is a Quick tutorial to brief you with Edit Chain Screen. Same screen is for adding a new chain too.",
-        );
-        tutorialCoach.showTutorial();
-      }
       pageInit = false;
       //FocusScope.of(context).requestFocus(addActivityFocus);
     }
@@ -1490,255 +1473,271 @@ class _AddChainScreenState extends State<AddChainScreen> {
 
     return Scaffold(
       //appBar: appBarWidget,
+      // resizeToAvoidBottomInset: false,
       body: SafeArea(
         // child: Stack(
         //   children: [
-        child: Column(
-          children: [
-            Semantics(
-              label: tempChain.title.isEmpty
-                  ? "Chain Input Form"
-                  : "Chain Input Form for : ${tempChain.title}",
-              child: chainInputForm,
-            ),
-            if (errorString != "")
-              Semantics(
-                label: "Chain Error Message",
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    errorString,
-                    style:
-                        TextStyle(color: Theme.of(context).colorScheme.error),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-            if (errorString != "")
-              Divider(
-                thickness: 1,
-                color: Theme.of(context).dividerTheme.color,
-              ),
-            Expanded(
-              child: Padding(
-                key: KeyHelper.addChainKey,
-                padding: const EdgeInsets.all(8.0),
-                child: Semantics(
-                  label: "Editable Chain of Activities",
-                  child: ChainActivitiesWidget(
-                    tempChain: tempChain,
-                    editActivity: editActivity,
-                    undoEdit: undoEdit,
-                    updateDurationForAllWaitActivity:
-                        tempChain.activities.length > 3
-                            ? updateDurationForAllWaitActivity
-                            : null,
-                  ),
-                ),
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.all(5),
-              padding: const EdgeInsets.only(bottom: 5),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: Theme.of(context).cardColor,
-              ),
-              child: const ShowBannerAd(),
-            ),
-            if ((addingDurationToActivity || addingImageToActivity) &&
-                tempChain.title.isNotEmpty)
-              Container(
-                key: KeyHelper.addChainAddActivitySpecificationBarKey,
-                child: activitySpecificationForm,
-              ),
-            Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Semantics(
-                    label: "Save and Go back to previous screen",
-                    child: SizedBox(
-                      // width: appWidth * 0.21,
-                      child: IconButton(
-                        key: KeyHelper.addChainSaveAndExitKey,
-                        onPressed: saveAndExit,
-                        icon: const Icon(Icons.arrow_back),
-                      ),
-                      // child: InkWell(
-                      //   onTap: saveAndExit,
-                      //   child: Column(
-                      //     children: [
-                      //       const Icon(Icons.arrow_back),
-                      //       Padding(
-                      //         padding:
-                      //             const EdgeInsets.symmetric(horizontal: 5),
-                      //         child: const Text("Save & Exit"),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
+        child: OrientationBuilder(builder: (context, orientation) {
+          return orientation == Orientation.landscape
+              ? Center(
+                  child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    const Text(
+                        "Landscape mode is not supported. Please rotate your device to portrait mode."),
+                  ],
+                ))
+              : Column(
+                  children: [
+                    Semantics(
+                      label: tempChain.title.isEmpty
+                          ? "Chain Input Form"
+                          : "Chain Input Form for : ${tempChain.title}",
+                      child: chainInputForm,
                     ),
-                  ),
-                  if (!updatingSystemWaitActivityInDB &&
-                      tempChain.title.isNotEmpty)
-                    Expanded(
-                      key: KeyHelper.addChainAddActivityBarKey,
-                      child: TextField(
-                        cursorColor: Theme.of(context).shadowColor,
-                        focusNode: addActivityFocus,
-                        decoration: InputDecoration(
-                          //floatingLabelBehavior: FloatingLabelBehavior.never,
-                          label: Text(
-                            'Chain Activity Name',
+                    if (errorString != "")
+                      Semantics(
+                        label: "Chain Error Message",
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            errorString,
                             style: TextStyle(
-                              color: Theme.of(context).disabledColor,
+                                color: Theme.of(context).colorScheme.error),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    if (errorString != "")
+                      Divider(
+                        thickness: 1,
+                        color: Theme.of(context).dividerTheme.color,
+                      ),
+                    Expanded(
+                      child: Padding(
+                        key: KeyHelper.addChainKey,
+                        padding: const EdgeInsets.all(8.0),
+                        child: Semantics(
+                          label: "Editable Chain of Activities",
+                          child: ChainActivitiesWidget(
+                            tempChain: tempChain,
+                            editActivity: editActivity,
+                            undoEdit: undoEdit,
+                            updateDurationForAllWaitActivity:
+                                tempChain.activities.length > 3
+                                    ? updateDurationForAllWaitActivity
+                                    : null,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.all(5),
+                      padding: const EdgeInsets.only(bottom: 5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Theme.of(context).cardColor,
+                      ),
+                      child: const ShowBannerAd(),
+                    ),
+                    if ((addingDurationToActivity || addingImageToActivity) &&
+                        tempChain.title.isNotEmpty)
+                      Container(
+                        key: KeyHelper.addChainAddActivitySpecificationBarKey,
+                        child: activitySpecificationForm,
+                      ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Semantics(
+                            label: "Save and Go back to previous screen",
+                            child: SizedBox(
+                              // width: appWidth * 0.21,
+                              child: IconButton(
+                                key: KeyHelper.addChainSaveAndExitKey,
+                                onPressed: saveAndExit,
+                                icon: const Icon(Icons.arrow_back),
+                              ),
+                              // child: InkWell(
+                              //   onTap: saveAndExit,
+                              //   child: Column(
+                              //     children: [
+                              //       const Icon(Icons.arrow_back),
+                              //       Padding(
+                              //         padding:
+                              //             const EdgeInsets.symmetric(horizontal: 5),
+                              //         child: const Text("Save & Exit"),
+                              //       ),
+                              //     ],
+                              //   ),
+                              // ),
                             ),
                           ),
-                          border: const OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                          filled: true,
-                          prefixIcon: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                addingDurationToActivity =
-                                    !addingDurationToActivity;
-                                addingImageToActivity = !addingImageToActivity;
-                              });
-                            },
-                            icon: Semantics(
-                              label:
-                                  "Toggle to show the Duration and Image field to be added along with this activity.",
-                              child: Icon(
-                                addingDurationToActivity ||
-                                        addingImageToActivity
-                                    ? Icons.settings_suggest_outlined
-                                    : Icons.settings_suggest,
-                                color: Theme.of(context).iconTheme.color,
+                          if (!updatingSystemWaitActivityInDB &&
+                              tempChain.title.isNotEmpty)
+                            Expanded(
+                              key: KeyHelper.addChainAddActivityBarKey,
+                              child: TextField(
+                                cursorColor: Theme.of(context).shadowColor,
+                                focusNode: addActivityFocus,
+                                decoration: InputDecoration(
+                                  //floatingLabelBehavior: FloatingLabelBehavior.never,
+                                  label: Text(
+                                    'Chain Activity Name',
+                                    style: TextStyle(
+                                      color: Theme.of(context).disabledColor,
+                                    ),
+                                  ),
+                                  border: const OutlineInputBorder(
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  filled: true,
+                                  prefixIcon: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        addingDurationToActivity =
+                                            !addingDurationToActivity;
+                                        addingImageToActivity =
+                                            !addingImageToActivity;
+                                      });
+                                    },
+                                    icon: Semantics(
+                                      label:
+                                          "Toggle to show the Duration and Image field to be added along with this activity.",
+                                      child: Icon(
+                                        addingDurationToActivity ||
+                                                addingImageToActivity
+                                            ? Icons.settings_suggest_outlined
+                                            : Icons.settings_suggest,
+                                        color:
+                                            Theme.of(context).iconTheme.color,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                controller: addActivityController,
+                                onSubmitted: (_) {
+                                  if (!processingRequest) {
+                                    onSubmitText();
+                                  }
+                                },
                               ),
                             ),
-                          ),
-                        ),
-                        controller: addActivityController,
-                        onSubmitted: (_) {
-                          if (!processingRequest) {
-                            onSubmitText();
-                          }
-                        },
-                      ),
-                    ),
-                  // if (tempChain.at != null)
-                  //   TextButton(
-                  //     onPressed: () {
-                  //       undoEdit(chainActivityInEditMode!);
-                  //       tempChain.at = null;
-                  //       tempChain.repeatType = repeatTypeDoesNotRepeat;
-                  //       tempChain.repeatCount = repeatTypeDefaultCount;
-                  //     },
-                  //     child: CircleAvatar(
-                  //       radius: 50,
-                  //       child: Text(
-                  //         "Remove\nAlarm",
-                  //         style: Theme.of(context).textTheme.labelSmall,
-                  //         textAlign: TextAlign.center,
-                  //       ),
-                  //     ),
-                  //   ),
-                  // if (chainActivityInEditMode == null ||
-                  //     chainActivityInEditMode!.activity.type !=
-                  //         systemWaitActivityInDB)
+                          // if (tempChain.at != null)
+                          //   TextButton(
+                          //     onPressed: () {
+                          //       undoEdit(chainActivityInEditMode!);
+                          //       tempChain.at = null;
+                          //       tempChain.repeatType = repeatTypeDoesNotRepeat;
+                          //       tempChain.repeatCount = repeatTypeDefaultCount;
+                          //     },
+                          //     child: CircleAvatar(
+                          //       radius: 50,
+                          //       child: Text(
+                          //         "Remove\nAlarm",
+                          //         style: Theme.of(context).textTheme.labelSmall,
+                          //         textAlign: TextAlign.center,
+                          //       ),
+                          //     ),
+                          //   ),
+                          // if (chainActivityInEditMode == null ||
+                          //     chainActivityInEditMode!.activity.type !=
+                          //         systemWaitActivityInDB)
 
-                  if (chainActivityInEditMode != null)
-                    InkWell(
-                      onTap: () {
-                        undoEdit(chainActivityInEditMode!);
-                        // tempChain.at = null;
-                        // tempChain.repeatType = repeatTypeDoesNotRepeat;
-                        // tempChain.repeatCount = repeatTypeDefaultCount;
-                      },
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 15 // appWidth * 0.04,
+                          if (chainActivityInEditMode != null)
+                            InkWell(
+                              onTap: () {
+                                undoEdit(chainActivityInEditMode!);
+                                // tempChain.at = null;
+                                // tempChain.repeatType = repeatTypeDoesNotRepeat;
+                                // tempChain.repeatCount = repeatTypeDefaultCount;
+                              },
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 15 // appWidth * 0.04,
+                                    ),
+                                child: Column(
+                                  children: [
+                                    const Icon(Icons.cancel_outlined),
+                                    const Text("Discard"),
+                                  ],
+                                ),
+                              ),
                             ),
-                        child: Column(
-                          children: [
-                            const Icon(Icons.cancel_outlined),
-                            const Text("Discard"),
-                          ],
-                        ),
-                      ),
-                    ),
-                  if (updatingSystemWaitActivityInDB)
-                    InkWell(
-                      onTap: updateDurationForAllSystemWaitActivity,
-                      child: Column(
-                        children: [
-                          if (processingRequest)
-                            CircularProgressIndicator(
-                              color: Colors.black,
-                            )
-                          else
-                            const Icon(Icons.done_all),
                           if (updatingSystemWaitActivityInDB)
-                            const Text("Between All"),
+                            InkWell(
+                              onTap: updateDurationForAllSystemWaitActivity,
+                              child: Column(
+                                children: [
+                                  if (processingRequest)
+                                    CircularProgressIndicator(
+                                      color: Colors.black,
+                                    )
+                                  else
+                                    const Icon(Icons.done_all),
+                                  if (updatingSystemWaitActivityInDB)
+                                    const Text("Between All"),
+                                ],
+                              ),
+                            ),
+                          if (showSubmitActivityButton)
+                            Column(
+                              children: [
+                                InkWell(
+                                  onTap: processingRequest
+                                      ? null
+                                      : tempChain.title.isNotEmpty
+                                          ? onSubmitText
+                                          : () {
+                                              validateForm(context, false);
+                                            },
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 15 // appWidth * 0.04,
+                                        ),
+                                    child: Column(
+                                      children: [
+                                        if (processingRequest)
+                                          CircularProgressIndicator(
+                                            color: Colors.black,
+                                          )
+                                        else
+                                          chainActivityInEditMode != null ||
+                                                  updatingSystemWaitActivityInDB
+                                              ? const Icon(Icons.done_outline)
+                                              : const Icon(
+                                                  Icons.add_task_outlined),
+                                        if (updatingSystemWaitActivityInDB)
+                                          const Text("Just here"),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                // IconButton(
+                                //   onPressed:
+                                //       tempChain.title.isNotEmpty && !processingRequest
+                                //           ? onSubmitText
+                                //           : () {
+                                //               validateForm(context, false);
+                                //             },
+                                //   icon: chainActivityInEditMode != null ||
+                                //           updatingSystemWaitActivityInDB
+                                //       ? const Icon(Icons.done_outline)
+                                //       : const Icon(Icons.add_task_outlined),
+                                // ),
+                              ],
+                            ),
                         ],
                       ),
                     ),
-                  if (showSubmitActivityButton)
-                    Column(
-                      children: [
-                        InkWell(
-                          onTap: processingRequest
-                              ? null
-                              : tempChain.title.isNotEmpty
-                                  ? onSubmitText
-                                  : () {
-                                      validateForm(context, false);
-                                    },
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 15 // appWidth * 0.04,
-                                ),
-                            child: Column(
-                              children: [
-                                if (processingRequest)
-                                  CircularProgressIndicator(
-                                    color: Colors.black,
-                                  )
-                                else
-                                  chainActivityInEditMode != null ||
-                                          updatingSystemWaitActivityInDB
-                                      ? const Icon(Icons.done_outline)
-                                      : const Icon(Icons.add_task_outlined),
-                                if (updatingSystemWaitActivityInDB)
-                                  const Text("Just here"),
-                              ],
-                            ),
-                          ),
-                        ),
-                        // IconButton(
-                        //   onPressed:
-                        //       tempChain.title.isNotEmpty && !processingRequest
-                        //           ? onSubmitText
-                        //           : () {
-                        //               validateForm(context, false);
-                        //             },
-                        //   icon: chainActivityInEditMode != null ||
-                        //           updatingSystemWaitActivityInDB
-                        //       ? const Icon(Icons.done_outline)
-                        //       : const Icon(Icons.add_task_outlined),
-                        // ),
-                      ],
-                    ),
-                ],
-              ),
-            ),
-          ],
-        ),
+                  ],
+                );
+        }),
         // Expanded(
         //   child: Positioned(
         //     bottom: 50,

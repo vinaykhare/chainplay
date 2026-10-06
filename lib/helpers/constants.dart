@@ -6,12 +6,6 @@ const String sampleWorkoutChainTitle = "Sample Workout Chain";
 const String sampleDietRoutineChainTitle = "Sample Diet Routine Chain";
 const String sampleMedicineRoutineChainTitle = "Sample Medicine Routine Chain";
 
-// For Tutorial
-const String idToGoToPlayWaitTutorialScreen =
-    "Press the forward button to go back to Chain Activity Execution screen, where we can resume the Chain Activity Interactively.\nIf the chain is running in background then you will be asked if you really need to force complete the background activity and enter the interactive view of chain activity.";
-const String idToGoToPlayChainScreen =
-    "Press the back button to pause the Chain (if running) and go to the Screen where we can see the Chain Execution Status and take actions on the Chain.";
-
 // Activity Specifications
 const String activitySpecImagePath = "imagePath";
 const String pixaBayApiKey = "49503054-f92036d9ea19800816b8e4902";
@@ -46,14 +40,7 @@ const String darkThemeSettingKey = "DARK THEME";
 const String darkTheme = "DARK";
 const String lightTheme = "LIGHT";
 const String showHelpOnNextBootKey = "Need ChainPlay Introduction?";
-const String tutorialFull = "Show full tutorial";
-const String tutorialChainListScreen = "SHOW GUIDE ON HOME SCREEN";
-const String tutorialViewChainScreen = "SHOW GUIDE ON VIEW CHAIN SCREEN";
-const String tutorialAddChainScreen = "SHOW GUIDE ON ADD CHAIN SCREEN";
-const String tutorialPlayChainScreen = "SHOW GUIDE ON PLAY CHAIN SCREEN";
-// const String tutorialPlayWaitScreen = "SHOW GUIDE ON PLAY ACTIVITY SCREEN";
-const String catClockModeKey = "ChainPlay Clock Mode";
-const String catClockModeValue = "HH:MM:SS,HH:MM,AM/PM";
+
 const String trueSettingValue = "TRUE";
 const String falseSettingValue = "FALSE";
 const String settingDataTypeBool = "BOOL";

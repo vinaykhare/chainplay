@@ -1,13 +1,15 @@
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/helpers/key_helper.dart';
+import 'package:chain_activities/screens/add_chain_screen.dart';
 import 'package:chain_activities/screens/search_chain_screen.dart';
-import 'package:chain_activities/tutorial/tutorial_coach.dart';
-import 'package:chain_activities/tutorial/widgets/list_of_chains_tutorial.dart';
+import 'package:chain_activities/screens/settings_screen.dart';
+import 'package:chain_activities/screens/view_chain_screen.dart';
 import 'package:chain_activities/widgets/chain_list_header.dart';
 import 'package:chain_activities/widgets/list_of_chains.dart';
 import 'package:chain_activities/widgets/no_chains_view.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' hide KeyHelper;
+// import 'package:flutter/services.dart' hide KeyHelper;
 import 'package:provider/provider.dart';
 import 'package:chain_activities/models/chain.dart';
 import 'package:chain_activities/models/chain_list.dart';
@@ -29,10 +31,10 @@ class _ChainListScreenState extends State<ChainListScreen> {
   @override
   void initState() {
     super.initState();
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
+    // SystemChrome.setPreferredOrientations([
+    //   DeviceOrientation.portraitUp,
+    //   DeviceOrientation.portraitDown,
+    // ]);
   }
 
   // late ChainList chainList;
@@ -40,20 +42,6 @@ class _ChainListScreenState extends State<ChainListScreen> {
   Widget build(BuildContext context) {
     if (initialize) {
       chainList = Provider.of<ChainList>(context, listen: true);
-
-      if (chainList.getSettingByKey(tutorialChainListScreen).value ==
-          trueSettingValue) {
-        TutorialCoach tutorialCoach = TutorialCoach(
-          tutorialType: tutorialChainListScreen,
-          context: context,
-        );
-        chainList.loadSampleChainsForTutorial().then((value) {
-          tutorialCoach.createTutorial();
-          chainList.speakText(
-              "Chain Play is a tool to Chain your activities and Play it. Press on the highlighted section to move ahead, and close to end this tutorial.");
-          tutorialCoach.showTutorial();
-        });
-      }
       initialize = false;
     }
     List<Chain> chains = chainList.chains;
@@ -129,40 +117,112 @@ class _ChainListScreenState extends State<ChainListScreen> {
           child: Material(
             elevation: 5.0,
             color: Theme.of(context).scaffoldBackgroundColor,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const ChainListHeader(),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(5),
-                    margin: const EdgeInsets.symmetric(horizontal: 8),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(30),
-                        topRight: Radius.circular(30),
-                      ),
-                    ),
-                    child: Column(
+            child: OrientationBuilder(builder: (context, orientation) {
+              if (orientation == Orientation.landscape) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // const ChainListHeader(),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        (chains.isNotEmpty)
-                            ? chainList
-                                        .getSettingByKey(
-                                            tutorialChainListScreen)
-                                        .value ==
-                                    trueSettingValue
-                                ? const Expanded(
-                                    child: ListOfChainsTutorial(
-                                      textFilter: null,
-                                      showAd: true,
-                                      showChainControlSummary: true,
-                                      showChainInReverse: false,
-                                      showFavorites: false,
-                                      showRunning: false,
-                                    ),
-                                  )
-                                : Expanded(
+                        Expanded(
+                          child: Column(
+                            children: [
+                              // IconButton(
+                              //   icon: const Icon(Icons.menu),
+                              //   onPressed: () {
+                              //     Scaffold.of(context).openDrawer();
+                              //   },
+                              // ),
+
+                              IconButton(
+                                icon: ImageIcon(
+                                  AssetImage(assetMap["logoImage"]!),
+                                ),
+                                onPressed: () {
+                                  ChainList chainList = Provider.of<ChainList>(
+                                      context,
+                                      listen: false);
+                                  chainList.refresh();
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.add),
+                                onPressed: () {
+                                  while (Navigator.of(context).canPop()) {
+                                    Navigator.of(context).pop();
+                                  }
+                                  Navigator.of(context).pushReplacementNamed(
+                                      AddChainScreen.routename);
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.upload),
+                                onPressed: () async {
+                                  NavigatorState nav = Navigator.of(context);
+                                  ChainList chainList = Provider.of<ChainList>(
+                                      context,
+                                      listen: false);
+                                  FilePickerResult? result =
+                                      await FilePicker.pickFiles(
+                                    type: FileType.custom,
+                                    allowedExtensions: ["json"],
+                                  );
+
+                                  if (result != null) {
+                                    Chain? chain = await chainList
+                                        .uploadChain(result.files.single.path!);
+                                    nav.pushNamed(
+                                      ViewChain.routename,
+                                      arguments: {
+                                        "chain": chain ?? Chain(),
+                                        "savedInDb": false,
+                                        "invalidChain": chain == null,
+                                      },
+                                    );
+                                  } else {
+                                    // User canceled the picker
+                                  }
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.search),
+                                onPressed: () {
+                                  Navigator.of(context)
+                                      .pushNamed(SearchChainScreen.routename);
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.settings),
+                          onPressed: () {
+                            while (Navigator.of(context).canPop()) {
+                              Navigator.of(context).pop();
+                            }
+                            Navigator.of(context)
+                                .pushReplacementNamed(SettingsScreen.routename);
+                          },
+                        ),
+                      ],
+                    ),
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        margin: const EdgeInsets.symmetric(horizontal: 8),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(30),
+                            topRight: Radius.circular(30),
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            (chains.isNotEmpty)
+                                ? Expanded(
                                     child: ListOfChains(
                                       textFilter: null,
                                       showAd: true,
@@ -172,14 +232,53 @@ class _ChainListScreenState extends State<ChainListScreen> {
                                       showRunning: showRunning,
                                     ),
                                   )
-                            : const Expanded(child: NoChainsView()),
-                      ],
+                                : const Expanded(child: NoChainsView()),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                appBarWidget,
-              ],
-            ),
+                    // appBarWidget,
+                  ],
+                );
+              } else {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const ChainListHeader(),
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        margin: const EdgeInsets.symmetric(horizontal: 8),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(30),
+                            topRight: Radius.circular(30),
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            (chains.isNotEmpty)
+                                ? Expanded(
+                                    child: ListOfChains(
+                                      textFilter: null,
+                                      showAd: true,
+                                      showChainControlSummary: true,
+                                      showChainInReverse: false,
+                                      showFavorites: showFavorites,
+                                      showRunning: showRunning,
+                                    ),
+                                  )
+                                : const Expanded(child: NoChainsView()),
+                          ],
+                        ),
+                      ),
+                    ),
+                    appBarWidget,
+                  ],
+                );
+              }
+            }),
           ),
         ),
       ),

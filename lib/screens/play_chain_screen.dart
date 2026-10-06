@@ -1,14 +1,13 @@
 import 'dart:async';
 
-import 'package:chain_activities/helpers/common_logic.dart';
+// import 'package:chain_activities/helpers/common_logic.dart';
 import 'package:chain_activities/helpers/common_ui.dart';
 import 'package:chain_activities/helpers/content_transformer.dart';
 import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/screens/view_chain_screen.dart';
-import 'package:chain_activities/tutorial/tutorial_coach.dart';
 import 'package:chain_activities/widgets/cat_text_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' hide KeyHelper;
+// import 'package:flutter/services.dart' hide KeyHelper;
 import 'package:provider/provider.dart';
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/models/chain.dart';
@@ -34,10 +33,10 @@ class _PlayChainState extends State<PlayChain> {
   bool initializing = true, isLandScape = false;
   String? playChainAction;
 
-  Future<void> setOrietation(bool orientationLandScape) async {
-    await CommonLogic().setOrietation(orientationLandScape);
-    isLandScape = orientationLandScape;
-  }
+  // Future<void> setOrientation(bool orientationLandScape) async {
+  //   await CommonLogic().setOrientation(orientationLandScape);
+  //   isLandScape = orientationLandScape;
+  // }
 
   Future<void> playTheChain() async {
     dynamic popResponse;
@@ -286,12 +285,12 @@ class _PlayChainState extends State<PlayChain> {
   void dispose() {
     super.dispose();
     chainList.disposeAds();
-    SystemChrome.setPreferredOrientations(
-      [
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown,
-      ],
-    );
+    // SystemChrome.setPreferredOrientations(
+    //   [
+    //     DeviceOrientation.portraitUp,
+    //     DeviceOrientation.portraitDown,
+    //   ],
+    // );
   }
 
   //Build Function
@@ -333,26 +332,13 @@ class _PlayChainState extends State<PlayChain> {
         }
       }
 
-      if (chainList.getSettingByKey(tutorialPlayChainScreen).value ==
-          trueSettingValue) {
-        TutorialCoach tutorialCoach = TutorialCoach(
-          tutorialType: tutorialPlayChainScreen,
-          context: context,
-        );
-        tutorialCoach.createTutorial();
-        chainList.speakText(
-          "This is a Quick tutorial to Brief you with Chain Execution Status screen functions.",
-        );
-        tutorialCoach.showTutorial();
+      if (chain.chainStatus == statusExecuting &&
+          playChainAction == playChainActionPlay) {
+        playTheChain();
+      } else if (chain.chainStatus != statusExecuting) {
+        invokeCounter = chain.activities.length;
       } else {
-        if (chain.chainStatus == statusExecuting &&
-            playChainAction == playChainActionPlay) {
-          playTheChain();
-        } else if (chain.chainStatus != statusExecuting) {
-          invokeCounter = chain.activities.length;
-        } else {
-          //
-        }
+        //
       }
 
       initializing = false;
@@ -529,22 +515,22 @@ class _PlayChainState extends State<PlayChain> {
                             ),
                           ),
                         ),
-                        IconButton(
-                          key: KeyHelper.playChainRotateScreenKey,
-                          style: ButtonStyle(
-                            iconColor: WidgetStateProperty.resolveWith(
-                              (states) => Theme.of(context).colorScheme.error,
-                            ),
-                          ),
-                          icon: Icon(
-                            Icons.screen_rotation_outlined,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              setOrietation(!isLandScape);
-                            });
-                          },
-                        ),
+                        // IconButton(
+                        //   key: KeyHelper.playChainRotateScreenKey,
+                        //   style: ButtonStyle(
+                        //     iconColor: WidgetStateProperty.resolveWith(
+                        //       (states) => Theme.of(context).colorScheme.error,
+                        //     ),
+                        //   ),
+                        //   icon: Icon(
+                        //     Icons.screen_rotation_outlined,
+                        //   ),
+                        //   onPressed: () {
+                        //     setState(() {
+                        //       setOrientation(!isLandScape);
+                        //     });
+                        //   },
+                        // ),
                       ],
                     ),
                   ),

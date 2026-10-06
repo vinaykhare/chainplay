@@ -116,110 +116,168 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Scaffold(
           drawer: const AppDrawer(),
           body: SafeArea(
-            child: Column(
-              //mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // const ResetApp(),
-                //const ShowBannerAd(),
-                SizedBox(
-                  height: appHeight * 0.1,
-                  child: ListTile(
-                    leading: InkWell(
-                      child: Image.asset(
-                        assetMap["logoImage"]!,
-                      ),
-                      onTap: () async {
-                        Navigator.of(context).pushReplacementNamed(
-                          ChainListScreen.routename,
-                        );
-                      },
-                    ),
-                    title: Text(
-                      "ChainPlay",
-                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            fontWeight: FontWeight.bold,
+            child: OrientationBuilder(builder: (ctx, orientation) {
+              if (orientation == Orientation.landscape) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                          icon: ImageIcon(
+                            AssetImage(assetMap["logoImage"]!),
                           ),
+                          onPressed: () {
+                            ChainList chainList =
+                                Provider.of<ChainList>(context, listen: false);
+                            chainList.refresh();
+                            Navigator.of(context).pushReplacementNamed(
+                                ChainListScreen.routename);
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.arrow_back),
+                          onPressed: () {
+                            ChainList chainList =
+                                Provider.of<ChainList>(context, listen: false);
+                            chainList.refresh();
+                            Navigator.of(context).pushReplacementNamed(
+                                ChainListScreen.routename);
+                          },
+                        ),
+                      ],
                     ),
-                    subtitle: Text(
-                      "CHAIN THE ACTIVITIES\n& PLAY IT",
-                      style: Theme.of(context).textTheme.titleSmall,
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text(
+                              "System Settings",
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                          ),
+                          Expanded(
+                            child: DbSettings(),
+                          ),
+                          const ShowBannerAd(),
+                        ],
+                      ),
                     ),
-                  ),
-                ),
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                //   child: Text(
-                //     "Manage Activities",
-                //     style: Theme.of(context).textTheme.titleMedium,
-                //   ),
-                // ),
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(horizontal: 20),
-                //   child: Column(
-                //     children: [
-                //       // Row(
-                //       //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //       //   children: [
-                //       //     const Text("Explore all User Activites"),
-                //       //     ElevatedButton(
-                //       //         onPressed: () {
-                //       //           Navigator.of(context).push(
-                //       //             MaterialPageRoute(
-                //       //               //fullscreenDialog: true,
-                //       //               builder: (context) {
-                //       //                 return const ActivityListScreen();
-                //       //               },
-                //       //             ),
-                //       //           );
-                //       //         },
-                //       //         child: const Icon(Icons.arrow_forward)),
-                //       //   ],
-                //       // ),
-                //       Divider(
-                //         color: Theme.of(context).primaryColor,
-                //       ),
-                //       Row(
-                //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //         children: [
-                //           Text(activitiesCount[notInUse]! > 0
-                //               ? "Clear ${activitiesCount[notInUse]} User Created Activities\nthat are not in use"
-                //               : "All User Created activites\nare in use."),
-                //           if (activitiesCount[notInUse]! > 0)
-                //             ElevatedButton(
-                //               onPressed: clearUnusedActivities,
-                //               child: const Icon(Icons.clear_all),
-                //             )
-                //           else
-                //             const ElevatedButton(
-                //               onPressed: null,
-                //               child: Icon(Icons.done),
-                //             ),
-                //         ],
-                //       ),
-                //       Divider(
-                //         color: Theme.of(context).primaryColor,
-                //       ),
-                //     ],
-                //   ),
-                // ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Text(
-                    "System Settings",
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ),
-                Expanded(
-                  child: DbSettings(),
-                ),
-                const ShowBannerAd(),
-                AppBar(
-                  centerTitle: true,
-                  title: const Text("Settings"),
-                )
-              ],
-            ),
+                  ],
+                );
+              } else {
+                return Column(
+                  //mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // const ResetApp(),
+                    //const ShowBannerAd(),
+                    SizedBox(
+                      height: appHeight * 0.1,
+                      child: ListTile(
+                        leading: InkWell(
+                          child: Image.asset(
+                            assetMap["logoImage"]!,
+                          ),
+                          onTap: () async {
+                            Navigator.of(context).pushReplacementNamed(
+                              ChainListScreen.routename,
+                            );
+                          },
+                        ),
+                        title: Text(
+                          "ChainPlay",
+                          style:
+                              Theme.of(context).textTheme.titleMedium!.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                        ),
+                        subtitle: Text(
+                          "CHAIN THE ACTIVITIES\n& PLAY IT",
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                      ),
+                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    //   child: Text(
+                    //     "Manage Activities",
+                    //     style: Theme.of(context).textTheme.titleMedium,
+                    //   ),
+                    // ),
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(horizontal: 20),
+                    //   child: Column(
+                    //     children: [
+                    //       // Row(
+                    //       //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //       //   children: [
+                    //       //     const Text("Explore all User Activites"),
+                    //       //     ElevatedButton(
+                    //       //         onPressed: () {
+                    //       //           Navigator.of(context).push(
+                    //       //             MaterialPageRoute(
+                    //       //               //fullscreenDialog: true,
+                    //       //               builder: (context) {
+                    //       //                 return const ActivityListScreen();
+                    //       //               },
+                    //       //             ),
+                    //       //           );
+                    //       //         },
+                    //       //         child: const Icon(Icons.arrow_forward)),
+                    //       //   ],
+                    //       // ),
+                    //       Divider(
+                    //         color: Theme.of(context).primaryColor,
+                    //       ),
+                    //       Row(
+                    //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //         children: [
+                    //           Text(activitiesCount[notInUse]! > 0
+                    //               ? "Clear ${activitiesCount[notInUse]} User Created Activities\nthat are not in use"
+                    //               : "All User Created activites\nare in use."),
+                    //           if (activitiesCount[notInUse]! > 0)
+                    //             ElevatedButton(
+                    //               onPressed: clearUnusedActivities,
+                    //               child: const Icon(Icons.clear_all),
+                    //             )
+                    //           else
+                    //             const ElevatedButton(
+                    //               onPressed: null,
+                    //               child: Icon(Icons.done),
+                    //             ),
+                    //         ],
+                    //       ),
+                    //       Divider(
+                    //         color: Theme.of(context).primaryColor,
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text(
+                        "System Settings",
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ),
+                    Expanded(
+                      child: DbSettings(),
+                    ),
+                    const ShowBannerAd(),
+                    AppBar(
+                      centerTitle: true,
+                      title: const Text("Settings"),
+                    )
+                  ],
+                );
+              }
+            }),
           ),
         ),
       ),

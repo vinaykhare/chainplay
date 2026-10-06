@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:chain_activities/helpers/common_logic.dart';
+// import 'package:chain_activities/helpers/common_logic.dart';
 import 'package:chain_activities/helpers/common_ui.dart';
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/helpers/notification_helper.dart';
@@ -53,10 +53,10 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
     WakelockPlus.disable();
   }
 
-  Future<void> setOrietation(bool isLandscape) async {
-    await CommonLogic().setOrietation(isLandscape);
-    orientationLandScape = isLandscape;
-  }
+  // Future<void> setOrientation(bool isLandscape) async {
+  //   await CommonLogic().setOrientation(isLandscape);
+  //   orientationLandScape = isLandscape;
+  // }
 
   Future<void> setCountDown() async {
     final seconds = waitDuration.inSeconds - 1;
@@ -160,7 +160,7 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
       screenImage = input["screenImage"];
       orientationLandScape = input["orientationLandScape"] ?? false;
 
-      setOrietation(orientationLandScape);
+      // setOrientation(orientationLandScape);
       switch (playScreenType) {
         case systemWaitActivityInDB:
           title = "Rest";
@@ -394,23 +394,23 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                                   // fit: BoxFit.fitWidth,
                                 ),
                     ),
-                    Positioned(
-                      bottom: 10,
-                      right: 10,
-                      child: IconButton(
-                        style: IconButton.styleFrom(
-                          backgroundColor: Theme.of(context).cardColor,
-                        ),
-                        icon: Icon(
-                          Icons.screen_rotation,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            setOrietation(!orientationLandScape);
-                          });
-                        },
-                      ),
-                    ),
+                    // Positioned(
+                    //   bottom: 10,
+                    //   right: 10,
+                    //   child: IconButton(
+                    //     style: IconButton.styleFrom(
+                    //       backgroundColor: Theme.of(context).cardColor,
+                    //     ),
+                    //     icon: Icon(
+                    //       Icons.screen_rotation,
+                    //     ),
+                    //     onPressed: () {
+                    //       setState(() {
+                    //         setOrientation(!orientationLandScape);
+                    //       });
+                    //     },
+                    //   ),
+                    // ),
                   ],
                 ),
               );

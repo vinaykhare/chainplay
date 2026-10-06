@@ -115,30 +115,6 @@ const sqlInitScript = [
       '$settingDataTypeHiddenBool'
     )
   ''',
-  '''INSERT INTO settings(key, value, type) VALUES (
-      '$tutorialChainListScreen', 
-      '$trueSettingValue',
-      '$settingDataTypeBool'
-    )
-  ''',
-  '''INSERT INTO settings(key, value, type) VALUES (
-      '$tutorialViewChainScreen', 
-      '$trueSettingValue',
-      '$settingDataTypeBool'
-    )
-  ''',
-  '''INSERT INTO settings(key, value, type) VALUES (
-      '$tutorialAddChainScreen', 
-      '$trueSettingValue',
-      '$settingDataTypeBool'
-    )
-  ''',
-  '''INSERT INTO settings(key, value, type) VALUES (
-      '$tutorialPlayChainScreen', 
-      '$trueSettingValue',
-      '$settingDataTypeBool'
-    )
-  ''',
 ];
 
 // Constant Header Content
