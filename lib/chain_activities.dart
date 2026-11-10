@@ -1,7 +1,6 @@
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/helpers/theme_factory.dart';
-import 'package:chain_activities/screens/pixabay_selection_screen.dart';
 import 'package:chain_activities/screens/view_chain_screen.dart';
 import 'package:chain_activities/widgets/my_error_widget.dart';
 import 'package:chain_activities/widgets/redirect.dart';
@@ -72,8 +71,6 @@ class ChainActivities extends StatelessWidget {
         LoadScreen.routename: (context) => const LoadScreen(),
         FirstBootScreen.routename: (context) => const FirstBootScreen(),
         ViewChain.routename: (context) => const ViewChain(),
-        PixabaySelectionScreen.routename: (context) =>
-            const PixabaySelectionScreen(),
       },
     );
   }

@@ -1,15 +1,14 @@
 import 'dart:io';
 
 import 'package:chain_activities/helpers/common_ui.dart';
+import 'package:chain_activities/helpers/app_resume_clipboard.dart';
 import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/screens/chain_list_screen.dart';
-import 'package:chain_activities/screens/pixabay_selection_screen.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:pixabay_picker/model/pixabay_media.dart';
-import 'package:pixabay_picker/pixabay_api.dart';
+import 'package:url_launcher/url_launcher.dart';
 //import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:chain_activities/helpers/constants.dart';
@@ -574,7 +573,6 @@ class _AddChainScreenState extends State<AddChainScreen> {
       //       .updateChain(tempChain);
       // }
     } else {
-      List<String?>? pixabayLinks = await getPixabayImageLinks();
       addActivity(
         ChainActivity(
           activity: Activity(
@@ -582,16 +580,9 @@ class _AddChainScreenState extends State<AddChainScreen> {
             createdAt: DateTime.now(),
             lastUpdatedAt: DateTime.now(),
             activityId: const Uuid().v1(),
-            specification: activityImageController.text.isNotEmpty
-                ? {
-                    activitySpecImagePath: activityImageController.text,
-                  }
-                : {
-                    activitySpecImagePath:
-                        pixabayLinks != null && pixabayLinks[0] != null
-                            ? pixabayLinks[0]
-                            : "",
-                  },
+            specification: {
+              activitySpecImagePath: activityImageController.text,
+            },
           ),
           activityDuration: Duration(
             hours: activityDurationHour,
@@ -621,20 +612,44 @@ class _AddChainScreenState extends State<AddChainScreen> {
     });
   }
 
-  Future<List<String?>?> getPixabayImageLinks() async {
-    PixabayMediaProvider api = PixabayMediaProvider(
-      apiKey: pixaBayApiKey,
-      language: "en",
-    );
-    PixabayResponse? result = await api.requestImagesWithKeyword(
-        keyword: addActivityController.text, resultsPerPage: 100);
-
-    if (result != null && result.hits != null && result.hits!.isNotEmpty) {
-      return result.hits!.map((hit) {
-        return hit.getDownloadLink();
-      }).toList();
+  // Opens a Google Images / Google Photos web search for the activity title.
+  // The user copies an image address in the browser; on return, that address is
+  // taken from the clipboard if it differs from what was in the field before
+  // (see [AppResumeClipboard] for why the read is deferred and filtered).
+  Future<void> searchImageOnWeb(String imageBeforeSearch) async {
+    String query = addActivityController.text.trim();
+    if (query.isEmpty) {
+      query = tempChain.title;
     }
-    return null;
+    Uri url = Uri.parse(
+      "https://www.google.com/search?tbm=isch&q=${Uri.encodeComponent("$query gif")}",
+    );
+    bool launched = false;
+    try {
+      launched = await launchUrl(url, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      launched = false;
+    }
+    if (!launched) {
+      scms.showSnackBar(
+        const SnackBar(content: Text("Could not open the web browser.")),
+      );
+      return;
+    }
+
+    String? copiedLink = await AppResumeClipboard.readAfterBrowserReturn(
+      (clipboardText) => clipboardText.startsWith("http"),
+      previous: imageBeforeSearch,
+    );
+    if (!mounted) {
+      return;
+    }
+    if (copiedLink != null) {
+      activityImageController.text = copiedLink;
+      setState(() {
+        activityFormErrorString = "";
+      });
+    }
   }
 
   String? validateMinuteOrSecond(String? value) {
@@ -833,12 +848,11 @@ class _AddChainScreenState extends State<AddChainScreen> {
                 onPressed: () async {
                   String imagePath = "";
                   String imageSelectionError = "";
-                  NavigatorState nav = Navigator.of(context);
 
                   setState(() {
                     processingRequest = true;
                   });
-                  bool? dialogResponse = await showDialog(
+                  String? dialogResponse = await showDialog<String>(
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
@@ -852,24 +866,23 @@ class _AddChainScreenState extends State<AddChainScreen> {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 8.0),
                               child: InkWell(
-                                onTap: () => Navigator.of(context).pop(true),
+                                onTap: () => Navigator.of(context).pop("web"),
                                 child: Row(
                                   children: [
                                     SizedBox(
+                                      height: 50,
                                       width: appWidth * 0.20,
-                                      child: Image(
-                                        image: AssetImage(
-                                            assetMap['pixabaylogo']!),
-                                        fit: BoxFit.fill,
+                                      child: Icon(
+                                        Icons.travel_explore,
+                                        size: 45,
                                         color: Theme.of(context)
                                             .textTheme
                                             .bodyLarge!
                                             .color,
-                                        width: 50,
                                       ),
                                     ),
                                     Text(
-                                      "PixaBay\nRecommendation",
+                                      "Search on\nGoogle Photos",
                                       style: Theme.of(context)
                                           .textTheme
                                           .labelMedium!
@@ -889,7 +902,8 @@ class _AddChainScreenState extends State<AddChainScreen> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: InkWell(
-                                onTap: () => Navigator.of(context).pop(false),
+                                onTap: () =>
+                                    Navigator.of(context).pop("local"),
                                 child: Row(
                                   children: [
                                     SizedBox(
@@ -926,41 +940,12 @@ class _AddChainScreenState extends State<AddChainScreen> {
                   );
 
                   try {
-                    if (dialogResponse == true) {
-                      List<String?>? pixabayLinks =
-                          await getPixabayImageLinks();
-
-                      if (pixabayLinks != null) {
-                        int? chosenPictureIndex = await nav.pushNamed(
-                          PixabaySelectionScreen.routename,
-                          arguments: {
-                            "activityTitle": addActivityController.text,
-                            "pixabayLinks": pixabayLinks,
-                          },
-                        ) as int?;
-                        if (chosenPictureIndex != null) {
-                          imagePath = pixabayLinks[chosenPictureIndex] ?? "";
-                        } else {
-                          imagePath = "";
-                        }
-                      } else {
-                        // User cancelled the picker
-                        imageSelectionError =
-                            "Pixabay is unable to get images matching the Chain Activity Name.";
+                    if (dialogResponse == "web") {
+                      await searchImageOnWeb(activityImageController.text);
+                      if (!mounted) {
+                        return;
                       }
-                      setState(() {
-                        processingRequest = false;
-                      });
-                    }
-                    // XFile? pickedImage = await ImagePicker()
-                    //     .pickImage(source: ImageSource.gallery);
-                    // if (pickedImage != null) {
-                    //   // activityImageController.text = pickedImage.path;
-                    //   setState(() {
-                    //     localImagePath = pickedImage.path;
-                    //   });
-                    // }
-                    else if (dialogResponse == false) {
+                    } else if (dialogResponse == "local") {
                       FilePickerResult? result = await FilePicker.pickFiles(
                         type: FileType.custom,
                         allowedExtensions: [
@@ -1008,7 +993,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
                         ),
                       ),
                     );
-                  } else {
+                  } else if (imagePath != "") {
                     activityImageController.text = imagePath;
                   }
                   setState(() {
@@ -1027,8 +1012,7 @@ class _AddChainScreenState extends State<AddChainScreen> {
           ],
         ),
         if (activityFormErrorString == "" &&
-            activityImageController.text != "" &&
-            activityImageController.text.startsWith("http"))
+            activityImageController.text != "")
           InkWell(
             onTap: () async {
               await showDialog(
@@ -1085,85 +1069,48 @@ class _AddChainScreenState extends State<AddChainScreen> {
             ),
           ),
         Expanded(
-          child: activityImageController.text.startsWith("/")
-              ? InkWell(
-                  onTap: () async {
-                    await showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text(addActivityController.text),
-                          content: CommonUI()
-                              .getImageByPath(activityImageController.text),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              child: Text(
-                                "Close",
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.error,
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                  child: Container(
-                    height: appWidth * 0.135,
-                    width: appWidth * 0.135,
-                    padding: EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      border: Border.all(),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child:
-                        CommonUI().getImageByPath(activityImageController.text),
-                  ),
-                )
-              : TextFormField(
-                  key: ValueKey(
-                    "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_image",
-                  ),
-                  keyboardType: TextInputType.url,
-                  textAlign: TextAlign.center,
-                  controller: activityImageController,
-                  // onSaved: (_) => chainActivityInEditMode!
-                  //         .activity.specification![activitySpecImagePath] =
-                  //     activityImageController.text,
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    label: Text(
-                      "HTTP URL to an Image or a GIF",
-                      style: TextStyle(
-                        color: Theme.of(context).disabledColor,
-                      ),
-                    ),
-                    hintText: "https://",
-                    alignLabelWithHint: true,
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
-                  ),
-                  onFieldSubmitted: (imagePath) async {
-                    bool valid = await validURL(imagePath);
-                    if (!valid) {
-                      activityImageController.text = "";
-                      activityFormErrorString = "Invalid Path or URL";
-                    }
-                    // if (imagePath.startsWith("/") &&
-                    //     !File(imagePath).existsSync()) {
-                    //   activityImageController.text = "";
-                    //   formImageUrlErrorString = "Invalid Local Path";
-                    // }
-                    // if (imagePath.startsWith("http")) {
-                    //   try {
-                    //     Uri.parse(imagePath);
-                    //   } catch (e) {
-                    //     activityImageController.text = "";
-                    //     formImageUrlErrorString = "Invalid Http path";
-                    //   }
-                    // }
-                  },
+          child: TextFormField(
+            key: ValueKey(
+              "${chainActivityInEditMode?.activity.title.toString()}_${chainActivityInEditMode?.index.toString()}_image",
+            ),
+            keyboardType: TextInputType.url,
+            textAlign: TextAlign.center,
+            controller: activityImageController,
+            // onSaved: (_) => chainActivityInEditMode!
+            //         .activity.specification![activitySpecImagePath] =
+            //     activityImageController.text,
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              label: Text(
+                "HTTP URL to an Image or a GIF",
+                style: TextStyle(
+                  color: Theme.of(context).disabledColor,
+                ),
+              ),
+              hintText: "https://",
+              alignLabelWithHint: true,
+              floatingLabelBehavior: FloatingLabelBehavior.never,
+            ),
+            onFieldSubmitted: (imagePath) async {
+              bool valid = await validURL(imagePath);
+              if (!valid) {
+                activityImageController.text = "";
+                activityFormErrorString = "Invalid Path or URL";
+              }
+              // if (imagePath.startsWith("/") &&
+              //     !File(imagePath).existsSync()) {
+              //   activityImageController.text = "";
+              //   formImageUrlErrorString = "Invalid Local Path";
+              // }
+              // if (imagePath.startsWith("http")) {
+              //   try {
+              //     Uri.parse(imagePath);
+              //   } catch (e) {
+              //     activityImageController.text = "";
+              //     formImageUrlErrorString = "Invalid Http path";
+              //   }
+              // }
+            },
                   // validator: (imagePath) {
                   //   String? validationError;
                   //   try {

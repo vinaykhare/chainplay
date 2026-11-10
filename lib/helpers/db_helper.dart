@@ -1,7 +1,7 @@
-import 'package:chain_activities/helpers/system_configuration.dart';
+import 'package:chain_activities/helpers/db_schema.dart';
 import 'package:sqflite/sqflite.dart' as sql;
-import 'package:path/path.dart' as path;
 import 'package:sqflite/sqlite_api.dart';
+import 'package:path/path.dart' as path;
 
 class DBHelper {
   static Future<Database> database() async {
@@ -14,7 +14,24 @@ class DBHelper {
       for (var script in sqlInitScript) {
         await db.execute(script);
       }
+    }, onUpgrade: (db, oldVersion, newVersion) async {
+      await upgradeSchema(db, oldVersion, newVersion);
     }, version: sqfLiteDBVersion);
+  }
+
+  /// Runs every migration step registered between [oldVersion] and
+  /// [newVersion], plus data repairs that must survive schema changes.
+  /// sqflite already wraps this in a transaction, so a throwing step rolls the
+  /// whole upgrade back and the next open retries it.
+  static Future<void> upgradeSchema(
+    Database db,
+    int oldVersion,
+    int newVersion,
+  ) async {
+    for (var statement in getMigrationSteps(oldVersion, newVersion)) {
+      await db.execute(statement);
+    }
+    await repairActivitySpecifications(db);
   }
 
   static Future<void> insert(String table, Map<String, Object> data) async {
