@@ -67,10 +67,51 @@ void main() {
   test('no migration steps are registered below the current version', () {
     expect(
       dbMigrations.where((m) => m.version <= sqfLiteDBVersion),
+      isNotEmpty,
+      reason: "migrations registered at or below the current version apply",
+    );
+    expect(
+      dbMigrations.where((m) => m.version > sqfLiteDBVersion),
       isEmpty,
       reason: "bump sqfLiteDBVersion when adding a DbMigration",
     );
-    expect(getMigrationSteps(1, sqfLiteDBVersion), isEmpty);
+  });
+
+  test('v2 adds the sample chains opt-in next to the fresh-install default',
+      () async {
+    Database db = await openAt(sqfLiteDBVersion);
+
+    Map<String, Object?> setting = (await db.query(
+      'settings',
+      where: 'key = ?',
+      whereArgs: [addSampleChainsOnBootSettingKey],
+    ))
+        .single;
+    expect(setting['value'], trueSettingValue);
+    expect(setting['type'], settingDataTypeBool);
+
+    await db.close();
+  });
+
+  test('an existing v1 database gains the opt-in on upgrade', () async {
+    Database db = await openAt(sqfLiteDBVersion);
+    await db.delete(
+      'settings',
+      where: 'key = ?',
+      whereArgs: [addSampleChainsOnBootSettingKey],
+    );
+    await db.setVersion(1);
+    await db.close();
+
+    db = await openAt(sqfLiteDBVersion);
+    Map<String, Object?> setting = (await db.query(
+      'settings',
+      where: 'key = ?',
+      whereArgs: [addSampleChainsOnBootSettingKey],
+    ))
+        .single;
+    expect(setting['value'], trueSettingValue);
+    await db.close();
   });
 
   test('getMigrationSteps selects only steps in (oldVersion, newVersion]', () {

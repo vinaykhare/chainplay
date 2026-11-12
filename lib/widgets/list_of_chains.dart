@@ -4,6 +4,7 @@ import 'package:chain_activities/models/chain_list.dart';
 // import 'package:chain_activities/widgets/app_header_buttons_help.dart';
 import 'package:chain_activities/widgets/chain_list_item.dart';
 // import 'package:chain_activities/widgets/chain_tile_help.dart';
+import 'package:chain_activities/widgets/home_controls_help.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -69,72 +70,85 @@ class _ListOfChainsState extends State<ListOfChains> {
       children: [
         if (widget.showChainControlSummary == null ||
             widget.showChainControlSummary == true)
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // IconButton(
-                //   icon: Icon(Icons.help),
-                //   onPressed: () {
-                //     setState(() {
-                //       showChainControlSummary = !showChainControlSummary;
-                //     });
-                //   },
-                // ),
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      showFavorites = false;
-                      showRunning = false;
-                    });
-                  },
-                  child: Text(
-                    "All Chains",
-                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                          fontWeight:
-                              showFavorites == false && showRunning == false
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
+          Row(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            showFavorites = false;
+                            showRunning = false;
+                          });
+                        },
+                        child: Text(
+                          "All Chains",
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleSmall!
+                              .copyWith(
+                                fontWeight:
+                                    showFavorites == false && showRunning == false
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                              ),
                         ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            showRunning = true;
+                            showFavorites = false;
+                          });
+                        },
+                        child: Text(
+                          "Running Chains",
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleSmall!
+                              .copyWith(
+                                fontWeight:
+                                    showFavorites == false && showRunning == true
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                              ),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            showFavorites = true;
+                            showRunning = false;
+                          });
+                        },
+                        child: Text(
+                          "Favorite Chains",
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleSmall!
+                              .copyWith(
+                                fontWeight:
+                                    showFavorites == true && showRunning == false
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                              ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      showRunning = true;
-                      showFavorites = false;
-                    });
-                  },
-                  child: Text(
-                    "Running Chains",
-                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                          fontWeight:
-                              showFavorites == false && showRunning == true
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                        ),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      showFavorites = true;
-                      showRunning = false;
-                    });
-                  },
-                  child: Text(
-                    "Favorite Chains",
-                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                          fontWeight:
-                              showFavorites == true && showRunning == false
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                        ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+              // Outside the scroll view so it is always on screen.
+              IconButton(
+                icon: const Icon(Icons.help_outline),
+                tooltip: "What do these controls do?",
+                onPressed: () => HomeControlsHelp.show(context),
+              ),
+            ],
           ),
         Expanded(
           // child: Stack(

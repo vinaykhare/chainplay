@@ -350,177 +350,224 @@ class _PlayWaitActivityState extends State<PlayWaitActivity> {
                           Icons.notification_add,
                         ),
                       ),
-                    if (orientation == Orientation.portrait)
-                      Container(
-                        margin: const EdgeInsets.all(5),
-                        padding: const EdgeInsets.only(bottom: 5),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Theme.of(context).cardColor,
-                        ),
-                        child: const ShowBannerAd(),
+                    // if (orientation == Orientation.portrait)
+                    Container(
+                      margin: const EdgeInsets.all(5),
+                      padding: const EdgeInsets.only(bottom: 5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Theme.of(context).cardColor,
                       ),
+                      child: const ShowBannerAd(),
+                    ),
                   ],
                 ),
               );
-              Widget activityImage = Container(
+              Widget activityImage = screenImage == null || screenImage == ""
+                  ? Image.asset(
+                      assetMap['logoImage']!,
+                      fit: BoxFit.cover,
+                      //height: appHeight * 0.45,
+                    )
+                  : screenImage!.startsWith("http")
+                      ? FadeInImage.assetNetwork(
+                          placeholder: assetMap["logoImage"]!,
+                          image: screenImage!,
+                          // height: appHeight * 0.45,
+                          fit: BoxFit.cover,
+                          imageErrorBuilder: (context, error, stackTrace) =>
+                              Image.asset(
+                            assetMap['logoImage']!,
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      : Image.file(
+                          File(screenImage!),
+                          // height: appHeight * 0.45,
+                          fit: BoxFit.cover,
+                        );
+              Widget activityImageFrame = Container(
                 margin: const EdgeInsets.all(5),
                 width: appWidth,
                 child: Stack(
                   children: [
                     Center(
-                      child: screenImage == null || screenImage == ""
-                          ? Image.asset(
-                              assetMap['logoImage']!,
-                              // fit: BoxFit.fitHeight,
-                              //height: appHeight * 0.45,
-                            )
-                          : screenImage!.startsWith("http")
-                              ? FadeInImage.assetNetwork(
-                                  placeholder: assetMap["logoImage"]!,
-                                  image: screenImage!,
-                                  // height: appHeight * 0.45,
-                                  //fit: BoxFit.cover,
-                                  imageErrorBuilder:
-                                      (context, error, stackTrace) =>
-                                          Image.asset(
-                                    assetMap['logoImage']!,
-                                    // fit: BoxFit.cover,
-                                  ),
-                                )
-                              : Image.file(
-                                  File(screenImage!),
-                                  // height: appHeight * 0.45,
-                                  // fit: BoxFit.fitWidth,
-                                ),
+                      child: activityImage,
                     ),
-                    // Positioned(
-                    //   bottom: 10,
-                    //   right: 10,
-                    //   child: IconButton(
-                    //     style: IconButton.styleFrom(
-                    //       backgroundColor: Theme.of(context).cardColor,
-                    //     ),
-                    //     icon: Icon(
-                    //       Icons.screen_rotation,
-                    //     ),
-                    //     onPressed: () {
-                    //       setState(() {
-                    //         setOrientation(!orientationLandScape);
-                    //       });
-                    //     },
-                    //   ),
-                    // ),
+                    if (orientation == Orientation.portrait)
+                      Positioned(
+                        bottom: 10,
+                        // right: 10,
+                        child: ElevatedButton.icon(
+                            style: IconButton.styleFrom(
+                              backgroundColor: Theme.of(context).cardColor,
+                            ),
+                            icon: Icon(
+                              Icons.screen_rotation,
+                            ),
+                            onPressed: null,
+                            label: Text("Presentaion Mode")),
+                      ),
                   ],
                 ),
               );
               return orientation == Orientation.landscape
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                  ? Stack(
                       children: [
-                        Expanded(
-                          child: activityImage,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: activityImage,
+                            ),
+                            if (playScreenType == systemEndActivityInDB)
+                              Expanded(
+                                child: activityContent,
+                              ),
+                          ],
                         ),
-                        if (playScreenType != systemEndActivityInDB)
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: appWidth * 0.05),
-                            child: activityContent,
-                          )
-                        else
-                          Expanded(
-                            child: activityContent,
-                          ),
+                        if (showPlayPause)
+                          if (hours == 0 && minutes == 0 && seconds < 6)
+                            Positioned(
+                              right: 10,
+                              top: 10,
+                              child: Container(
+                                width: 70,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Text(
+                                  displaySeconds,
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            )
+                          else
+                            Positioned(
+                              right: 10,
+                              top: 10,
+                              child: Container(
+                                width: 70,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Icon(Icons.timer, color: Colors.black),
+                              ),
+                            ),
                       ],
                     )
                   : Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Expanded(child: activityImage),
+                        Expanded(child: activityImageFrame),
                         activityContent,
                       ],
                     );
             }),
           ),
           bottomNavigationBar: SafeArea(
-            child: Row(
-              children: [
-                InkWell(
-                  onTap: () {
-                    Navigator.of(context).pop({
-                      "running": false, //running,
-                      "waitDuration": waitDuration,
-                      "interruptAndCompleted": false,
-                      "resumedAt": resumedAt,
-                      "orientationLandScape": orientationLandScape,
-                      "completionMessage": chainActivityCompletionMessageDone,
-                    });
-                  },
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.timeline,
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(
-                          left: 5,
+            child: OrientationBuilder(builder: (context, orientation) {
+              return Row(
+                children: [
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).pop({
+                        "running": false, //running,
+                        "waitDuration": waitDuration,
+                        "interruptAndCompleted": false,
+                        "resumedAt": resumedAt,
+                        "orientationLandScape": orientationLandScape,
+                        "completionMessage": chainActivityCompletionMessageDone,
+                      });
+                    },
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.timeline,
                         ),
-                        child: const Text("Chain Status"),
-                      ),
-                    ],
+                        Container(
+                          margin: EdgeInsets.only(
+                            left: 5,
+                          ),
+                          child: const Text("Chain Status"),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                if (showPlayPause)
-                  Expanded(
-                    child: IconButton(
-                      onPressed: () {
-                        if (running) {
-                          stopTimer();
-                        } else {
-                          startTimer();
-                          resumedAt = DateTime.now();
-                        }
+                  if (showPlayPause)
+                    Expanded(
+                      child: TextButton.icon(
+                        onPressed: () {
+                          if (running) {
+                            stopTimer();
+                          } else {
+                            startTimer();
+                            resumedAt = DateTime.now();
+                          }
 
-                        setState(() {
-                          running = !running;
-                        });
-                      },
-                      icon: Icon(
-                        running ? Icons.pause : Icons.play_arrow,
+                          setState(() {
+                            running = !running;
+                          });
+                        },
+                        label: (orientation == Orientation.landscape)
+                            ? Text(
+                                title ?? "Generic Activity",
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              )
+                            : Text(""),
+                        icon: Icon(
+                          running ? Icons.pause : Icons.play_arrow,
+                        ),
+                      ),
+                    )
+                  else if (orientation == Orientation.landscape)
+                    Expanded(
+                      child: Text(
+                        title ?? "Generic Activity",
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    )
+                  else
+                    const Expanded(
+                      child: SizedBox(
+                        height: 45,
                       ),
                     ),
-                  )
-                else
-                  const Expanded(
-                    child: SizedBox(
-                      height: 45,
-                    ),
-                  ),
-                InkWell(
-                  onTap: interruptAndCompleteActivity,
-                  child: Row(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                          right: 5,
+                  InkWell(
+                    onTap: interruptAndCompleteActivity,
+                    child: Row(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(
+                            right: 5,
+                          ),
+                          child: Text(
+                            playScreenType == systemEndActivityInDB
+                                ? "Complete"
+                                : "Next Activity",
+                          ),
                         ),
-                        child: Text(
+                        Icon(
                           playScreenType == systemEndActivityInDB
-                              ? "Complete"
-                              : "Next Activity",
+                              ? Icons.done
+                              : Icons.arrow_forward,
                         ),
-                      ),
-                      Icon(
-                        playScreenType == systemEndActivityInDB
-                            ? Icons.done
-                            : Icons.arrow_forward,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              );
+            }),
           ),
         ),
       ),

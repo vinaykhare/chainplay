@@ -79,8 +79,33 @@ class ChainTileView extends StatelessWidget {
     // }
     return Semantics(
       label: "Play or Resume this chain",
-      child: const Icon(
-        Icons.play_arrow,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          const Icon(
+            Icons.play_arrow,
+          ),
+          // A chain that has never run teaches the long-press: the alarm sits
+          // on the play button until the chain has a schedule or a first
+          // execution (the `?` sheet explains it after that).
+          if (chain.at == null && chain.chainHistory.isEmpty)
+            Positioned(
+              right: -8,
+              bottom: -2,
+              child: Container(
+                padding: const EdgeInsets.all(1),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Theme.of(context).colorScheme.surface,
+                ),
+                child: Icon(
+                  Icons.alarm,
+                  size: 14,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -339,18 +364,41 @@ class ChainTileView extends StatelessWidget {
                       ),
                     ),
                     FittedBox(
-                      child: Text(
-                        key: getGlobaleKey(
-                              tutorialChain,
-                              0,
-                            ) ??
-                            key,
-                        chain.title,
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            key: getGlobaleKey(
+                                  tutorialChain,
+                                  0,
+                                ) ??
+                                key,
+                            chain.title,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   //color: Theme.of(context).hintColor,
                                 ),
+                          ),
+                          if (isSampleChain(chain.title)) ...[
+                            const SizedBox(width: 6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 1),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).focusColor,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                "Sample",
+                                style:
+                                    Theme.of(context).textTheme.labelSmall,
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                     ),
                     Expanded(

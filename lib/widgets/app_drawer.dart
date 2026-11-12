@@ -57,27 +57,9 @@ class AppDrawer extends StatelessWidget {
                 children: [
                   const Divider(),
                   //const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.add_circle),
-                    title: Text(
-                      'Add Sample Chains',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    subtitle: Text(
-                      "made of Timer & Manual Tasks",
-                      style: Theme.of(context).textTheme.labelSmall,
-                    ),
-                    onTap: () async {
-                      NavigatorState nav = Navigator.of(context);
-                      while (Navigator.of(context).canPop()) {
-                        Navigator.of(context).pop();
-                      }
-
-                      await Provider.of<ChainList>(context, listen: false)
-                          .loadSampleChainsFromAssets();
-                      nav.pushReplacementNamed(ChainListScreen.routename);
-                    },
-                  ),
+                  // Sample chains are offered once, on the first boot screen
+                  // ("Add Sample Chains at Start"), so they are not repeated
+                  // here.
                   ListTile(
                     leading: const Icon(
                       Icons.create,

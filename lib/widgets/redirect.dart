@@ -2,6 +2,7 @@
 
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:chain_activities/models/chain_list.dart';
+import 'package:chain_activities/screens/add_chain_screen.dart';
 import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:chain_activities/screens/first_boot_screen.dart';
 import 'package:chain_activities/screens/load_screen.dart';
@@ -32,9 +33,14 @@ class Redirect extends StatelessWidget {
         } else {
           if (chainList.sharedFile != null) {
             return const ViewChain();
+          } else if (chainList.sharedLink != null) {
+            // An image address shared from another app (Photos, Chrome): the
+            // user is building an activity for it, so start there with the
+            // link already filled in.
+            chainList.sharedLink = null;
+            return const AddChainScreen();
           } else if (chainList.getSettingByKey(showHelpOnNextBootKey).value ==
-              trueSettingValue) {
-            return const FirstBootScreen();
+              trueSettingValue) {            return const FirstBootScreen();
           } else if (chainList.notificationCameAs != null) {
             return const PlayChain();
           } else {

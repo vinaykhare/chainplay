@@ -31,6 +31,14 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="application/json" />
             </intent-filter>
+            <!-- Image address shared as text from Chrome and other browsers.
+                 `image/*` is deliberately NOT registered: that shares a photo
+                 file, which the app reads as a chain .json and would fail. -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
             <meta-data
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"

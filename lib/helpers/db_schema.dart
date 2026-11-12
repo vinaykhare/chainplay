@@ -36,7 +36,7 @@ import 'dart:convert';
 import 'package:chain_activities/helpers/constants.dart';
 import 'package:sqflite/sqflite.dart';
 
-const int sqfLiteDBVersion = 1;
+const int sqfLiteDBVersion = 2;
 
 const sqlInitScript = [
   '''CREATE TABLE activity (
@@ -149,12 +149,29 @@ const sqlInitScript = [
       '$settingDataTypeHiddenBool'
     )
   ''',
+  '''INSERT INTO settings(key, value, type) VALUES (
+      '$addSampleChainsOnBootSettingKey', 
+      '$trueSettingValue',
+      '$settingDataTypeHiddenBool'
+    )
+  ''',
 ];
 
 // One entry per schema version that existing databases must be moved to.
 // Version 1 is the initial schema, created by `sqlInitScript`, so there is no
 // migration for it.
 const List<DbMigration> dbMigrations = [
+  DbMigration(
+    version: 2,
+    description: "Let the user opt out of the sample chains on first boot",
+    steps: [
+      '''INSERT OR IGNORE INTO settings(key, value, type) VALUES (
+      '$addSampleChainsOnBootSettingKey',
+      '$trueSettingValue',
+      '$settingDataTypeBool'
+    )''',
+    ],
+  ),
   // Example of a future step (do not uncomment without bumping the version):
   //
   // DbMigration(
@@ -220,7 +237,9 @@ Future<int> repairActivitySpecifications(Database db) async {
     String imagePath = decoded is String ? decoded : "";
     await db.update(
       'activity',
-      {'specifications': jsonEncode({activitySpecImagePath: imagePath})},
+      {
+        'specifications': jsonEncode({activitySpecImagePath: imagePath})
+      },
       where: 'activityId = ?',
       whereArgs: [row['activityId']],
     );

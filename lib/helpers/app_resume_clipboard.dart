@@ -1,33 +1,60 @@
 import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-/// Reads the clipboard only after the user comes back from an external
-/// browser (see [readAfterBrowserReturn] for why).
+/// Reads the clipboard, or returns null when it holds no text or the system
+/// refuses the request.
+typedef ClipboardTextReader = Future<String?> Function();
+
+/// What happened while the user was away in another app, such as a browser.
+enum AppReturnStatus {
+  /// The app never left the foreground: the other app did not open.
+  stayed,
+
+  /// The user came back, but nothing new is available.
+  notFound,
+
+  /// Something usable came back.
+  copied,
+}
+
+/// The result of waiting for the user to come back from another app.
+class AppReturn {
+  const AppReturn(this.status, [this.text]);
+
+  final AppReturnStatus status;
+
+  final String? text;
+
+  bool get copied => status == AppReturnStatus.copied;
+}
+
+/// Waits for the user to come back from an external app.
+///
+/// Deliberately does **not** read the clipboard on return. On Android 12+
+/// `Clipboard.getData` issued by the app right after it resumes is refused
+/// (silently: it returns null), which the app observed on Android 17 — every
+/// read after the browser came back was null. The one reliable clipboard read
+/// is one the user asks for, which is why the image field has an explicit
+/// paste button instead. Links shared from other apps arrive through the
+/// share intent (see `ChainList.sharedLink`).
 class AppResumeClipboard {
   AppResumeClipboard._();
 
-  static const Duration _settleTime = Duration(milliseconds: 250);
-  static const int _maxAttempts = 4;
+  /// Notes what is on the clipboard beforehand, for callers that want to
+  /// report or compare it. A refused read returns an empty string.
+  static Future<String> snapshot(ClipboardTextReader readClipboard) async {
+    try {
+      return await readClipboard() ?? "";
+    } catch (_) {
+      return "";
+    }
+  }
 
-  /// Waits for the app to be backgrounded and resumed, then returns the
-  /// clipboard text if [accept] accepts it and it is not [previous] (the value
-  /// that was in the field before the browser opened, so a link copied for an
-  /// earlier activity is not applied again).
-  ///
-  /// Returns null when the app never left the foreground within
-  /// [launchTimeout] (the browser failed to open), never resumed within
-  /// [resumeTimeout], or the clipboard holds nothing acceptable.
-  ///
-  /// `Clipboard.getData` is bound to the activity that issued it: a request
-  /// sent while the app is paused can be rejected, and a request sent right
-  /// after resuming can still be served from the clipboard view of the browser
-  /// that had focus. Neither is reported, so the value is only used once two
-  /// consecutive reads (0.25 s apart) agree.
-  static Future<String?> readAfterBrowserReturn(
-    bool Function(String clipboardText) accept, {
-    String? previous,
+  /// Returns [AppReturnStatus.stayed] when the app never left the foreground
+  /// within [launchTimeout], or [AppReturnStatus.notFound] once the user is
+  /// back. Never reads the clipboard (see the class comment).
+  static Future<AppReturn> waitForReturn({
     Duration launchTimeout = const Duration(seconds: 3),
     Duration resumeTimeout = const Duration(minutes: 10),
   }) async {
@@ -35,32 +62,15 @@ class AppResumeClipboard {
     WidgetsBinding.instance.addObserver(tracker);
     try {
       if (!await tracker.didLeaveForeground(launchTimeout)) {
-        return null;
+        return const AppReturn(AppReturnStatus.stayed);
       }
       if (!await tracker.didResume(resumeTimeout)) {
-        return null;
+        return const AppReturn(AppReturnStatus.stayed);
       }
-
-      for (int attempt = 0; attempt < _maxAttempts; attempt++) {
-        final String first = await _read();
-        await Future<void>.delayed(_settleTime);
-        final String second = await _read();
-        if (first.isEmpty || first != second || first == previous) {
-          continue;
-        }
-        if (accept(first)) {
-          return first;
-        }
-      }
-      return null;
+      return const AppReturn(AppReturnStatus.notFound);
     } finally {
       WidgetsBinding.instance.removeObserver(tracker);
     }
-  }
-
-  static Future<String> _read() async {
-    final ClipboardData? data = await Clipboard.getData(Clipboard.kTextPlain);
-    return data?.text?.trim() ?? "";
   }
 }
 

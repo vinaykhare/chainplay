@@ -8,6 +8,7 @@ import 'package:chain_activities/helpers/ad_state.dart';
 import 'package:chain_activities/models/chain_activity.dart';
 import 'package:chain_activities/screens/play_chain_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show MethodChannel;
 import 'package:chain_activities/helpers/constants.dart';
 //import 'package:google_mobile_ads/google_mobile_ads.dart';
 //import 'package:chain_activities/helpers/ad_state.dart';
@@ -69,6 +70,10 @@ class ChainList with ChangeNotifier {
   final BuildContext context;
   StreamSubscription? intentDataStreamSubscription;
   SharedMediaFile? sharedFile;
+
+  /// A URL (typically an image address) shared into the app. Handled by
+  /// `AddChainScreen`, where it becomes the activity's image link.
+  String? sharedLink;
 
   List<BannerAd> bannerAds = [];
   InterstitialAd? interstitialAd;
@@ -1481,7 +1486,7 @@ class ChainList with ChangeNotifier {
     if (keyIndex == -1) {
       SystemSetting newSetting = SystemSetting();
       newSetting.key = key;
-      newSetting.value = newSetting.value;
+      newSetting.value = value;
       newSetting.type = type;
       systemSettings.add(newSetting);
       await DBHelper.insert(
@@ -2203,6 +2208,7 @@ class ChainList with ChangeNotifier {
 
   Future<void> cancelIntentSubscription() async {
     sharedFile = null;
+    sharedLink = null;
     ReceiveSharingIntent.instance.reset();
     if (intentDataStreamSubscription != null) {
       await intentDataStreamSubscription!.cancel();
@@ -2210,9 +2216,24 @@ class ChainList with ChangeNotifier {
     }
   }
 
-  Future<void> receiveIntent() async {
-    // String? sharedText;
+  /// Keeps the first shared link and ignores what a share sheet often adds
+  /// alongside it (a title, a description). Only one link is an activity image.
+  void _takeSharedText(String? text) {
+    if (text == null || text.trim().isEmpty) {
+      return;
+    }
+    for (final String word in text.split(RegExp(r"\s+"))) {
+      Uri? uri = Uri.tryParse(word.trim());
+      if (uri != null &&
+          (uri.scheme == "http" || uri.scheme == "https") &&
+          uri.host.isNotEmpty) {
+        sharedLink ??= word.trim();
+        return;
+      }
+    }
+  }
 
+  Future<void> receiveIntent() async {
     intentDataStreamSubscription = ReceiveSharingIntent.instance
         .getMediaStream()
         .listen((List<SharedMediaFile> sharedMediaFiles) {
@@ -2233,19 +2254,29 @@ class ChainList with ChangeNotifier {
       ReceiveSharingIntent.instance.reset();
     });
 
-    // intentDataStreamSubscription =
-    //     ReceiveSharingIntent.instance.getTextStream().listen((String value) {
-    //   sharedText = value;
-    //   print("Shared Text: $sharedText");
-    // }, onError: (err) {
-    //   print("getLinkStream error: $err");
-    // });
+    // receive_sharing_intent 1.9.0 forwards media only, so a shared image
+    // address is read from the app's own Activity (see MainActivity.kt).
+    await _readSharedTextFromAndroid();
 
-    // await ReceiveSharingIntent.instance.getInitialText().then((String? value) {
-    //   sharedText = value;
-    // });
     ReceiveSharingIntent.instance.reset();
     await intentDataStreamSubscription!.cancel();
     intentDataStreamSubscription = null;
+  }
+
+  /// Reads a link shared into the app, including one shared while the app was
+  /// already running: `checkAndUpdateConfig` calls this again on every start.
+  Future<void> _readSharedTextFromAndroid() async {
+    if (!Platform.isAndroid) {
+      return;
+    }
+    try {
+      const MethodChannel sharedTextChannel =
+          MethodChannel("promaxbiz.com/shared_text");
+      String? text =
+          await sharedTextChannel.invokeMethod<String>("getSharedText");
+      _takeSharedText(text);
+    } catch (e) {
+      // Nothing shared, or the channel is unavailable: nothing to do.
+    }
   }
 }

@@ -1,12 +1,13 @@
 import 'dart:io';
 
 import 'package:chain_activities/helpers/common_ui.dart';
-import 'package:chain_activities/helpers/app_resume_clipboard.dart';
 import 'package:chain_activities/helpers/key_helper.dart';
 import 'package:chain_activities/screens/chain_list_screen.dart';
 import 'package:chain_activities/widgets/show_banner_ad.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+
+import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 //import 'package:intl/intl.dart';
@@ -91,6 +92,55 @@ class _AddChainScreenState extends State<AddChainScreen> {
     addActivityFocus.dispose();
     addActivityController.dispose();
     super.dispose();
+  }
+
+  /// A link shared from another app (for example an image address from Google
+  /// Photos) becomes this activity's image, so the browser round trip is not
+  /// needed at all.
+  void takeSharedLinkIfAny() {
+    ChainList chainList = Provider.of<ChainList>(context, listen: false);
+    String? sharedLink = chainList.sharedLink;
+    if (sharedLink == null) {
+      return;
+    }
+    chainList.sharedLink = null;
+    activityImageController.text = sharedLink;
+    setState(() {
+      addingImageToActivity = true;
+      activityFormErrorString = "";
+    });
+  }
+
+  /// Reads the clipboard only when the user asks for it, which is the one
+  /// clipboard read Android always allows, even after the app comes back to
+  /// the foreground.
+  Future<void> pasteImageLink() async {
+    String? text;
+    try {
+      final ClipboardData? data =
+          await Clipboard.getData(Clipboard.kTextPlain);
+      text = data?.text?.trim();
+    } catch (e) {
+      text = null;
+    }
+    if (!mounted) {
+      return;
+    }
+    if (text == null || !_isUsableImageLink(text)) {
+      scms.showSnackBar(
+        const SnackBar(
+          content: Text(
+            "The clipboard has no image link. In the browser, long press the "
+            "image and choose \"Copy image address\".",
+          ),
+        ),
+      );
+      return;
+    }
+    setState(() {
+      activityImageController.text = text!;
+      activityFormErrorString = "";
+    });
   }
 
   Future<bool> isNameValid() async {
@@ -612,10 +662,10 @@ class _AddChainScreenState extends State<AddChainScreen> {
     });
   }
 
-  // Opens a Google Images / Google Photos web search for the activity title.
-  // The user copies an image address in the browser; on return, that address is
-  // taken from the clipboard if it differs from what was in the field before
-  // (see [AppResumeClipboard] for why the read is deferred and filtered).
+  // Opens a Google Images web search for the activity title. The user copies an
+  // image address in the browser, comes back, and taps the paste button next to
+  // the image field. The clipboard is not read here: Android refuses that read
+  // right after the app resumes (see [AppResumeClipboard]).
   Future<void> searchImageOnWeb(String imageBeforeSearch) async {
     String query = addActivityController.text.trim();
     if (query.isEmpty) {
@@ -630,26 +680,34 @@ class _AddChainScreenState extends State<AddChainScreen> {
     } catch (e) {
       launched = false;
     }
+    if (!mounted) {
+      return;
+    }
     if (!launched) {
       scms.showSnackBar(
         const SnackBar(content: Text("Could not open the web browser.")),
       );
       return;
     }
-
-    String? copiedLink = await AppResumeClipboard.readAfterBrowserReturn(
-      (clipboardText) => clipboardText.startsWith("http"),
-      previous: imageBeforeSearch,
+    scms.showSnackBar(
+      const SnackBar(
+        content: Text(
+          "Long press the image in the browser, choose \"Copy image "
+          "address\", come back and tap the paste button.",
+        ),
+        duration: Duration(seconds: 6),
+      ),
     );
-    if (!mounted) {
-      return;
-    }
-    if (copiedLink != null) {
-      activityImageController.text = copiedLink;
-      setState(() {
-        activityFormErrorString = "";
-      });
-    }
+  }
+
+  // Only http(s) links: the clipboard may hold a browser's page URL, or text
+  // that happens to start with "http", and neither is an image.
+  static bool _isUsableImageLink(String clipboardText) {
+    Uri? uri = Uri.tryParse(clipboardText);
+    return uri != null &&
+        (uri.scheme == "http" || uri.scheme == "https") &&
+        uri.host.isNotEmpty &&
+        !clipboardText.contains(RegExp(r"\s"));
   }
 
   String? validateMinuteOrSecond(String? value) {
@@ -808,6 +866,15 @@ class _AddChainScreenState extends State<AddChainScreen> {
       });
       pageInit = false;
       //FocusScope.of(context).requestFocus(addActivityFocus);
+
+      // A link shared into the app (see ChainList.sharedLink) fills the image
+      // field as soon as this screen is ready. Done after the frame so the
+      // setState below has a built widget.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          takeSharedLinkIfAny();
+        }
+      });
     }
 
     double appWidth = MediaQuery.of(context).size.width;
@@ -1128,6 +1195,18 @@ class _AddChainScreenState extends State<AddChainScreen> {
                   //   }
                   // },
                 ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColor,
+          ),
+          child: Tooltip(
+            message: "Paste the image link copied in the browser",
+            child: IconButton(
+              icon: const Icon(Icons.content_paste),
+              onPressed: pasteImageLink,
+            ),
+          ),
         ),
         Container(
           decoration: BoxDecoration(
@@ -1622,8 +1701,13 @@ class _AddChainScreenState extends State<AddChainScreen> {
                               child: Column(
                                 children: [
                                   if (processingRequest)
-                                    CircularProgressIndicator(
-                                      color: Colors.black,
+                                    const SizedBox(
+                                      height: 24,
+                                      width: 24,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.black,
+                                      ),
                                     )
                                   else
                                     const Icon(Icons.done_all),
@@ -1650,8 +1734,13 @@ class _AddChainScreenState extends State<AddChainScreen> {
                                     child: Column(
                                       children: [
                                         if (processingRequest)
-                                          CircularProgressIndicator(
-                                            color: Colors.black,
+                                          const SizedBox(
+                                            height: 24,
+                                            width: 24,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: Colors.black,
+                                            ),
                                           )
                                         else
                                           chainActivityInEditMode != null ||

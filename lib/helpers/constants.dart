@@ -6,6 +6,15 @@ const String sampleWorkoutChainTitle = "Sample Workout Chain";
 const String sampleDietRoutineChainTitle = "Sample Diet Routine Chain";
 const String sampleMedicineRoutineChainTitle = "Sample Medicine Routine Chain";
 
+// Sample chains ship with the app and are imported by title, so a chain still
+// carrying one of those titles is the sample (renaming it makes it the user's).
+const List<String> sampleChainTitles = [
+  sampleWorkoutChainTitle,
+  sampleDietRoutineChainTitle,
+  sampleMedicineRoutineChainTitle,
+];
+bool isSampleChain(String title) => sampleChainTitles.contains(title);
+
 // Activity Specifications
 const String activitySpecImagePath = "imagePath";
 const String inUse = "Activities in use";
@@ -39,6 +48,7 @@ const String darkThemeSettingKey = "DARK THEME";
 const String darkTheme = "DARK";
 const String lightTheme = "LIGHT";
 const String showHelpOnNextBootKey = "Need ChainPlay Introduction?";
+const String addSampleChainsOnBootSettingKey = "Add Sample Chains at Start";
 
 const String trueSettingValue = "TRUE";
 const String falseSettingValue = "FALSE";
